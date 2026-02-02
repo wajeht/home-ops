@@ -4,7 +4,7 @@ services:
     networks:
       - traefik
     deploy:
-      replicas: 2
+      replicas: 1
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.whoami.rule=Host(`whoami.wajeht.com`)"
