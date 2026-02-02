@@ -13,7 +13,9 @@ home-ops/
 │   ├── whoami/              # test service
 │   ├── commit/              # AI commit messages (private ghcr)
 │   │   └── .enc.env         # app secrets (SOPS encrypted)
-│   └── gitea/               # git mirror
+│   ├── gitea/               # git mirror
+│   ├── uptime-kuma/         # status monitoring
+│   └── plausible/           # privacy-friendly analytics
 ├── infrastructure/          # core services
 │   ├── traefik/             # reverse proxy + TLS
 │   │   └── .enc.env         # traefik secrets
@@ -107,3 +109,5 @@ ssh server 'sudo docker service logs -f traefik_traefik'
 - https://whoami.wajeht.com - Test
 - https://commit.wajeht.com - AI Commits
 - https://git.wajeht.com - Gitea (GitHub mirror)
+- https://status.wajeht.com - Uptime Kuma
+- https://analytics.wajeht.com - Plausible
