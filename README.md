@@ -15,7 +15,6 @@ home-ops/
 │   │   └── .enc.env         # app secrets (SOPS encrypted)
 │   ├── gitea/               # git mirror
 │   ├── uptime-kuma/         # status monitoring
-│   ├── plausible/           # privacy-friendly analytics
 │   ├── media/               # plex, *arr stack, qbittorrent
 │   ├── ntfy/                # push notifications
 │   ├── vaultwarden/         # password manager

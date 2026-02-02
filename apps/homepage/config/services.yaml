@@ -79,12 +79,6 @@
         description: Status Monitoring
         siteMonitor: https://status.wajeht.com
 
-    - Plausible:
-        icon: plausible
-        href: https://analytics.wajeht.com
-        description: Analytics
-        siteMonitor: https://analytics.wajeht.com
-
     - Changedetection:
         icon: changedetection-io
         href: https://changes.wajeht.com
