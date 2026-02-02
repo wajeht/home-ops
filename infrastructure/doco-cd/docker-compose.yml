@@ -15,9 +15,12 @@ services:
           reference: refs/heads/main
           interval: 60
           deployments:
-            - working_dir: apps/homepage
-            - working_dir: apps/whoami
-            - working_dir: infrastructure/prometheus
+            - name: homepage
+              working_dir: apps/homepage
+            - name: whoami
+              working_dir: apps/whoami
+            - name: prometheus
+              working_dir: infrastructure/prometheus
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - doco-data:/data
