@@ -21,7 +21,7 @@ home-ops/
 │   ├── vaultwarden/         # password manager
 │   ├── stirling-pdf/        # PDF tools
 │   └── changedetection/     # website change alerts
-├── infrastructure/          # core services
+├── infra/          # core services
 │   ├── traefik/             # reverse proxy + TLS
 │   │   └── .enc.env         # traefik secrets
 │   └── doco-cd/             # gitops controller

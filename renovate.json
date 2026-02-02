@@ -8,7 +8,7 @@
     "fileMatch": [
       "(^|/)docker-compose\\.ya?ml$",
       "apps/.+/docker-compose\\.ya?ml$",
-      "infrastructure/.+/docker-compose\\.ya?ml$"
+      "infra/.+/docker-compose\\.ya?ml$"
     ]
   },
   "hostRules": [
