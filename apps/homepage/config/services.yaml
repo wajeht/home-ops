@@ -127,6 +127,7 @@
         description: Notifications
         siteMonitor: https://ntfy.wajeht.com
 
+- Apps:
     - Commit:
         icon: git
         href: https://commit.wajeht.com
