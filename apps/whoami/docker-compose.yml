@@ -1,41 +1,17 @@
 services:
   whoami:
     image: traefik/whoami:latest
-    hostname: whoami-{{.Task.Slot}}
+    container_name: whoami
+    restart: unless-stopped
     networks:
       - traefik
-    deploy:
-      mode: replicated
-      replicas: ${REPLICAS:-2}
-      resources:
-        limits:
-          memory: 32M
-        reservations:
-          memory: 16M
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-        failure_action: rollback
-        monitor: 30s
-      rollback_config:
-        parallelism: 1
-        delay: 10s
-      restart_policy:
-        condition: any
-        delay: 5s
-        max_attempts: 3
-        window: 120s
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.whoami.rule=Host(`whoami.wajeht.com`)"
-        - "traefik.http.routers.whoami.entrypoints=websecure"
-        - "traefik.http.routers.whoami.tls=true"
-        - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
-        - "traefik.http.services.whoami.loadbalancer.server.port=80"
-        - "traefik.http.services.whoami.loadbalancer.healthcheck.path=/"
-        - "traefik.http.services.whoami.loadbalancer.healthcheck.interval=10s"
-    # whoami is a minimal container - Traefik handles health checks
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.wajeht.com`)"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls=true"
+      - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
+      - "traefik.http.services.whoami.loadbalancer.server.port=80"
 
 networks:
   traefik:
