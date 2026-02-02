@@ -6,24 +6,28 @@ services:
     depends_on:
       - apprise
     ports:
-      - "9120:9120"  # Prometheus metrics
+      - "9120:9120"
     environment:
       TZ: America/Chicago
       LOG_LEVEL: info
-      GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
-      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
+      GIT_ACCESS_TOKEN_FILE: /run/secrets/git_token
+      WEBHOOK_SECRET_FILE: /run/secrets/webhook_secret
       APPRISE_API_URL: http://apprise:8000/notify
-      APPRISE_NOTIFY_URLS: ${APPRISE_NOTIFY_URLS}
-      APPRISE_NOTIFY_LEVEL: ${APPRISE_NOTIFY_LEVEL:-success}
-      SOPS_AGE_KEY_FILE: /sops/age-key.txt
+      APPRISE_NOTIFY_URLS_FILE: /run/secrets/apprise_url
+      APPRISE_NOTIFY_LEVEL: success
+      SOPS_AGE_KEY_FILE: /run/secrets/sops_age_key
       POLL_CONFIG: |
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
           interval: 0
+    secrets:
+      - git_token
+      - webhook_secret
+      - apprise_url
+      - sops_age_key
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - doco-data:/data
-      - /root/.sops/age-key.txt:/sops/age-key.txt:ro
     networks:
       - traefik
       - default
@@ -45,6 +49,16 @@ services:
     image: caronc/apprise:v1.3.1
     container_name: apprise
     restart: unless-stopped
+
+secrets:
+  git_token:
+    file: /root/.secrets/git-token
+  webhook_secret:
+    file: /root/.secrets/webhook-secret
+  apprise_url:
+    file: /root/.secrets/apprise-url
+  sops_age_key:
+    file: /root/.sops/age-key.txt
 
 volumes:
   doco-data:
