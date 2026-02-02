@@ -1,0 +1,39 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.secret
+*.key
+*.pem
+*.crt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Docker
+docker-compose.override.yml
+docker-compose.local.yml
+*.local.yml
+
+# Data & logs
+data/
+logs/
+*.log
+
+# Temp
+tmp/
+.tmp/
+*.tmp
+*.bak
+
+# Claude
+.claude/settings.local.json
