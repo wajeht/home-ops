@@ -3,6 +3,7 @@
     memory: true
     disk: /
     cputemp: true
+    tempmin: imperial
     uptime: true
 
 - search:
