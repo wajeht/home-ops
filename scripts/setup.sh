@@ -76,6 +76,13 @@ fi
 echo "[5/5] Deploying stacks..."
 $SUDO docker network create --driver overlay --attachable traefik 2>/dev/null || true
 
+# Create Docker secrets for doco-cd bootstrap
+GIT_TOKEN=$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2 || true)
+if [ -n "$GIT_TOKEN" ]; then
+    $SUDO docker secret rm git_access_token 2>/dev/null || true
+    echo "$GIT_TOKEN" | $SUDO docker secret create git_access_token -
+fi
+
 deploy() {
     local dir=$1 name=$2 registry=$3
 
