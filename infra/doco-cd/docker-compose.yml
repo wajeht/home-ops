@@ -17,7 +17,7 @@ services:
       POLL_CONFIG: |
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
-          interval: 0
+          interval: 60  # poll every 60 seconds
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - doco-data:/data
