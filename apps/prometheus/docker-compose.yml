@@ -22,7 +22,7 @@ services:
         - "traefik.http.routers.prometheus.rule=Host(`prometheus.wajeht.com`)"
         - "traefik.http.routers.prometheus.entrypoints=websecure"
         - "traefik.http.routers.prometheus.tls=true"
-        - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.prometheus.tls.certresolver=cloudflare"
         - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
       update_config:
         parallelism: 1
