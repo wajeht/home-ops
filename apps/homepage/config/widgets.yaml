@@ -2,6 +2,8 @@
     cpu: true
     memory: true
     disk: /
+    cputemp: true
+    uptime: true
 
 - search:
     provider: duckduckgo
