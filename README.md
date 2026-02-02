@@ -15,23 +15,47 @@ home-ops/
 │   └── doco-cd/
 ├── .doco-cd.yml             # auto-discover config
 ├── .sops.yaml               # sops encryption config
-├── secrets.enc.env          # encrypted secrets (safe to commit)
+├── secrets.enc.env          # encrypted secrets (committed to git)
 └── renovate.json            # auto-update docker images
 ```
 
-## Quick Start
+## Quick Start (New VPS)
 
 ```bash
-# 1. Clone and configure
-git clone https://github.com/wajeht/home-ops.git
+# 1. Install Docker
+curl -fsSL https://get.docker.com | sh
+
+# 2. Install SOPS
+curl -LO https://github.com/getsops/sops/releases/download/v3.11.0/sops-v3.11.0.linux.amd64
+mv sops-v3.11.0.linux.amd64 /usr/local/bin/sops && chmod +x /usr/local/bin/sops
+
+# 3. Setup secrets directories
+mkdir -p /root/.secrets /root/.sops
+chmod 700 /root/.secrets /root/.sops
+
+# 4. Copy age key (get from existing machine or generate new)
+# From existing: scp user@oldserver:/root/.sops/age-key.txt /root/.sops/
+# Or generate: age-keygen -o /root/.sops/age-key.txt
+
+# 5. Clone repo
+git clone https://<TOKEN>@github.com/wajeht/home-ops.git
 cd home-ops
-cp .env.example .env
-nano .env  # fill in values
 
-# 2. Bootstrap infrastructure
-make bootstrap
+# 6. Decrypt secrets
+export SOPS_AGE_KEY_FILE=/root/.sops/age-key.txt
+sops -d secrets.enc.env > /tmp/secrets.env
+grep "^GIT_ACCESS_TOKEN=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/git-token
+grep "^WEBHOOK_SECRET=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/webhook-secret
+grep "^APPRISE_NOTIFY_URLS=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/apprise-url
+grep "^CF_DNS_API_TOKEN=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/cf-token
+grep "^ACME_EMAIL=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/acme-email
+rm /tmp/secrets.env
+chmod 600 /root/.secrets/*
 
-# 3. Done - push to deploy
+# 7. Bootstrap
+docker network create traefik
+cd infrastructure/traefik && docker compose up -d
+cd ../doco-cd && docker compose up -d
 ```
 
 ## How It Works
@@ -64,64 +88,69 @@ networks:
     external: true
 ```
 
-Push - deployed automatically. No config needed (auto-discover).
+Push - deployed automatically via webhook.
 
 ## Secrets Management (SOPS)
 
-Secrets are encrypted with [SOPS](https://github.com/getsops/sops) + [age](https://github.com/FiloSottile/age).
+All secrets are SOPS-encrypted in `secrets.enc.env` and committed to git.
 
-### View encrypted secrets
+### Edit secrets (local machine)
 ```bash
-cat secrets.enc.env  # shows encrypted values
+sops secrets.enc.env
+# Edit, save - auto re-encrypts
 ```
 
-### Edit secrets
+### Deploy secrets to VPS
 ```bash
-# Decrypt, edit, re-encrypt in one command
-sops secrets.enc.env
+# On VPS after git pull
+export SOPS_AGE_KEY_FILE=/root/.sops/age-key.txt
+sops -d secrets.enc.env > /tmp/secrets.env
+# Parse into /root/.secrets/ files (see Quick Start step 6)
+```
+
+### Setup on new dev machine
+```bash
+brew install age sops
+mkdir -p ~/.sops
+scp root@YOUR_VPS:/root/.sops/age-key.txt ~/.sops/
+echo 'export SOPS_AGE_KEY_FILE=~/.sops/age-key.txt' >> ~/.zshrc
+source ~/.zshrc
 ```
 
 ### Add new secret
 ```bash
 sops secrets.enc.env
-# Add your secret, save, auto-encrypts
+# Add: MY_NEW_SECRET=value
+# Save, push, decrypt on VPS
 ```
 
-### How it works
-- `secrets.enc.env` - encrypted, safe to commit
-- `.sops/age-key.txt` - private key, gitignored, on VPS at `/root/.sops/`
-- doco-cd decrypts secrets at deploy time
+## VPS Secrets Layout
 
-### Setup on new machine
-```bash
-# Install tools
-brew install age sops
+```
+/root/.sops/
+└── age-key.txt           # SOPS decryption key
 
-# Copy age key from VPS
-mkdir -p ~/.sops
-scp root@YOUR_VPS:/root/.sops/age-key.txt ~/.sops/
-
-# Tell SOPS where to find the key
-echo 'export SOPS_AGE_KEY_FILE=~/.sops/age-key.txt' >> ~/.zshrc
-source ~/.zshrc
+/root/.secrets/
+├── git-token             # GitHub PAT
+├── webhook-secret        # doco-cd webhook auth
+├── apprise-url           # Discord notification URL
+├── cf-token              # Cloudflare API token
+└── acme-email            # Let's Encrypt email
 ```
 
 ## Auto-Updates (Renovate)
 
-[Renovate](https://github.com/apps/renovate) automatically creates PRs when docker images have updates.
+[Renovate](https://github.com/apps/renovate) creates PRs when docker images have updates.
 
-- Detects pinned versions in docker-compose files
-- Creates PR with version bump
-- Merge PR → auto-deployed
+Install: https://github.com/apps/renovate → Select repo
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `make bootstrap` | Setup traefik + doco-cd |
-| `make status` | Show containers |
-| `make logs` | Tail doco-cd logs |
-| `sops secrets.enc.env` | Edit secrets |
+| `sops secrets.enc.env` | Edit encrypted secrets |
+| `docker logs doco-cd` | Check deployment logs |
+| `docker logs traefik` | Check proxy logs |
 
 ## URLs
 
