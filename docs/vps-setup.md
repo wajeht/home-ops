@@ -1,52 +1,65 @@
-# VPS Setup
+# Server Setup
 
 ## Quick Setup
 
 ```bash
-# 1. SSH to fresh Ubuntu VPS
-ssh root@YOUR_VPS
+# 1. SSH to your server
+ssh user@YOUR_SERVER
 
-# 2. Run setup (installs Docker, SOPS, inits Swarm)
-curl -fsSL https://raw.githubusercontent.com/wajeht/home-ops/main/scripts/setup.sh | bash
-# Script will pause and tell you to copy age key
+# 2. Install Docker and SOPS
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER
+# Log out and back in
+
+sudo curl -sLo /usr/local/bin/sops https://github.com/getsops/sops/releases/download/v3.11.0/sops-v3.11.0.linux.amd64
+sudo chmod +x /usr/local/bin/sops
 
 # 3. Copy age key (from your local machine)
-scp ~/.sops/age-key.txt root@YOUR_VPS:/root/.sops/
+scp ~/.sops/age-key.txt user@YOUR_SERVER:~/.sops/
 
 # 4. Clone repo
-git clone https://YOUR_TOKEN@github.com/wajeht/home-ops.git
+git clone https://github.com/wajeht/home-ops.git ~/home-ops
 
-# 5. Run setup again (now completes fully)
-cd home-ops
+# 5. Run setup
+cd ~/home-ops
 ./scripts/setup.sh
 ```
 
-Done. Swarm running with infrastructure deployed.
+## What Setup Does
 
-## Post-Setup
+1. Installs Docker and SOPS (if needed)
+2. Initializes Docker Swarm
+3. Creates Docker secrets from encrypted `secrets.enc.env`
+4. Creates docker_config secret for pulling private ghcr images
+5. Logs into ghcr.io
+6. Creates overlay network
+7. Deploys all stacks (traefik, doco-cd, homepage, whoami, commit)
 
-1. **Update DNS** - Point `*.yourdomain.com` to VPS IP
-2. **GitHub Webhook** - Add `https://doco.yourdomain.com/v1/webhook`
-3. **Test** - Push a commit, verify rolling update with no downtime
+## DNS Configuration
 
-## Verify Swarm
+### Local Network (AdGuard)
+Add DNS rewrite in AdGuard Home:
+- Domain: `*.wajeht.com`
+- Answer: `192.168.x.x` (your server IP)
+
+### Public Internet
+Point `*.yourdomain.com` to your server's public IP in your DNS provider.
+
+## Verify Setup
 
 ```bash
-# Check swarm status
-docker node ls
+# Check swarm
+sudo docker node ls
 
 # Check secrets
-docker secret ls
-
-# Check stacks
-docker stack ls
+sudo docker secret ls
 
 # Check services
-docker service ls
+sudo docker service ls
 
 # Check service logs
-docker service logs traefik_traefik
-docker service logs doco-cd_doco-cd
+sudo docker service logs traefik_traefik
+sudo docker service logs doco-cd_doco-cd
 ```
 
 ## Updating Secrets
@@ -58,101 +71,57 @@ After editing `secrets.enc.env` locally:
 sops secrets.enc.env
 git add -A && git commit -m "update secrets" && git push
 
-# VPS: sync
-ssh root@YOUR_VPS
+# Server: sync
+ssh user@YOUR_SERVER
 cd ~/home-ops && ./scripts/sync-secrets.sh
 ```
 
-## Manual Setup
+## Deploying Apps
 
-If you prefer step-by-step:
-
-### Install Docker
+### Deploy existing app
 ```bash
-curl -fsSL https://get.docker.com | sh
+sudo docker stack deploy -c apps/appname/docker-compose.yml appname
 ```
 
-### Install SOPS
+### Deploy private ghcr image
 ```bash
-curl -sLO https://github.com/getsops/sops/releases/download/v3.11.0/sops-v3.11.0.linux.amd64
-mv sops-v3.11.0.linux.amd64 /usr/local/bin/sops
-chmod +x /usr/local/bin/sops
+sudo docker stack deploy -c apps/appname/docker-compose.yml --with-registry-auth appname
 ```
 
-### Initialize Swarm
+### Force update (rolling restart)
 ```bash
-docker swarm init --advertise-addr $(hostname -I | awk '{print $1}')
-```
-
-### Setup Directories
-```bash
-mkdir -p /root/.secrets /root/.sops
-chmod 700 /root/.secrets /root/.sops
-```
-
-### Decrypt and Create Secrets
-```bash
-export SOPS_AGE_KEY_FILE=/root/.sops/age-key.txt
-sops -d secrets.enc.env > /tmp/secrets.env
-
-grep "^GIT_ACCESS_TOKEN=" /tmp/secrets.env | cut -d= -f2 > /tmp/git-token
-grep "^WEBHOOK_SECRET=" /tmp/secrets.env | cut -d= -f2 > /tmp/webhook-secret
-grep "^API_SECRET=" /tmp/secrets.env | cut -d= -f2 > /tmp/api-secret
-grep "^APPRISE_NOTIFY_URLS=" /tmp/secrets.env | cut -d= -f2 > /tmp/apprise-url
-grep "^CF_DNS_API_TOKEN=" /tmp/secrets.env | cut -d= -f2 > /tmp/cf-token
-
-docker secret create git_token /tmp/git-token
-docker secret create webhook_secret /tmp/webhook-secret
-docker secret create api_secret /tmp/api-secret
-docker secret create apprise_url /tmp/apprise-url
-docker secret create cf_token /tmp/cf-token
-docker secret create sops_age_key /root/.sops/age-key.txt
-
-rm /tmp/secrets.env /tmp/git-token /tmp/webhook-secret /tmp/api-secret /tmp/apprise-url /tmp/cf-token
-```
-
-### Create Network and Deploy
-```bash
-docker network create --driver overlay --attachable traefik
-cd infrastructure/traefik && docker stack deploy -c docker-compose.yml traefik
-cd ../doco-cd && docker stack deploy -c docker-compose.yml doco-cd
+sudo docker service update --force appname_appname
 ```
 
 ## Troubleshooting
 
 ### Check logs
 ```bash
-docker service logs traefik_traefik
-docker service logs doco-cd_doco-cd
+sudo docker service logs -f traefik_traefik
+sudo docker service logs -f doco-cd_doco-cd
 ```
 
-### Force service update
+### Service not starting
 ```bash
-docker service update --force traefik_traefik
-docker service update --force doco-cd_doco-cd
-```
-
-### Verify secrets
-```bash
-docker secret ls
+sudo docker service ps appname_appname --no-trunc
 ```
 
 ### Rollback a service
 ```bash
-docker service rollback traefik_traefik
+sudo docker service rollback traefik_traefik
 ```
 
-### Leave Swarm (emergency rollback)
+### Reset and redeploy
 ```bash
-docker swarm leave --force
-# Then use docker compose up -d manually
+sudo docker stack rm appname
+sudo docker stack deploy -c apps/appname/docker-compose.yml appname
 ```
 
 ## File Locations
 
 ```
-/root/.sops/age-key.txt      # Decryption key (NEVER share)
-~/home-ops/                  # Git repository
+~/.sops/age-key.txt     # Decryption key (NEVER commit)
+~/home-ops/             # Git repository
 ```
 
-Note: Secrets are now stored in Docker Swarm, not `/root/.secrets/`.
+Secrets are stored in Docker Swarm (encrypted in Raft log).

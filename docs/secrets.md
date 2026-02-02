@@ -1,14 +1,26 @@
 # Secrets Management
 
-Secrets are encrypted with [SOPS](https://github.com/getsops/sops) + [age](https://github.com/FiloSottile/age) and stored in git. On the VPS, they're deployed as Docker Swarm secrets.
+Secrets are encrypted with [SOPS](https://github.com/getsops/sops) + [age](https://github.com/FiloSottile/age) and stored in git. On the server, they're deployed as Docker Swarm secrets.
 
 ## How It Works
 
 ```
-secrets.enc.env (git)  →  decrypt on VPS  →  docker secret create
-     encrypted              SOPS               Swarm secrets
-     safe to commit         age key            services read via /run/secrets/
+secrets.enc.env (git)  →  decrypt on server  →  docker secret create
+     encrypted              SOPS                  Swarm secrets
+     safe to commit         age key               services read via /run/secrets/
 ```
+
+## Current Secrets
+
+| Secret | Docker Secret Name | Used By |
+|--------|-------------------|---------|
+| GIT_ACCESS_TOKEN | git_token | doco-cd |
+| WEBHOOK_SECRET | webhook_secret | doco-cd |
+| API_SECRET | api_secret | doco-cd |
+| APPRISE_NOTIFY_URLS | apprise_url | doco-cd |
+| CF_DNS_API_TOKEN | cf_token | traefik |
+| GHCR_TOKEN | docker_config | doco-cd (private images) |
+| (age key file) | sops_age_key | doco-cd |
 
 ## Local Setup (Dev Machine)
 
@@ -20,7 +32,7 @@ brew install age sops
 ### Get Age Key
 ```bash
 mkdir -p ~/.sops
-scp root@YOUR_VPS:/root/.sops/age-key.txt ~/.sops/
+scp user@YOUR_SERVER:~/.sops/age-key.txt ~/.sops/
 ```
 
 ### Configure Shell
@@ -58,49 +70,36 @@ git commit -m "add new secret"
 git push
 ```
 
-### Deploy to VPS
+### Deploy to Server
 After pushing changes:
 ```bash
-ssh root@YOUR_VPS
+ssh user@YOUR_SERVER
 cd ~/home-ops && ./scripts/sync-secrets.sh
 ```
 
-## Docker Swarm Secrets
+## Private Registry (ghcr.io)
 
-On the VPS, secrets are managed by Docker Swarm:
+The `GHCR_TOKEN` is used to pull private images from GitHub Container Registry.
 
-### List secrets
+### Token Requirements
+Create a GitHub **classic** token with `read:packages` scope.
+
+### How It Works
+1. `GHCR_TOKEN` stored in `secrets.enc.env`
+2. `setup.sh` creates `docker_config` secret with base64-encoded auth
+3. doco-cd mounts this at `/root/.docker/config.json`
+4. Enables pulling private ghcr images during deployment
+
+### Update GHCR Token
 ```bash
-docker secret ls
+# Edit secrets locally
+sops secrets.enc.env
+# Update GHCR_TOKEN value, save
+
+# Push and sync
+git add -A && git commit -m "update ghcr token" && git push
+ssh user@YOUR_SERVER 'cd ~/home-ops && ./scripts/sync-secrets.sh'
 ```
-
-### Inspect secret metadata
-```bash
-docker secret inspect cf_token
-```
-
-### Manually update a secret
-```bash
-# Remove old secret
-docker secret rm my_secret
-
-# Create new secret
-echo "newvalue" | docker secret create my_secret -
-
-# Update services to pick up change
-docker service update --force service_name
-```
-
-## Current Secrets
-
-| Secret | Docker Secret Name | Used By |
-|--------|-------------------|---------|
-| GIT_ACCESS_TOKEN | git_token | doco-cd |
-| WEBHOOK_SECRET | webhook_secret | doco-cd |
-| API_SECRET | api_secret | doco-cd |
-| APPRISE_NOTIFY_URLS | apprise_url | doco-cd |
-| CF_DNS_API_TOKEN | cf_token | traefik |
-| (age key file) | sops_age_key | doco-cd |
 
 ## Rotating Secrets
 
@@ -108,14 +107,13 @@ docker service update --force service_name
 1. Generate new token on GitHub
 2. `sops secrets.enc.env` → update GIT_ACCESS_TOKEN
 3. Push to git
-4. On VPS: `./scripts/sync-secrets.sh`
+4. On server: `./scripts/sync-secrets.sh`
 
-### Rotate Webhook Secret
-1. `openssl rand -hex 32` → generate new secret
-2. `sops secrets.enc.env` → update WEBHOOK_SECRET
+### Rotate GHCR Token
+1. Generate new classic token with `read:packages`
+2. `sops secrets.enc.env` → update GHCR_TOKEN
 3. Push to git
-4. Update GitHub webhook settings with new secret
-5. On VPS: `./scripts/sync-secrets.sh`
+4. On server: `./scripts/sync-secrets.sh`
 
 ### Rotate Age Key (Full Re-encryption)
 ```bash
@@ -125,15 +123,15 @@ age-keygen -o new-age-key.txt
 # Update .sops.yaml with new public key
 # Re-encrypt secrets
 sops -d secrets.enc.env > /tmp/plain.env
-# Update .sops.yaml
+# Edit .sops.yaml with new age public key
 sops -e /tmp/plain.env > secrets.enc.env
 rm /tmp/plain.env
 
-# Deploy new key to VPS
-scp new-age-key.txt root@VPS:/root/.sops/age-key.txt
+# Deploy new key to server
+scp new-age-key.txt user@SERVER:~/.sops/age-key.txt
 
 # Update Docker secret
-ssh root@VPS 'docker secret rm sops_age_key && docker secret create sops_age_key /root/.sops/age-key.txt'
+ssh user@SERVER 'sudo docker secret rm sops_age_key && sudo docker secret create sops_age_key ~/.sops/age-key.txt'
 
 # Update local key
 cp new-age-key.txt ~/.sops/age-key.txt
@@ -141,8 +139,8 @@ cp new-age-key.txt ~/.sops/age-key.txt
 
 ## Security Notes
 
-- **Never commit** `/root/.sops/age-key.txt`
+- **Never commit** `~/.sops/age-key.txt`
 - Age key = master key. Protect it.
 - Encrypted file safe to commit (can't decrypt without age key)
-- Use minimal permissions for GitHub token (read-only)
+- Use minimal permissions for GitHub tokens
 - Docker secrets are encrypted at rest in the Swarm Raft log
