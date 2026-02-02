@@ -16,7 +16,12 @@ echo "[1/5] Removing stacks..."
 $SUDO docker stack ls --format '{{.Name}}' | xargs -r -I{} $SUDO docker stack rm {}
 
 echo "[2/5] Waiting for services to stop..."
-sleep 10
+sleep 15
+# Wait for all services to fully stop
+while [ "$($SUDO docker service ls -q | wc -l)" -gt 0 ]; do
+    echo "Waiting for services to stop..."
+    sleep 5
+done
 
 echo "[3/5] Removing secrets..."
 $SUDO docker secret ls -q | xargs -r $SUDO docker secret rm
