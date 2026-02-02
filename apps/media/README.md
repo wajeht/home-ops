@@ -56,10 +56,13 @@ Get token from: https://plex.tv/claim
 |---------|-----|---------|
 | Plex | https://plex.wajeht.com | Media server |
 | Radarr | https://radarr.wajeht.com | Movie management |
+| Sonarr | https://sonarr.wajeht.com | TV show management |
 | Prowlarr | https://prowlarr.wajeht.com | Indexer manager |
-| qBittorrent | https://qbit.wajeht.com | Torrent client (via VPN) |
+| qBittorrent | https://qbit.wajeht.com | Torrent client (via VPN proxy) |
+| Tautulli | https://tautulli.wajeht.com | Plex stats |
+| Overseerr | https://requests.wajeht.com | Media requests |
 | FlareSolverr | internal | Cloudflare bypass |
-| Gluetun | internal | VPN container |
+| Gluetun | internal | VPN proxy server |
 
 ## Traffic Flow
 
@@ -84,12 +87,43 @@ Prowlarr (indexers) → Radarr (movies) → qBittorrent → Gluetun VPN → Inte
 In Prowlarr: Settings → Indexers → Add FlareSolverr:
 - Host: `http://flaresolverr:8191`
 
-## Radarr → qBittorrent
+## Radarr/Sonarr → qBittorrent
 
-In Radarr: Settings → Download Clients → Add qBittorrent:
-- Host: `gluetun` (not qbittorrent!)
+In Radarr/Sonarr: Settings → Download Clients → Add qBittorrent:
+- Host: `qbittorrent`
 - Port: `8085`
 
-## Adding Sonarr (TV Shows)
+## qBittorrent VPN Setup (CRITICAL - DO THIS FIRST)
 
-Add to docker-compose.yml if needed - same pattern as Radarr.
+Docker Swarm doesn't support `network_mode: service:gluetun`, so we use Gluetun's HTTP proxy instead. **All torrent traffic routes through VPN** when configured properly.
+
+### Step 1: Proxy Settings
+1. Open https://qbit.wajeht.com (default: admin/adminadmin)
+2. Go to **Settings → Connection → Proxy Server**
+3. Configure:
+   - Type: `HTTP`
+   - Host: `gluetun`
+   - Port: `8888`
+   - ✅ Use proxy for peer connections
+   - ✅ Use proxy for hostname lookup
+
+### Step 2: Disable IP Leaking Features
+Go to **Settings → BitTorrent**:
+   - ❌ Uncheck "Enable DHT"
+   - ❌ Uncheck "Enable PeX"
+   - ❌ Uncheck "Enable LSD"
+
+These features can leak your real IP to other peers.
+
+### Step 3: Verify VPN is Working
+1. Add any torrent and start downloading
+2. Check https://ipleak.net in the qBittorrent browser (if available)
+3. Or check Gluetun logs: `docker service logs media_gluetun`
+
+Your public IP should show the VPN server, not your real IP.
+
+### Why This Works
+- All peer connections → HTTP proxy → Gluetun VPN → Internet
+- All tracker connections → HTTP proxy → Gluetun VPN → Internet
+- DNS lookups → HTTP proxy → Gluetun VPN → Internet
+- ISP only sees encrypted VPN tunnel traffic
