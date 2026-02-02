@@ -44,11 +44,70 @@ git add . && git commit -m "remove myapp" && git push
 # removed within 60s (auto_discover.delete: true)
 ```
 
-### Manual Deploy
+## Subdomains & Routing
+
+Apps get subdomains via Traefik labels. Set `DOMAIN` in `.env`:
 
 ```bash
-make deploy APP=apps/homepage
+DOMAIN=example.com
 ```
+
+Results in:
+- `whoami.example.com` → whoami
+- `home.example.com` → homepage
+- `traefik.example.com` → dashboard
+
+### Adding Subdomain to New App
+
+```yaml
+services:
+  myapp:
+    image: myimage
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.myapp.rule=Host(`myapp.${DOMAIN}`)"
+      - "traefik.http.routers.myapp.entrypoints=websecure"
+      - "traefik.http.routers.myapp.tls=true"
+      - "traefik.http.routers.myapp.tls.certresolver=letsencrypt"
+
+networks:
+  default:
+    name: traefik
+    external: true
+```
+
+## HTTPS / TLS
+
+Using Let's Encrypt with Cloudflare DNS challenge (works behind NAT).
+
+### Setup
+
+1. Create Cloudflare API token with `Zone:DNS:Edit` permission
+2. Configure `.env`:
+   ```bash
+   DOMAIN=yourdomain.com
+   ACME_EMAIL=you@email.com
+   CF_DNS_API_TOKEN=your_cloudflare_token
+   ```
+3. Traefik auto-provisions certs
+
+### Other DNS Providers
+
+Edit `infrastructure/traefik/docker-compose.yml`, change provider:
+- `cloudflare`
+- `route53` (AWS)
+- `digitalocean`
+- `duckdns`
+- `namecheap`
+
+Full list: https://doc.traefik.io/traefik/https/acme/#providers
+
+### Local Network (No Public Domain)
+
+Options:
+- **mkcert** - local CA certs
+- **Tailscale** - auto HTTPS via MagicDNS
+- **HTTP only** - remove TLS labels
 
 ## Commands
 
@@ -60,7 +119,7 @@ make deploy APP=apps/homepage
 | `make deploy APP=path` | Manual deploy a specific app |
 | `make down APP=path` | Stop a specific app |
 | `make pull` | Pull latest images for all apps |
-| `make clean` | Stop all and prune |
+| `make clean` | Stop all + prune |
 
 ## Environment Variables
 
@@ -70,6 +129,8 @@ make deploy APP=apps/homepage
 | `DOMAIN` | Base domain for traefik routing |
 | `GIT_ACCESS_TOKEN` | GitHub/Gitea token |
 | `GITOPS_REPO_URL` | This repo's clone URL |
+| `ACME_EMAIL` | Let's Encrypt email |
+| `CF_DNS_API_TOKEN` | Cloudflare API token |
 
 ## How It Works
 
@@ -77,4 +138,4 @@ make deploy APP=apps/homepage
 2. Detects changes in `infrastructure/` and `apps/`
 3. Auto-deploys new/changed stacks
 4. Auto-removes deleted stacks
-5. All apps route through **traefik** reverse proxy
+5. **Traefik** handles routing + TLS
