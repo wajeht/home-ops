@@ -6,15 +6,16 @@ GitOps for Docker Compose using [doco-cd](https://github.com/kimdre/doco-cd).
 
 ```
 home-ops/
-├── .doco-cd.yml           # deployment config
 ├── infrastructure/
 │   ├── traefik/           # reverse proxy + TLS
 │   ├── doco-cd/           # gitops controller
-│   └── prometheus/        # metrics
+│   └── prometheus/        # metrics (+ .doco-cd.yml)
 └── apps/
-    ├── homepage/
-    └── whoami/
+    ├── homepage/          # dashboard (+ .doco-cd.yml)
+    └── whoami/            # test app (+ .doco-cd.yml)
 ```
+
+Each service has its own `.doco-cd.yml` for decentralized deploy config.
 
 ## Quick Start
 
@@ -36,9 +37,9 @@ make bootstrap
 
 ## How It Works
 
-1. **doco-cd** polls this repo every 60s
-2. Detects changes in `.doco-cd.yml`
-3. Runs `docker compose up -d` for each service
+1. **doco-cd** watches repo via webhook (instant) or polling (60s fallback)
+2. Detects `.doco-cd.yml` files in each service dir
+3. Runs `docker compose up -d` for changed services
 4. **Traefik** handles routing + TLS
 
 ## Adding Apps
@@ -66,23 +67,22 @@ networks:
     external: true
 ```
 
-2. Add to `.doco-cd.yml`:
+2. Add `apps/myapp/.doco-cd.yml`:
 
 ```yaml
----
 name: myapp
-working_dir: apps/myapp
 compose_files:
   - docker-compose.yml
+remove_orphans: true
+prune_images: true
 ```
 
-3. Push to git - deployed in ~60s
+3. Push to git - deployed instantly via webhook
 
 ## Removing Apps
 
 ```bash
 rm -rf apps/myapp
-# remove from .doco-cd.yml
 git add . && git commit -m "remove myapp" && git push
 ```
 
