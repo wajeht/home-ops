@@ -1,85 +1,71 @@
 # VPS Setup
 
-Complete guide to setting up a new VPS from scratch.
-
-## Prerequisites
-
-- Fresh Ubuntu 24.04 VPS
-- Root SSH access
-- Domain pointing to VPS IP
-
-## Quick Setup (Scripts)
+## Quick Setup
 
 ```bash
-# 1. Run install script (Docker + SOPS)
-curl -fsSL https://raw.githubusercontent.com/wajeht/home-ops/main/scripts/vps-install.sh | bash
+# 1. SSH to fresh Ubuntu VPS
+ssh root@YOUR_VPS
 
-# 2. Copy age key from local machine
-# (run this on your local machine)
-scp ~/.sops/age-key.txt root@NEW_VPS:/root/.sops/
+# 2. Run setup (installs Docker + SOPS)
+curl -fsSL https://raw.githubusercontent.com/wajeht/home-ops/main/scripts/setup.sh | bash
+# Script will pause and tell you to copy age key
 
-# 3. Clone repo
+# 3. Copy age key (from your local machine)
+scp ~/.sops/age-key.txt root@YOUR_VPS:/root/.sops/
+
+# 4. Clone repo
 git clone https://YOUR_TOKEN@github.com/wajeht/home-ops.git
-cd home-ops
 
-# 4. Decrypt secrets and bootstrap
-./scripts/decrypt-secrets.sh
-./scripts/bootstrap.sh
+# 5. Run setup again (now completes fully)
+cd home-ops
+./scripts/setup.sh
+```
+
+Done. Infrastructure running.
+
+## Post-Setup
+
+1. **Update DNS** - Point `*.yourdomain.com` to VPS IP
+2. **GitHub Webhook** - Add `https://doco.yourdomain.com/v1/webhook`
+3. **Test** - Push a commit, check Discord for notification
+
+## Updating Secrets
+
+After editing `secrets.enc.env` locally:
+
+```bash
+# Local: edit and push
+sops secrets.enc.env
+git add -A && git commit -m "update secrets" && git push
+
+# VPS: sync
+ssh root@YOUR_VPS
+cd ~/home-ops && ./scripts/sync-secrets.sh
 ```
 
 ## Manual Setup
 
-### 1. Install Docker
+If you prefer step-by-step:
 
+### Install Docker
 ```bash
 curl -fsSL https://get.docker.com | sh
-docker --version
 ```
 
-### 2. Install SOPS
-
+### Install SOPS
 ```bash
-curl -LO https://github.com/getsops/sops/releases/download/v3.11.0/sops-v3.11.0.linux.amd64
+curl -sLO https://github.com/getsops/sops/releases/download/v3.11.0/sops-v3.11.0.linux.amd64
 mv sops-v3.11.0.linux.amd64 /usr/local/bin/sops
 chmod +x /usr/local/bin/sops
-sops --version
 ```
 
-### 3. Setup Secrets Directories
-
+### Setup Directories
 ```bash
 mkdir -p /root/.secrets /root/.sops
 chmod 700 /root/.secrets /root/.sops
 ```
 
-### 4. Copy Age Key
-
-From existing machine:
-```bash
-scp ~/.sops/age-key.txt root@NEW_VPS:/root/.sops/
-```
-
-Or generate new key (requires re-encrypting secrets):
-```bash
-age-keygen -o /root/.sops/age-key.txt
-# Copy public key, update .sops.yaml, re-encrypt secrets.enc.env
-```
-
-### 5. Clone Repository
-
-```bash
-cd ~
-git clone https://YOUR_TOKEN@github.com/wajeht/home-ops.git
-```
-
-### 6. Decrypt Secrets
-
-```bash
-cd ~/home-ops
-./scripts/decrypt-secrets.sh
-```
-
-Or manually:
+### Decrypt Secrets
 ```bash
 export SOPS_AGE_KEY_FILE=/root/.sops/age-key.txt
 sops -d secrets.enc.env > /tmp/secrets.env
@@ -94,89 +80,37 @@ rm /tmp/secrets.env
 chmod 600 /root/.secrets/*
 ```
 
-### 7. Bootstrap Infrastructure
-
-```bash
-./scripts/bootstrap.sh
-```
-
-Or manually:
+### Bootstrap
 ```bash
 docker network create traefik
 cd infrastructure/traefik && docker compose up -d
 cd ../doco-cd && docker compose up -d
-docker ps
-```
-
-## 8. Configure GitHub Webhook
-
-1. Go to repo → Settings → Webhooks → Add webhook
-2. Payload URL: `https://doco.yourdomain.com/v1/webhook`
-3. Content type: `application/json`
-4. Secret: (value from webhook-secret)
-5. Events: Just the push event
-6. Save
-
-## 9. Update DNS
-
-Point these to your VPS IP:
-- `yourdomain.com`
-- `*.yourdomain.com` (wildcard)
-
-## 10. Verify Setup
-
-```bash
-# Check containers
-docker ps
-
-# Check traefik logs
-docker logs traefik
-
-# Check doco-cd logs
-docker logs doco-cd
-
-# Test webhook (push a commit)
 ```
 
 ## Troubleshooting
 
-### Traefik not getting certificates
+### Check logs
 ```bash
-docker logs traefik 2>&1 | grep -i acme
-```
-- Check CF_DNS_API_TOKEN is correct
-- Ensure DNS is pointing to VPS
-
-### doco-cd not deploying
-```bash
+docker logs traefik
 docker logs doco-cd
 ```
-- Check GIT_ACCESS_TOKEN has repo read access
-- Verify webhook secret matches GitHub
 
-### Container won't start
+### Restart services
 ```bash
-docker compose logs
-docker inspect <container>
+cd ~/home-ops/infrastructure/traefik && docker compose restart
+cd ~/home-ops/infrastructure/doco-cd && docker compose restart
+```
+
+### Verify secrets
+```bash
+ls -la /root/.secrets/
+cat /root/.secrets/git-token  # should show token
 ```
 
 ## File Locations
 
 ```
-/root/.sops/
-└── age-key.txt              # SOPS decryption key (NEVER share)
-
-/root/.secrets/
-├── git-token                # GitHub PAT
-├── webhook-secret           # Webhook authentication
-├── apprise-url              # Discord webhook URL
-├── cf-token                 # Cloudflare API token
-└── acme-email               # Let's Encrypt email
-
+/root/.sops/age-key.txt      # Decryption key (NEVER share)
+/root/.secrets/*             # Decrypted secrets
 ~/home-ops/                  # Git repository
-├── infrastructure/
-│   ├── traefik/
-│   └── doco-cd/
-└── apps/
-    └── */docker-compose.yml
 ```
