@@ -20,7 +20,10 @@ home-ops/
 │   ├── ntfy/                # push notifications
 │   ├── vaultwarden/         # password manager
 │   ├── stirling-pdf/        # PDF tools
-│   └── changedetection/     # website change alerts
+│   ├── changedetection/     # website change alerts
+│   ├── navidrome/           # music streaming
+│   ├── audiobookshelf/      # audiobooks & podcasts
+│   └── it-tools/            # dev utilities
 ├── infra/          # core services
 │   ├── traefik/             # reverse proxy + TLS
 │   │   └── .enc.env         # traefik secrets
@@ -127,3 +130,6 @@ ssh server 'sudo docker service logs -f traefik_traefik'
 - https://vault.wajeht.com - Vaultwarden
 - https://pdf.wajeht.com - Stirling PDF
 - https://changes.wajeht.com - Changedetection
+- https://music.wajeht.com - Navidrome
+- https://audiobooks.wajeht.com - Audiobookshelf
+- https://tools.wajeht.com - IT-Tools
