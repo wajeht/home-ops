@@ -35,12 +35,7 @@ services:
         - "traefik.http.services.whoami.loadbalancer.server.port=80"
         - "traefik.http.services.whoami.loadbalancer.healthcheck.path=/"
         - "traefik.http.services.whoami.loadbalancer.healthcheck.interval=10s"
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
+    # whoami is a minimal container - Traefik handles health checks
 
 networks:
   traefik:
