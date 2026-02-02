@@ -15,6 +15,7 @@ services:
       APPRISE_API_URL: http://apprise:8000/notify
       APPRISE_NOTIFY_URLS: ${APPRISE_NOTIFY_URLS}
       APPRISE_NOTIFY_LEVEL: ${APPRISE_NOTIFY_LEVEL:-success}
+      SOPS_AGE_KEY_FILE: /sops/age-key.txt
       POLL_CONFIG: |
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
@@ -22,6 +23,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - doco-data:/data
+      - /root/.sops/age-key.txt:/sops/age-key.txt:ro
     networks:
       - traefik
       - default

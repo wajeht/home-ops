@@ -1,24 +1,6 @@
-name: homepage
-working_dir: apps/homepage
-compose_files:
-  - docker-compose.yml
-remove_orphans: true
-prune_images: true
-
----
-
-name: whoami
-working_dir: apps/whoami
-compose_files:
-  - docker-compose.yml
-remove_orphans: true
-prune_images: true
-
----
-
-name: prometheus
-working_dir: infrastructure/prometheus
-compose_files:
-  - docker-compose.yml
+working_dir: apps/
+auto_discover: true
+auto_discover_opts:
+  depth: 1
 remove_orphans: true
 prune_images: true
