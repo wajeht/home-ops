@@ -1,0 +1,52 @@
+# NOTE: This stack runs with docker-compose, NOT Swarm
+# Swarm doesn't support devices or network_mode required for VPN
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun:v3.39
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    env_file:
+      - .enc.env
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - gluetun-data:/gluetun
+    networks:
+      - traefik
+    ports:
+      - "8085:8085"  # qBittorrent WebUI
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qbit.wajeht.com`)"
+      - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8085"
+    restart: unless-stopped
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:4.6.7
+    container_name: qbittorrent
+    network_mode: "service:gluetun"
+    depends_on:
+      - gluetun
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - WEBUI_PORT=8085
+    volumes:
+      - qbittorrent-config:/config
+      - /home/jaw/plex/downloads:/downloads
+    restart: unless-stopped
+
+volumes:
+  gluetun-data:
+  qbittorrent-config:
+
+networks:
+  traefik:
+    external: true

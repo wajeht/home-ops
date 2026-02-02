@@ -1,6 +1,6 @@
 # Media Stack
 
-Plex + *arr apps with qBittorrent through Gluetun VPN.
+Plex + *arr apps. qBittorrent is in separate `vpn-qbit` stack (requires docker-compose, not Swarm).
 
 ## VPN Setup (AirVPN)
 
@@ -58,11 +58,11 @@ Get token from: https://plex.tv/claim
 | Radarr | https://radarr.wajeht.com | Movie management |
 | Sonarr | https://sonarr.wajeht.com | TV show management |
 | Prowlarr | https://prowlarr.wajeht.com | Indexer manager |
-| qBittorrent | https://qbit.wajeht.com | Torrent client (via VPN proxy) |
 | Tautulli | https://tautulli.wajeht.com | Plex stats |
 | Overseerr | https://requests.wajeht.com | Media requests |
 | FlareSolverr | internal | Cloudflare bypass |
-| Gluetun | internal | VPN proxy server |
+
+**Note:** qBittorrent + Gluetun VPN is in `apps/vpn-qbit/` (docker-compose, not Swarm)
 
 ## Traffic Flow
 
@@ -90,40 +90,7 @@ In Prowlarr: Settings → Indexers → Add FlareSolverr:
 ## Radarr/Sonarr → qBittorrent
 
 In Radarr/Sonarr: Settings → Download Clients → Add qBittorrent:
-- Host: `qbittorrent`
+- Host: `gluetun` (qBittorrent uses Gluetun's network)
 - Port: `8085`
 
-## qBittorrent VPN Setup (CRITICAL - DO THIS FIRST)
-
-Docker Swarm doesn't support `network_mode: service:gluetun`, so we use Gluetun's HTTP proxy instead. **All torrent traffic routes through VPN** when configured properly.
-
-### Step 1: Proxy Settings
-1. Open https://qbit.wajeht.com (default: admin/adminadmin)
-2. Go to **Settings → Connection → Proxy Server**
-3. Configure:
-   - Type: `HTTP`
-   - Host: `gluetun`
-   - Port: `8888`
-   - ✅ Use proxy for peer connections
-   - ✅ Use proxy for hostname lookup
-
-### Step 2: Disable IP Leaking Features
-Go to **Settings → BitTorrent**:
-   - ❌ Uncheck "Enable DHT"
-   - ❌ Uncheck "Enable PeX"
-   - ❌ Uncheck "Enable LSD"
-
-These features can leak your real IP to other peers.
-
-### Step 3: Verify VPN is Working
-1. Add any torrent and start downloading
-2. Check https://ipleak.net in the qBittorrent browser (if available)
-3. Or check Gluetun logs: `docker service logs media_gluetun`
-
-Your public IP should show the VPN server, not your real IP.
-
-### Why This Works
-- All peer connections → HTTP proxy → Gluetun VPN → Internet
-- All tracker connections → HTTP proxy → Gluetun VPN → Internet
-- DNS lookups → HTTP proxy → Gluetun VPN → Internet
-- ISP only sees encrypted VPN tunnel traffic
+See `apps/vpn-qbit/README.md` for VPN setup.
