@@ -47,6 +47,10 @@ fi
 echo "[4/5] Checking prerequisites..."
 mkdir -p $HOME_DIR/.sops && chmod 700 $HOME_DIR/.sops
 
+# Create media directories for bind mounts
+mkdir -p $HOME_DIR/plex/{downloads,movies,tv,music,audiobooks,podcasts}
+chown -R 1000:1000 $HOME_DIR/plex 2>/dev/null || true
+
 if [ ! -f $HOME_DIR/.sops/age-key.txt ]; then
     echo "ERROR: Copy age key first:"
     echo "  scp ~/.sops/age-key.txt $(whoami)@$(hostname -I | awk '{print $1}'):$HOME_DIR/.sops/"
@@ -86,12 +90,23 @@ deploy() {
     fi
 }
 
+# Only bootstrap core infra - doco-cd auto-deploys everything else
 deploy infra/traefik traefik
-deploy infra/doco-cd doco-cd
-deploy apps/homepage homepage
-deploy apps/whoami whoami
-deploy apps/commit commit true
-deploy apps/hello-world hello-world true
+deploy infra/doco-cd doco-cd true
+
+echo ""
+echo "doco-cd will auto-deploy all apps within 60 seconds..."
+echo "Check progress: https://doco.wajeht.com"
+
+# vpn-qbit needs docker-compose (Swarm doesn't support devices/network_mode)
+echo ""
+echo "[vpn-qbit] Setting up VPN + qBittorrent..."
+mkdir -p /dev/net 2>/dev/null || true
+[ ! -c /dev/net/tun ] && $SUDO mknod /dev/net/tun c 10 200 && $SUDO chmod 666 /dev/net/tun
+cd "$REPO_DIR/apps/vpn-qbit"
+sops -d ../media/.enc.env > .env 2>/dev/null || echo "WARN: No VPN credentials yet - add apps/media/.enc.env"
+$SUDO docker compose up -d 2>/dev/null || echo "WARN: vpn-qbit not started - configure .env first"
+cd "$REPO_DIR"
 
 echo ""
 echo "=== Done ==="
