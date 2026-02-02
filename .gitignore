@@ -2,12 +2,16 @@
 .env
 .env.*
 !.env.example
+!*.enc.env
 *.secret
 *.key
 *.pem
 *.crt
 
-# Secrets directory (age keys, decrypted files)
+# SOPS age keys (private key - NEVER commit)
+.sops/
+
+# Secrets directory (decrypted files)
 secrets/
 !secrets/.gitkeep
 
