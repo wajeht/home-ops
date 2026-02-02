@@ -8,6 +8,7 @@ services:
       - "443:443"
     environment:
       TZ: ${TZ:-America/Los_Angeles}
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN:-}  # for cloudflare DNS challenge
     command:
       - "--api.dashboard=true"
       - "--api.insecure=true"
@@ -19,6 +20,13 @@ services:
       # Redirect HTTP to HTTPS
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # Let's Encrypt
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@example.com}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare"
+      # Uncomment for testing (avoid rate limits)
+      # - "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-certs:/letsencrypt
