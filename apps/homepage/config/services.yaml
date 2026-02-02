@@ -123,18 +123,19 @@
         description: Notifications
         siteMonitor: https://ntfy.wajeht.com
 
+- Apps:
+    - Commit:
+        icon: git
+        href: https://commit.wajeht.com
+        description: AI Commits
+        siteMonitor: https://commit.wajeht.com
+
 - Dev:
     - Gitea:
         icon: gitea
         href: https://git.wajeht.com
         description: Git Mirror
         siteMonitor: https://git.wajeht.com
-
-    - Commit:
-        icon: git
-        href: https://commit.wajeht.com
-        description: AI Commits
-        siteMonitor: https://commit.wajeht.com
 
     - Whoami:
         icon: docker

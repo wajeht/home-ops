@@ -16,5 +16,7 @@ layout:
     style: column
   Tools:
     style: column
+  Apps:
+    style: column
   Dev:
     style: column
