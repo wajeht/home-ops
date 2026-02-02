@@ -5,8 +5,6 @@ services:
       - apprise
     ports:
       - "9120:9120"
-    env_file:
-      - .enc.env
     environment:
       TZ: America/Chicago
       LOG_LEVEL: info
@@ -14,6 +12,7 @@ services:
       APPRISE_API_URL: http://apprise:8000/notify
       APPRISE_NOTIFY_LEVEL: success
       SOPS_AGE_KEY_FILE: /sops/age-key.txt
+      GIT_ACCESS_TOKEN_FILE: /run/secrets/git_access_token
       POLL_CONFIG: |
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
@@ -23,6 +22,8 @@ services:
       - doco-data:/data
       - ${HOME}/.sops/age-key.txt:/sops/age-key.txt:ro
       - ${HOME}/.docker/config.json:/root/.docker/config.json:ro
+    secrets:
+      - git_access_token
     networks:
       - traefik
       - default
@@ -80,4 +81,8 @@ volumes:
 
 networks:
   traefik:
+    external: true
+
+secrets:
+  git_access_token:
     external: true
