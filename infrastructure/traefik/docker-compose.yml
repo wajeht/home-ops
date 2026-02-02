@@ -61,13 +61,13 @@ services:
       labels:
         - "traefik.enable=true"
         # Dashboard
-        - "traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN}`)"
+        - "traefik.http.routers.dashboard.rule=Host(`traefik.wajeht.com`)"
         - "traefik.http.routers.dashboard.service=api@internal"
         - "traefik.http.routers.dashboard.entrypoints=websecure"
         - "traefik.http.routers.dashboard.tls=true"
         - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
         # Metrics endpoint
-        - "traefik.http.routers.metrics.rule=Host(`traefik.${DOMAIN}`) && Path(`/metrics`)"
+        - "traefik.http.routers.metrics.rule=Host(`traefik.wajeht.com`) && Path(`/metrics`)"
         - "traefik.http.routers.metrics.service=prometheus@internal"
         - "traefik.http.routers.metrics.entrypoints=websecure"
         - "traefik.http.routers.metrics.tls=true"

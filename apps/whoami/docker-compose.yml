@@ -28,7 +28,7 @@ services:
         window: 120s
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.whoami.rule=Host(`whoami.${DOMAIN}`)"
+        - "traefik.http.routers.whoami.rule=Host(`whoami.wajeht.com`)"
         - "traefik.http.routers.whoami.entrypoints=websecure"
         - "traefik.http.routers.whoami.tls=true"
         - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
