@@ -13,14 +13,26 @@ These are required for 100% VPN traffic routing.
 
 ## Setup
 
-1. Copy VPN credentials from media stack:
+1. Decrypt VPN credentials from media stack (doco-cd doesn't manage this):
 ```bash
-cp ../media/.enc.env .enc.env
+SOPS_AGE_KEY_FILE=~/.sops/age-key.txt sops -d ../media/.enc.env > .env
 ```
 
 2. Deploy with docker-compose (NOT stack deploy):
 ```bash
-docker compose up -d
+sudo docker compose up -d
+```
+
+## After Server Reboot
+
+This stack doesn't auto-start like Swarm services. Manually restart:
+```bash
+cd ~/home-ops/apps/vpn-qbit && sudo docker compose up -d
+```
+
+Or add to crontab for auto-start:
+```bash
+@reboot cd /home/jaw/home-ops/apps/vpn-qbit && /usr/bin/docker compose up -d
 ```
 
 ## Traffic Flow
