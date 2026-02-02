@@ -11,13 +11,13 @@
         description: GitOps Controller
         siteMonitor: https://doco.wajeht.com/v1/health
 
-    - Prometheus:
-        icon: prometheus
-        href: https://prometheus.wajeht.com
-        description: Metrics & Monitoring
-        siteMonitor: https://prometheus.wajeht.com
-
 - Apps:
+    - Commit:
+        icon: git
+        href: https://commit.wajeht.com
+        description: AI Commit Messages
+        siteMonitor: https://commit.wajeht.com
+
     - Whoami:
         icon: docker
         href: https://whoami.wajeht.com
