@@ -10,6 +10,8 @@ services:
       LOG_LEVEL: info
       GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
       WEBHOOK_SECRET: ${WEBHOOK_SECRET}
+      APPRISE_NOTIFY_URLS: ${APPRISE_NOTIFY_URLS}
+      APPRISE_NOTIFY_LEVEL: ${APPRISE_NOTIFY_LEVEL:-success}
       POLL_CONFIG: |
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
