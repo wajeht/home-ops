@@ -12,6 +12,8 @@ services:
       LOG_LEVEL: info
       GIT_ACCESS_TOKEN_FILE: /run/secrets/git_token
       WEBHOOK_SECRET_FILE: /run/secrets/webhook_secret
+      API_SECRET_FILE: /run/secrets/api_secret
+      MAX_DEPLOYMENT_LOOP_COUNT: "3"
       APPRISE_API_URL: http://apprise:8000/notify
       APPRISE_NOTIFY_URLS_FILE: /run/secrets/apprise_url
       APPRISE_NOTIFY_LEVEL: success
@@ -23,6 +25,7 @@ services:
     secrets:
       - git_token
       - webhook_secret
+      - api_secret
       - apprise_url
       - sops_age_key
     volumes:
@@ -55,6 +58,8 @@ secrets:
     file: /root/.secrets/git-token
   webhook_secret:
     file: /root/.secrets/webhook-secret
+  api_secret:
+    file: /root/.secrets/api-secret
   apprise_url:
     file: /root/.secrets/apprise-url
   sops_age_key:
