@@ -1,16 +1,34 @@
-# Root orchestrator - deploys infrastructure first, then apps
-name: infrastructure
-working_dir: infrastructure
-auto_discover: true
-auto_discover_opts:
-  depth: 1
-  delete: true
+# Explicit deployment configs for each service
+
+name: traefik
+working_dir: infrastructure/traefik
+compose_files:
+  - docker-compose.yml
 
 ---
 
-name: apps
-working_dir: apps
-auto_discover: true
-auto_discover_opts:
-  depth: 1
-  delete: true
+name: doco-cd
+working_dir: infrastructure/doco-cd
+compose_files:
+  - docker-compose.yml
+
+---
+
+name: prometheus
+working_dir: infrastructure/prometheus
+compose_files:
+  - docker-compose.yml
+
+---
+
+name: homepage
+working_dir: apps/homepage
+compose_files:
+  - docker-compose.yml
+
+---
+
+name: whoami
+working_dir: apps/whoami
+compose_files:
+  - docker-compose.yml
