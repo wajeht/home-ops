@@ -142,6 +142,12 @@
         description: MMA Calendar
         siteMonitor: https://ufc.wajeht.com/health
 
+    - Calendar:
+        icon: mdi-calendar
+        href: https://calendar.wajeht.com
+        description: Personal Calendar
+        siteMonitor: https://calendar.wajeht.com/health
+
 - Dev:
     - Gitea:
         icon: gitea
