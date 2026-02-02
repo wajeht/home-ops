@@ -7,16 +7,21 @@ showStats: true
 layout:
   Infrastructure:
     style: row
+    columns: 4
+  Media Streaming:
+    style: row
     columns: 3
-  Media:
+  Media Management:
+    style: row
+    columns: 3
+  Productivity:
     style: row
     columns: 4
-  Monitoring:
-    style: column
-  Tools:
+  Development:
     style: row
     columns: 4
-  Apps:
-    style: column
+  Services:
+    style: row
+    columns: 2
   Developer:
     style: column
