@@ -1,6 +1,6 @@
 services:
   vaultwarden:
-    image: vaultwarden/server:latest
+    image: vaultwarden/server:1.32.5
     env_file:
       - .enc.env
     environment:

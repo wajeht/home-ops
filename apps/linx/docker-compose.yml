@@ -1,6 +1,6 @@
 services:
   linx:
-    image: andreimarcu/linx-server:latest
+    image: andreimarcu/linx-server:version-2.3.8
     command: -config /config/linx.conf
     volumes:
       - ./config:/config
