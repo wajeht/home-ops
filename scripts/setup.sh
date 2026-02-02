@@ -1,12 +1,12 @@
 #!/bin/bash
-# Full server setup for Docker Swarm
+# Full server setup for Docker Swarm with per-app SOPS secrets
 # Usage: ./scripts/setup.sh
 set -e
 
-echo "=== home-ops Setup (Swarm Mode) ==="
+echo "=== home-ops Setup ==="
 echo ""
 
-# Determine home directory and if we need sudo
+# Determine home directory and sudo
 if [ "$EUID" -eq 0 ]; then
     HOME_DIR="/root"
     SUDO=""
@@ -15,129 +15,85 @@ else
     SUDO="sudo"
 fi
 
+REPO_DIR="$HOME_DIR/home-ops"
+
 # Install Docker
 if ! command -v docker &> /dev/null; then
-    echo "[1/7] Installing Docker..."
+    echo "[1/5] Installing Docker..."
     curl -fsSL https://get.docker.com | $SUDO sh
-    if [ "$EUID" -ne 0 ]; then
-        $SUDO usermod -aG docker $USER
-        echo "NOTE: Log out and back in for docker group to take effect"
-    fi
+    [ "$EUID" -ne 0 ] && $SUDO usermod -aG docker $USER
 else
-    echo "[1/7] Docker already installed"
+    echo "[1/5] Docker installed"
 fi
 
 # Install SOPS
 if ! command -v sops &> /dev/null; then
-    echo "[2/7] Installing SOPS..."
+    echo "[2/5] Installing SOPS..."
     $SUDO curl -sLo /usr/local/bin/sops https://github.com/getsops/sops/releases/download/v3.11.0/sops-v3.11.0.linux.amd64
     $SUDO chmod +x /usr/local/bin/sops
 else
-    echo "[2/7] SOPS already installed"
+    echo "[2/5] SOPS installed"
 fi
 
 # Initialize Docker Swarm
 if ! $SUDO docker info 2>/dev/null | grep -q "Swarm: active"; then
-    echo "[3/7] Initializing Docker Swarm..."
+    echo "[3/5] Initializing Swarm..."
     $SUDO docker swarm init --advertise-addr $(hostname -I | awk '{print $1}')
 else
-    echo "[3/7] Docker Swarm already initialized"
+    echo "[3/5] Swarm active"
 fi
 
-# Create directories
-echo "[4/7] Creating directories..."
-mkdir -p $HOME_DIR/.sops
-chmod 700 $HOME_DIR/.sops
+# Check prerequisites
+echo "[4/5] Checking prerequisites..."
+mkdir -p $HOME_DIR/.sops && chmod 700 $HOME_DIR/.sops
 
-# Check for age key
 if [ ! -f $HOME_DIR/.sops/age-key.txt ]; then
-    echo ""
-    echo "=== ACTION REQUIRED ==="
-    echo "Copy your age key to this server:"
+    echo "ERROR: Copy age key first:"
     echo "  scp ~/.sops/age-key.txt $(whoami)@$(hostname -I | awk '{print $1}'):$HOME_DIR/.sops/"
-    echo ""
-    echo "Then run this script again."
-    exit 0
+    exit 1
 fi
 
-# Check if repo exists
-REPO_DIR="$HOME_DIR/home-ops"
-if [ ! -d "$REPO_DIR" ]; then
-    echo ""
-    echo "=== ACTION REQUIRED ==="
-    echo "Clone the repo:"
-    echo "  git clone https://github.com/wajeht/home-ops.git $REPO_DIR"
-    echo ""
-    echo "Then run: cd $REPO_DIR && ./scripts/setup.sh"
-    exit 0
-fi
+[ ! -d "$REPO_DIR" ] && { echo "ERROR: Clone repo first: git clone https://github.com/wajeht/home-ops.git $REPO_DIR"; exit 1; }
 
 cd "$REPO_DIR"
-
-# Decrypt secrets and create Docker secrets
-echo "[5/7] Creating Docker secrets..."
 export SOPS_AGE_KEY_FILE=$HOME_DIR/.sops/age-key.txt
-sops -d secrets.enc.env > /tmp/secrets.env
 
-# Extract secrets to temp files
-grep "^GIT_ACCESS_TOKEN=" /tmp/secrets.env | cut -d= -f2 > /tmp/git-token
-grep "^WEBHOOK_SECRET=" /tmp/secrets.env | cut -d= -f2 > /tmp/webhook-secret
-grep "^API_SECRET=" /tmp/secrets.env | cut -d= -f2 > /tmp/api-secret
-grep "^APPRISE_NOTIFY_URLS=" /tmp/secrets.env | cut -d= -f2 > /tmp/apprise-url
-grep "^CF_DNS_API_TOKEN=" /tmp/secrets.env | cut -d= -f2 > /tmp/cf-token
-GHCR_TOKEN=$(grep "^GHCR_TOKEN=" /tmp/secrets.env | cut -d= -f2)
+# Setup ghcr.io auth
+mkdir -p $HOME_DIR/.docker
+GHCR_TOKEN=$(sops -d infrastructure/doco-cd/.enc.env 2>/dev/null | grep "^GHCR_TOKEN=" | cut -d= -f2 || true)
+if [ -n "$GHCR_TOKEN" ]; then
+    AUTH=$(printf "wajeht:%s" "$GHCR_TOKEN" | base64)
+    echo "{\"auths\":{\"ghcr.io\":{\"auth\":\"$AUTH\"}}}" > $HOME_DIR/.docker/config.json
+    chmod 600 $HOME_DIR/.docker/config.json
+    echo "$GHCR_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
+fi
 
-# Create docker config for private registry
-AUTH=$(printf "wajeht:%s" "$GHCR_TOKEN" | base64)
-echo "{\"auths\":{\"ghcr.io\":{\"auth\":\"$AUTH\"}}}" > /tmp/docker-config.json
+# Deploy stacks
+echo "[5/5] Deploying stacks..."
+$SUDO docker network create --driver overlay --attachable traefik 2>/dev/null || true
 
-# Create Docker secrets (remove if exist, then create)
-for secret in git_token webhook_secret api_secret apprise_url cf_token sops_age_key docker_config; do
-    $SUDO docker secret rm "$secret" 2>/dev/null || true
-done
+deploy() {
+    local dir=$1 name=$2 registry=$3
 
-$SUDO docker secret create git_token /tmp/git-token
-$SUDO docker secret create webhook_secret /tmp/webhook-secret
-$SUDO docker secret create api_secret /tmp/api-secret
-$SUDO docker secret create apprise_url /tmp/apprise-url
-$SUDO docker secret create cf_token /tmp/cf-token
-$SUDO docker secret create sops_age_key $HOME_DIR/.sops/age-key.txt
-$SUDO docker secret create docker_config /tmp/docker-config.json
+    # Decrypt .enc.env if exists, source vars
+    [ -f "$dir/.enc.env" ] && { eval "$(sops -d "$dir/.enc.env")"; export $(sops -d "$dir/.enc.env" | cut -d= -f1 | xargs); }
 
-# Login to ghcr for pulling private images
-echo "[6/7] Logging into ghcr.io..."
-echo "$GHCR_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
+    # Deploy
+    if [ "$registry" = "true" ]; then
+        HOME=$HOME_DIR $SUDO -E docker stack deploy -c "$dir/docker-compose.yml" --with-registry-auth "$name"
+    else
+        HOME=$HOME_DIR $SUDO -E docker stack deploy -c "$dir/docker-compose.yml" "$name"
+    fi
+}
 
-# Cleanup temp files
-rm -f /tmp/secrets.env /tmp/git-token /tmp/webhook-secret /tmp/api-secret /tmp/apprise-url /tmp/cf-token /tmp/docker-config.json
-
-# Create overlay network and deploy
-echo "[7/7] Deploying stacks..."
-$SUDO docker network rm traefik 2>/dev/null || true
-$SUDO docker network create --driver overlay --attachable traefik
-
-# Deploy infrastructure
-$SUDO docker stack deploy -c infrastructure/traefik/docker-compose.yml traefik
-$SUDO docker stack deploy -c infrastructure/doco-cd/docker-compose.yml doco-cd
-
-# Deploy apps
-$SUDO docker stack deploy -c apps/homepage/docker-compose.yml homepage
-$SUDO docker stack deploy -c apps/whoami/docker-compose.yml whoami
-$SUDO docker stack deploy -c apps/commit/docker-compose.yml --with-registry-auth commit
+deploy infrastructure/traefik traefik
+deploy infrastructure/doco-cd doco-cd
+deploy apps/homepage homepage
+deploy apps/whoami whoami
+deploy apps/commit commit true
 
 echo ""
-echo "=== Setup Complete ==="
-echo ""
-echo "Swarm status:"
-$SUDO docker node ls
-echo ""
-echo "Secrets:"
-$SUDO docker secret ls
-echo ""
-echo "Services:"
+echo "=== Done ==="
 $SUDO docker service ls
 echo ""
-echo "Next steps:"
-echo "  1. Configure DNS to point *.yourdomain.com to $(hostname -I | awk '{print $1}')"
-echo "     (Use AdGuard DNS rewrite for local, or public DNS for internet)"
-echo "  2. Wait for services to start: watch '$SUDO docker service ls'"
+echo "DNS: Point *.wajeht.com to $(hostname -I | awk '{print $1}')"

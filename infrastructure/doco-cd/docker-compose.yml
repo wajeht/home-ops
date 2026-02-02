@@ -5,32 +5,24 @@ services:
       - apprise
     ports:
       - "9120:9120"
+    env_file:
+      - .enc.env
     environment:
       TZ: America/Chicago
       LOG_LEVEL: info
-      GIT_ACCESS_TOKEN_FILE: /run/secrets/git_token
-      WEBHOOK_SECRET_FILE: /run/secrets/webhook_secret
-      API_SECRET_FILE: /run/secrets/api_secret
       MAX_DEPLOYMENT_LOOP_COUNT: "3"
       APPRISE_API_URL: http://apprise:8000/notify
-      APPRISE_NOTIFY_URLS_FILE: /run/secrets/apprise_url
       APPRISE_NOTIFY_LEVEL: success
-      SOPS_AGE_KEY_FILE: /run/secrets/sops_age_key
+      SOPS_AGE_KEY_FILE: /sops/age-key.txt
       POLL_CONFIG: |
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
           interval: 0
-    secrets:
-      - git_token
-      - webhook_secret
-      - api_secret
-      - apprise_url
-      - sops_age_key
-      - source: docker_config
-        target: /root/.docker/config.json
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - doco-data:/data
+      - ${HOME}/.sops/age-key.txt:/sops/age-key.txt:ro
+      - ${HOME}/.docker/config.json:/root/.docker/config.json:ro
     networks:
       - traefik
       - default
@@ -82,20 +74,6 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-
-secrets:
-  git_token:
-    external: true
-  webhook_secret:
-    external: true
-  api_secret:
-    external: true
-  apprise_url:
-    external: true
-  sops_age_key:
-    external: true
-  docker_config:
-    external: true
 
 volumes:
   doco-data:
