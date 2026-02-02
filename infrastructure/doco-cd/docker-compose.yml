@@ -4,15 +4,24 @@ services:
     container_name: doco-cd
     restart: unless-stopped
     ports:
-      - "9120:9120"
+      - "9120:9120"  # Prometheus metrics
     environment:
       TZ: America/Chicago
       LOG_LEVEL: info
+      # Git authentication
       GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
+      # Webhook for instant deployments (optional)
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-}
+      # API for manual triggers (optional)
+      API_SECRET: ${API_SECRET:-}
+      # Polling configuration
       POLL_CONFIG: |
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
           interval: 60
+      # Deployment settings
+      DOCKER_QUIET_DEPLOY: "false"
+      MAX_DEPLOYMENT_LOOP_COUNT: "2"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - doco-data:/data
