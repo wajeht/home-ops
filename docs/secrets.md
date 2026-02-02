@@ -15,7 +15,7 @@ Each stack has its own `.enc.env` file. When doco-cd deploys (via webhook), it a
 ## Structure
 
 ```
-infrastructure/
+infra/
 ├── traefik/.enc.env      # CF_DNS_API_TOKEN
 ├── doco-cd/.enc.env      # GIT_ACCESS_TOKEN, WEBHOOK_SECRET, etc.
 apps/
