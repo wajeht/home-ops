@@ -52,6 +52,11 @@ services:
     image: caronc/apprise:v1.3.1
     container_name: apprise
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 secrets:
   git_token:
