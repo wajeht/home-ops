@@ -132,9 +132,9 @@
 
     - Favicon:
         icon: mdi-image-search
-        href: https://favicon.jaw.dev
+        href: https://favicon.wajeht.com
         description: Favicon Grabber
-        siteMonitor: https://favicon.jaw.dev/healthz
+        siteMonitor: https://favicon.wajeht.com/healthz
 
 - Dev:
     - Gitea:
