@@ -1,4 +1,4 @@
-- Core:
+- Infra:
     - Traefik:
         icon: traefik
         href: https://traefik.wajeht.com
@@ -21,7 +21,7 @@
     - Uptime Kuma:
         icon: uptime-kuma
         href: https://status.wajeht.com
-        description: Status Monitoring
+        description: Status
         siteMonitor: https://status.wajeht.com
 
     - Changedetection:
@@ -29,6 +29,12 @@
         href: https://changes.wajeht.com
         description: Web Monitor
         siteMonitor: https://changes.wajeht.com
+
+    - Tautulli:
+        icon: tautulli
+        href: https://tautulli.wajeht.com
+        description: Plex Stats
+        siteMonitor: https://tautulli.wajeht.com
 
 - Media:
     - Plex:
@@ -49,6 +55,7 @@
         description: Audiobooks
         siteMonitor: https://audiobooks.wajeht.com
 
+- Arr Stack:
     - Overseerr:
         icon: overseerr
         href: https://requests.wajeht.com
@@ -79,24 +86,12 @@
         description: Downloads
         siteMonitor: https://qbit.wajeht.com
 
-    - Tautulli:
-        icon: tautulli
-        href: https://tautulli.wajeht.com
-        description: Plex Stats
-        siteMonitor: https://tautulli.wajeht.com
-
 - Tools:
     - Vaultwarden:
         icon: vaultwarden
         href: https://vault.wajeht.com
         description: Passwords
         siteMonitor: https://vault.wajeht.com
-
-    - Gitea:
-        icon: gitea
-        href: https://git.wajeht.com
-        description: Git Mirror
-        siteMonitor: https://git.wajeht.com
 
     - Miniflux:
         icon: miniflux
@@ -128,7 +123,13 @@
         description: Notifications
         siteMonitor: https://ntfy.wajeht.com
 
-- Apps:
+- Dev:
+    - Gitea:
+        icon: gitea
+        href: https://git.wajeht.com
+        description: Git Mirror
+        siteMonitor: https://git.wajeht.com
+
     - Commit:
         icon: git
         href: https://commit.wajeht.com
@@ -141,7 +142,6 @@
         description: Test Service
         siteMonitor: https://whoami.wajeht.com
 
-- Developer:
     - GitHub:
         icon: github
         href: https://github.com/wajeht

@@ -6,15 +6,15 @@ hideVersion: false
 showStats: true
 cardBlur: sm
 layout:
-  Core:
+  Infra:
     style: column
   Monitoring:
     style: column
   Media:
     style: column
+  Arr Stack:
+    style: column
   Tools:
     style: column
-  Apps:
-    style: column
-  Developer:
+  Dev:
     style: column
