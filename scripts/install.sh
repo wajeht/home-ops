@@ -51,6 +51,13 @@ chown -R 1000:1000 "$HOME_DIR/plex" 2>/dev/null || true
 # Network
 $SUDO docker network create --driver overlay --attachable traefik 2>/dev/null || true
 
+# Docker Hub auth (avoid rate limits)
+DH_USER=$(sops -d infra/.enc.env 2>/dev/null | grep "^DOCKER_HUB_USER=" | cut -d= -f2 || true)
+DH_TOKEN=$(sops -d infra/.enc.env 2>/dev/null | grep "^DOCKER_HUB_TOKEN=" | cut -d= -f2 || true)
+if [ -n "$DH_TOKEN" ]; then
+    echo "$DH_TOKEN" | $SUDO docker login -u "$DH_USER" --password-stdin
+fi
+
 # GHCR auth
 GHCR_TOKEN=$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GHCR_TOKEN=" | cut -d= -f2 || true)
 if [ -n "$GHCR_TOKEN" ]; then
