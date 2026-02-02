@@ -16,7 +16,9 @@ home-ops/
 │   ├── gitea/               # git mirror
 │   ├── uptime-kuma/         # status monitoring
 │   ├── plausible/           # privacy-friendly analytics
-│   └── media/               # plex, radarr, prowlarr, qbittorrent
+│   ├── media/               # plex, *arr stack, qbittorrent
+│   ├── ntfy/                # push notifications
+│   └── vaultwarden/         # password manager
 ├── infrastructure/          # core services
 │   ├── traefik/             # reverse proxy + TLS
 │   │   └── .enc.env         # traefik secrets
@@ -116,3 +118,6 @@ ssh server 'sudo docker service logs -f traefik_traefik'
 - https://radarr.wajeht.com - Radarr
 - https://prowlarr.wajeht.com - Prowlarr
 - https://qbit.wajeht.com - qBittorrent
+- https://sonarr.wajeht.com - Sonarr
+- https://ntfy.wajeht.com - Ntfy
+- https://vault.wajeht.com - Vaultwarden
