@@ -1,6 +1,6 @@
 services:
   stirling-pdf:
-    image: frooodle/s-pdf:latest
+    image: frooodle/s-pdf:0.36.0
     environment:
       - TZ=America/Chicago
       - DOCKER_ENABLE_SECURITY=false
