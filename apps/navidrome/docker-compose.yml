@@ -1,0 +1,40 @@
+services:
+  navidrome:
+    image: deluan/navidrome:0.53.3
+    environment:
+      - ND_SCANSCHEDULE=1h
+      - ND_LOGLEVEL=info
+      - ND_BASEURL=https://music.wajeht.com
+    volumes:
+      - navidrome-data:/data
+      - /home/jaw/plex/music:/music:ro
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4533/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.navidrome.rule=Host(`music.wajeht.com`)"
+        - "traefik.http.routers.navidrome.entrypoints=websecure"
+        - "traefik.http.routers.navidrome.tls.certresolver=cloudflare"
+        - "traefik.http.services.navidrome.loadbalancer.server.port=4533"
+
+volumes:
+  navidrome-data:
+
+networks:
+  traefik:
+    external: true

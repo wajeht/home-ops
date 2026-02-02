@@ -1,0 +1,39 @@
+services:
+  linx:
+    image: andreimarcu/linx-server:version-2.3.8
+    command: -config /config/linx.conf
+    volumes:
+      - ./config:/config
+      - linx-files:/files
+      - linx-meta:/meta
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.linx.rule=Host(`linx.wajeht.com`)"
+        - "traefik.http.routers.linx.entrypoints=websecure"
+        - "traefik.http.routers.linx.tls.certresolver=cloudflare"
+        - "traefik.http.services.linx.loadbalancer.server.port=8080"
+
+volumes:
+  linx-files:
+  linx-meta:
+
+networks:
+  traefik:
+    external: true
