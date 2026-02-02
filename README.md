@@ -2,15 +2,22 @@
 
 GitOps for Docker Swarm using [doco-cd](https://github.com/kimdre/doco-cd).
 
-Zero-downtime rolling updates via Swarm mode.
+Zero-downtime rolling updates, secrets management, and full observability.
 
 ## Structure
 
 ```
 home-ops/
-├── .doco-cd.yml        # root orchestrator
-├── infrastructure/     # core services (traefik, doco-cd)
-└── apps/               # application stacks
+├── .doco-cd.yml           # root orchestrator
+├── .sops.yaml             # encryption config (optional)
+├── infrastructure/        # core services
+│   ├── traefik/           # reverse proxy + TLS
+│   ├── doco-cd/           # gitops controller
+│   └── prometheus/        # metrics
+├── apps/                  # application stacks
+│   ├── homepage/
+│   └── whoami/
+└── secrets/               # encrypted secrets (gitignored)
 ```
 
 ## Quick Start
@@ -18,14 +25,26 @@ home-ops/
 ```bash
 # 1. Configure environment
 cp .env.example .env
-vim .env
+vim .env  # fill in values
 
-# 2. Bootstrap (initializes swarm + deploys infra)
+# 2. Bootstrap
 make bootstrap
 
 # 3. Push to git - doco-cd handles the rest
 git add . && git commit -m "init" && git push
 ```
+
+## Features
+
+| Feature | Implementation |
+|---------|----------------|
+| Zero-downtime deploys | Swarm rolling updates (`order: start-first`) |
+| Automatic HTTPS | Let's Encrypt via Traefik |
+| Secrets management | Docker secrets + SOPS encryption |
+| Health checks | Container + Traefik load balancer checks |
+| Metrics | Prometheus scraping Traefik + doco-cd |
+| Notifications | Apprise (Discord, Slack, etc.) |
+| Auto-rollback | `failure_action: rollback` |
 
 ## Zero-Downtime Deployments
 
@@ -33,57 +52,88 @@ All apps use Swarm rolling updates:
 
 ```yaml
 deploy:
-  replicas: 2
+  replicas: 2                    # minimum for zero-downtime
   update_config:
-    parallelism: 1
-    delay: 10s
-    order: start-first      # new container starts before old stops
-    failure_action: rollback
+    parallelism: 1               # update one at a time
+    delay: 10s                   # wait between updates
+    order: start-first           # start new before stopping old
+    failure_action: rollback     # auto-revert on failure
+    monitor: 30s                 # health check window
+  restart_policy:
+    condition: any
+    max_attempts: 3
 ```
 
-- `order: start-first` ensures new replica is healthy before stopping old
-- `failure_action: rollback` auto-reverts on failure
-- Set `REPLICAS=2` in `.env` (minimum for zero-downtime)
+## Secrets Management
 
-## Usage
+### Docker Secrets (Recommended)
 
-### Add New App
+Secrets are stored encrypted in Swarm and mounted to containers:
 
 ```bash
-mkdir apps/myapp
-# create apps/myapp/docker-compose.yml (see template below)
-git add . && git commit -m "add myapp" && git push
-# deployed within 60s with zero downtime
+# Create secrets from .env
+make secrets
+
+# Update secrets
+make secrets-update
+
+# List secrets
+make secrets-list
 ```
 
-### Remove App
+### SOPS Encryption (For Git)
+
+Encrypt sensitive files before committing:
 
 ```bash
-rm -rf apps/myapp
-git add . && git commit -m "remove myapp" && git push
-# removed within 60s
+# Generate age key
+make sops-keygen
+
+# Add to .sops.yaml
+creation_rules:
+  - path_regex: \.env$
+    age: >-
+      age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Encrypt
+make sops-encrypt FILE=apps/myapp/.env
+
+# doco-cd auto-decrypts during deployment
 ```
 
-### App Template
+## App Template
 
 ```yaml
 services:
   myapp:
     image: myimage:latest
-    hostname: myapp
+    hostname: myapp-{{.Task.Slot}}
+    environment:
+      TZ: ${TZ:-America/Los_Angeles}
     networks:
       - traefik
     deploy:
       mode: replicated
       replicas: ${REPLICAS:-2}
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
       update_config:
         parallelism: 1
         delay: 10s
         order: start-first
         failure_action: rollback
+        monitor: 30s
       rollback_config:
         parallelism: 1
         delay: 10s
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.myapp.rule=Host(`myapp.${DOMAIN}`)"
@@ -91,6 +141,14 @@ services:
         - "traefik.http.routers.myapp.tls=true"
         - "traefik.http.routers.myapp.tls.certresolver=letsencrypt"
         - "traefik.http.services.myapp.loadbalancer.server.port=8080"
+        - "traefik.http.services.myapp.loadbalancer.healthcheck.path=/health"
+        - "traefik.http.services.myapp.loadbalancer.healthcheck.interval=10s"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
 networks:
   traefik:
@@ -105,89 +163,150 @@ Set `DOMAIN` in `.env`:
 DOMAIN=example.com
 ```
 
-Results in:
-- `whoami.example.com` → whoami
-- `home.example.com` → homepage
-- `traefik.example.com` → dashboard
-- `doco.example.com` → doco-cd
+Results:
+| Subdomain | Service |
+|-----------|---------|
+| `home.example.com` | homepage |
+| `whoami.example.com` | whoami |
+| `traefik.example.com` | traefik dashboard |
+| `doco.example.com` | doco-cd API |
+| `prometheus.example.com` | prometheus |
 
 ## HTTPS / TLS
 
-Using Let's Encrypt with Cloudflare DNS challenge (works behind NAT).
-
-### Setup
+Using Let's Encrypt with Cloudflare DNS challenge:
 
 1. Create Cloudflare API token with `Zone:DNS:Edit` permission
-2. Configure `.env`:
+2. Add to `.env`:
    ```bash
    DOMAIN=yourdomain.com
    ACME_EMAIL=you@email.com
-   CF_DNS_API_TOKEN=your_cloudflare_token
+   CF_DNS_API_TOKEN=your_token
    ```
-3. Traefik auto-provisions certs
 
-### Other DNS Providers
+Other providers: `route53`, `digitalocean`, `duckdns`, `namecheap`
+See: https://doc.traefik.io/traefik/https/acme/#providers
 
-Edit `infrastructure/traefik/docker-compose.yml`, change provider:
-- `cloudflare`, `route53`, `digitalocean`, `duckdns`, `namecheap`
+## Notifications
 
-Full list: https://doc.traefik.io/traefik/https/acme/#providers
+Configure in `.env`:
+
+```bash
+# Discord
+APPRISE_NOTIFY_URLS=discord://webhook_id/webhook_token
+
+# Slack
+APPRISE_NOTIFY_URLS=slack://tokenA/tokenB/tokenC
+
+# Multiple (comma-separated)
+APPRISE_NOTIFY_URLS=discord://...,slack://...
+
+# Notification level: info, success, warning, failure
+APPRISE_NOTIFY_LEVEL=success
+```
+
+See: https://github.com/caronc/apprise/wiki
+
+## API Endpoints
+
+doco-cd exposes a REST API (requires `API_SECRET`):
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/v1/health` | GET | Health check |
+| `/v1/webhook` | POST | Git webhook receiver |
+| `/v1/api/stacks` | GET | List stacks |
+| `/v1/api/stack/{name}` | GET | Stack details |
+| `/v1/api/stack/{name}` | DELETE | Remove stack |
+| `/v1/api/stack/{name}/restart` | POST | Restart stack |
+| `/v1/api/stack/{name}/scale` | POST | Scale stack |
+
+Auth: `x-api-key: <API_SECRET>` header
 
 ## Commands
 
+### Bootstrap
 | Command | Description |
 |---------|-------------|
-| `make bootstrap` | Init swarm + deploy traefik + doco-cd |
+| `make bootstrap` | Full setup (swarm + network + secrets + services) |
+| `make swarm-init` | Initialize Docker Swarm |
+| `make network` | Create overlay network |
+| `make secrets` | Create Docker secrets |
+| `make secrets-update` | Update secrets |
+
+### Deployment
+| Command | Description |
+|---------|-------------|
+| `make deploy APP=apps/myapp` | Deploy specific stack |
+| `make down APP=apps/myapp` | Remove stack |
+| `make scale SVC=myapp_web REPLICAS=3` | Scale service |
+| `make restart SVC=myapp_web` | Force restart |
+
+### Monitoring
+| Command | Description |
+|---------|-------------|
 | `make status` | Show stacks and services |
 | `make ps` | Show service tasks |
 | `make logs` | Tail doco-cd logs |
-| `make deploy APP=path` | Deploy specific stack |
-| `make down APP=path` | Remove specific stack |
-| `make scale SVC=name REPLICAS=n` | Scale a service |
+| `make health` | Check service health |
+
+### Maintenance
+| Command | Description |
+|---------|-------------|
 | `make pull` | Pull latest images |
-| `make services` | List all services |
-| `make nodes` | List swarm nodes |
+| `make up-all` | Deploy all stacks |
+| `make down-all` | Remove all stacks |
 | `make clean` | Remove all + prune |
 
 ## Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `TZ` | Timezone |
-| `DOMAIN` | Base domain for routing |
-| `GIT_ACCESS_TOKEN` | GitHub/Gitea token |
-| `GITOPS_REPO_URL` | This repo's clone URL |
-| `ACME_EMAIL` | Let's Encrypt email |
-| `CF_DNS_API_TOKEN` | Cloudflare API token |
-| `REPLICAS` | Default replica count (2 for zero-downtime) |
-
-## How It Works
-
-1. **Docker Swarm** manages containers with rolling updates
-2. **doco-cd** polls this repo every 60s
-3. Detects changes → deploys as Swarm stacks
-4. **Traefik** handles routing + TLS + load balancing
-5. Updates roll out with zero downtime
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `TZ` | Timezone | No |
+| `DOMAIN` | Base domain | Yes |
+| `GITOPS_REPO_URL` | This repo's clone URL | Yes |
+| `GIT_ACCESS_TOKEN` | Git provider token (read-only) | Yes |
+| `API_SECRET` | doco-cd API auth | No |
+| `WEBHOOK_SECRET` | Git webhook auth | No |
+| `ACME_EMAIL` | Let's Encrypt email | Yes |
+| `CF_DNS_API_TOKEN` | Cloudflare API token | Yes |
+| `REPLICAS` | Default replica count | No (default: 2) |
+| `APPRISE_NOTIFY_URLS` | Notification URLs | No |
 
 ## Architecture
 
 ```
-                    ┌─────────────┐
-                    │   GitHub    │
-                    └──────┬──────┘
-                           │ poll every 60s
-                    ┌──────▼──────┐
-                    │   doco-cd   │
-                    └──────┬──────┘
-                           │ docker stack deploy
-              ┌────────────┼────────────┐
-              ▼            ▼            ▼
-         ┌────────┐   ┌────────┐   ┌────────┐
-         │ app-1  │   │ app-2  │   │ app-n  │
-         │ (2 rep)│   │ (2 rep)│   │ (2 rep)│
-         └────┬───┘   └────┬───┘   └───┬────┘
-              └────────────┼───────────┘
-                    ┌──────▼──────┐
-                    │   traefik   │◄─── HTTPS
-                    └─────────────┘
+                         ┌──────────────┐
+                         │    GitHub    │
+                         └──────┬───────┘
+                                │ poll/webhook
+                         ┌──────▼───────┐
+                         │   doco-cd    │──────► Notifications
+                         └──────┬───────┘
+                                │ docker stack deploy
+        ┌───────────────────────┼───────────────────────┐
+        ▼                       ▼                       ▼
+   ┌─────────┐            ┌─────────┐            ┌─────────┐
+   │ app-1   │            │ app-2   │            │ app-n   │
+   │ replica │            │ replica │            │ replica │
+   │ replica │            │ replica │            │ replica │
+   └────┬────┘            └────┬────┘            └────┬────┘
+        └───────────────────────┼───────────────────────┘
+                         ┌──────▼───────┐
+                         │   traefik    │◄──── HTTPS (Let's Encrypt)
+                         └──────┬───────┘
+                                │
+                         ┌──────▼───────┐
+                         │  prometheus  │──────► Metrics
+                         └──────────────┘
 ```
+
+## Security Best Practices
+
+1. **Minimal permissions** - Git tokens with read-only repo access
+2. **Docker secrets** - Never put secrets in compose files or images
+3. **SOPS encryption** - Encrypt secrets before committing to git
+4. **Network isolation** - Apps only expose ports via Traefik
+5. **Resource limits** - Prevent runaway containers
+6. **Health checks** - Auto-restart unhealthy containers
+7. **Read-only mounts** - `/var/run/docker.sock:ro` where possible
