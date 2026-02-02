@@ -21,14 +21,14 @@ services:
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--certificatesresolvers.cloudflare.acme.email=mail@wajeht.com"
-      - "--certificatesresolvers.cloudflare.acme.storage=/cloudflare/acme.json"
+      - "--certificatesresolvers.cloudflare.acme.storage=/certs/acme.json"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
       - "--log.level=INFO"
       - "--ping=true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik-certs:/cloudflare
+      - traefik-certs:/certs
     networks:
       - traefik
     healthcheck:
