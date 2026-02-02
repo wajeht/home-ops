@@ -5,6 +5,7 @@ services:
     environment:
       TZ: ${TZ:-America/Los_Angeles}
       CF_DNS_API_TOKEN_FILE: /run/secrets/cf_dns_api_token
+      DOCKER_API_VERSION: "1.45"
     secrets:
       - cf_dns_api_token
     command:
