@@ -1,0 +1,5 @@
+name: prometheus
+compose_files:
+  - docker-compose.yml
+remove_orphans: true
+prune_images: true
