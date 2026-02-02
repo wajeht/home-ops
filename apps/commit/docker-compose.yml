@@ -1,0 +1,33 @@
+services:
+  commit:
+    image: ghcr.io/wajeht/commit:latest
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.commit.rule=Host(`commit.wajeht.com`)"
+        - "traefik.http.routers.commit.entrypoints=websecure"
+        - "traefik.http.routers.commit.tls=true"
+        - "traefik.http.routers.commit.tls.certresolver=letsencrypt"
+        - "traefik.http.services.commit.loadbalancer.server.port=80"
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+networks:
+  traefik:
+    external: true
