@@ -4,7 +4,7 @@ GitOps for Docker Swarm with zero-downtime rolling updates.
 
 ## Overview
 
-Push to git → doco-cd deploys → rolling update with no downtime.
+Push to git → doco-cd auto-deploys → rolling update with no downtime.
 
 ```
 home-ops/
@@ -12,13 +12,15 @@ home-ops/
 │   ├── homepage/            # dashboard
 │   ├── whoami/              # test service
 │   └── commit/              # AI commit messages (private ghcr)
+│       └── .enc.env         # app secrets (SOPS encrypted)
 ├── infrastructure/          # core services
 │   ├── traefik/             # reverse proxy + TLS
+│   │   └── .enc.env         # traefik secrets
 │   └── doco-cd/             # gitops controller
+│       └── .enc.env         # doco-cd secrets
 ├── scripts/                 # setup and maintenance
 │   ├── setup.sh             # initial server setup
-│   └── sync-secrets.sh      # update secrets
-├── secrets.enc.env          # SOPS encrypted secrets
+│   └── sync-secrets.sh      # redeploy after secret changes
 └── docs/                    # documentation
 ```
 
@@ -27,9 +29,9 @@ home-ops/
 | Component | Purpose |
 |-----------|---------|
 | [Docker Swarm](https://docs.docker.com/engine/swarm/) | Orchestration + rolling updates |
-| [doco-cd](https://github.com/kimdre/doco-cd) | GitOps deployment |
+| [doco-cd](https://github.com/kimdre/doco-cd) | GitOps deployment + SOPS decryption |
 | [Traefik](https://traefik.io) | Reverse proxy + TLS |
-| [SOPS](https://github.com/getsops/sops) | Secrets encryption |
+| [SOPS](https://github.com/getsops/sops) | Per-app secrets encryption |
 
 ## Quick Start
 
@@ -45,7 +47,7 @@ See [Server Setup](docs/vps-setup.md) for full instructions.
 ## Documentation
 
 - **[Server Setup](docs/vps-setup.md)** - Setting up a new server
-- **[Secrets Management](docs/secrets.md)** - SOPS + Docker secrets
+- **[Secrets Management](docs/secrets.md)** - Per-app SOPS encryption
 - **[Adding Apps](docs/adding-apps.md)** - Deploy new applications
 
 ## Quick Reference
@@ -55,21 +57,29 @@ See [Server Setup](docs/vps-setup.md) for full instructions.
 mkdir -p apps/myapp
 # Create apps/myapp/docker-compose.yml
 git add -A && git commit -m "add myapp" && git push
-# On server:
-sudo docker stack deploy -c apps/myapp/docker-compose.yml myapp
 ```
 
-### Add private ghcr app
+### Add app with secrets
 ```bash
-# Same as above, but deploy with:
-sudo docker stack deploy -c apps/myapp/docker-compose.yml --with-registry-auth myapp
+# Create encrypted env file
+cat > apps/myapp/.env << 'EOF'
+API_KEY=secret
+EOF
+sops -e apps/myapp/.env > apps/myapp/.enc.env
+rm apps/myapp/.env
+
+# Reference in docker-compose.yml:
+# env_file:
+#   - .enc.env
+
+git add -A && git commit -m "add myapp" && git push
 ```
 
 ### Edit secrets
 ```bash
-sops secrets.enc.env
-git push
-ssh server 'cd ~/home-ops && ./scripts/sync-secrets.sh'
+sops apps/myapp/.enc.env
+git add -A && git commit -m "update secrets" && git push
+# doco-cd auto-deploys with decrypted secrets
 ```
 
 ### Check services
