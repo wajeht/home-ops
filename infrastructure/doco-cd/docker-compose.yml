@@ -8,20 +8,16 @@ services:
     environment:
       TZ: America/Chicago
       LOG_LEVEL: info
-      # Git authentication
       GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
-      # Webhook for instant deployments (optional)
-      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-}
-      # API for manual triggers (optional)
-      API_SECRET: ${API_SECRET:-}
-      # Polling configuration
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
       POLL_CONFIG: |
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
           interval: 60
-      # Deployment settings
-      DOCKER_QUIET_DEPLOY: "false"
-      MAX_DEPLOYMENT_LOOP_COUNT: "2"
+          deployments:
+            - working_dir: apps/homepage
+            - working_dir: apps/whoami
+            - working_dir: infrastructure/prometheus
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - doco-data:/data
