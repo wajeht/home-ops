@@ -122,6 +122,12 @@
         description: Dev Utilities
         siteMonitor: https://tools.wajeht.com
 
+    - Linx:
+        icon: filerun
+        href: https://linx.wajeht.com
+        description: File Sharing
+        siteMonitor: https://linx.wajeht.com
+
 - Apps:
     - Commit:
         icon: git
