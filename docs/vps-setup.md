@@ -8,14 +8,35 @@ Complete guide to setting up a new VPS from scratch.
 - Root SSH access
 - Domain pointing to VPS IP
 
-## 1. Install Docker
+## Quick Setup (Scripts)
+
+```bash
+# 1. Run install script (Docker + SOPS)
+curl -fsSL https://raw.githubusercontent.com/wajeht/home-ops/main/scripts/vps-install.sh | bash
+
+# 2. Copy age key from local machine
+# (run this on your local machine)
+scp ~/.sops/age-key.txt root@NEW_VPS:/root/.sops/
+
+# 3. Clone repo
+git clone https://YOUR_TOKEN@github.com/wajeht/home-ops.git
+cd home-ops
+
+# 4. Decrypt secrets and bootstrap
+./scripts/decrypt-secrets.sh
+./scripts/bootstrap.sh
+```
+
+## Manual Setup
+
+### 1. Install Docker
 
 ```bash
 curl -fsSL https://get.docker.com | sh
 docker --version
 ```
 
-## 2. Install SOPS
+### 2. Install SOPS
 
 ```bash
 curl -LO https://github.com/getsops/sops/releases/download/v3.11.0/sops-v3.11.0.linux.amd64
@@ -24,14 +45,14 @@ chmod +x /usr/local/bin/sops
 sops --version
 ```
 
-## 3. Setup Secrets Directories
+### 3. Setup Secrets Directories
 
 ```bash
 mkdir -p /root/.secrets /root/.sops
 chmod 700 /root/.secrets /root/.sops
 ```
 
-## 4. Copy Age Key
+### 4. Copy Age Key
 
 From existing machine:
 ```bash
@@ -44,19 +65,23 @@ age-keygen -o /root/.sops/age-key.txt
 # Copy public key, update .sops.yaml, re-encrypt secrets.enc.env
 ```
 
-## 5. Clone Repository
+### 5. Clone Repository
 
 ```bash
 cd ~
 git clone https://YOUR_TOKEN@github.com/wajeht/home-ops.git
 ```
 
-## 6. Decrypt Secrets
+### 6. Decrypt Secrets
 
 ```bash
 cd ~/home-ops
-export SOPS_AGE_KEY_FILE=/root/.sops/age-key.txt
+./scripts/decrypt-secrets.sh
+```
 
+Or manually:
+```bash
+export SOPS_AGE_KEY_FILE=/root/.sops/age-key.txt
 sops -d secrets.enc.env > /tmp/secrets.env
 
 grep "^GIT_ACCESS_TOKEN=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/git-token
@@ -69,26 +94,17 @@ rm /tmp/secrets.env
 chmod 600 /root/.secrets/*
 ```
 
-Verify:
+### 7. Bootstrap Infrastructure
+
 ```bash
-ls -la /root/.secrets/
+./scripts/bootstrap.sh
 ```
 
-## 7. Bootstrap Infrastructure
-
+Or manually:
 ```bash
-# Create traefik network
 docker network create traefik
-
-# Start traefik (reverse proxy + TLS)
-cd ~/home-ops/infrastructure/traefik
-docker compose up -d
-
-# Start doco-cd (GitOps controller)
-cd ~/home-ops/infrastructure/doco-cd
-docker compose up -d
-
-# Verify
+cd infrastructure/traefik && docker compose up -d
+cd ../doco-cd && docker compose up -d
 docker ps
 ```
 
