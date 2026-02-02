@@ -1,12 +1,11 @@
 #!/bin/bash
-# Full server setup for Docker Swarm with per-app SOPS secrets
+# Docker Swarm setup for home-ops
 # Usage: ./scripts/setup.sh
-set -e
+set -eo pipefail
 
 echo "=== home-ops Setup ==="
-echo ""
 
-# Determine home directory and sudo
+# Config
 if [ "$EUID" -eq 0 ]; then
     HOME_DIR="/root"
     SUDO=""
@@ -14,115 +13,86 @@ else
     HOME_DIR="$HOME"
     SUDO="sudo"
 fi
-
 REPO_DIR="$HOME_DIR/home-ops"
+export SOPS_AGE_KEY_FILE="$HOME_DIR/.sops/age-key.txt"
+
+# Prerequisites
+echo "[1/4] Checking prerequisites..."
+[ ! -f "$SOPS_AGE_KEY_FILE" ] && { echo "ERROR: Copy age key: scp ~/.sops/age-key.txt $(whoami)@$(hostname -I | awk '{print $1}'):$HOME_DIR/.sops/"; exit 1; }
+[ ! -d "$REPO_DIR" ] && { echo "ERROR: Clone repo: git clone https://github.com/wajeht/home-ops.git $REPO_DIR"; exit 1; }
 
 # Install Docker
+echo "[2/4] Docker..."
 if ! command -v docker &> /dev/null; then
-    echo "[1/5] Installing Docker..."
     curl -fsSL https://get.docker.com | $SUDO sh
-    [ "$EUID" -ne 0 ] && $SUDO usermod -aG docker $USER
-else
-    echo "[1/5] Docker installed"
+    [ "$EUID" -ne 0 ] && $SUDO usermod -aG docker "$USER"
 fi
 
 # Install SOPS
 if ! command -v sops &> /dev/null; then
-    echo "[2/5] Installing SOPS..."
     $SUDO curl -sLo /usr/local/bin/sops https://github.com/getsops/sops/releases/download/v3.11.0/sops-v3.11.0.linux.amd64
     $SUDO chmod +x /usr/local/bin/sops
-else
-    echo "[2/5] SOPS installed"
 fi
 
-# Initialize Docker Swarm
-if ! $SUDO docker info 2>/dev/null | grep -q "Swarm: active"; then
-    echo "[3/5] Initializing Swarm..."
-    $SUDO docker swarm init --advertise-addr $(hostname -I | awk '{print $1}')
-else
-    echo "[3/5] Swarm active"
-fi
+# Init Swarm
+echo "[3/4] Swarm..."
+$SUDO docker info 2>/dev/null | grep -q "Swarm: active" || \
+    $SUDO docker swarm init --advertise-addr "$(hostname -I | awk '{print $1}')"
 
-# Check prerequisites
-echo "[4/5] Checking prerequisites..."
-mkdir -p $HOME_DIR/.sops && chmod 700 $HOME_DIR/.sops
-
-# Create media directories for bind mounts
-mkdir -p $HOME_DIR/plex/{downloads,movies,tv,music,audiobooks,podcasts}
-chown -R 1000:1000 $HOME_DIR/plex 2>/dev/null || true
-
-if [ ! -f $HOME_DIR/.sops/age-key.txt ]; then
-    echo "ERROR: Copy age key first:"
-    echo "  scp ~/.sops/age-key.txt $(whoami)@$(hostname -I | awk '{print $1}'):$HOME_DIR/.sops/"
-    exit 1
-fi
-
-[ ! -d "$REPO_DIR" ] && { echo "ERROR: Clone repo first: git clone https://github.com/wajeht/home-ops.git $REPO_DIR"; exit 1; }
-
+# Setup
+echo "[4/4] Deploying core infra..."
 cd "$REPO_DIR"
-export SOPS_AGE_KEY_FILE=$HOME_DIR/.sops/age-key.txt
 
-# Setup ghcr.io auth
-mkdir -p $HOME_DIR/.docker
+# Directories
+mkdir -p "$HOME_DIR/.sops" "$HOME_DIR/.docker" "$HOME_DIR/plex"/{downloads,movies,tv,music,audiobooks,podcasts}
+chmod 700 "$HOME_DIR/.sops"
+chown -R 1000:1000 "$HOME_DIR/plex" 2>/dev/null || true
+
+# Network
+$SUDO docker network create --driver overlay --attachable traefik 2>/dev/null || true
+
+# GHCR auth
 GHCR_TOKEN=$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GHCR_TOKEN=" | cut -d= -f2 || true)
 if [ -n "$GHCR_TOKEN" ]; then
-    AUTH=$(printf "wajeht:%s" "$GHCR_TOKEN" | base64)
-    echo "{\"auths\":{\"ghcr.io\":{\"auth\":\"$AUTH\"}}}" > $HOME_DIR/.docker/config.json
-    chmod 600 $HOME_DIR/.docker/config.json
+    echo "{\"auths\":{\"ghcr.io\":{\"auth\":\"$(printf "wajeht:%s" "$GHCR_TOKEN" | base64)\"}}}" > "$HOME_DIR/.docker/config.json"
+    chmod 600 "$HOME_DIR/.docker/config.json"
     echo "$GHCR_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
 fi
 
-# Deploy stacks
-echo "[5/5] Deploying stacks..."
-$SUDO docker network create --driver overlay --attachable traefik 2>/dev/null || true
-
-# Create Docker secrets for bootstrap
-GIT_TOKEN=$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2 || true)
-if [ -n "$GIT_TOKEN" ]; then
-    $SUDO docker secret rm git_access_token 2>/dev/null || true
-    echo "$GIT_TOKEN" | $SUDO docker secret create git_access_token -
-fi
-
-CF_TOKEN=$(sops -d infra/traefik/.enc.env 2>/dev/null | grep "^CF_DNS_API_TOKEN=" | cut -d= -f2 || true)
-if [ -n "$CF_TOKEN" ]; then
-    $SUDO docker secret rm cf_dns_api_token 2>/dev/null || true
-    echo "$CF_TOKEN" | $SUDO docker secret create cf_dns_api_token -
-fi
-
-deploy() {
-    local dir=$1 name=$2 registry=$3
-
-    # Decrypt .enc.env if exists, source vars
-    [ -f "$dir/.enc.env" ] && { eval "$(sops -d "$dir/.enc.env")"; export $(sops -d "$dir/.enc.env" | cut -d= -f1 | xargs); }
-
-    # Deploy
-    if [ "$registry" = "true" ]; then
-        HOME=$HOME_DIR $SUDO -E docker stack deploy -c "$dir/docker-compose.yml" --with-registry-auth "$name"
-    else
-        HOME=$HOME_DIR $SUDO -E docker stack deploy -c "$dir/docker-compose.yml" "$name"
-    fi
+# Docker secrets
+create_secret() {
+    local name=$1 value=$2
+    [ -z "$value" ] && return
+    $SUDO docker secret rm "$name" 2>/dev/null || true
+    echo "$value" | $SUDO docker secret create "$name" -
 }
 
-# Only bootstrap core infra - doco-cd auto-deploys everything else
+create_secret git_access_token "$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2 || true)"
+create_secret cf_dns_api_token "$(sops -d infra/traefik/.enc.env 2>/dev/null | grep "^CF_DNS_API_TOKEN=" | cut -d= -f2 || true)"
+
+# Deploy core (doco-cd handles rest)
+deploy() {
+    local dir=$1 name=$2 registry=${3:-false}
+    local flags=""
+    [ "$registry" = "true" ] && flags="--with-registry-auth"
+    HOME="$HOME_DIR" $SUDO -E docker stack deploy -c "$dir/docker-compose.yml" $flags "$name"
+}
+
 deploy infra/traefik traefik
 deploy infra/doco-cd doco-cd true
 
+# vpn-qbit (needs docker-compose - swarm doesn't support devices/network_mode)
 echo ""
-echo "doco-cd will auto-deploy all apps within 60 seconds..."
-echo "Check progress: https://doco.wajeht.com"
-
-# vpn-qbit needs docker-compose (Swarm doesn't support devices/network_mode)
-echo ""
-echo "[vpn-qbit] Setting up VPN + qBittorrent..."
+echo "[vpn-qbit] Setting up..."
 mkdir -p /dev/net 2>/dev/null || true
 [ ! -c /dev/net/tun ] && $SUDO mknod /dev/net/tun c 10 200 && $SUDO chmod 666 /dev/net/tun
 cd "$REPO_DIR/apps/vpn-qbit"
-sops -d ../media/.enc.env > .env 2>/dev/null || echo "WARN: No VPN credentials yet - add apps/media/.enc.env"
-$SUDO docker compose up -d 2>/dev/null || echo "WARN: vpn-qbit not started - configure .env first"
-cd "$REPO_DIR"
+sops -d ../media/.enc.env > .env 2>/dev/null || echo "WARN: No VPN credentials"
+$SUDO docker compose up -d 2>/dev/null || echo "WARN: vpn-qbit not started"
 
 echo ""
 echo "=== Done ==="
 $SUDO docker service ls
 echo ""
+echo "doco-cd will auto-deploy apps within 60s: https://doco.wajeht.com"
 echo "DNS: Point *.wajeht.com to $(hostname -I | awk '{print $1}')"
