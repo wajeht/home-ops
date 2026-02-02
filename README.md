@@ -15,7 +15,8 @@ home-ops/
 │   │   └── .enc.env         # app secrets (SOPS encrypted)
 │   ├── gitea/               # git mirror
 │   ├── uptime-kuma/         # status monitoring
-│   └── plausible/           # privacy-friendly analytics
+│   ├── plausible/           # privacy-friendly analytics
+│   └── media/               # plex, radarr, prowlarr, qbittorrent
 ├── infrastructure/          # core services
 │   ├── traefik/             # reverse proxy + TLS
 │   │   └── .enc.env         # traefik secrets
@@ -111,3 +112,7 @@ ssh server 'sudo docker service logs -f traefik_traefik'
 - https://git.wajeht.com - Gitea (GitHub mirror)
 - https://status.wajeht.com - Uptime Kuma
 - https://analytics.wajeht.com - Plausible
+- https://plex.wajeht.com - Plex
+- https://radarr.wajeht.com - Radarr
+- https://prowlarr.wajeht.com - Prowlarr
+- https://qbit.wajeht.com - qBittorrent
