@@ -24,7 +24,8 @@ home-ops/
 │   ├── navidrome/           # music streaming
 │   ├── audiobookshelf/      # audiobooks & podcasts
 │   ├── it-tools/            # dev utilities
-│   └── linx/                 # file sharing
+│   ├── linx/                 # file sharing
+│   └── miniflux/             # RSS reader
 ├── infra/          # core services
 │   ├── traefik/             # reverse proxy + TLS
 │   │   └── .enc.env         # traefik secrets
@@ -135,3 +136,4 @@ ssh server 'sudo docker service logs -f traefik_traefik'
 - https://audiobooks.wajeht.com - Audiobookshelf
 - https://tools.wajeht.com - IT-Tools
 - https://linx.wajeht.com - Linx (file sharing)
+- https://rss.wajeht.com - Miniflux

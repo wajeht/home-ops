@@ -1,0 +1,65 @@
+services:
+  miniflux:
+    image: miniflux/miniflux:2.2.5
+    depends_on:
+      miniflux-db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://miniflux:miniflux@miniflux-db/miniflux?sslmode=disable
+      - RUN_MIGRATIONS=1
+      - CREATE_ADMIN=1
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=changeme
+      - BASE_URL=https://rss.wajeht.com
+    networks:
+      - traefik
+      - miniflux-internal
+    healthcheck:
+      test: ["CMD", "/usr/bin/miniflux", "-healthcheck", "auto"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.miniflux.rule=Host(`rss.wajeht.com`)"
+        - "traefik.http.routers.miniflux.entrypoints=websecure"
+        - "traefik.http.routers.miniflux.tls.certresolver=cloudflare"
+        - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
+
+  miniflux-db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=miniflux
+      - POSTGRES_PASSWORD=miniflux
+      - POSTGRES_DB=miniflux
+    volumes:
+      - miniflux-db-data:/var/lib/postgresql/data
+    networks:
+      - miniflux-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U miniflux"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  miniflux-db-data:
+
+networks:
+  traefik:
+    external: true
+  miniflux-internal:
