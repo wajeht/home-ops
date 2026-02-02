@@ -11,13 +11,6 @@ services:
       - /sys:/host/sys:ro
     networks:
       - traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.homepage.rule=Host(`home.wajeht.com`)"
-      - "traefik.http.routers.homepage.entrypoints=websecure"
-      - "traefik.http.routers.homepage.tls=true"
-      - "traefik.http.routers.homepage.tls.certresolver=letsencrypt"
-      - "traefik.http.services.homepage.loadbalancer.server.port=3000"
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
       interval: 30s
@@ -25,6 +18,13 @@ services:
       retries: 3
     deploy:
       replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.homepage.rule=Host(`home.wajeht.com`)"
+        - "traefik.http.routers.homepage.entrypoints=websecure"
+        - "traefik.http.routers.homepage.tls=true"
+        - "traefik.http.routers.homepage.tls.certresolver=letsencrypt"
+        - "traefik.http.services.homepage.loadbalancer.server.port=3000"
       update_config:
         parallelism: 1
         delay: 10s

@@ -32,13 +32,6 @@ services:
     networks:
       - traefik
       - default
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.doco-cd.rule=Host(`doco.wajeht.com`)"
-      - "traefik.http.routers.doco-cd.entrypoints=websecure"
-      - "traefik.http.routers.doco-cd.tls=true"
-      - "traefik.http.routers.doco-cd.tls.certresolver=letsencrypt"
-      - "traefik.http.services.doco-cd.loadbalancer.server.port=80"
     healthcheck:
       test: ["CMD", "/doco-cd", "healthcheck"]
       start_period: 15s
@@ -47,6 +40,13 @@ services:
       retries: 3
     deploy:
       replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.doco-cd.rule=Host(`doco.wajeht.com`)"
+        - "traefik.http.routers.doco-cd.entrypoints=websecure"
+        - "traefik.http.routers.doco-cd.tls=true"
+        - "traefik.http.routers.doco-cd.tls.certresolver=letsencrypt"
+        - "traefik.http.services.doco-cd.loadbalancer.server.port=80"
       placement:
         constraints:
           - node.role == manager

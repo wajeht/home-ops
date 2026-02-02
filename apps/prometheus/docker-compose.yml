@@ -10,13 +10,6 @@ services:
       - prometheus-data:/prometheus
     networks:
       - traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.prometheus.rule=Host(`prometheus.wajeht.com`)"
-      - "traefik.http.routers.prometheus.entrypoints=websecure"
-      - "traefik.http.routers.prometheus.tls=true"
-      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
-      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:9090/-/healthy"]
       interval: 30s
@@ -24,6 +17,13 @@ services:
       retries: 3
     deploy:
       replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.prometheus.rule=Host(`prometheus.wajeht.com`)"
+        - "traefik.http.routers.prometheus.entrypoints=websecure"
+        - "traefik.http.routers.prometheus.tls=true"
+        - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+        - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
       update_config:
         parallelism: 1
         delay: 10s
