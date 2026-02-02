@@ -46,6 +46,7 @@ services:
         - "traefik.http.routers.dashboard.entrypoints=websecure"
         - "traefik.http.routers.dashboard.tls=true"
         - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+        - "traefik.http.services.dummy.loadbalancer.server.port=9999"
       placement:
         constraints:
           - node.role == manager
