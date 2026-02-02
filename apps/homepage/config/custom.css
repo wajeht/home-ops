@@ -1,4 +1,0 @@
-/* Force 3 columns max for service groups */
-#information-widgets ~ div > div {
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-}

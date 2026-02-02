@@ -5,9 +5,10 @@ headerStyle: clean
 hideVersion: false
 showStats: true
 cardBlur: sm
-maxGroupColumns: 3
 layout:
-  Infrastructure:
+  Core:
+    style: column
+  Monitoring:
     style: column
   Media:
     style: column

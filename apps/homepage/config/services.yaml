@@ -1,4 +1,4 @@
-- Infrastructure:
+- Core:
     - Traefik:
         icon: traefik
         href: https://traefik.wajeht.com
@@ -11,6 +11,7 @@
         description: GitOps Controller
         siteMonitor: https://doco.wajeht.com/v1/health
 
+- Monitoring:
     - Prometheus:
         icon: prometheus
         href: https://prometheus.wajeht.com
