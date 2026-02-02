@@ -60,6 +60,18 @@
         description: Plex Stats
         siteMonitor: https://tautulli.wajeht.com
 
+    - Navidrome:
+        icon: navidrome
+        href: https://music.wajeht.com
+        description: Music Streaming
+        siteMonitor: https://music.wajeht.com
+
+    - Audiobookshelf:
+        icon: audiobookshelf
+        href: https://audiobooks.wajeht.com
+        description: Audiobooks & Podcasts
+        siteMonitor: https://audiobooks.wajeht.com
+
 - Monitoring:
     - Uptime Kuma:
         icon: uptime-kuma
@@ -103,6 +115,12 @@
         href: https://ntfy.wajeht.com
         description: Push Notifications
         siteMonitor: https://ntfy.wajeht.com
+
+    - IT-Tools:
+        icon: it-tools
+        href: https://tools.wajeht.com
+        description: Dev Utilities
+        siteMonitor: https://tools.wajeht.com
 
 - Apps:
     - Commit:
