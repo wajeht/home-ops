@@ -97,9 +97,13 @@ sops secrets.enc.env
 # Install tools
 brew install age sops
 
-# Copy age key from VPS (or generate new one)
-mkdir -p .sops
-scp root@YOUR_VPS:/root/.sops/age-key.txt .sops/
+# Copy age key from VPS
+mkdir -p ~/.sops
+scp root@YOUR_VPS:/root/.sops/age-key.txt ~/.sops/
+
+# Tell SOPS where to find the key
+echo 'export SOPS_AGE_KEY_FILE=~/.sops/age-key.txt' >> ~/.zshrc
+source ~/.zshrc
 ```
 
 ## Auto-Updates (Renovate)
