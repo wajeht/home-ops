@@ -43,7 +43,7 @@ services:
       labels:
         - "traefik.enable=true"
         # Web UI / API
-        - "traefik.http.routers.doco-cd.rule=Host(`doco.${DOMAIN}`)"
+        - "traefik.http.routers.doco-cd.rule=Host(`doco.wajeht.com`)"
         - "traefik.http.routers.doco-cd.entrypoints=websecure"
         - "traefik.http.routers.doco-cd.tls=true"
         - "traefik.http.routers.doco-cd.tls.certresolver=letsencrypt"

@@ -35,7 +35,7 @@ services:
         window: 120s
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.homepage.rule=Host(`home.${DOMAIN}`)"
+        - "traefik.http.routers.homepage.rule=Host(`home.wajeht.com`)"
         - "traefik.http.routers.homepage.entrypoints=websecure"
         - "traefik.http.routers.homepage.tls=true"
         - "traefik.http.routers.homepage.tls.certresolver=letsencrypt"
