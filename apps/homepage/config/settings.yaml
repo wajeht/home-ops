@@ -5,7 +5,7 @@ headerStyle: clean
 hideVersion: false
 showStats: true
 cardBlur: sm
-columns: 3
+maxGroupColumns: 3
 layout:
   Infrastructure:
     style: column
