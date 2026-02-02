@@ -91,6 +91,7 @@ deploy infrastructure/doco-cd doco-cd
 deploy apps/homepage homepage
 deploy apps/whoami whoami
 deploy apps/commit commit true
+deploy apps/hello-world hello-world true
 
 echo ""
 echo "=== Done ==="
