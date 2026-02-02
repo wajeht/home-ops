@@ -130,6 +130,12 @@
         description: AI Commits
         siteMonitor: https://commit.wajeht.com
 
+    - Favicon:
+        icon: mdi-image-search
+        href: https://favicon.jaw.dev
+        description: Favicon Grabber
+        siteMonitor: https://favicon.jaw.dev/healthz
+
 - Dev:
     - Gitea:
         icon: gitea
