@@ -139,3 +139,14 @@
         href: https://whoami.wajeht.com
         description: Test Service
         siteMonitor: https://whoami.wajeht.com
+
+- Developer:
+    - GitHub:
+        icon: github
+        href: https://github.com/wajeht
+        description: Profile
+
+    - Home Ops:
+        icon: github
+        href: https://github.com/wajeht/home-ops
+        description: This Repo
