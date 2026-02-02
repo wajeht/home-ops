@@ -11,6 +11,99 @@
         description: GitOps Controller
         siteMonitor: https://doco.wajeht.com/v1/health
 
+    - Prometheus:
+        icon: prometheus
+        href: https://prometheus.wajeht.com
+        description: Metrics
+        siteMonitor: https://prometheus.wajeht.com
+
+- Media:
+    - Plex:
+        icon: plex
+        href: https://plex.wajeht.com
+        description: Media Server
+        siteMonitor: https://plex.wajeht.com
+
+    - Overseerr:
+        icon: overseerr
+        href: https://requests.wajeht.com
+        description: Media Requests
+        siteMonitor: https://requests.wajeht.com
+
+    - Radarr:
+        icon: radarr
+        href: https://radarr.wajeht.com
+        description: Movies
+        siteMonitor: https://radarr.wajeht.com
+
+    - Sonarr:
+        icon: sonarr
+        href: https://sonarr.wajeht.com
+        description: TV Shows
+        siteMonitor: https://sonarr.wajeht.com
+
+    - Prowlarr:
+        icon: prowlarr
+        href: https://prowlarr.wajeht.com
+        description: Indexers
+        siteMonitor: https://prowlarr.wajeht.com
+
+    - qBittorrent:
+        icon: qbittorrent
+        href: https://qbit.wajeht.com
+        description: Torrents (VPN)
+        siteMonitor: https://qbit.wajeht.com
+
+    - Tautulli:
+        icon: tautulli
+        href: https://tautulli.wajeht.com
+        description: Plex Stats
+        siteMonitor: https://tautulli.wajeht.com
+
+- Monitoring:
+    - Uptime Kuma:
+        icon: uptime-kuma
+        href: https://status.wajeht.com
+        description: Status Monitoring
+        siteMonitor: https://status.wajeht.com
+
+    - Plausible:
+        icon: plausible
+        href: https://analytics.wajeht.com
+        description: Analytics
+        siteMonitor: https://analytics.wajeht.com
+
+    - Changedetection:
+        icon: changedetection-io
+        href: https://changes.wajeht.com
+        description: Website Changes
+        siteMonitor: https://changes.wajeht.com
+
+- Tools:
+    - Gitea:
+        icon: gitea
+        href: https://git.wajeht.com
+        description: Git Mirror
+        siteMonitor: https://git.wajeht.com
+
+    - Vaultwarden:
+        icon: vaultwarden
+        href: https://vault.wajeht.com
+        description: Passwords
+        siteMonitor: https://vault.wajeht.com
+
+    - Stirling PDF:
+        icon: stirling-pdf
+        href: https://pdf.wajeht.com
+        description: PDF Tools
+        siteMonitor: https://pdf.wajeht.com
+
+    - Ntfy:
+        icon: ntfy
+        href: https://ntfy.wajeht.com
+        description: Push Notifications
+        siteMonitor: https://ntfy.wajeht.com
+
 - Apps:
     - Commit:
         icon: git
