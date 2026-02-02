@@ -8,7 +8,7 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/healthz"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/healthz"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -20,7 +20,7 @@ services:
         - "traefik.http.routers.favicon.entrypoints=websecure"
         - "traefik.http.routers.favicon.tls=true"
         - "traefik.http.routers.favicon.tls.certresolver=cloudflare"
-        - "traefik.http.services.favicon.loadbalancer.server.port=8080"
+        - "traefik.http.services.favicon.loadbalancer.server.port=80"
       update_config:
         parallelism: 1
         delay: 10s
