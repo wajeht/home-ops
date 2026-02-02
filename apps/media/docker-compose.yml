@@ -1,53 +1,4 @@
 services:
-  # VPN Container - provides HTTP proxy for qBittorrent torrent traffic
-  gluetun:
-    image: qmcgaw/gluetun:v3.39
-    cap_add:
-      - NET_ADMIN
-    privileged: true
-    env_file:
-      - .enc.env
-    environment:
-      - TZ=America/Chicago
-      - HTTPPROXY=on
-    volumes:
-      - gluetun-data:/gluetun
-    networks:
-      - vpn-internal
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-
-  # Torrent client - torrent traffic through VPN proxy
-  # Configure in UI: Settings > Connection > Proxy > HTTP, gluetun:8888
-  # Enable: "Use proxy for peer connections" + "Use proxy for hostname lookup"
-  qbittorrent:
-    image: linuxserver/qbittorrent:4.6.7
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-      - WEBUI_PORT=8085
-    volumes:
-      - qbittorrent-config:/config
-      - /home/jaw/plex/downloads:/downloads
-    networks:
-      - traefik
-      - vpn-internal
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.qbittorrent.rule=Host(`qbit.wajeht.com`)"
-        - "traefik.http.routers.qbittorrent.entrypoints=websecure"
-        - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
-        - "traefik.http.services.qbittorrent.loadbalancer.server.port=8085"
-
   # Indexer manager
   prowlarr:
     image: linuxserver/prowlarr:1.28.2
@@ -90,7 +41,6 @@ services:
     networks:
       - traefik
       - media-internal
-      - vpn-internal
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7878/ping"]
       interval: 30s
@@ -121,7 +71,6 @@ services:
     networks:
       - traefik
       - media-internal
-      - vpn-internal
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8989/ping"]
       interval: 30s
@@ -235,8 +184,6 @@ services:
         - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
 
 volumes:
-  gluetun-data:
-  qbittorrent-config:
   prowlarr-config:
   radarr-config:
   sonarr-config:
@@ -248,5 +195,3 @@ networks:
   traefik:
     external: true
   media-internal:
-  vpn-internal:
-    internal: true  # NO external internet access - forces VPN
