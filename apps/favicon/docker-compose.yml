@@ -1,0 +1,40 @@
+services:
+  favicon:
+    image: ghcr.io/wajeht/favicon:latest
+    environment:
+      TZ: America/Chicago
+    volumes:
+      - favicon-data:/app/data
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.favicon.rule=Host(`favicon.wajeht.com`)"
+        - "traefik.http.routers.favicon.entrypoints=websecure"
+        - "traefik.http.routers.favicon.tls=true"
+        - "traefik.http.routers.favicon.tls.certresolver=cloudflare"
+        - "traefik.http.services.favicon.loadbalancer.server.port=8080"
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+volumes:
+  favicon-data:
+
+networks:
+  traefik:
+    external: true
