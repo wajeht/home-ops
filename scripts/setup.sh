@@ -76,11 +76,17 @@ fi
 echo "[5/5] Deploying stacks..."
 $SUDO docker network create --driver overlay --attachable traefik 2>/dev/null || true
 
-# Create Docker secrets for doco-cd bootstrap
+# Create Docker secrets for bootstrap
 GIT_TOKEN=$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2 || true)
 if [ -n "$GIT_TOKEN" ]; then
     $SUDO docker secret rm git_access_token 2>/dev/null || true
     echo "$GIT_TOKEN" | $SUDO docker secret create git_access_token -
+fi
+
+CF_TOKEN=$(sops -d infra/traefik/.enc.env 2>/dev/null | grep "^CF_DNS_API_TOKEN=" | cut -d= -f2 || true)
+if [ -n "$CF_TOKEN" ]; then
+    $SUDO docker secret rm cf_dns_api_token 2>/dev/null || true
+    echo "$CF_TOKEN" | $SUDO docker secret create cf_dns_api_token -
 fi
 
 deploy() {
