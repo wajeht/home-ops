@@ -1,0 +1,25 @@
+- Infrastructure:
+    - Traefik:
+        icon: traefik
+        href: https://traefik.wajeht.com
+        description: Reverse Proxy
+        siteMonitor: https://traefik.wajeht.com
+
+    - Doco-CD:
+        icon: docker
+        href: https://doco.wajeht.com
+        description: GitOps Controller
+        siteMonitor: https://doco.wajeht.com/v1/health
+
+    - Prometheus:
+        icon: prometheus
+        href: https://prometheus.wajeht.com
+        description: Metrics & Monitoring
+        siteMonitor: https://prometheus.wajeht.com
+
+- Apps:
+    - Whoami:
+        icon: docker
+        href: https://whoami.wajeht.com
+        description: Test Service
+        siteMonitor: https://whoami.wajeht.com
