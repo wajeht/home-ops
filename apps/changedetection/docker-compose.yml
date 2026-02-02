@@ -1,0 +1,55 @@
+services:
+  changedetection:
+    image: ghcr.io/dgtlmoon/changedetection.io:latest
+    environment:
+      - TZ=America/Chicago
+      - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000
+      - BASE_URL=https://changes.wajeht.com
+    volumes:
+      - changedetection-data:/datastore
+    networks:
+      - traefik
+      - changedetection-internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.changedetection.rule=Host(`changes.wajeht.com`)"
+        - "traefik.http.routers.changedetection.entrypoints=websecure"
+        - "traefik.http.routers.changedetection.tls.certresolver=cloudflare"
+        - "traefik.http.services.changedetection.loadbalancer.server.port=5000"
+
+  # Browser for JS-rendered pages
+  playwright-chrome:
+    image: browserless/chrome:latest
+    environment:
+      - SCREEN_WIDTH=1920
+      - SCREEN_HEIGHT=1080
+      - MAX_CONCURRENT_SESSIONS=10
+    networks:
+      - changedetection-internal
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  changedetection-data:
+
+networks:
+  traefik:
+    external: true
+  changedetection-internal:

@@ -1,0 +1,38 @@
+services:
+  stirling-pdf:
+    image: frooodle/s-pdf:latest
+    environment:
+      - TZ=America/Chicago
+      - DOCKER_ENABLE_SECURITY=false
+    volumes:
+      - stirling-data:/usr/share/tessdata
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/info/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.stirling-pdf.rule=Host(`pdf.wajeht.com`)"
+        - "traefik.http.routers.stirling-pdf.entrypoints=websecure"
+        - "traefik.http.routers.stirling-pdf.tls.certresolver=cloudflare"
+        - "traefik.http.services.stirling-pdf.loadbalancer.server.port=8080"
+
+volumes:
+  stirling-data:
+
+networks:
+  traefik:
+    external: true

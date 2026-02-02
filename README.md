@@ -18,7 +18,9 @@ home-ops/
 │   ├── plausible/           # privacy-friendly analytics
 │   ├── media/               # plex, *arr stack, qbittorrent
 │   ├── ntfy/                # push notifications
-│   └── vaultwarden/         # password manager
+│   ├── vaultwarden/         # password manager
+│   ├── stirling-pdf/        # PDF tools
+│   └── changedetection/     # website change alerts
 ├── infrastructure/          # core services
 │   ├── traefik/             # reverse proxy + TLS
 │   │   └── .enc.env         # traefik secrets
@@ -121,3 +123,5 @@ ssh server 'sudo docker service logs -f traefik_traefik'
 - https://sonarr.wajeht.com - Sonarr
 - https://ntfy.wajeht.com - Ntfy
 - https://vault.wajeht.com - Vaultwarden
+- https://pdf.wajeht.com - Stirling PDF
+- https://changes.wajeht.com - Changedetection
