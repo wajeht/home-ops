@@ -26,6 +26,8 @@ services:
       - api_secret
       - apprise_url
       - sops_age_key
+      - source: docker_config
+        target: /root/.docker/config.json
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - doco-data:/data
@@ -91,6 +93,8 @@ secrets:
   apprise_url:
     external: true
   sops_age_key:
+    external: true
+  docker_config:
     external: true
 
 volumes:
