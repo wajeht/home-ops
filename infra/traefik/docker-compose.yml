@@ -35,9 +35,14 @@ services:
       - "--entrypoints.websecure.http.tls.certresolver=cloudflare"
       - "--log.level=INFO"
       - "--ping=true"
+      - "--providers.file.filename=/etc/traefik/dynamic.yml"
+      - "--providers.file.watch=true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-certs:/certs
+    configs:
+      - source: traefik-dynamic
+        target: /etc/traefik/dynamic.yml
     networks:
       - traefik
     healthcheck:
@@ -77,6 +82,10 @@ networks:
     name: traefik
     driver: overlay
     attachable: true
+
+configs:
+  traefik-dynamic:
+    file: ./dynamic.yml
 
 secrets:
   cf_dns_api_token:

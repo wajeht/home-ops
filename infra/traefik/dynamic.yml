@@ -1,0 +1,16 @@
+# Dynamic config for non-swarm services (docker-compose)
+http:
+  routers:
+    qbittorrent:
+      rule: "Host(`qbit.wajeht.com`)"
+      entrypoints:
+        - websecure
+      service: qbittorrent
+      tls:
+        certResolver: cloudflare
+
+  services:
+    qbittorrent:
+      loadBalancer:
+        servers:
+          - url: "http://gluetun:8085"
