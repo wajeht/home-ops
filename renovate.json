@@ -4,14 +4,27 @@
     "config:recommended",
     ":semanticCommits"
   ],
+  "docker-compose": {
+    "fileMatch": [
+      "(^|/)docker-compose\\.ya?ml$",
+      "apps/.+/docker-compose\\.ya?ml$",
+      "infrastructure/.+/docker-compose\\.ya?ml$"
+    ]
+  },
   "packageRules": [
     {
+      "description": "Auto-merge own ghcr images",
       "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackagePatterns": ["^ghcr\\.io/wajeht/"],
+      "automerge": true,
+      "automergeType": "branch",
+      "ignoreTests": true
+    },
+    {
+      "description": "Third-party images - PR only",
+      "matchDatasources": ["docker"],
+      "excludePackagePatterns": ["^ghcr\\.io/wajeht/"],
       "automerge": false
     }
-  ],
-  "docker-compose": {
-    "fileMatch": ["(^|/)docker-compose\\.ya?ml$"]
-  }
+  ]
 }
