@@ -147,7 +147,7 @@ services:
     # ... rest of config
 ```
 
-The GHCR_TOKEN in `infrastructure/doco-cd/.enc.env` handles authentication.
+The GHCR_TOKEN in `infra/doco-cd/.enc.env` handles authentication.
 
 ## Health Checks
 
