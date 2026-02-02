@@ -1,7 +1,7 @@
 services:
   # VPN Container - all qbittorrent traffic routes through this
   gluetun:
-    image: qmcgaw/gluetun:latest
+    image: qmcgaw/gluetun:v3.39
     cap_add:
       - NET_ADMIN
     devices:
@@ -33,7 +33,7 @@ services:
 
   # Torrent client - routes through VPN
   qbittorrent:
-    image: linuxserver/qbittorrent:latest
+    image: linuxserver/qbittorrent:4.6.7
     network_mode: "service:gluetun"
     depends_on:
       - gluetun
@@ -52,7 +52,7 @@ services:
 
   # Indexer manager
   prowlarr:
-    image: linuxserver/prowlarr:latest
+    image: linuxserver/prowlarr:1.28.2
     environment:
       - PUID=1000
       - PGID=1000
@@ -80,7 +80,7 @@ services:
 
   # Movie management
   radarr:
-    image: linuxserver/radarr:latest
+    image: linuxserver/radarr:5.16.3
     environment:
       - PUID=1000
       - PGID=1000
@@ -110,7 +110,7 @@ services:
 
   # TV show management
   sonarr:
-    image: linuxserver/sonarr:latest
+    image: linuxserver/sonarr:4.0.11
     environment:
       - PUID=1000
       - PGID=1000
@@ -140,7 +140,7 @@ services:
 
   # Cloudflare bypass for indexers
   flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:v3.3.21
     environment:
       - TZ=America/Chicago
       - LOG_LEVEL=info
@@ -153,7 +153,7 @@ services:
 
   # Media server
   plex:
-    image: linuxserver/plex:latest
+    image: linuxserver/plex:1.41.3
     environment:
       - PUID=1000
       - PGID=1000
@@ -180,6 +180,60 @@ services:
         - "traefik.http.routers.plex.tls.certresolver=cloudflare"
         - "traefik.http.services.plex.loadbalancer.server.port=32400"
 
+  # Plex stats & monitoring
+  tautulli:
+    image: linuxserver/tautulli:2.14.6
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - tautulli-config:/config
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8181/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.tautulli.rule=Host(`tautulli.wajeht.com`)"
+        - "traefik.http.routers.tautulli.entrypoints=websecure"
+        - "traefik.http.routers.tautulli.tls.certresolver=cloudflare"
+        - "traefik.http.services.tautulli.loadbalancer.server.port=8181"
+
+  # Media request management
+  overseerr:
+    image: linuxserver/overseerr:1.33.2
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - overseerr-config:/config
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5055/api/v1/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.overseerr.rule=Host(`requests.wajeht.com`)"
+        - "traefik.http.routers.overseerr.entrypoints=websecure"
+        - "traefik.http.routers.overseerr.tls.certresolver=cloudflare"
+        - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
+
 volumes:
   gluetun-data:
   qbittorrent-config:
@@ -187,6 +241,8 @@ volumes:
   radarr-config:
   sonarr-config:
   plex-config:
+  tautulli-config:
+  overseerr-config:
 
 networks:
   traefik:

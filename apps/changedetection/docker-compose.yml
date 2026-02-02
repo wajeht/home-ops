@@ -1,6 +1,6 @@
 services:
   changedetection:
-    image: ghcr.io/dgtlmoon/changedetection.io:latest
+    image: ghcr.io/dgtlmoon/changedetection.io:0.48.05
     environment:
       - TZ=America/Chicago
       - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000
@@ -34,7 +34,7 @@ services:
 
   # Browser for JS-rendered pages
   playwright-chrome:
-    image: browserless/chrome:latest
+    image: browserless/chrome:1.61.1-puppeteer-21.4.1
     environment:
       - SCREEN_WIDTH=1920
       - SCREEN_HEIGHT=1080

@@ -60,7 +60,7 @@ export SOPS_AGE_KEY_FILE=$HOME_DIR/.sops/age-key.txt
 
 # Setup ghcr.io auth
 mkdir -p $HOME_DIR/.docker
-GHCR_TOKEN=$(sops -d infrastructure/doco-cd/.enc.env 2>/dev/null | grep "^GHCR_TOKEN=" | cut -d= -f2 || true)
+GHCR_TOKEN=$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GHCR_TOKEN=" | cut -d= -f2 || true)
 if [ -n "$GHCR_TOKEN" ]; then
     AUTH=$(printf "wajeht:%s" "$GHCR_TOKEN" | base64)
     echo "{\"auths\":{\"ghcr.io\":{\"auth\":\"$AUTH\"}}}" > $HOME_DIR/.docker/config.json
@@ -86,8 +86,8 @@ deploy() {
     fi
 }
 
-deploy infrastructure/traefik traefik
-deploy infrastructure/doco-cd doco-cd
+deploy infra/traefik traefik
+deploy infra/doco-cd doco-cd
 deploy apps/homepage homepage
 deploy apps/whoami whoami
 deploy apps/commit commit true

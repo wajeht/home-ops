@@ -8,6 +8,15 @@ layout:
   Infrastructure:
     style: row
     columns: 3
-  Apps:
+  Media:
+    style: row
+    columns: 4
+  Monitoring:
     style: row
     columns: 3
+  Tools:
+    style: row
+    columns: 4
+  Apps:
+    style: row
+    columns: 2

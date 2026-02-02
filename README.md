@@ -20,8 +20,13 @@ home-ops/
 │   ├── ntfy/                # push notifications
 │   ├── vaultwarden/         # password manager
 │   ├── stirling-pdf/        # PDF tools
-│   └── changedetection/     # website change alerts
-├── infrastructure/          # core services
+│   ├── changedetection/     # website change alerts
+│   ├── navidrome/           # music streaming
+│   ├── audiobookshelf/      # audiobooks & podcasts
+│   ├── it-tools/            # dev utilities
+│   ├── linx/                 # file sharing
+│   └── miniflux/             # RSS reader
+├── infra/          # core services
 │   ├── traefik/             # reverse proxy + TLS
 │   │   └── .enc.env         # traefik secrets
 │   └── doco-cd/             # gitops controller
@@ -121,7 +126,14 @@ ssh server 'sudo docker service logs -f traefik_traefik'
 - https://prowlarr.wajeht.com - Prowlarr
 - https://qbit.wajeht.com - qBittorrent
 - https://sonarr.wajeht.com - Sonarr
+- https://tautulli.wajeht.com - Tautulli
+- https://requests.wajeht.com - Overseerr
 - https://ntfy.wajeht.com - Ntfy
 - https://vault.wajeht.com - Vaultwarden
 - https://pdf.wajeht.com - Stirling PDF
 - https://changes.wajeht.com - Changedetection
+- https://music.wajeht.com - Navidrome
+- https://audiobooks.wajeht.com - Audiobookshelf
+- https://tools.wajeht.com - IT-Tools
+- https://linx.wajeht.com - Linx (file sharing)
+- https://rss.wajeht.com - Miniflux
