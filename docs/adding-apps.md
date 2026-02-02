@@ -108,29 +108,47 @@ services:
 
 ## With App Secrets (SOPS)
 
-For app-specific secrets, create encrypted env file:
+For app-specific secrets, create an encrypted `.enc.env` file:
 
 ```bash
 # Create plain env file
-cat > apps/myapp/secrets.env << 'EOF'
+cat > apps/myapp/.env << 'EOF'
 DATABASE_URL=postgres://user:pass@host/db
 API_KEY=secret123
 EOF
 
 # Encrypt it
-sops -e apps/myapp/secrets.env > apps/myapp/secrets.enc.env
-rm apps/myapp/secrets.env
+sops -e apps/myapp/.env > apps/myapp/.enc.env
+rm apps/myapp/.env
 ```
 
-Reference in docker-compose.yml:
+Reference in docker-compose.yml using variable substitution:
 ```yaml
 services:
   myapp:
     image: myimage:v1.0
-    env_file:
-      - secrets.enc.env  # doco-cd auto-decrypts
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - API_KEY=${API_KEY}
     networks:
       - traefik
+```
+
+Add to `scripts/setup.sh` deploy section:
+```bash
+# Deploy myapp with per-app secrets
+if [ -f apps/myapp/.enc.env ]; then
+    sops -d apps/myapp/.enc.env > /tmp/myapp.env
+    set -a; source /tmp/myapp.env; set +a
+    rm /tmp/myapp.env
+fi
+$SUDO -E docker stack deploy -c apps/myapp/docker-compose.yml myapp
+```
+
+### Edit encrypted secrets
+```bash
+sops apps/myapp/.enc.env
+# Make changes, save, auto re-encrypts
 ```
 
 ## Multiple Services

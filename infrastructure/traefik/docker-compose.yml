@@ -4,12 +4,11 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    env_file:
+      - .enc.env
     environment:
       TZ: America/Chicago
-      CF_DNS_API_TOKEN_FILE: /run/secrets/cf_token
       DOCKER_API_VERSION: "1.45"
-    secrets:
-      - cf_token
     command:
       - "--api.dashboard=true"
       - "--api.insecure=true"
@@ -60,10 +59,6 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-
-secrets:
-  cf_token:
-    external: true
 
 volumes:
   traefik-certs:

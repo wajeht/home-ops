@@ -3,6 +3,8 @@ services:
     image: ghcr.io/wajeht/commit:71e095d
     networks:
       - traefik
+    env_file:
+      - .enc.env
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/healthz"]
       interval: 30s
