@@ -1,0 +1,16 @@
+# Root orchestrator - deploys infrastructure first, then apps
+name: infrastructure
+working_dir: infrastructure
+auto_discover: true
+auto_discover_opts:
+  depth: 1
+  delete: true
+
+---
+
+name: apps
+working_dir: apps
+auto_discover: true
+auto_discover_opts:
+  depth: 1
+  delete: true
