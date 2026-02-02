@@ -1,18 +1,5 @@
-# Explicit deployment configs for each service
-
-name: traefik
-working_dir: infrastructure/traefik
-compose_files:
-  - docker-compose.yml
-
----
-
-name: doco-cd
-working_dir: infrastructure/doco-cd
-compose_files:
-  - docker-compose.yml
-
----
+# doco-cd deployment configs
+# NOTE: doco-cd and traefik are bootstrapped manually, not managed here
 
 name: prometheus
 working_dir: infrastructure/prometheus
