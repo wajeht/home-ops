@@ -1,0 +1,163 @@
+services:
+  # VPN Container - all qbittorrent traffic routes through this
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    env_file:
+      - .enc.env
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - gluetun-data:/gluetun
+    networks:
+      - traefik
+      - media-internal
+    ports:
+      - "8085:8085"  # qbittorrent webui (exposed through gluetun)
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - "traefik.enable=true"
+        # qBittorrent WebUI through Gluetun
+        - "traefik.http.routers.qbittorrent.rule=Host(`qbit.wajeht.com`)"
+        - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+        - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
+        - "traefik.http.services.qbittorrent.loadbalancer.server.port=8085"
+
+  # Torrent client - routes through VPN
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    network_mode: "service:gluetun"
+    depends_on:
+      - gluetun
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - WEBUI_PORT=8085
+    volumes:
+      - qbittorrent-config:/config
+      - /home/jaw/plex/downloads:/downloads
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  # Indexer manager
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - prowlarr-config:/config
+    networks:
+      - traefik
+      - media-internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9696/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.wajeht.com`)"
+        - "traefik.http.routers.prowlarr.entrypoints=websecure"
+        - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
+        - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+
+  # Movie management
+  radarr:
+    image: linuxserver/radarr:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - radarr-config:/config
+      - /home/jaw/plex/downloads:/downloads
+      - /home/jaw/plex/movies:/movies
+    networks:
+      - traefik
+      - media-internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7878/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.radarr.rule=Host(`radarr.wajeht.com`)"
+        - "traefik.http.routers.radarr.entrypoints=websecure"
+        - "traefik.http.routers.radarr.tls.certresolver=cloudflare"
+        - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+
+  # Cloudflare bypass for indexers
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    environment:
+      - TZ=America/Chicago
+      - LOG_LEVEL=info
+    networks:
+      - media-internal
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  # Media server
+  plex:
+    image: linuxserver/plex:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - VERSION=docker
+    env_file:
+      - .enc.env
+    volumes:
+      - plex-config:/config
+      - /home/jaw/plex/movies:/movies
+      - /home/jaw/plex/tv:/tv
+    networks:
+      - traefik
+    ports:
+      - "32400:32400"  # Direct access for Plex clients
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.plex.rule=Host(`plex.wajeht.com`)"
+        - "traefik.http.routers.plex.entrypoints=websecure"
+        - "traefik.http.routers.plex.tls.certresolver=cloudflare"
+        - "traefik.http.services.plex.loadbalancer.server.port=32400"
+
+volumes:
+  gluetun-data:
+  qbittorrent-config:
+  prowlarr-config:
+  radarr-config:
+  plex-config:
+
+networks:
+  traefik:
+    external: true
+  media-internal:
