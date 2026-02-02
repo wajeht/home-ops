@@ -11,6 +11,14 @@
       "infrastructure/.+/docker-compose\\.ya?ml$"
     ]
   },
+  "hostRules": [
+    {
+      "matchHost": "ghcr.io",
+      "hostType": "docker",
+      "username": "wajeht",
+      "password": "{{ secrets.GHCR_TOKEN }}"
+    }
+  ],
   "packageRules": [
     {
       "description": "Auto-merge own ghcr images",
