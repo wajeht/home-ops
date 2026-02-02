@@ -1,70 +1,36 @@
 services:
   doco-cd:
     image: ghcr.io/kimdre/doco-cd:latest
-    hostname: doco-cd
+    container_name: doco-cd
+    restart: unless-stopped
+    ports:
+      - "9120:9120"
     environment:
-      TZ: ${TZ:-America/Los_Angeles}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-      # Git access
-      GIT_ACCESS_TOKEN_FILE: /run/secrets/git_access_token
-      # API & Webhook secrets
-      API_SECRET_FILE: /run/secrets/api_secret
-      WEBHOOK_SECRET_FILE: /run/secrets/webhook_secret
-      # Polling config
+      TZ: America/Chicago
+      LOG_LEVEL: info
+      GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
       POLL_CONFIG: |
-        - url: ${GITOPS_REPO_URL}
+        - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
           interval: 60
-      # Notifications (optional)
-      APPRISE_NOTIFY_URLS: ${APPRISE_NOTIFY_URLS:-}
-      APPRISE_NOTIFY_LEVEL: ${APPRISE_NOTIFY_LEVEL:-success}
-      # SOPS encryption (optional)
-      SOPS_AGE_KEY_FILE: ${SOPS_AGE_KEY_FILE:-}
-    secrets:
-      - git_access_token
-      - api_secret
-      - webhook_secret
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - doco-data:/data
     networks:
       - traefik
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-      resources:
-        limits:
-          memory: 128M
-        reservations:
-          memory: 64M
-      labels:
-        - "traefik.enable=true"
-        # Web UI / API
-        - "traefik.http.routers.doco-cd.rule=Host(`doco.wajeht.com`)"
-        - "traefik.http.routers.doco-cd.entrypoints=websecure"
-        - "traefik.http.routers.doco-cd.tls=true"
-        - "traefik.http.routers.doco-cd.tls.certresolver=letsencrypt"
-        - "traefik.http.services.doco-cd.loadbalancer.server.port=80"
-        # Health check
-        - "traefik.http.services.doco-cd.loadbalancer.healthcheck.path=/v1/health"
-        - "traefik.http.services.doco-cd.loadbalancer.healthcheck.interval=30s"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.doco-cd.rule=Host(`doco.wajeht.com`)"
+      - "traefik.http.routers.doco-cd.entrypoints=websecure"
+      - "traefik.http.routers.doco-cd.tls=true"
+      - "traefik.http.routers.doco-cd.tls.certresolver=letsencrypt"
+      - "traefik.http.services.doco-cd.loadbalancer.server.port=80"
     healthcheck:
       test: ["CMD", "/doco-cd", "healthcheck"]
       start_period: 15s
       interval: 30s
       timeout: 5s
       retries: 3
-
-secrets:
-  git_access_token:
-    external: true
-  api_secret:
-    external: true
-  webhook_secret:
-    external: true
 
 volumes:
   doco-data:
