@@ -23,7 +23,13 @@
         description: Status Monitoring
         siteMonitor: https://status.wajeht.com
 
-- Media Streaming:
+    - Changedetection:
+        icon: changedetection-io
+        href: https://changes.wajeht.com
+        description: Web Monitor
+        siteMonitor: https://changes.wajeht.com
+
+- Media:
     - Plex:
         icon: plex
         href: https://plex.wajeht.com
@@ -42,7 +48,6 @@
         description: Audiobooks
         siteMonitor: https://audiobooks.wajeht.com
 
-- Media Management:
     - Overseerr:
         icon: overseerr
         href: https://requests.wajeht.com
@@ -79,12 +84,18 @@
         description: Plex Stats
         siteMonitor: https://tautulli.wajeht.com
 
-- Productivity:
+- Tools:
     - Vaultwarden:
         icon: vaultwarden
         href: https://vault.wajeht.com
         description: Passwords
         siteMonitor: https://vault.wajeht.com
+
+    - Gitea:
+        icon: gitea
+        href: https://git.wajeht.com
+        description: Git Mirror
+        siteMonitor: https://git.wajeht.com
 
     - Miniflux:
         icon: miniflux
@@ -98,25 +109,6 @@
         description: PDF Tools
         siteMonitor: https://pdf.wajeht.com
 
-    - Changedetection:
-        icon: changedetection-io
-        href: https://changes.wajeht.com
-        description: Web Monitor
-        siteMonitor: https://changes.wajeht.com
-
-- Development:
-    - Gitea:
-        icon: gitea
-        href: https://git.wajeht.com
-        description: Git Mirror
-        siteMonitor: https://git.wajeht.com
-
-    - Commit:
-        icon: git
-        href: https://commit.wajeht.com
-        description: AI Commits
-        siteMonitor: https://commit.wajeht.com
-
     - IT-Tools:
         icon: it-tools
         href: https://tools.wajeht.com
@@ -129,12 +121,17 @@
         description: File Sharing
         siteMonitor: https://linx.wajeht.com
 
-- Services:
     - Ntfy:
         icon: ntfy
         href: https://ntfy.wajeht.com
-        description: Push Notifications
+        description: Notifications
         siteMonitor: https://ntfy.wajeht.com
+
+    - Commit:
+        icon: git
+        href: https://commit.wajeht.com
+        description: AI Commits
+        siteMonitor: https://commit.wajeht.com
 
     - Whoami:
         icon: docker

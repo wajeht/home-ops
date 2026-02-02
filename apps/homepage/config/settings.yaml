@@ -4,24 +4,17 @@ color: slate
 headerStyle: clean
 hideVersion: false
 showStats: true
+cardBlur: sm
 layout:
   Infrastructure:
-    style: row
-    columns: 4
-  Media Streaming:
-    style: row
-    columns: 3
-  Media Management:
-    style: row
-    columns: 3
-  Productivity:
-    style: row
-    columns: 4
-  Development:
-    style: row
-    columns: 4
-  Services:
-    style: row
-    columns: 2
+    style: column
+    header: true
+  Media:
+    style: column
+    header: true
+  Tools:
+    style: column
+    header: true
   Developer:
     style: column
+    header: true
