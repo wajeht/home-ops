@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.3
+    image: traefik:v2.11
     container_name: traefik
     restart: unless-stopped
     ports:
@@ -9,6 +9,7 @@ services:
     environment:
       TZ: America/Chicago
       CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
+      DOCKER_API_VERSION: "1.45"
     command:
       - "--api.dashboard=true"
       - "--api.insecure=true"
