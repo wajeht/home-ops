@@ -10,7 +10,7 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     env_file:
-      - .env  # decrypted from .enc.env
+      - .env  # decrypt once: SOPS_AGE_KEY_FILE=~/.sops/age-key.txt sops -d ../media/.enc.env > .env
     environment:
       - TZ=America/Chicago
     volumes:
