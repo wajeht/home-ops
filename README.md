@@ -49,6 +49,7 @@ See [Server Setup](docs/vps-setup.md) for full instructions.
 - **[Server Setup](docs/vps-setup.md)** - Setting up a new server
 - **[Secrets Management](docs/secrets.md)** - Per-app SOPS encryption
 - **[Adding Apps](docs/adding-apps.md)** - Deploy new applications
+- **[Renovate Auto-Updates](docs/renovate.md)** - Auto-update private images
 
 ## Quick Reference
 
