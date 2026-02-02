@@ -1,0 +1,14 @@
+# SOPS configuration for encrypting secrets
+# Generate age key: make sops-keygen
+# Then replace the age public key below
+
+creation_rules:
+  # Encrypt .env files
+  - path_regex: \.env$
+    age: >-
+      age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+  # Encrypt files in secrets/ directory
+  - path_regex: secrets/.*
+    age: >-
+      age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

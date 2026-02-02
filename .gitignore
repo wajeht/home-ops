@@ -7,6 +7,10 @@
 *.pem
 *.crt
 
+# Secrets directory (age keys, decrypted files)
+secrets/
+!secrets/.gitkeep
+
 # OS
 .DS_Store
 Thumbs.db

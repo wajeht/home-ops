@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Traefik metrics
+  - job_name: "traefik"
+    static_configs:
+      - targets: ["traefik:8080"]
+
+  # doco-cd metrics
+  - job_name: "doco-cd"
+    static_configs:
+      - targets: ["doco-cd:9120"]
+
+  # Docker daemon metrics (requires daemon.json config)
+  # - job_name: "docker"
+  #   static_configs:
+  #     - targets: ["host.docker.internal:9323"]
