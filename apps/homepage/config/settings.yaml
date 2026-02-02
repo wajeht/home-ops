@@ -8,13 +8,11 @@ cardBlur: sm
 layout:
   Infrastructure:
     style: column
-    header: true
   Media:
     style: column
-    header: true
   Tools:
     style: column
-    header: true
+  Apps:
+    style: column
   Developer:
     style: column
-    header: true
