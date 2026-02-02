@@ -10,7 +10,7 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     env_file:
-      - .enc.env
+      - .env  # decrypted from .enc.env
     environment:
       - TZ=America/Chicago
     volumes:
