@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Chicago
+      HOMEPAGE_ALLOWED_HOSTS: home.wajeht.com
     volumes:
       - homepage-config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
