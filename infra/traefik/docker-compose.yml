@@ -24,6 +24,10 @@ services:
       - "--certificatesresolvers.cloudflare.acme.storage=/certs/acme.json"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
+      # Wildcard cert for all *.wajeht.com
+      - "--entrypoints.websecure.http.tls.domains[0].main=wajeht.com"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.wajeht.com"
+      - "--entrypoints.websecure.http.tls.certresolver=cloudflare"
       - "--log.level=INFO"
       - "--ping=true"
     volumes:
