@@ -1,8 +1,6 @@
 services:
   doco-cd:
     image: ghcr.io/kimdre/doco-cd:0.60.0
-    container_name: doco-cd
-    restart: unless-stopped
     depends_on:
       - apprise
     ports:
@@ -47,28 +45,53 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
 
   apprise:
     image: caronc/apprise:v1.3.1
-    container_name: apprise
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/status"]
       interval: 30s
       timeout: 5s
       retries: 3
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
 
 secrets:
   git_token:
-    file: /root/.secrets/git-token
+    external: true
   webhook_secret:
-    file: /root/.secrets/webhook-secret
+    external: true
   api_secret:
-    file: /root/.secrets/api-secret
+    external: true
   apprise_url:
-    file: /root/.secrets/apprise-url
+    external: true
   sops_age_key:
-    file: /root/.sops/age-key.txt
+    external: true
 
 volumes:
   doco-data:

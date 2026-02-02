@@ -1,13 +1,13 @@
 # Secrets Management
 
-Secrets are encrypted with [SOPS](https://github.com/getsops/sops) + [age](https://github.com/FiloSottile/age) and stored in git.
+Secrets are encrypted with [SOPS](https://github.com/getsops/sops) + [age](https://github.com/FiloSottile/age) and stored in git. On the VPS, they're deployed as Docker Swarm secrets.
 
 ## How It Works
 
 ```
-secrets.enc.env (git)     →  decrypt on VPS  →  /root/.secrets/*
-     encrypted                   SOPS                 plain files
-     safe to commit              age key              Docker reads
+secrets.enc.env (git)  →  decrypt on VPS  →  docker secret create
+     encrypted              SOPS               Swarm secrets
+     safe to commit         age key            services read via /run/secrets/
 ```
 
 ## Local Setup (Dev Machine)
@@ -61,32 +61,46 @@ git push
 ### Deploy to VPS
 After pushing changes:
 ```bash
-# SSH to VPS
 ssh root@YOUR_VPS
+cd ~/home-ops && ./scripts/sync-secrets.sh
+```
 
-# Pull and decrypt
-cd ~/home-ops && git pull
-export SOPS_AGE_KEY_FILE=/root/.sops/age-key.txt
-sops -d secrets.enc.env > /tmp/secrets.env
+## Docker Swarm Secrets
 
-# Update specific secret file
-grep "^MY_NEW_SECRET=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/my-new-secret
-chmod 600 /root/.secrets/my-new-secret
-rm /tmp/secrets.env
+On the VPS, secrets are managed by Docker Swarm:
 
-# Restart service if needed
-cd infrastructure/doco-cd && docker compose down && docker compose up -d
+### List secrets
+```bash
+docker secret ls
+```
+
+### Inspect secret metadata
+```bash
+docker secret inspect cf_token
+```
+
+### Manually update a secret
+```bash
+# Remove old secret
+docker secret rm my_secret
+
+# Create new secret
+echo "newvalue" | docker secret create my_secret -
+
+# Update services to pick up change
+docker service update --force service_name
 ```
 
 ## Current Secrets
 
-| Secret | File | Used By |
-|--------|------|---------|
-| GIT_ACCESS_TOKEN | git-token | doco-cd |
-| WEBHOOK_SECRET | webhook-secret | doco-cd |
-| APPRISE_NOTIFY_URLS | apprise-url | doco-cd |
-| CF_DNS_API_TOKEN | cf-token | traefik |
-| ACME_EMAIL | acme-email | traefik |
+| Secret | Docker Secret Name | Used By |
+|--------|-------------------|---------|
+| GIT_ACCESS_TOKEN | git_token | doco-cd |
+| WEBHOOK_SECRET | webhook_secret | doco-cd |
+| API_SECRET | api_secret | doco-cd |
+| APPRISE_NOTIFY_URLS | apprise_url | doco-cd |
+| CF_DNS_API_TOKEN | cf_token | traefik |
+| (age key file) | sops_age_key | doco-cd |
 
 ## Rotating Secrets
 
@@ -94,16 +108,14 @@ cd infrastructure/doco-cd && docker compose down && docker compose up -d
 1. Generate new token on GitHub
 2. `sops secrets.enc.env` → update GIT_ACCESS_TOKEN
 3. Push to git
-4. On VPS: decrypt and update `/root/.secrets/git-token`
-5. Restart doco-cd
+4. On VPS: `./scripts/sync-secrets.sh`
 
 ### Rotate Webhook Secret
 1. `openssl rand -hex 32` → generate new secret
 2. `sops secrets.enc.env` → update WEBHOOK_SECRET
 3. Push to git
 4. Update GitHub webhook settings with new secret
-5. On VPS: decrypt and update `/root/.secrets/webhook-secret`
-6. Restart doco-cd
+5. On VPS: `./scripts/sync-secrets.sh`
 
 ### Rotate Age Key (Full Re-encryption)
 ```bash
@@ -120,13 +132,17 @@ rm /tmp/plain.env
 # Deploy new key to VPS
 scp new-age-key.txt root@VPS:/root/.sops/age-key.txt
 
+# Update Docker secret
+ssh root@VPS 'docker secret rm sops_age_key && docker secret create sops_age_key /root/.sops/age-key.txt'
+
 # Update local key
 cp new-age-key.txt ~/.sops/age-key.txt
 ```
 
 ## Security Notes
 
-- **Never commit** `/root/.sops/age-key.txt` or `/root/.secrets/*`
+- **Never commit** `/root/.sops/age-key.txt`
 - Age key = master key. Protect it.
 - Encrypted file safe to commit (can't decrypt without age key)
 - Use minimal permissions for GitHub token (read-only)
+- Docker secrets are encrypted at rest in the Swarm Raft log

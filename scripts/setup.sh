@@ -3,7 +3,7 @@
 # Usage: curl -fsSL https://raw.githubusercontent.com/wajeht/home-ops/main/scripts/setup.sh | bash
 set -e
 
-echo "=== home-ops VPS Setup ==="
+echo "=== home-ops VPS Setup (Swarm Mode) ==="
 echo ""
 
 # Check if running as root
@@ -14,24 +14,32 @@ fi
 
 # Install Docker
 if ! command -v docker &> /dev/null; then
-    echo "[1/5] Installing Docker..."
+    echo "[1/6] Installing Docker..."
     curl -fsSL https://get.docker.com | sh
 else
-    echo "[1/5] Docker already installed"
+    echo "[1/6] Docker already installed"
 fi
 
 # Install SOPS
 if ! command -v sops &> /dev/null; then
-    echo "[2/5] Installing SOPS..."
+    echo "[2/6] Installing SOPS..."
     curl -sLO https://github.com/getsops/sops/releases/download/v3.11.0/sops-v3.11.0.linux.amd64
     mv sops-v3.11.0.linux.amd64 /usr/local/bin/sops
     chmod +x /usr/local/bin/sops
 else
-    echo "[2/5] SOPS already installed"
+    echo "[2/6] SOPS already installed"
+fi
+
+# Initialize Docker Swarm
+if ! docker info 2>/dev/null | grep -q "Swarm: active"; then
+    echo "[3/6] Initializing Docker Swarm..."
+    docker swarm init --advertise-addr $(hostname -I | awk '{print $1}')
+else
+    echo "[3/6] Docker Swarm already initialized"
 fi
 
 # Create directories
-echo "[3/5] Creating directories..."
+echo "[4/6] Creating directories..."
 mkdir -p /root/.secrets /root/.sops
 chmod 700 /root/.secrets /root/.sops
 
@@ -59,33 +67,56 @@ fi
 
 cd ~/home-ops
 
-# Decrypt secrets
-echo "[4/5] Decrypting secrets..."
+# Decrypt secrets and create Docker secrets
+echo "[5/6] Creating Docker secrets..."
 export SOPS_AGE_KEY_FILE=/root/.sops/age-key.txt
 sops -d secrets.enc.env > /tmp/secrets.env
 
-grep "^GIT_ACCESS_TOKEN=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/git-token
-grep "^WEBHOOK_SECRET=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/webhook-secret
-grep "^API_SECRET=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/api-secret
-grep "^APPRISE_NOTIFY_URLS=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/apprise-url
-grep "^CF_DNS_API_TOKEN=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/cf-token
-grep "^ACME_EMAIL=" /tmp/secrets.env | cut -d= -f2 > /root/.secrets/acme-email
+# Extract secrets to temp files
+grep "^GIT_ACCESS_TOKEN=" /tmp/secrets.env | cut -d= -f2 > /tmp/git-token
+grep "^WEBHOOK_SECRET=" /tmp/secrets.env | cut -d= -f2 > /tmp/webhook-secret
+grep "^API_SECRET=" /tmp/secrets.env | cut -d= -f2 > /tmp/api-secret
+grep "^APPRISE_NOTIFY_URLS=" /tmp/secrets.env | cut -d= -f2 > /tmp/apprise-url
+grep "^CF_DNS_API_TOKEN=" /tmp/secrets.env | cut -d= -f2 > /tmp/cf-token
 
-rm /tmp/secrets.env
-chmod 600 /root/.secrets/*
+# Create Docker secrets (remove if exist, then create)
+for secret in git_token webhook_secret api_secret apprise_url cf_token sops_age_key; do
+    docker secret rm "$secret" 2>/dev/null || true
+done
 
-# Bootstrap infrastructure
-echo "[5/5] Starting infrastructure..."
-docker network inspect traefik >/dev/null 2>&1 || docker network create traefik
-cd infrastructure/traefik && docker compose up -d
-cd ../doco-cd && docker compose up -d
+docker secret create git_token /tmp/git-token
+docker secret create webhook_secret /tmp/webhook-secret
+docker secret create api_secret /tmp/api-secret
+docker secret create apprise_url /tmp/apprise-url
+docker secret create cf_token /tmp/cf-token
+docker secret create sops_age_key /root/.sops/age-key.txt
+
+# Cleanup temp files
+rm -f /tmp/secrets.env /tmp/git-token /tmp/webhook-secret /tmp/api-secret /tmp/apprise-url /tmp/cf-token
+
+# Create overlay network
+echo "[6/6] Starting infrastructure..."
+docker network rm traefik 2>/dev/null || true
+docker network create --driver overlay --attachable traefik
+
+# Deploy stacks
+cd infrastructure/traefik && docker stack deploy -c docker-compose.yml traefik
+cd ../doco-cd && docker stack deploy -c docker-compose.yml doco-cd
 cd ~/home-ops
 
 echo ""
 echo "=== Setup Complete ==="
-docker ps --format "table {{.Names}}\t{{.Status}}"
+echo ""
+echo "Swarm status:"
+docker node ls
+echo ""
+echo "Secrets:"
+docker secret ls
+echo ""
+echo "Services:"
+docker service ls
 echo ""
 echo "Next steps:"
 echo "  1. Point DNS *.yourdomain.com to $(hostname -I | awk '{print $1}')"
 echo "  2. Add GitHub webhook: https://doco.yourdomain.com/v1/webhook"
-echo "  3. Push a commit to test"
+echo "  3. Push a commit to test rolling updates"
