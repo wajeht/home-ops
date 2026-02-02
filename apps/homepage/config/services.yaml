@@ -17,17 +17,36 @@
         description: Metrics
         siteMonitor: https://prometheus.wajeht.com
 
-- Media:
+    - Uptime Kuma:
+        icon: uptime-kuma
+        href: https://status.wajeht.com
+        description: Status Monitoring
+        siteMonitor: https://status.wajeht.com
+
+- Media Streaming:
     - Plex:
         icon: plex
         href: https://plex.wajeht.com
-        description: Media Server
+        description: Movies & TV
         siteMonitor: https://plex.wajeht.com
 
+    - Navidrome:
+        icon: navidrome
+        href: https://music.wajeht.com
+        description: Music
+        siteMonitor: https://music.wajeht.com
+
+    - Audiobookshelf:
+        icon: audiobookshelf
+        href: https://audiobooks.wajeht.com
+        description: Audiobooks
+        siteMonitor: https://audiobooks.wajeht.com
+
+- Media Management:
     - Overseerr:
         icon: overseerr
         href: https://requests.wajeht.com
-        description: Media Requests
+        description: Requests
         siteMonitor: https://requests.wajeht.com
 
     - Radarr:
@@ -51,7 +70,7 @@
     - qBittorrent:
         icon: qbittorrent
         href: https://qbit.wajeht.com
-        description: Torrents (VPN)
+        description: Downloads
         siteMonitor: https://qbit.wajeht.com
 
     - Tautulli:
@@ -60,43 +79,18 @@
         description: Plex Stats
         siteMonitor: https://tautulli.wajeht.com
 
-    - Navidrome:
-        icon: navidrome
-        href: https://music.wajeht.com
-        description: Music Streaming
-        siteMonitor: https://music.wajeht.com
-
-    - Audiobookshelf:
-        icon: audiobookshelf
-        href: https://audiobooks.wajeht.com
-        description: Audiobooks & Podcasts
-        siteMonitor: https://audiobooks.wajeht.com
-
-- Monitoring:
-    - Uptime Kuma:
-        icon: uptime-kuma
-        href: https://status.wajeht.com
-        description: Status Monitoring
-        siteMonitor: https://status.wajeht.com
-
-    - Changedetection:
-        icon: changedetection-io
-        href: https://changes.wajeht.com
-        description: Website Changes
-        siteMonitor: https://changes.wajeht.com
-
-- Tools:
-    - Gitea:
-        icon: gitea
-        href: https://git.wajeht.com
-        description: Git Mirror
-        siteMonitor: https://git.wajeht.com
-
+- Productivity:
     - Vaultwarden:
         icon: vaultwarden
         href: https://vault.wajeht.com
         description: Passwords
         siteMonitor: https://vault.wajeht.com
+
+    - Miniflux:
+        icon: miniflux
+        href: https://rss.wajeht.com
+        description: RSS Reader
+        siteMonitor: https://rss.wajeht.com
 
     - Stirling PDF:
         icon: stirling-pdf
@@ -104,11 +98,24 @@
         description: PDF Tools
         siteMonitor: https://pdf.wajeht.com
 
-    - Ntfy:
-        icon: ntfy
-        href: https://ntfy.wajeht.com
-        description: Push Notifications
-        siteMonitor: https://ntfy.wajeht.com
+    - Changedetection:
+        icon: changedetection-io
+        href: https://changes.wajeht.com
+        description: Web Monitor
+        siteMonitor: https://changes.wajeht.com
+
+- Development:
+    - Gitea:
+        icon: gitea
+        href: https://git.wajeht.com
+        description: Git Mirror
+        siteMonitor: https://git.wajeht.com
+
+    - Commit:
+        icon: git
+        href: https://commit.wajeht.com
+        description: AI Commits
+        siteMonitor: https://commit.wajeht.com
 
     - IT-Tools:
         icon: it-tools
@@ -122,18 +129,12 @@
         description: File Sharing
         siteMonitor: https://linx.wajeht.com
 
-    - Miniflux:
-        icon: miniflux
-        href: https://rss.wajeht.com
-        description: RSS Reader
-        siteMonitor: https://rss.wajeht.com
-
-- Apps:
-    - Commit:
-        icon: git
-        href: https://commit.wajeht.com
-        description: AI Commit Messages
-        siteMonitor: https://commit.wajeht.com
+- Services:
+    - Ntfy:
+        icon: ntfy
+        href: https://ntfy.wajeht.com
+        description: Push Notifications
+        siteMonitor: https://ntfy.wajeht.com
 
     - Whoami:
         icon: docker
