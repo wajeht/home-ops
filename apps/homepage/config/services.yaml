@@ -136,6 +136,12 @@
         description: Favicon Grabber
         siteMonitor: https://favicon.wajeht.com/healthz
 
+    - UFC:
+        icon: mdi-mixed-martial-arts
+        href: https://ufc.wajeht.com
+        description: MMA Calendar
+        siteMonitor: https://ufc.wajeht.com/health
+
 - Dev:
     - Gitea:
         icon: gitea
