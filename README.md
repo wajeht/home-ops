@@ -121,6 +121,8 @@ ssh server 'sudo docker service logs -f traefik_traefik'
 - https://prowlarr.wajeht.com - Prowlarr
 - https://qbit.wajeht.com - qBittorrent
 - https://sonarr.wajeht.com - Sonarr
+- https://tautulli.wajeht.com - Tautulli
+- https://requests.wajeht.com - Overseerr
 - https://ntfy.wajeht.com - Ntfy
 - https://vault.wajeht.com - Vaultwarden
 - https://pdf.wajeht.com - Stirling PDF

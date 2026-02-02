@@ -180,6 +180,60 @@ services:
         - "traefik.http.routers.plex.tls.certresolver=cloudflare"
         - "traefik.http.services.plex.loadbalancer.server.port=32400"
 
+  # Plex stats & monitoring
+  tautulli:
+    image: linuxserver/tautulli:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - tautulli-config:/config
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8181/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.tautulli.rule=Host(`tautulli.wajeht.com`)"
+        - "traefik.http.routers.tautulli.entrypoints=websecure"
+        - "traefik.http.routers.tautulli.tls.certresolver=cloudflare"
+        - "traefik.http.services.tautulli.loadbalancer.server.port=8181"
+
+  # Media request management
+  overseerr:
+    image: linuxserver/overseerr:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - overseerr-config:/config
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5055/api/v1/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.overseerr.rule=Host(`requests.wajeht.com`)"
+        - "traefik.http.routers.overseerr.entrypoints=websecure"
+        - "traefik.http.routers.overseerr.tls.certresolver=cloudflare"
+        - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
+
 volumes:
   gluetun-data:
   qbittorrent-config:
@@ -187,6 +241,8 @@ volumes:
   radarr-config:
   sonarr-config:
   plex-config:
+  tautulli-config:
+  overseerr-config:
 
 networks:
   traefik:
