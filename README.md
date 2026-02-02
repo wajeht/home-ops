@@ -11,8 +11,9 @@ home-ops/
 ├── apps/                    # applications
 │   ├── homepage/            # dashboard
 │   ├── whoami/              # test service
-│   └── commit/              # AI commit messages (private ghcr)
-│       └── .enc.env         # app secrets (SOPS encrypted)
+│   ├── commit/              # AI commit messages (private ghcr)
+│   │   └── .enc.env         # app secrets (SOPS encrypted)
+│   └── gitea/               # git mirror
 ├── infrastructure/          # core services
 │   ├── traefik/             # reverse proxy + TLS
 │   │   └── .enc.env         # traefik secrets
@@ -32,6 +33,7 @@ home-ops/
 | [doco-cd](https://github.com/kimdre/doco-cd) | GitOps deployment + SOPS decryption |
 | [Traefik](https://traefik.io) | Reverse proxy + TLS |
 | [SOPS](https://github.com/getsops/sops) | Per-app secrets encryption |
+| [Gitea](https://gitea.io) | Git server + GitHub mirror |
 
 ## Quick Start
 
@@ -104,3 +106,4 @@ ssh server 'sudo docker service logs -f traefik_traefik'
 - https://traefik.wajeht.com - Traefik
 - https://whoami.wajeht.com - Test
 - https://commit.wajeht.com - AI Commits
+- https://git.wajeht.com - Gitea (GitHub mirror)

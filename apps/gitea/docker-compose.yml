@@ -1,0 +1,48 @@
+services:
+  gitea:
+    image: gitea/gitea:1.22
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__server__ROOT_URL=https://git.wajeht.com/
+      - GITEA__server__DOMAIN=git.wajeht.com
+      - GITEA__mirror__ENABLED=true
+      - GITEA__mirror__DEFAULT_INTERVAL=8h
+      - GITEA__service__DISABLE_REGISTRATION=true
+    env_file:
+      - .enc.env
+    volumes:
+      - gitea-data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.gitea.rule=Host(`git.wajeht.com`)"
+        - "traefik.http.routers.gitea.entrypoints=websecure"
+        - "traefik.http.routers.gitea.tls.certresolver=cloudflare"
+        - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+
+volumes:
+  gitea-data:
+
+networks:
+  traefik:
+    external: true
