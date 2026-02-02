@@ -1,24 +1,36 @@
 services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
-    container_name: homepage
-    restart: unless-stopped
+    hostname: homepage
     environment:
       TZ: ${TZ:-America/Los_Angeles}
     volumes:
       - homepage-config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.homepage.rule=Host(`home.${DOMAIN}`)"
-      - "traefik.http.routers.homepage.entrypoints=websecure"
-      - "traefik.http.routers.homepage.tls=true"
-      - "traefik.http.routers.homepage.tls.certresolver=letsencrypt"
+    networks:
+      - traefik
+    deploy:
+      mode: replicated
+      replicas: ${REPLICAS:-2}
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.homepage.rule=Host(`home.${DOMAIN}`)"
+        - "traefik.http.routers.homepage.entrypoints=websecure"
+        - "traefik.http.routers.homepage.tls=true"
+        - "traefik.http.routers.homepage.tls.certresolver=letsencrypt"
+        - "traefik.http.services.homepage.loadbalancer.server.port=3000"
 
 volumes:
   homepage-config:
 
 networks:
-  default:
-    name: traefik
+  traefik:
     external: true

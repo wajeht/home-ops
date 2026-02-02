@@ -1,16 +1,11 @@
 services:
   doco-cd:
     image: ghcr.io/kimdre/doco-cd:latest
-    container_name: doco-cd
-    restart: unless-stopped
-    ports:
-      - "8080:80"
-      - "9120:9120"  # prometheus metrics
+    hostname: doco-cd
     environment:
       TZ: ${TZ:-America/Los_Angeles}
       LOG_LEVEL: info
       GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
-      # Polling config - checks repo every 60s
       POLL_CONFIG: |
         - url: ${GITOPS_REPO_URL}
           reference: refs/heads/main
@@ -18,10 +13,21 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - doco-data:/data
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.doco-cd.rule=Host(`doco.${DOMAIN}`)"
-      - "traefik.http.services.doco-cd.loadbalancer.server.port=80"
+    networks:
+      - traefik
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.doco-cd.rule=Host(`doco.${DOMAIN}`)"
+        - "traefik.http.routers.doco-cd.entrypoints=websecure"
+        - "traefik.http.routers.doco-cd.tls=true"
+        - "traefik.http.routers.doco-cd.tls.certresolver=letsencrypt"
+        - "traefik.http.services.doco-cd.loadbalancer.server.port=80"
     healthcheck:
       test: ["CMD", "/doco-cd", "healthcheck"]
       start_period: 15s
@@ -33,6 +39,5 @@ volumes:
   doco-data:
 
 networks:
-  default:
-    name: traefik
+  traefik:
     external: true
