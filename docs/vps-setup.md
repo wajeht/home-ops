@@ -15,25 +15,23 @@ sudo curl -sLo /usr/local/bin/sops https://github.com/getsops/sops/releases/down
 sudo chmod +x /usr/local/bin/sops
 
 # 3. Copy age key (from your local machine)
+mkdir -p ~/.sops
 scp ~/.sops/age-key.txt user@YOUR_SERVER:~/.sops/
 
 # 4. Clone repo
 git clone https://github.com/wajeht/home-ops.git ~/home-ops
 
 # 5. Run setup
-cd ~/home-ops
-./scripts/setup.sh
+cd ~/home-ops && ./scripts/setup.sh
 ```
 
 ## What Setup Does
 
 1. Installs Docker and SOPS (if needed)
 2. Initializes Docker Swarm
-3. Creates Docker secrets from encrypted `secrets.enc.env`
-4. Creates docker_config secret for pulling private ghcr images
-5. Logs into ghcr.io
-6. Creates overlay network
-7. Deploys all stacks (traefik, doco-cd, homepage, whoami, commit)
+3. Sets up ghcr.io authentication
+4. Creates overlay network
+5. Deploys all stacks with decrypted per-app secrets
 
 ## DNS Configuration
 
@@ -43,16 +41,13 @@ Add DNS rewrite in AdGuard Home:
 - Answer: `192.168.x.x` (your server IP)
 
 ### Public Internet
-Point `*.yourdomain.com` to your server's public IP in your DNS provider.
+Point `*.yourdomain.com` to your server's public IP.
 
 ## Verify Setup
 
 ```bash
 # Check swarm
 sudo docker node ls
-
-# Check secrets
-sudo docker secret ls
 
 # Check services
 sudo docker service ls
@@ -64,28 +59,22 @@ sudo docker service logs doco-cd_doco-cd
 
 ## Updating Secrets
 
-After editing `secrets.enc.env` locally:
-
 ```bash
 # Local: edit and push
-sops secrets.enc.env
+sops apps/myapp/.enc.env
 git add -A && git commit -m "update secrets" && git push
 
-# Server: sync
-ssh user@YOUR_SERVER
-cd ~/home-ops && ./scripts/sync-secrets.sh
+# doco-cd auto-deploys, or manually:
+ssh user@YOUR_SERVER 'cd ~/home-ops && ./scripts/sync-secrets.sh'
 ```
 
 ## Deploying Apps
 
-### Deploy existing app
-```bash
-sudo docker stack deploy -c apps/appname/docker-compose.yml appname
-```
+After initial setup, just push to git - doco-cd handles deployment.
 
-### Deploy private ghcr image
+### Manual deploy (if needed)
 ```bash
-sudo docker stack deploy -c apps/appname/docker-compose.yml --with-registry-auth appname
+cd ~/home-ops && ./scripts/setup.sh
 ```
 
 ### Force update (rolling restart)
@@ -114,14 +103,13 @@ sudo docker service rollback traefik_traefik
 ### Reset and redeploy
 ```bash
 sudo docker stack rm appname
-sudo docker stack deploy -c apps/appname/docker-compose.yml appname
+./scripts/setup.sh
 ```
 
 ## File Locations
 
 ```
-~/.sops/age-key.txt     # Decryption key (NEVER commit)
-~/home-ops/             # Git repository
+~/.sops/age-key.txt      # Decryption key (NEVER commit)
+~/.docker/config.json    # ghcr.io credentials
+~/home-ops/              # Git repository
 ```
-
-Secrets are stored in Docker Swarm (encrypted in Raft log).
