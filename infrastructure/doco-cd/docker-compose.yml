@@ -13,7 +13,7 @@ services:
       POLL_CONFIG: |
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
-          interval: 60
+          interval: 0
           deployments:
             - name: homepage
               working_dir: apps/homepage
