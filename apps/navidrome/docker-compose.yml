@@ -1,6 +1,6 @@
 services:
   navidrome:
-    image: deluan/navidrome:0.53.3
+    image: deluan/navidrome:0.59.0
     environment:
       - ND_SCANSCHEDULE=1h
       - ND_LOGLEVEL=info
