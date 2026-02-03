@@ -56,26 +56,22 @@ chown -R 1000:1000 "$HOME_DIR/plex" "$HOME_DIR/data" 2>/dev/null || true
 # Network
 $SUDO docker network create --driver overlay --attachable traefik 2>/dev/null || true
 
-# Docker Hub auth (avoid rate limits)
+# Registry auth (Docker Hub + GHCR)
 DH_USER=$(sops -d infra/.enc.env 2>/dev/null | grep "^DOCKER_HUB_USER=" | cut -d= -f2 || true)
 DH_TOKEN=$(sops -d infra/.enc.env 2>/dev/null | grep "^DOCKER_HUB_TOKEN=" | cut -d= -f2 || true)
-if [ -n "$DH_TOKEN" ]; then
-    echo "$DH_TOKEN" | $SUDO docker login -u "$DH_USER" --password-stdin
-fi
-
-# GHCR auth
 GH_TOKEN=$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)
-if [ -n "$GH_TOKEN" ]; then
-    echo "{\"auths\":{\"ghcr.io\":{\"auth\":\"$(printf "wajeht:%s" "$GH_TOKEN" | base64)\"}}}" > "$HOME_DIR/.docker/config.json"
-    chmod 600 "$HOME_DIR/.docker/config.json"
-    echo "$GH_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
-    # Copy to /root for swarm services when running as non-root
-    if [ "$EUID" -ne 0 ]; then
-        $SUDO mkdir -p /root/.docker /root/.sops
-        $SUDO cp "$HOME_DIR/.docker/config.json" /root/.docker/
-        $SUDO cp "$HOME_DIR/.sops/age-key.txt" /root/.sops/
-    fi
+
+# Login to registries (creates ~/.docker/config.json with both auths)
+[ -n "$DH_TOKEN" ] && echo "$DH_TOKEN" | $SUDO docker login -u "$DH_USER" --password-stdin
+[ -n "$GH_TOKEN" ] && echo "$GH_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
+
+# Copy docker config to /root for swarm and to user home
+if [ "$EUID" -ne 0 ]; then
+    $SUDO mkdir -p /root/.docker /root/.sops
+    $SUDO cp /root/.docker/config.json "$HOME_DIR/.docker/config.json" 2>/dev/null || true
+    $SUDO cp "$HOME_DIR/.sops/age-key.txt" /root/.sops/
 fi
+chmod 600 "$HOME_DIR/.docker/config.json" 2>/dev/null || true
 
 # Docker secrets
 create_secret() {
@@ -97,7 +93,8 @@ deploy() {
     HOME="$HOME_DIR" $SUDO -E docker stack deploy -c "$dir/docker-compose.yml" $flags "$name"
 }
 
-deploy infra/traefik traefik
+# Deploy with registry auth for all stacks (needed to pull images)
+deploy infra/traefik traefik true
 deploy infra/doco-cd doco-cd true
 
 # vpn-qbit (needs docker-compose - swarm doesn't support devices/network_mode)
