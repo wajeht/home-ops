@@ -56,10 +56,10 @@ home-ops/
 |--------|-----|---------|----|---------|
 | Dell OptiPlex 5050 | 32GB | 1TB SSD | Ubuntu 24.04 | Docker Swarm |
 | Dell OptiPlex 7050 | 32GB | 1TB SSD | Ubuntu 22.04 | Docker Swarm |
-| Synology DS423+ | - | 25TB SHR | DSM | NAS |
-| UniFi Cloud Gateway Ultra | - | - | - | Router |
-| TP-Link TL-SG608P | - | - | - | PoE Switch |
 | Raspberry Pi 5 + PoE HAT | 8GB | 128GB SD | Raspberry Pi OS | AdGuard |
+| Synology DS423+ | 4GB | 25TB SHR | DSM | NAS |
+| UniFi Cloud Gateway Ultra | 3GB | 16GB | UniFi OS | Router |
+| TP-Link TL-SG608P | - | - | - | PoE Switch |
 | CyberPower 1500VA AVR | - | - | - | UPS |
 
 ## Docs
