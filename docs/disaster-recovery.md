@@ -159,6 +159,7 @@ Add to cron:
 ├── miniflux/
 ├── ntfy/
 ├── qbittorrent/
+├── screenshot/
 ├── stirling-pdf/
 ├── traefik/
 │   └── certs/
