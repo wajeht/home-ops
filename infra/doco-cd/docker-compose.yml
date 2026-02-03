@@ -1,6 +1,6 @@
 services:
   doco-cd:
-    image: ghcr.io/kimdre/doco-cd:0.61.0
+    image: ghcr.io/kimdre/doco-cd:0.61.0@sha256:f8968e5b1f51ca1893a8ea929b3bbf2e63992a1a8aa471362d27a78e85c286c1
     depends_on:
       - apprise
     ports:
@@ -62,7 +62,7 @@ services:
         max_attempts: 3
 
   apprise:
-    image: caronc/apprise:v1.3.1
+    image: caronc/apprise:v1.3.1@sha256:6b112f8f174244f4a73b8e1254c9bde1fa562a6a428010aeaff1c18bc98d2713
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/status"]
       interval: 30s

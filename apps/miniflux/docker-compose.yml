@@ -1,6 +1,6 @@
 services:
   miniflux:
-    image: miniflux/miniflux:2.2.16
+    image: miniflux/miniflux:2.2.16@sha256:1f37163a178189eba09bf0a1c96d7335aa1fa474d4f958f51e0c5ad9f8136979
     environment:
       - DATABASE_URL=postgres://miniflux:miniflux@miniflux-db/miniflux?sslmode=disable
       - RUN_MIGRATIONS=1
@@ -33,7 +33,7 @@ services:
         - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
 
   miniflux-db:
-    image: postgres:18-alpine
+    image: postgres:18-alpine@sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29
     environment:
       - POSTGRES_USER=miniflux
       - POSTGRES_PASSWORD=miniflux
