@@ -31,39 +31,6 @@ git push → webhook → doco-cd → decrypts secrets → docker stack deploy
 | [SOPS](https://github.com/getsops/sops) | Secrets encryption |
 | [Renovate](https://github.com/renovatebot/renovate) | Dependency updates |
 
-## Services
-
-<details>
-<summary>Media</summary>
-
-- Plex, Radarr, Sonarr, Prowlarr
-- Overseerr, Tautulli
-- Navidrome, Audiobookshelf
-- qBittorrent + Gluetun VPN
-
-</details>
-
-<details>
-<summary>Productivity</summary>
-
-- Vaultwarden (passwords)
-- Gitea (git mirror)
-- Miniflux (RSS)
-- Stirling PDF, IT-Tools
-- Changedetection, Linx
-
-</details>
-
-<details>
-<summary>Infrastructure</summary>
-
-- Traefik (proxy)
-- doco-cd (GitOps)
-- Uptime Kuma, Prometheus
-- Homepage, Ntfy
-
-</details>
-
 ## Repository Structure
 
 ```
