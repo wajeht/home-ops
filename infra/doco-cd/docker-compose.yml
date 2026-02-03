@@ -12,7 +12,7 @@ services:
       APPRISE_API_URL: http://apprise:8000/notify
       APPRISE_NOTIFY_LEVEL: success
       SOPS_AGE_KEY_FILE: /sops/age-key.txt
-      GIT_ACCESS_TOKEN_FILE: /run/secrets/git_access_token
+      GIT_ACCESS_TOKEN_FILE: /run/secrets/gh_token
       POLL_CONFIG: |
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
@@ -23,7 +23,7 @@ services:
       - ${HOME}/.sops/age-key.txt:/sops/age-key.txt:ro
       - ${HOME}/.docker/config.json:/root/.docker/config.json:ro
     secrets:
-      - git_access_token
+      - gh_token
     networks:
       - traefik
       - default
@@ -84,5 +84,5 @@ networks:
     external: true
 
 secrets:
-  git_access_token:
+  gh_token:
     external: true

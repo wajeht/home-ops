@@ -25,7 +25,7 @@ doco-cd deploys
       "matchHost": "ghcr.io",
       "hostType": "docker",
       "username": "wajeht",
-      "password": "{{ secrets.GHCR_TOKEN }}"
+      "password": "{{ secrets.GH_TOKEN }}"
     }
   ],
   "packageRules": [
@@ -43,18 +43,18 @@ doco-cd deploys
 2. Select `wajeht/home-ops`
 3. Go to **Settings** → **Credentials**
 4. **Add Secret**:
-   - Name: `GHCR_TOKEN`
+   - Name: `GH_TOKEN`
    - Value: Your GitHub PAT with `read:packages` scope
 5. **Add Host Rule**:
    - Description: `ghcr.io private registry`
    - Host Type: `docker`
    - HostUrl: `ghcr.io`
    - Username: `wajeht`
-   - Select Secret: `GHCR_TOKEN`
+   - Select Secret: `GH_TOKEN`
 
 **Important:** You need BOTH:
 - Secret stored in Mend UI
-- hostRules in renovate.json referencing it with `{{ secrets.GHCR_TOKEN }}`
+- hostRules in renovate.json referencing it with `{{ secrets.GH_TOKEN }}`
 
 ## Behavior
 
@@ -78,9 +78,9 @@ git push origin v1.0.0
 
 ### "Failed to look up docker package ghcr.io/wajeht/..."
 
-1. Check GHCR_TOKEN has `read:packages` scope
+1. Check GH_TOKEN has `read:packages` scope
 2. Verify secret is added in Mend UI
-3. Verify hostRules in renovate.json references `{{ secrets.GHCR_TOKEN }}`
+3. Verify hostRules in renovate.json references `{{ secrets.GH_TOKEN }}`
 4. Retry the failed job in Renovate dashboard
 
 ### Token Requirements
