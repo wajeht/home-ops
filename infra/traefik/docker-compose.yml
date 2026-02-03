@@ -77,9 +77,7 @@ services:
 
 networks:
   traefik:
-    name: traefik
-    driver: overlay
-    attachable: true
+    external: true
 
 configs:
   traefik-dynamic:

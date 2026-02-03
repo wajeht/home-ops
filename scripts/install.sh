@@ -53,7 +53,7 @@ mkdir -p "$HOME_DIR/data"/{traefik/certs,uptime-kuma,vaultwarden}
 chmod 700 "$HOME_DIR/.sops"
 chown -R 1000:1000 "$HOME_DIR/plex" "$HOME_DIR/data" 2>/dev/null || true
 
-# Network
+# Create traefik network (external, shared by all stacks)
 $SUDO docker network create --driver overlay --attachable traefik 2>/dev/null || true
 
 # Registry auth (Docker Hub + GHCR)
