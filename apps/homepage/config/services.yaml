@@ -100,12 +100,6 @@
           url: https://sonarr.wajeht.com
           key: {{HOMEPAGE_VAR_SONARR_KEY}}
 
-    - Prowlarr:
-        icon: prowlarr
-        href: https://prowlarr.wajeht.com
-        description: Indexers
-        siteMonitor: https://prowlarr.wajeht.com
-
     - qBittorrent:
         icon: qbittorrent
         href: https://qbit.wajeht.com
@@ -116,6 +110,12 @@
           url: https://qbit.wajeht.com
           username: {{HOMEPAGE_VAR_QBIT_USER}}
           password: {{HOMEPAGE_VAR_QBIT_PASS}}
+
+    - Prowlarr:
+        icon: prowlarr
+        href: https://prowlarr.wajeht.com
+        description: Indexers
+        siteMonitor: https://prowlarr.wajeht.com
 
 - Tools:
     - Vaultwarden:
