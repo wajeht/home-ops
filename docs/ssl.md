@@ -1,0 +1,60 @@
+# SSL/TLS Certificates
+
+Traefik handles SSL automatically using Let's Encrypt with Cloudflare DNS challenge.
+
+## How It Works
+
+1. Traefik requests a **wildcard certificate** for `wajeht.com` + `*.wajeht.com`
+2. Uses Cloudflare DNS challenge (creates `_acme-challenge` TXT records)
+3. All apps automatically use this wildcard cert - no per-app config needed
+
+## Config (infra/traefik/docker-compose.yml)
+
+```yaml
+command:
+  # ACME with Cloudflare DNS
+  - "--certificatesresolvers.cloudflare.acme.email=mail@wajeht.com"
+  - "--certificatesresolvers.cloudflare.acme.storage=/certs/acme.json"
+  - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
+  - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
+  - "--certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=30"
+  - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53"
+  # Wildcard cert at entrypoint level
+  - "--entrypoints.websecure.http.tls.domains[0].main=wajeht.com"
+  - "--entrypoints.websecure.http.tls.domains[0].sans=*.wajeht.com"
+  - "--entrypoints.websecure.http.tls.certresolver=cloudflare"
+```
+
+## App Config
+
+Apps don't need `certresolver` labels - the wildcard handles all `*.wajeht.com` subdomains:
+
+```yaml
+deploy:
+  labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.myapp.rule=Host(`myapp.wajeht.com`)"
+    - "traefik.http.routers.myapp.entrypoints=websecure"
+    - "traefik.http.services.myapp.loadbalancer.server.port=80"
+```
+
+## Cloudflare Token
+
+Stored as Docker secret `cf_dns_api_token`. Needs permissions:
+- Zone:DNS:Edit
+- Zone:Zone:Read
+
+## Troubleshooting
+
+**Rate limited by Let's Encrypt:**
+- Wait 1 hour for rate limit to reset
+- Check logs: `docker service logs traefik_traefik`
+
+**DNS propagation issues:**
+- The 30s delay before check helps with propagation
+- Using 1.1.1.1 resolvers sees Cloudflare changes faster
+
+**Certificate not obtained:**
+1. Check acme.json: `docker exec <traefik> cat /certs/acme.json`
+2. Verify Cloudflare token has correct permissions
+3. Check for stale `_acme-challenge` TXT records in Cloudflare DNS
