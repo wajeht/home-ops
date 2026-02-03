@@ -1,6 +1,6 @@
 #!/bin/bash
 # Docker Swarm setup for home-ops
-# Usage: ./scripts/setup.sh
+# Usage: ./scripts/install.sh
 set -eo pipefail
 
 echo "=== home-ops Setup ==="
@@ -64,6 +64,12 @@ if [ -n "$GH_TOKEN" ]; then
     echo "{\"auths\":{\"ghcr.io\":{\"auth\":\"$(printf "wajeht:%s" "$GH_TOKEN" | base64)\"}}}" > "$HOME_DIR/.docker/config.json"
     chmod 600 "$HOME_DIR/.docker/config.json"
     echo "$GH_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
+    # Copy to /root for swarm services when running as non-root
+    if [ "$EUID" -ne 0 ]; then
+        $SUDO mkdir -p /root/.docker /root/.sops
+        $SUDO cp "$HOME_DIR/.docker/config.json" /root/.docker/
+        $SUDO cp "$HOME_DIR/.sops/age-key.txt" /root/.sops/
+    fi
 fi
 
 # Docker secrets
