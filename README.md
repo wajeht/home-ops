@@ -28,8 +28,8 @@ Push to git, [doco-cd](https://github.com/kimdre/doco-cd) picks it up via webhoo
 | [UniFi U6+](https://store.ui.com/us/en/products/u6-plus) | - | - | - | WiFi 6 AP |
 | [TP-Link TL-SG608P](https://www.amazon.com/s?k=TP-Link+TL-SG608P) | - | - | - | PoE Switch |
 | [CyberPower 1500VA AVR](https://www.amazon.com/CyberPower-CP1500AVRLCD-Intelligent-Outlets-Mini-Tower/dp/B000FBK3QK) | - | - | - | UPS |
-
-Idle: 82W | UPS Runtime: 2 hrs | Monthly: 60 kWh ($7)
+| | | | | |
+| **Idle: 82W** | **UPS: 2 hrs** | | **Monthly: 60 kWh ($7)** | |
 
 ## Docs
 
