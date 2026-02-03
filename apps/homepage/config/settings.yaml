@@ -2,21 +2,22 @@ title: Home Ops
 favicon: https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/docker.png
 color: slate
 headerStyle: clean
-hideVersion: false
-showStats: true
+hideVersion: true
+showStats: false
 cardBlur: sm
 layout:
-  Infra:
-    style: column
-  Monitoring:
-    style: column
+  Infrastructure:
+    style: row
+    columns: 3
   Media:
-    style: column
-  Arr Stack:
-    style: column
+    style: row
+    columns: 3
+  Downloads:
+    style: row
+    columns: 5
   Tools:
-    style: column
+    style: row
+    columns: 4
   Apps:
-    style: column
-  Dev:
-    style: column
+    style: row
+    columns: 3
