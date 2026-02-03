@@ -6,7 +6,7 @@ Auto-mirrors GitHub repos to self-hosted Gitea.
 
 After deploy:
 
-1. Go to https://git.wajeht.com → create admin account
+1. Go to https://gitea.wajeht.com → create admin account
 2. Settings → Applications → Generate API token
 3. Run mirror script:
 
@@ -22,7 +22,7 @@ On GitHub, for each repo: Settings → Webhooks → Add webhook:
 
 | Field | Value |
 |-------|-------|
-| URL | `https://git.wajeht.com/api/v1/repos/wajeht/{repo}/mirror-sync` |
+| URL | `https://gitea.wajeht.com/api/v1/repos/wajeht/{repo}/mirror-sync` |
 | Content type | `application/json` |
 | Events | Just `push` |
 
@@ -38,6 +38,6 @@ Edit `setup-mirrors.sh` and add repos to the `REPOS` array, then re-run.
 ## Manual Sync
 
 ```bash
-curl -X POST "https://git.wajeht.com/api/v1/repos/wajeht/REPO/mirror-sync" \
+curl -X POST "https://gitea.wajeht.com/api/v1/repos/wajeht/REPO/mirror-sync" \
   -H "Authorization: token YOUR_GITEA_TOKEN"
 ```
