@@ -12,11 +12,11 @@ GitOps-driven homelab running on Docker Swarm
 ## Overview
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph Internet
         User([User])
+        Cloudflare[Cloudflare]
         GitHub[(GitHub)]
-        Cloudflare[Cloudflare DNS]
         GHCR[(GHCR)]
     end
 
@@ -27,13 +27,9 @@ flowchart LR
         Apps[Apps]
     end
 
-    User -->|HTTPS| Cloudflare
-    Cloudflare -->|SSL| Traefik
-    Traefik -->|Route| Apps
-    GitHub -->|Webhook| DocoCd
-    DocoCd -->|Deploy| Swarm
-    Swarm -->|Pull| GHCR
-    Swarm -->|Run| Apps
+    User -->|HTTPS| Cloudflare -->|SSL| Traefik -->|Route| Apps
+    GitHub -->|Webhook| DocoCd -->|Deploy| Swarm -->|Run| Apps
+    GHCR -.->|Pull| Swarm
 ```
 
 [Docker Swarm](https://docs.docker.com/engine/swarm/) orchestrates containers across nodes. [Traefik](https://traefik.io) handles reverse proxy with automatic Let's Encrypt SSL via Cloudflare DNS. [doco-cd](https://github.com/kimdre/doco-cd) deploys on webhook with zero-downtime rolling updates. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) auto-updates public image dependencies. Private apps use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) to build and deploy instantly.
