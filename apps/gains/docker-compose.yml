@@ -1,12 +1,12 @@
 services:
-  calendar:
-    image: ghcr.io/wajeht/calendar:4d5cb48
+  gains:
+    image: ghcr.io/wajeht/gains:8966fe7
     env_file:
       - .enc.env
     environment:
       - TZ=America/Chicago
     volumes:
-      - /home/jaw/data/calendar:/usr/src/app/src/db/sqlite
+      - /home/jaw/data/gains:/usr/src/app/src/db/sqlite
     networks:
       - traefik
     healthcheck:
@@ -18,9 +18,9 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.calendar.rule=Host(`calendar.wajeht.com`)"
-        - "traefik.http.routers.calendar.entrypoints=websecure"
-        - "traefik.http.services.calendar.loadbalancer.server.port=80"
+        - "traefik.http.routers.gains.rule=Host(`gains.wajeht.com`)"
+        - "traefik.http.routers.gains.entrypoints=websecure"
+        - "traefik.http.services.gains.loadbalancer.server.port=80"
       update_config:
         parallelism: 1
         delay: 10s
