@@ -17,7 +17,7 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "authelia", "healthcheck"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9091/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
