@@ -11,16 +11,6 @@ GitOps-driven homelab running on Docker Swarm
 
 ## Overview
 
-```mermaid
-flowchart LR
-    User([User]) -->|HTTPS| Cloudflare -->|SSL| Traefik --> Apps
-```
-
-```mermaid
-flowchart LR
-    GitHub -->|Webhook| doco-cd --> Docker-Swarm --> Apps
-```
-
 [Docker Swarm](https://docs.docker.com/engine/swarm/) orchestrates containers across nodes. [Traefik](https://traefik.io) handles reverse proxy with automatic Let's Encrypt SSL via Cloudflare DNS. [doco-cd](https://github.com/kimdre/doco-cd) deploys on webhook with zero-downtime rolling updates. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) auto-updates public image dependencies. Private apps use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) to build and deploy instantly.
 
 **Public:** git push → webhook → doco-cd → deploy
