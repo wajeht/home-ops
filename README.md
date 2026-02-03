@@ -18,14 +18,14 @@ Push to git, [doco-cd](https://github.com/kimdre/doco-cd) picks it up via webhoo
 
 | Device | RAM | Storage | OS | Function |
 |--------|-----|---------|----|---------|
-| [Dell OptiPlex 5050](https://www.amazon.com/dp/B01M0KOCP8) | 32GB | 1TB SSD | Ubuntu 24.04 | Docker Swarm |
-| [Dell OptiPlex 7050](https://www.amazon.com/dp/B077PYMGCK) | 32GB | 1TB SSD | Ubuntu 22.04 | Docker Swarm |
+| [Dell OptiPlex 5050 Micro](https://www.amazon.com/s?k=dell+optiplex+5050+micro) | 32GB | 1TB SSD | Ubuntu 24.04 | Docker Swarm |
+| [Dell OptiPlex 7050 Micro](https://www.amazon.com/s?k=dell+optiplex+7050+micro) | 32GB | 1TB SSD | Ubuntu 22.04 | Docker Swarm |
 | [Raspberry Pi 5 + PoE HAT](https://www.raspberrypi.com/products/raspberry-pi-5/) | 8GB | 128GB SD | Raspberry Pi OS | AdGuard |
 | [Synology DS423+](https://www.synology.com/en-us/products/DS423+) | 4GB | 25TB SHR | DSM | NAS |
-| [UniFi Cloud Gateway Ultra](https://store.ui.com/us/en/category/cloud-gateways/products/ucg-ultra) | 3GB | 16GB | UniFi OS | Firewall |
-| [UniFi U6+](https://store.ui.com/us/en/category/wifi-flagship/products/u6-plus) | - | - | - | WiFi 6 AP |
-| [TP-Link TL-SG608P](https://www.amazon.com/dp/B0BFDJ5GTW) | - | - | - | PoE Switch |
-| [CyberPower 1500VA AVR](https://www.amazon.com/dp/B000FBK3QK) | - | - | - | UPS |
+| [UniFi Cloud Gateway Ultra](https://store.ui.com/us/en/products/ucg-ultra) | 3GB | 16GB | UniFi OS | Firewall |
+| [UniFi U6+](https://store.ui.com/us/en/products/u6-plus) | - | - | - | WiFi 6 AP |
+| [TP-Link TL-SG608P](https://www.amazon.com/s?k=TP-Link+TL-SG608P) | - | - | - | PoE Switch |
+| [CyberPower 1500VA AVR](https://www.amazon.com/CyberPower-CP1500AVRLCD-Intelligent-Outlets-Mini-Tower/dp/B000FBK3QK) | - | - | - | UPS |
 
 ## Docs
 
