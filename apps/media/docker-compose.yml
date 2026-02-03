@@ -59,7 +59,7 @@ services:
 
   # TV show management
   sonarr:
-    image: linuxserver/sonarr:4.0.11
+    image: linuxserver/sonarr:4.0.16
     environment:
       - PUID=1000
       - PGID=1000
