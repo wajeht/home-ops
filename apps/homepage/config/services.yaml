@@ -1,4 +1,4 @@
-- Infra:
+- Infrastructure:
     - Traefik:
         icon: traefik
         href: https://traefik.wajeht.com
@@ -8,28 +8,28 @@
           type: traefik
           url: https://traefik.wajeht.com
 
-    - Doco-CD:
-        icon: docker
-        href: https://doco.wajeht.com
-        description: GitOps Controller
-        siteMonitor: https://doco.wajeht.com/v1/health
-
-- Monitoring:
     - Uptime Kuma:
         icon: uptime-kuma
         href: https://status.wajeht.com
-        description: Status
+        description: Status Monitor
         siteMonitor: https://status.wajeht.com
         widget:
           type: uptimekuma
           url: https://status.wajeht.com
           slug: home
 
-    - Changedetection:
-        icon: changedetection-io
-        href: https://changes.wajeht.com
-        description: Web Monitor
-        siteMonitor: https://changes.wajeht.com
+    - Doco-CD:
+        icon: docker
+        href: https://doco.wajeht.com
+        description: GitOps Deployer
+        siteMonitor: https://doco.wajeht.com/v1/health
+
+- Media:
+    - Plex:
+        icon: plex
+        href: https://plex.wajeht.com
+        description: Movies & TV
+        siteMonitor: https://plex.wajeht.com
 
     - Tautulli:
         icon: tautulli
@@ -41,20 +41,13 @@
           url: https://tautulli.wajeht.com
           key: {{HOMEPAGE_VAR_TAUTULLI_KEY}}
 
-- Media:
-    - Plex:
-        icon: plex
-        href: https://plex.wajeht.com
-        description: Movies & TV
-        siteMonitor: https://plex.wajeht.com
-
     - Audiobookshelf:
         icon: audiobookshelf
         href: https://audiobooks.wajeht.com
         description: Audiobooks
         siteMonitor: https://audiobooks.wajeht.com
 
-- Arr Stack:
+- Downloads:
     - Overseerr:
         icon: overseerr
         href: https://requests.wajeht.com
@@ -74,7 +67,6 @@
           type: radarr
           url: https://radarr.wajeht.com
           key: {{HOMEPAGE_VAR_RADARR_KEY}}
-          enableQueue: true
 
     - Sonarr:
         icon: sonarr
@@ -85,7 +77,6 @@
           type: sonarr
           url: https://sonarr.wajeht.com
           key: {{HOMEPAGE_VAR_SONARR_KEY}}
-          enableQueue: true
 
     - Prowlarr:
         icon: prowlarr
@@ -96,7 +87,7 @@
     - qBittorrent:
         icon: qbittorrent
         href: https://qbit.wajeht.com
-        description: Downloads
+        description: Torrents
         siteMonitor: https://qbit.wajeht.com
         widget:
           type: qbittorrent
@@ -133,6 +124,12 @@
         description: Dev Utilities
         siteMonitor: https://tools.wajeht.com
 
+    - Changedetection:
+        icon: changedetection-io
+        href: https://changes.wajeht.com
+        description: Web Monitor
+        siteMonitor: https://changes.wajeht.com
+
     - Linx:
         icon: filerun
         href: https://linx.wajeht.com
@@ -145,19 +142,13 @@
         description: Notifications
         siteMonitor: https://ntfy.wajeht.com
 
+    - Gitea:
+        icon: gitea
+        href: https://git.wajeht.com
+        description: Git Mirror
+        siteMonitor: https://git.wajeht.com
+
 - Apps:
-    - Commit:
-        icon: git
-        href: https://commit.wajeht.com
-        description: AI Commits
-        siteMonitor: https://commit.wajeht.com
-
-    - Favicon:
-        icon: mdi-image-search
-        href: https://favicon.wajeht.com
-        description: Favicon Grabber
-        siteMonitor: https://favicon.wajeht.com/healthz
-
     - UFC:
         icon: mdi-mixed-martial-arts
         href: https://ufc.wajeht.com
@@ -170,12 +161,17 @@
         description: Personal Calendar
         siteMonitor: https://calendar.wajeht.com/health
 
-- Dev:
-    - Gitea:
-        icon: gitea
-        href: https://git.wajeht.com
-        description: Git Mirror
-        siteMonitor: https://git.wajeht.com
+    - Commit:
+        icon: git
+        href: https://commit.wajeht.com
+        description: AI Commits
+        siteMonitor: https://commit.wajeht.com
+
+    - Favicon:
+        icon: mdi-image-search
+        href: https://favicon.wajeht.com
+        description: Favicon Grabber
+        siteMonitor: https://favicon.wajeht.com/healthz
 
     - GitHub:
         icon: github
