@@ -17,6 +17,7 @@ flowchart LR
         User([User])
         GitHub[(GitHub)]
         Cloudflare[Cloudflare DNS]
+        GHCR[(GHCR)]
     end
 
     subgraph Homelab
@@ -31,18 +32,19 @@ flowchart LR
     Traefik -->|Route| Apps
     GitHub -->|Webhook| DocoCd
     DocoCd -->|Deploy| Swarm
+    Swarm -->|Pull| GHCR
     Swarm -->|Run| Apps
 ```
 
-[Docker Swarm](https://docs.docker.com/engine/swarm/) orchestrates containers across nodes. [Traefik](https://traefik.io) handles reverse proxy with automatic Let's Encrypt SSL via Cloudflare DNS. [doco-cd](https://github.com/kimdre/doco-cd) watches this repo and deploys on webhook with zero-downtime rolling updates. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) auto-updates dependencies.
+[Docker Swarm](https://docs.docker.com/engine/swarm/) orchestrates containers across nodes. [Traefik](https://traefik.io) handles reverse proxy with automatic Let's Encrypt SSL via Cloudflare DNS. [doco-cd](https://github.com/kimdre/doco-cd) deploys on webhook with zero-downtime rolling updates. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) auto-updates public image dependencies.
 
 **Deploy Flow:**
 ```
 public:  git push → webhook → doco-cd → deploy
-private: push tag → build → update home-ops → deploy
+private: push tag → build image → update home-ops → webhook → deploy
 ```
 
-Private apps use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) for instant deploys.
+Private apps use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) - tag release triggers GitHub Actions to build image to GHCR, then updates this repo with new version, triggering doco-cd to deploy.
 
 
 ## Hardware
