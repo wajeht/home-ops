@@ -73,11 +73,14 @@ if [ "$EUID" -ne 0 ]; then
 fi
 chmod 600 "$HOME_DIR/.docker/config.json" 2>/dev/null || true
 
-# Docker secrets
+# Docker secrets (skip if exists, can't update secrets in use)
 create_secret() {
     local name=$1 value=$2
     [ -z "$value" ] && return
-    $SUDO docker secret rm "$name" 2>/dev/null || true
+    if $SUDO docker secret inspect "$name" &>/dev/null; then
+        echo "Secret $name exists, skipping"
+        return
+    fi
     echo "$value" | $SUDO docker secret create "$name" -
 }
 
