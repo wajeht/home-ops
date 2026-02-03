@@ -15,7 +15,8 @@
     {
       "matchHost": "ghcr.io",
       "hostType": "docker",
-      "token": "{{ secrets.GHCR_TOKEN }}"
+      "username": "wajeht",
+      "password": "{{ secrets.GHCR_TOKEN }}"
     }
   ],
   "packageRules": [
