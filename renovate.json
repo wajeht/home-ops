@@ -19,28 +19,10 @@
       "password": "{{ secrets.GH_TOKEN }}"
     }
   ],
-  "packageRules": [
-    {
-      "description": "Auto-merge own ghcr images",
-      "matchDatasources": [
-        "docker"
-      ],
-      "automerge": true,
-      "automergeType": "branch",
-      "ignoreTests": true,
-      "matchPackageNames": [
-        "/^ghcr\\.io/wajeht//"
-      ]
-    },
-    {
-      "description": "Third-party images - PR only",
-      "matchDatasources": [
-        "docker"
-      ],
-      "automerge": false,
-      "matchPackageNames": [
-        "!/^ghcr\\.io/wajeht//"
-      ]
-    }
+  "ignoreDeps": [
+    "ghcr.io/wajeht/ufc",
+    "ghcr.io/wajeht/commit",
+    "ghcr.io/wajeht/favicon",
+    "ghcr.io/wajeht/calendar"
   ]
 }
