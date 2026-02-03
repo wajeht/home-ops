@@ -21,6 +21,7 @@
   ],
   "ignoreDeps": [
     "ghcr.io/wajeht/ufc",
+    "ghcr.io/wajeht/hello-world",
     "ghcr.io/wajeht/commit",
     "ghcr.io/wajeht/favicon",
     "ghcr.io/wajeht/calendar"
