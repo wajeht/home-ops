@@ -1,7 +1,7 @@
 - openmeteo:
-    label: Dallas
-    latitude: 32.7767
-    longitude: -96.7970
+    label: Amarillo
+    latitude: 35.2220
+    longitude: -101.8313
     units: imperial
     cache: 5
 
