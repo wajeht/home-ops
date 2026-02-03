@@ -45,3 +45,4 @@ tmp/
 
 # Claude
 .claude/settings.local.json
+CLAUDE.md
