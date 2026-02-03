@@ -21,7 +21,6 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.myapp.rule=Host(`myapp.wajeht.com`)"
         - "traefik.http.routers.myapp.entrypoints=websecure"
-        - "traefik.http.routers.myapp.tls.certresolver=cloudflare"
         - "traefik.http.services.myapp.loadbalancer.server.port=80"
       update_config:
         order: start-first

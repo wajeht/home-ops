@@ -27,7 +27,6 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.stirling-pdf.rule=Host(`pdf.wajeht.com`)"
         - "traefik.http.routers.stirling-pdf.entrypoints=websecure"
-        - "traefik.http.routers.stirling-pdf.tls.certresolver=cloudflare"
         - "traefik.http.services.stirling-pdf.loadbalancer.server.port=8080"
 
 volumes:
