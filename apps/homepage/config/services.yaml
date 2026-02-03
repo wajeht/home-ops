@@ -30,6 +30,11 @@
         description: SSO Auth
         siteMonitor: https://auth.wajeht.com
 
+    - Kopia:
+        icon: kopia
+        href: https://backup.wajeht.com
+        description: Backups
+        siteMonitor: https://backup.wajeht.com
 
     - Changedetection:
         icon: changedetection-io

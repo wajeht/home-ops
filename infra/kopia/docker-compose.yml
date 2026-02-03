@@ -1,0 +1,51 @@
+services:
+  kopia:
+    image: kopia/kopia:latest
+    hostname: kopia-server
+    command:
+      - server
+      - start
+      - --insecure
+      - --address=0.0.0.0:51515
+      - --server-username=jaw
+      - --server-password-file=/run/secrets/kopia_password
+    environment:
+      TZ: America/Chicago
+      KOPIA_PASSWORD_FILE: /run/secrets/kopia_password
+      USER: jaw
+    volumes:
+      # Data to backup (read-only)
+      - /home/jaw/data:/data:ro
+      - /home/jaw/.sops:/sops:ro
+      # SQLite dumps (pre-backup script writes here)
+      - /home/jaw/data/kopia/dumps:/dumps
+      # Backup repository (mount NFS here)
+      - /home/jaw/backup/kopia:/repository
+      # Kopia config and cache
+      - /home/jaw/data/kopia/config:/app/config
+      - /home/jaw/data/kopia/cache:/app/cache
+      - /home/jaw/data/kopia/logs:/app/logs
+    secrets:
+      - kopia_password
+    networks:
+      - traefik
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.kopia.rule=Host(`backup.wajeht.com`)"
+        - "traefik.http.routers.kopia.entrypoints=websecure"
+        - "traefik.http.routers.kopia.middlewares=authelia@file"
+        - "traefik.http.services.kopia.loadbalancer.server.port=51515"
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+secrets:
+  kopia_password:
+    external: true
+
+networks:
+  traefik:
+    external: true
