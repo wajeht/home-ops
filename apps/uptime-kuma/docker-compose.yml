@@ -1,6 +1,6 @@
 services:
   uptime-kuma:
-    image: louislam/uptime-kuma:1
+    image: louislam/uptime-kuma:2
     volumes:
       - /home/jaw/data/uptime-kuma:/app/data
     networks:
