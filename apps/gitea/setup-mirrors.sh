@@ -4,7 +4,7 @@
 
 set -e
 
-GITEA_URL="https://git.wajeht.com"
+GITEA_URL="https://gitea.wajeht.com"
 GITEA_TOKEN="${GITEA_TOKEN:?Set GITEA_TOKEN env var}"
 GITHUB_USER="wajeht"
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"  # Optional, needed for private repos

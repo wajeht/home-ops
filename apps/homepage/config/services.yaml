@@ -176,9 +176,9 @@
 - Dev:
     - Gitea:
         icon: gitea
-        href: https://git.wajeht.com
+        href: https://gitea.wajeht.com
         description: Git Mirror
-        siteMonitor: https://git.wajeht.com
+        siteMonitor: https://gitea.wajeht.com
 
     - GitHub:
         icon: github
