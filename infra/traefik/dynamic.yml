@@ -6,8 +6,7 @@ http:
       entrypoints:
         - websecure
       service: qbittorrent
-      tls:
-        certResolver: cloudflare
+      tls: {}
 
   services:
     qbittorrent:
