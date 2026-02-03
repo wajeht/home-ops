@@ -131,6 +131,7 @@ Reusable workflow at `wajeht/doco-deploy-workflow` that:
 - `commit`
 - `favicon`
 - `calendar`
+- `screenshot`
 
 ## Renovate vs Instant Deploy
 

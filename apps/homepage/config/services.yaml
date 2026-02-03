@@ -167,6 +167,12 @@
         description: Favicon Grabber
         siteMonitor: https://favicon.wajeht.com/healthz
 
+    - Screenshot:
+        icon: mdi-monitor-screenshot
+        href: https://screenshot.wajeht.com
+        description: Screenshot API
+        siteMonitor: https://screenshot.wajeht.com/healthz
+
 - Dev:
     - Gitea:
         icon: gitea
