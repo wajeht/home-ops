@@ -124,12 +124,6 @@
         description: Passwords
         siteMonitor: https://vault.wajeht.com
 
-    - Gitea:
-        icon: gitea
-        href: https://git.wajeht.com
-        description: Git Mirror
-        siteMonitor: https://git.wajeht.com
-
     - Stirling PDF:
         icon: stirling-pdf
         href: https://pdf.wajeht.com
@@ -148,6 +142,7 @@
         description: File Sharing
         siteMonitor: https://linx.wajeht.com
 
+- Apps:
     - UFC:
         icon: mdi-mixed-martial-arts
         href: https://ufc.wajeht.com
@@ -171,6 +166,13 @@
         href: https://favicon.wajeht.com
         description: Favicon Grabber
         siteMonitor: https://favicon.wajeht.com/healthz
+
+- Dev:
+    - Gitea:
+        icon: gitea
+        href: https://git.wajeht.com
+        description: Git Mirror
+        siteMonitor: https://git.wajeht.com
 
     - GitHub:
         icon: github
