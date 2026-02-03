@@ -52,12 +52,13 @@ home-ops/
 
 ## Hardware
 
-| Device | Storage | Function |
-|--------|---------|----------|
-| Dell OptiPlex 5050 | 100GB SSD | Docker Swarm |
-| Synology DS423+ | 25TB SHR | NAS |
-| UniFi Cloud Gateway Ultra | - | Router |
-| Raspberry Pi 5 | SD Card | AdGuard |
+| Device | RAM | Storage | OS | Function |
+|--------|-----|---------|----|---------|
+| Dell OptiPlex 5050 | 32GB | 100GB SSD | Ubuntu 24.04 | Docker Swarm |
+| Synology DS423+ | - | 25TB SHR | DSM | NAS |
+| UniFi Cloud Gateway Ultra | - | - | - | Router |
+| Raspberry Pi 5 | 8GB | SD Card | - | AdGuard |
+| CyberPower UPS | - | - | - | Power backup |
 
 ## Docs
 
