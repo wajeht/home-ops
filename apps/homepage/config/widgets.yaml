@@ -1,3 +1,10 @@
+- openmeteo:
+    label: Dallas
+    latitude: 32.7767
+    longitude: -96.7970
+    units: imperial
+    cache: 5
+
 - resources:
     cpu: true
     memory: true

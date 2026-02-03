@@ -4,6 +4,9 @@
         href: https://traefik.wajeht.com
         description: Reverse Proxy
         siteMonitor: https://traefik.wajeht.com
+        widget:
+          type: traefik
+          url: https://traefik.wajeht.com
 
     - Doco-CD:
         icon: docker
@@ -17,6 +20,10 @@
         href: https://status.wajeht.com
         description: Status
         siteMonitor: https://status.wajeht.com
+        widget:
+          type: uptimekuma
+          url: https://status.wajeht.com
+          slug: home
 
     - Changedetection:
         icon: changedetection-io
@@ -29,6 +36,10 @@
         href: https://tautulli.wajeht.com
         description: Plex Stats
         siteMonitor: https://tautulli.wajeht.com
+        widget:
+          type: tautulli
+          url: https://tautulli.wajeht.com
+          key: {{HOMEPAGE_VAR_TAUTULLI_KEY}}
 
 - Media:
     - Plex:
@@ -49,18 +60,32 @@
         href: https://requests.wajeht.com
         description: Requests
         siteMonitor: https://requests.wajeht.com
+        widget:
+          type: overseerr
+          url: https://requests.wajeht.com
+          key: {{HOMEPAGE_VAR_OVERSEERR_KEY}}
 
     - Radarr:
         icon: radarr
         href: https://radarr.wajeht.com
         description: Movies
         siteMonitor: https://radarr.wajeht.com
+        widget:
+          type: radarr
+          url: https://radarr.wajeht.com
+          key: {{HOMEPAGE_VAR_RADARR_KEY}}
+          enableQueue: true
 
     - Sonarr:
         icon: sonarr
         href: https://sonarr.wajeht.com
         description: TV Shows
         siteMonitor: https://sonarr.wajeht.com
+        widget:
+          type: sonarr
+          url: https://sonarr.wajeht.com
+          key: {{HOMEPAGE_VAR_SONARR_KEY}}
+          enableQueue: true
 
     - Prowlarr:
         icon: prowlarr
@@ -73,6 +98,11 @@
         href: https://qbit.wajeht.com
         description: Downloads
         siteMonitor: https://qbit.wajeht.com
+        widget:
+          type: qbittorrent
+          url: https://qbit.wajeht.com
+          username: {{HOMEPAGE_VAR_QBIT_USER}}
+          password: {{HOMEPAGE_VAR_QBIT_PASS}}
 
 - Tools:
     - Vaultwarden:
@@ -86,6 +116,10 @@
         href: https://rss.wajeht.com
         description: RSS Reader
         siteMonitor: https://rss.wajeht.com
+        widget:
+          type: miniflux
+          url: https://rss.wajeht.com
+          key: {{HOMEPAGE_VAR_MINIFLUX_KEY}}
 
     - Stirling PDF:
         icon: stirling-pdf
