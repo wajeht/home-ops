@@ -1,17 +1,19 @@
 # Renovate Auto-Updates
 
-Renovate automatically creates PRs (or auto-merges) when new image versions are available.
+Renovate automatically creates PRs when third-party Docker image versions are available.
+
+> **Note:** Your own images (ghcr.io/wajeht/*) use [instant deploy](instant-deploy.md) instead.
 
 ## How It Works
 
 ```
-new image tag pushed to ghcr.io
+new third-party image tag available
     ↓
 Renovate detects new version
     ↓
-auto-merges to home-ops (for your images)
+creates PR for review
     ↓
-doco-cd deploys
+merge PR → doco-cd deploys
 ```
 
 ## Configuration
@@ -28,14 +30,15 @@ doco-cd deploys
       "password": "{{ secrets.GH_TOKEN }}"
     }
   ],
-  "packageRules": [
-    {
-      "matchPackagePatterns": ["^ghcr\\.io/wajeht/"],
-      "automerge": true
-    }
+  "ignoreDeps": [
+    "ghcr.io/wajeht/ufc",
+    "ghcr.io/wajeht/hello-world"
   ]
 }
 ```
+
+- `hostRules` - auth for private ghcr.io images
+- `ignoreDeps` - your images handled by instant deploy
 
 ### Mend UI Setup (Required for Private Images)
 
@@ -52,31 +55,16 @@ doco-cd deploys
    - Username: `wajeht`
    - Select Secret: `GH_TOKEN`
 
-**Important:** You need BOTH:
-- Secret stored in Mend UI
-- hostRules in renovate.json referencing it with `{{ secrets.GH_TOKEN }}`
-
 ## Behavior
 
 | Image | Action |
 |-------|--------|
-| `ghcr.io/wajeht/*` | Auto-merge (your private images) |
-| Other images | Creates PR for review |
-
-## Creating a Release
-
-```bash
-# In your app repo (e.g., hello-world)
-git tag v1.0.0
-git push origin v1.0.0
-# → CI builds image
-# → Renovate detects and auto-merges
-# → doco-cd deploys
-```
+| `ghcr.io/wajeht/*` | Ignored (uses instant deploy) |
+| Third-party images | Creates PR for review |
 
 ## Troubleshooting
 
-### "Failed to look up docker package ghcr.io/wajeht/..."
+### "Failed to look up docker package ghcr.io/..."
 
 1. Check GH_TOKEN has `read:packages` scope
 2. Verify secret is added in Mend UI
