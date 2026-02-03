@@ -1,6 +1,6 @@
 services:
   hello-world:
-    image: ghcr.io/wajeht/hello-world:v0.2.0
+    image: ghcr.io/wajeht/hello-world:v0.2.1
     networks:
       - traefik
     healthcheck:
