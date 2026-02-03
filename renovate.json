@@ -4,6 +4,14 @@
     "config:recommended",
     ":semanticCommits"
   ],
+  "timezone": "America/Chicago",
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 5,
+  "pinDigests": true,
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "automerge": true
+  },
   "docker-compose": {
     "managerFilePatterns": [
       "/(^|/)docker-compose\\.ya?ml$/",
@@ -27,8 +35,17 @@
   ],
   "packageRules": [
     {
+      "matchPackagePatterns": ["^linuxserver/"],
+      "groupName": "linuxserver images"
+    },
+    {
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["major"]
     }
   ]
 }
