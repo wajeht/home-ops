@@ -37,12 +37,6 @@
         siteMonitor: https://ntfy.wajeht.com
 
 - Media:
-    - Plex:
-        icon: plex
-        href: https://plex.wajeht.com
-        description: Movies & TV
-        siteMonitor: https://plex.wajeht.com
-
     - Tautulli:
         icon: tautulli
         href: https://tautulli.wajeht.com
@@ -53,12 +47,6 @@
           url: https://tautulli.wajeht.com
           key: {{HOMEPAGE_VAR_TAUTULLI_KEY}}
 
-    - Audiobookshelf:
-        icon: audiobookshelf
-        href: https://audiobooks.wajeht.com
-        description: Audiobooks
-        siteMonitor: https://audiobooks.wajeht.com
-
     - Miniflux:
         icon: miniflux
         href: https://rss.wajeht.com
@@ -68,6 +56,18 @@
           type: miniflux
           url: https://rss.wajeht.com
           key: {{HOMEPAGE_VAR_MINIFLUX_KEY}}
+
+    - Audiobookshelf:
+        icon: audiobookshelf
+        href: https://audiobooks.wajeht.com
+        description: Audiobooks
+        siteMonitor: https://audiobooks.wajeht.com
+
+    - Plex:
+        icon: plex
+        href: https://plex.wajeht.com
+        description: Movies & TV
+        siteMonitor: https://plex.wajeht.com
 
 - Downloads:
     - Overseerr:
