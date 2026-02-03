@@ -18,7 +18,7 @@ GitOps-driven homelab on Docker Swarm
 Push to git, [doco-cd](https://github.com/kimdre/doco-cd) deploys with zero-downtime rolling updates. Secrets encrypted with SOPS.
 
 ```
-git push → doco-cd polls (60s) → decrypts secrets → docker stack deploy
+git push → webhook → doco-cd → decrypts secrets → docker stack deploy
 ```
 
 ## Tech Stack
@@ -68,10 +68,22 @@ git push → doco-cd polls (60s) → decrypts secrets → docker stack deploy
 
 ```
 home-ops/
-├── apps/           # application stacks
-├── infra/          # traefik, doco-cd
-├── scripts/        # install, backup, restore
-└── docs/           # documentation
+├── apps/
+│   ├── media/              # plex, radarr, sonarr, prowlarr, overseerr, tautulli
+│   ├── vpn-qbit/           # qbittorrent + gluetun vpn
+│   ├── audiobookshelf/     # audiobooks & podcasts
+│   ├── navidrome/          # music streaming
+│   ├── vaultwarden/        # password manager
+│   ├── miniflux/           # rss reader
+│   ├── gitea/              # git mirror
+│   ├── homepage/           # dashboard
+│   ├── uptime-kuma/        # monitoring
+│   └── ...                 # +10 more
+├── infra/
+│   ├── traefik/            # reverse proxy + ssl
+│   └── doco-cd/            # gitops controller
+├── scripts/                # install, backup, restore
+└── docs/                   # documentation
 ```
 
 ## Quick Start
