@@ -1,10 +1,4 @@
 - Infrastructure:
-    - Authelia:
-        icon: authelia
-        href: https://auth.wajeht.com
-        description: SSO Auth
-        siteMonitor: https://auth.wajeht.com
-
     - Traefik:
         icon: traefik
         href: https://traefik.wajeht.com
@@ -29,6 +23,13 @@
         href: https://doco.wajeht.com
         description: GitOps Deployer
         siteMonitor: https://doco.wajeht.com/v1/health
+
+    - Authelia:
+        icon: authelia
+        href: https://auth.wajeht.com
+        description: SSO Auth
+        siteMonitor: https://auth.wajeht.com
+
 
     - Changedetection:
         icon: changedetection-io
