@@ -4,8 +4,8 @@ services:
     environment:
       - TZ=America/Chicago
     volumes:
-      - audiobookshelf-config:/config
-      - audiobookshelf-metadata:/metadata
+      - /home/jaw/data/audiobookshelf/config:/config
+      - /home/jaw/data/audiobookshelf/metadata:/metadata
       - /home/jaw/plex/audiobooks:/audiobooks
       - /home/jaw/plex/podcasts:/podcasts
     networks:
@@ -30,10 +30,6 @@ services:
         - "traefik.http.routers.audiobookshelf.rule=Host(`audiobooks.wajeht.com`)"
         - "traefik.http.routers.audiobookshelf.entrypoints=websecure"
         - "traefik.http.services.audiobookshelf.loadbalancer.server.port=80"
-
-volumes:
-  audiobookshelf-config:
-  audiobookshelf-metadata:
 
 networks:
   traefik:

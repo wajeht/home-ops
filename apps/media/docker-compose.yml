@@ -7,7 +7,7 @@ services:
       - PGID=1000
       - TZ=America/Chicago
     volumes:
-      - prowlarr-config:/config
+      - /home/jaw/data/media/prowlarr:/config
     networks:
       - traefik
       - media-internal
@@ -34,7 +34,7 @@ services:
       - PGID=1000
       - TZ=America/Chicago
     volumes:
-      - radarr-config:/config
+      - /home/jaw/data/media/radarr:/config
       - /home/jaw/plex/downloads:/downloads
       - /home/jaw/plex/movies:/movies
     networks:
@@ -63,7 +63,7 @@ services:
       - PGID=1000
       - TZ=America/Chicago
     volumes:
-      - sonarr-config:/config
+      - /home/jaw/data/media/sonarr:/config
       - /home/jaw/plex/downloads:/downloads
       - /home/jaw/plex/tv:/tv
     networks:
@@ -108,7 +108,7 @@ services:
     env_file:
       - .enc.env
     volumes:
-      - plex-config:/config
+      - /home/jaw/data/media/plex:/config
       - /home/jaw/plex/movies:/movies
       - /home/jaw/plex/tv:/tv
     networks:
@@ -133,7 +133,7 @@ services:
       - PGID=1000
       - TZ=America/Chicago
     volumes:
-      - tautulli-config:/config
+      - /home/jaw/data/media/tautulli:/config
     networks:
       - traefik
     healthcheck:
@@ -159,7 +159,7 @@ services:
       - PGID=1000
       - TZ=America/Chicago
     volumes:
-      - overseerr-config:/config
+      - /home/jaw/data/media/overseerr:/config
     networks:
       - traefik
     healthcheck:
@@ -176,14 +176,6 @@ services:
         - "traefik.http.routers.overseerr.rule=Host(`requests.wajeht.com`)"
         - "traefik.http.routers.overseerr.entrypoints=websecure"
         - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
-
-volumes:
-  prowlarr-config:
-  radarr-config:
-  sonarr-config:
-  plex-config:
-  tautulli-config:
-  overseerr-config:
 
 networks:
   traefik:

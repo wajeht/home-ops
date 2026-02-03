@@ -14,7 +14,7 @@ services:
     environment:
       - TZ=America/Chicago
     volumes:
-      - gluetun-data:/gluetun
+      - /home/jaw/data/gluetun:/gluetun
     networks:
       - traefik
     ports:
@@ -38,13 +38,9 @@ services:
       - TZ=America/Chicago
       - WEBUI_PORT=8085
     volumes:
-      - qbittorrent-config:/config
+      - /home/jaw/data/qbittorrent:/config
       - /home/jaw/plex/downloads:/downloads
     restart: unless-stopped
-
-volumes:
-  gluetun-data:
-  qbittorrent-config:
 
 networks:
   traefik:

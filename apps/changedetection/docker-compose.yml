@@ -6,7 +6,7 @@ services:
       - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000
       - BASE_URL=https://changes.wajeht.com
     volumes:
-      - changedetection-data:/datastore
+      - /home/jaw/data/changedetection:/datastore
     networks:
       - traefik
       - changedetection-internal
@@ -45,9 +45,6 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
-
-volumes:
-  changedetection-data:
 
 networks:
   traefik:
