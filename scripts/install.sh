@@ -51,10 +51,7 @@ mkdir -p "$HOME_DIR/data"/{linx/{files,meta},media/{plex,prowlarr,radarr,sonarr,
 mkdir -p "$HOME_DIR/data"/{miniflux/db,ntfy,qbittorrent,screenshot,stirling-pdf}
 mkdir -p "$HOME_DIR/data"/{traefik/certs,uptime-kuma,vaultwarden}
 chmod 700 "$HOME_DIR/.sops"
-# linuxserver images use PUID/PGID=1000
 chown -R 1000:1000 "$HOME_DIR/plex" "$HOME_DIR/data" 2>/dev/null || true
-# custom wajeht apps run as UID 1001
-chown -R 1001:1001 "$HOME_DIR/data"/{favicon,screenshot} 2>/dev/null || true
 
 # Create traefik network (external, shared by all stacks)
 $SUDO docker network create --driver overlay --attachable traefik 2>/dev/null || true
