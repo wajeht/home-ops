@@ -1,6 +1,6 @@
 services:
   close-powerlifting:
-    image: ghcr.io/wajeht/close-powerlifting:latest
+    image: ghcr.io/wajeht/close-powerlifting:fc168b3
     env_file:
       - .enc.env
     environment:
