@@ -38,13 +38,14 @@ flowchart LR
 
 [Docker Swarm](https://docs.docker.com/engine/swarm/) orchestrates containers across nodes. [Traefik](https://traefik.io) handles reverse proxy with automatic Let's Encrypt SSL via Cloudflare DNS. [doco-cd](https://github.com/kimdre/doco-cd) deploys on webhook with zero-downtime rolling updates. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) auto-updates public image dependencies.
 
-**Deploy Flow:**
-```
-public:  git push → webhook → doco-cd → deploy
-private: push tag → build image → update home-ops → webhook → deploy
-```
+### Deploy Flow
 
-Private apps use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) - tag release triggers GitHub Actions to build image to GHCR, then updates this repo with new version, triggering doco-cd to deploy.
+| Type | Flow |
+|------|------|
+| **Public** | `git push` → `webhook` → `doco-cd` → `deploy` |
+| **Private** | `push tag` → `build image` → `update home-ops` → `webhook` → `deploy` |
+
+Private apps use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) to build images and auto-update this repo.
 
 
 ## Hardware
