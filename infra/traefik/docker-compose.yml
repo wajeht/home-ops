@@ -60,9 +60,6 @@ services:
         - "traefik.http.routers.dashboard.service=api@internal"
         - "traefik.http.routers.dashboard.entrypoints=websecure"
         - "traefik.http.routers.dashboard.tls=true"
-        - "traefik.http.routers.dashboard.tls.certresolver=cloudflare"
-        - "traefik.http.routers.dashboard.tls.domains[0].main=wajeht.com"
-        - "traefik.http.routers.dashboard.tls.domains[0].sans=*.wajeht.com"
         - "traefik.http.services.dummy.loadbalancer.server.port=9999"
       placement:
         constraints:
