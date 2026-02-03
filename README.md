@@ -1,5 +1,3 @@
-<div align="center">
-
 # home-ops
 
 GitOps-driven homelab on Docker Swarm
@@ -8,10 +6,6 @@ GitOps-driven homelab on Docker Swarm
 [![Traefik](https://img.shields.io/badge/Traefik-Proxy-24A1C1?style=flat&logo=traefikproxy&logoColor=white)](https://traefik.io)
 [![Renovate](https://img.shields.io/badge/Renovate-enabled-1A1F6C?style=flat&logo=renovatebot&logoColor=white)](https://github.com/renovatebot/renovate)
 [![SOPS](https://img.shields.io/badge/SOPS-encrypted-FF6F00?style=flat&logo=mozilla&logoColor=white)](https://github.com/getsops/sops)
-
-</div>
-
----
 
 ## Overview
 
