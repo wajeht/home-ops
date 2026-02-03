@@ -17,7 +17,7 @@ Each stack has its own `.enc.env` file. When doco-cd deploys (via webhook), it a
 ```
 infra/
 ├── traefik/.enc.env      # CF_DNS_API_TOKEN
-├── doco-cd/.enc.env      # GIT_ACCESS_TOKEN, WEBHOOK_SECRET, etc.
+├── doco-cd/.enc.env      # GH_TOKEN, WEBHOOK_SECRET, etc.
 apps/
 ├── commit/.enc.env       # OPENAI_API_KEY, GEMINI_API_KEY, etc.
 ```
@@ -81,7 +81,7 @@ Or just push - doco-cd will auto-deploy with decrypted secrets.
 ## Special Files
 
 - `~/.sops/age-key.txt` - Decryption key (never commit to public repo)
-- `~/.docker/config.json` - Created from GHCR_TOKEN for private images
+- `~/.docker/config.json` - Created from GH_TOKEN for private images
 
 ## Security Notes
 

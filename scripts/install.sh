@@ -59,11 +59,11 @@ if [ -n "$DH_TOKEN" ]; then
 fi
 
 # GHCR auth
-GHCR_TOKEN=$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GHCR_TOKEN=" | cut -d= -f2 || true)
-if [ -n "$GHCR_TOKEN" ]; then
-    echo "{\"auths\":{\"ghcr.io\":{\"auth\":\"$(printf "wajeht:%s" "$GHCR_TOKEN" | base64)\"}}}" > "$HOME_DIR/.docker/config.json"
+GH_TOKEN=$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)
+if [ -n "$GH_TOKEN" ]; then
+    echo "{\"auths\":{\"ghcr.io\":{\"auth\":\"$(printf "wajeht:%s" "$GH_TOKEN" | base64)\"}}}" > "$HOME_DIR/.docker/config.json"
     chmod 600 "$HOME_DIR/.docker/config.json"
-    echo "$GHCR_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
+    echo "$GH_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
 fi
 
 # Docker secrets
@@ -74,7 +74,7 @@ create_secret() {
     echo "$value" | $SUDO docker secret create "$name" -
 }
 
-create_secret git_access_token "$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2 || true)"
+create_secret gh_token "$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)"
 create_secret cf_dns_api_token "$(sops -d infra/traefik/.enc.env 2>/dev/null | grep "^CF_DNS_API_TOKEN=" | cut -d= -f2 || true)"
 
 # Deploy core (doco-cd handles rest)
