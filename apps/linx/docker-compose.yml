@@ -27,7 +27,6 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.linx.rule=Host(`linx.wajeht.com`)"
         - "traefik.http.routers.linx.entrypoints=websecure"
-        - "traefik.http.routers.linx.tls.certresolver=cloudflare"
         - "traefik.http.services.linx.loadbalancer.server.port=8080"
 
 volumes:

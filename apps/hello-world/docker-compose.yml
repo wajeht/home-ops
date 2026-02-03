@@ -15,7 +15,6 @@ services:
         - "traefik.http.routers.hello-world.rule=Host(`hello.wajeht.com`)"
         - "traefik.http.routers.hello-world.entrypoints=websecure"
         - "traefik.http.routers.hello-world.tls=true"
-        - "traefik.http.routers.hello-world.tls.certresolver=cloudflare"
         - "traefik.http.services.hello-world.loadbalancer.server.port=8080"
       update_config:
         parallelism: 1

@@ -30,7 +30,6 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.miniflux.rule=Host(`rss.wajeht.com`)"
         - "traefik.http.routers.miniflux.entrypoints=websecure"
-        - "traefik.http.routers.miniflux.tls.certresolver=cloudflare"
         - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
 
   miniflux-db:

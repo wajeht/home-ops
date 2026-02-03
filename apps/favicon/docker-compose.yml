@@ -19,7 +19,6 @@ services:
         - "traefik.http.routers.favicon.rule=Host(`favicon.wajeht.com`)"
         - "traefik.http.routers.favicon.entrypoints=websecure"
         - "traefik.http.routers.favicon.tls=true"
-        - "traefik.http.routers.favicon.tls.certresolver=cloudflare"
         - "traefik.http.services.favicon.loadbalancer.server.port=80"
       update_config:
         parallelism: 1

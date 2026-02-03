@@ -17,7 +17,6 @@ services:
         - "traefik.http.routers.commit.rule=Host(`commit.wajeht.com`)"
         - "traefik.http.routers.commit.entrypoints=websecure"
         - "traefik.http.routers.commit.tls=true"
-        - "traefik.http.routers.commit.tls.certresolver=cloudflare"
         - "traefik.http.services.commit.loadbalancer.server.port=80"
       update_config:
         parallelism: 1
