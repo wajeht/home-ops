@@ -48,7 +48,7 @@ mkdir -p "$HOME_DIR/.sops" "$HOME_DIR/.docker" "$HOME_DIR/plex"/{downloads,movie
 mkdir -p "$HOME_DIR/backup"
 mkdir -p "$HOME_DIR/data"/{audiobookshelf/{config,metadata},changedetection,doco-cd,favicon,gitea,gluetun}
 mkdir -p "$HOME_DIR/data"/{linx/{files,meta},media/{plex,prowlarr,radarr,sonarr,tautulli,overseerr}}
-mkdir -p "$HOME_DIR/data"/{miniflux/db,navidrome,ntfy,prometheus,qbittorrent,stirling-pdf}
+mkdir -p "$HOME_DIR/data"/{miniflux/db,ntfy,qbittorrent,stirling-pdf}
 mkdir -p "$HOME_DIR/data"/{traefik/certs,uptime-kuma,vaultwarden}
 chmod 700 "$HOME_DIR/.sops"
 chown -R 1000:1000 "$HOME_DIR/plex" "$HOME_DIR/data" 2>/dev/null || true

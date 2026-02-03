@@ -1,4 +1,4 @@
-.PHONY: help bootstrap network traefik doco-cd status logs deploy down pull clean
+.PHONY: help bootstrap network traefik doco-cd status logs deploy down pull clean restart up-all down-all health
 
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
@@ -23,10 +23,6 @@ traefik: network ## Start traefik
 doco-cd: network ## Start doco-cd
 	@docker compose -f infrastructure/doco-cd/docker-compose.yml up -d
 	@echo "✓ doco-cd started"
-
-prometheus: network ## Start prometheus
-	@docker compose -f infrastructure/prometheus/docker-compose.yml up -d
-	@echo "✓ prometheus started"
 
 # Operations
 status: ## Show running containers

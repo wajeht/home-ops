@@ -12,12 +12,6 @@
         siteMonitor: https://doco.wajeht.com/v1/health
 
 - Monitoring:
-    - Prometheus:
-        icon: prometheus
-        href: https://prometheus.wajeht.com
-        description: Metrics
-        siteMonitor: https://prometheus.wajeht.com
-
     - Uptime Kuma:
         icon: uptime-kuma
         href: https://status.wajeht.com
@@ -42,12 +36,6 @@
         href: https://plex.wajeht.com
         description: Movies & TV
         siteMonitor: https://plex.wajeht.com
-
-    - Navidrome:
-        icon: navidrome
-        href: https://music.wajeht.com
-        description: Music
-        siteMonitor: https://music.wajeht.com
 
     - Audiobookshelf:
         icon: audiobookshelf
@@ -154,12 +142,6 @@
         href: https://git.wajeht.com
         description: Git Mirror
         siteMonitor: https://git.wajeht.com
-
-    - Whoami:
-        icon: docker
-        href: https://whoami.wajeht.com
-        description: Test Service
-        siteMonitor: https://whoami.wajeht.com
 
     - GitHub:
         icon: github

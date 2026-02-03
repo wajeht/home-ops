@@ -157,9 +157,7 @@ Add to cron:
 │   ├── tautulli/
 │   └── overseerr/
 ├── miniflux/
-├── navidrome/
 ├── ntfy/
-├── prometheus/
 ├── qbittorrent/
 ├── stirling-pdf/
 ├── traefik/
