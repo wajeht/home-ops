@@ -29,10 +29,7 @@ Push to git, [doco-cd](https://github.com/kimdre/doco-cd) picks it up via webhoo
 | [TP-Link TL-SG608P](https://www.amazon.com/s?k=TP-Link+TL-SG608P) | - | - | - | PoE Switch |
 | [CyberPower 1500VA AVR](https://www.amazon.com/CyberPower-CP1500AVRLCD-Intelligent-Outlets-Mini-Tower/dp/B000FBK3QK) | - | - | - | UPS |
 
-| | |
-|--|--|
-| **Idle** | ~82W |
-| **Monthly** | ~60 kWh / ~$7 |
+Idle: ~82W | Monthly: ~60 kWh (~$7)
 
 ## Docs
 
