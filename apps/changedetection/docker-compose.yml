@@ -1,6 +1,6 @@
 services:
   changedetection:
-    image: ghcr.io/dgtlmoon/changedetection.io:0.48.05
+    image: ghcr.io/dgtlmoon/changedetection.io:0.52.9
     environment:
       - TZ=America/Chicago
       - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000
