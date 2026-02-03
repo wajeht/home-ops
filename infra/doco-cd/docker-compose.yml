@@ -20,7 +20,7 @@ services:
           interval: 60  # poll every 60 seconds
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - doco-data:/data
+      - /home/jaw/data/doco-cd:/data
       - ${HOME}/.sops/age-key.txt:/sops/age-key.txt:ro
       - ${HOME}/.docker/config.json:/root/.docker/config.json:ro
     secrets:
@@ -76,9 +76,6 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-
-volumes:
-  doco-data:
 
 networks:
   traefik:

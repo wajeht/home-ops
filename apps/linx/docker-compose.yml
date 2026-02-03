@@ -4,8 +4,8 @@ services:
     command: -config /config/linx.conf
     volumes:
       - ./config:/config
-      - linx-files:/files
-      - linx-meta:/meta
+      - /home/jaw/data/linx/files:/files
+      - /home/jaw/data/linx/meta:/meta
     networks:
       - traefik
     healthcheck:
@@ -28,10 +28,6 @@ services:
         - "traefik.http.routers.linx.rule=Host(`linx.wajeht.com`)"
         - "traefik.http.routers.linx.entrypoints=websecure"
         - "traefik.http.services.linx.loadbalancer.server.port=8080"
-
-volumes:
-  linx-files:
-  linx-meta:
 
 networks:
   traefik:

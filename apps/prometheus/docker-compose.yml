@@ -7,7 +7,7 @@ services:
       - "--storage.tsdb.retention.time=15d"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
+      - /home/jaw/data/prometheus:/prometheus
     networks:
       - traefik
     healthcheck:
@@ -33,9 +33,6 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-
-volumes:
-  prometheus-data:
 
 networks:
   traefik:

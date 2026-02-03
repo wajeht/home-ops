@@ -2,7 +2,7 @@ services:
   uptime-kuma:
     image: louislam/uptime-kuma:1
     volumes:
-      - uptime-kuma-data:/app/data
+      - /home/jaw/data/uptime-kuma:/app/data
     networks:
       - traefik
     healthcheck:
@@ -25,9 +25,6 @@ services:
         - "traefik.http.routers.uptime-kuma.rule=Host(`status.wajeht.com`)"
         - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
         - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
-
-volumes:
-  uptime-kuma-data:
 
 networks:
   traefik:

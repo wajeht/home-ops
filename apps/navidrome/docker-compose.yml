@@ -6,7 +6,7 @@ services:
       - ND_LOGLEVEL=info
       - ND_BASEURL=https://music.wajeht.com
     volumes:
-      - navidrome-data:/data
+      - /home/jaw/data/navidrome:/data
       - /home/jaw/plex/music:/music:ro
     networks:
       - traefik
@@ -30,9 +30,6 @@ services:
         - "traefik.http.routers.navidrome.rule=Host(`music.wajeht.com`)"
         - "traefik.http.routers.navidrome.entrypoints=websecure"
         - "traefik.http.services.navidrome.loadbalancer.server.port=4533"
-
-volumes:
-  navidrome-data:
 
 networks:
   traefik:

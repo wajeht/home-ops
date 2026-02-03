@@ -13,7 +13,7 @@ services:
     env_file:
       - .enc.env
     volumes:
-      - gitea-data:/data
+      - /home/jaw/data/gitea:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
@@ -38,9 +38,6 @@ services:
         - "traefik.http.routers.gitea.rule=Host(`git.wajeht.com`)"
         - "traefik.http.routers.gitea.entrypoints=websecure"
         - "traefik.http.services.gitea.loadbalancer.server.port=3000"
-
-volumes:
-  gitea-data:
 
 networks:
   traefik:

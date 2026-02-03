@@ -4,7 +4,7 @@ services:
     environment:
       TZ: America/Chicago
     volumes:
-      - favicon-data:/app/data
+      - /home/jaw/data/favicon:/app/data
     networks:
       - traefik
     healthcheck:
@@ -30,9 +30,6 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-
-volumes:
-  favicon-data:
 
 networks:
   traefik:
