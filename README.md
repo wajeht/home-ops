@@ -24,36 +24,6 @@ GitOps-driven homelab running on Docker Swarm.
 3. Detects changes, decrypts secrets via SOPS
 4. Deploys with zero-downtime rolling updates
 
-## Architecture
-
-```
-                        ┌─────────────────────────────────────┐
-                        │            Cloudflare               │
-                        │         DNS + SSL Certs             │
-                        └──────────────────┬──────────────────┘
-                                           │
-                        ┌──────────────────▼──────────────────┐
-                        │             Traefik                 │
-                        │     Reverse Proxy + Auto TLS        │
-                        │         *.wajeht.com                │
-                        └──────────────────┬──────────────────┘
-                                           │
-          ┌────────────────────────────────┼────────────────────────────────┐
-          │                                │                                │
-┌─────────▼─────────┐          ┌──────────▼──────────┐          ┌──────────▼──────────┐
-│      Media        │          │     Productivity    │          │    Infrastructure   │
-├───────────────────┤          ├─────────────────────┤          ├─────────────────────┤
-│ Plex              │          │ Vaultwarden         │          │ Traefik             │
-│ Radarr / Sonarr   │          │ Gitea               │          │ doco-cd             │
-│ Prowlarr          │          │ Miniflux            │          │ Uptime Kuma         │
-│ Overseerr         │          │ Stirling PDF        │          │ Prometheus          │
-│ Tautulli          │          │ IT-Tools            │          │ Ntfy                │
-│ Navidrome         │          │ Changedetection     │          │ Homepage            │
-│ Audiobookshelf    │          │ Linx                │          │                     │
-│ qBittorrent+VPN   │          │                     │          │                     │
-└───────────────────┘          └─────────────────────┘          └─────────────────────┘
-```
-
 ## Stack
 
 | Component | Purpose |
