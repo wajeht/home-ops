@@ -1,138 +1,117 @@
 # home-ops
 
-GitOps for Docker Swarm with zero-downtime rolling updates.
+GitOps-driven homelab running on Docker Swarm.
 
-## Overview
-
-Push to git → doco-cd auto-deploys → rolling update with no downtime.
+## How It Works
 
 ```
-home-ops/
-├── apps/                    # applications
-│   ├── homepage/            # dashboard
-│   ├── whoami/              # test service
-│   ├── commit/              # AI commit messages (private ghcr)
-│   │   └── .enc.env         # app secrets (SOPS encrypted)
-│   ├── gitea/               # git mirror
-│   ├── uptime-kuma/         # status monitoring
-│   ├── media/               # plex, *arr stack, qbittorrent
-│   ├── ntfy/                # push notifications
-│   ├── vaultwarden/         # password manager
-│   ├── stirling-pdf/        # PDF tools
-│   ├── changedetection/     # website change alerts
-│   ├── navidrome/           # music streaming
-│   ├── audiobookshelf/      # audiobooks & podcasts
-│   ├── it-tools/            # dev utilities
-│   ├── linx/                 # file sharing
-│   └── miniflux/             # RSS reader
-├── infra/          # core services
-│   ├── traefik/             # reverse proxy + TLS
-│   │   └── .enc.env         # traefik secrets
-│   └── doco-cd/             # gitops controller
-│       └── .enc.env         # doco-cd secrets
-├── scripts/                 # setup and maintenance
-│   ├── setup.sh             # initial server setup
-│   └── sync-secrets.sh      # redeploy after secret changes
-└── docs/                    # documentation
+┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+│   GitHub    │      │   doco-cd   │      │   Docker    │
+│             │ pull │             │deploy│   Swarm     │
+│  git push   │─────▶│  GitOps     │─────▶│             │
+│             │ 60s  │  Controller │      │  Services   │
+└─────────────┘      └─────────────┘      └─────────────┘
+                            │
+                     ┌──────┴──────┐
+                     │    SOPS     │
+                     │  Decrypts   │
+                     │  .enc.env   │
+                     └─────────────┘
+```
+
+1. Push changes to GitHub
+2. doco-cd polls repo every 60s
+3. Detects changes, decrypts secrets via SOPS
+4. Deploys with zero-downtime rolling updates
+
+## Architecture
+
+```
+                        ┌─────────────────────────────────────┐
+                        │            Cloudflare               │
+                        │         DNS + SSL Certs             │
+                        └──────────────────┬──────────────────┘
+                                           │
+                        ┌──────────────────▼──────────────────┐
+                        │             Traefik                 │
+                        │     Reverse Proxy + Auto TLS        │
+                        │         *.wajeht.com                │
+                        └──────────────────┬──────────────────┘
+                                           │
+          ┌────────────────────────────────┼────────────────────────────────┐
+          │                                │                                │
+┌─────────▼─────────┐          ┌──────────▼──────────┐          ┌──────────▼──────────┐
+│      Media        │          │     Productivity    │          │    Infrastructure   │
+├───────────────────┤          ├─────────────────────┤          ├─────────────────────┤
+│ Plex              │          │ Vaultwarden         │          │ Traefik             │
+│ Radarr / Sonarr   │          │ Gitea               │          │ doco-cd             │
+│ Prowlarr          │          │ Miniflux            │          │ Uptime Kuma         │
+│ Overseerr         │          │ Stirling PDF        │          │ Prometheus          │
+│ Tautulli          │          │ IT-Tools            │          │ Ntfy                │
+│ Navidrome         │          │ Changedetection     │          │ Homepage            │
+│ Audiobookshelf    │          │ Linx                │          │                     │
+│ qBittorrent+VPN   │          │                     │          │                     │
+└───────────────────┘          └─────────────────────┘          └─────────────────────┘
 ```
 
 ## Stack
 
 | Component | Purpose |
 |-----------|---------|
-| [Docker Swarm](https://docs.docker.com/engine/swarm/) | Orchestration + rolling updates |
-| [doco-cd](https://github.com/kimdre/doco-cd) | GitOps deployment + SOPS decryption |
-| [Traefik](https://traefik.io) | Reverse proxy + TLS |
-| [SOPS](https://github.com/getsops/sops) | Per-app secrets encryption |
-| [Gitea](https://gitea.io) | Git server + GitHub mirror |
+| [Docker Swarm](https://docs.docker.com/engine/swarm/) | Container orchestration with rolling updates |
+| [doco-cd](https://github.com/kimdre/doco-cd) | GitOps controller with SOPS integration |
+| [Traefik](https://traefik.io) | Reverse proxy with automatic Let's Encrypt |
+| [SOPS](https://github.com/getsops/sops) | Encrypted secrets in git |
+| [Renovate](https://github.com/renovatebot/renovate) | Automated dependency updates |
 
 ## Quick Start
 
 ```bash
-# On your server
+# Clone repo
 git clone https://github.com/wajeht/home-ops.git ~/home-ops
-# Copy age key: scp ~/.sops/age-key.txt user@server:~/.sops/
-cd ~/home-ops && ./scripts/setup.sh
+
+# Copy SOPS key
+scp ~/.sops/age-key.txt user@server:~/.sops/
+
+# Install
+cd ~/home-ops && ./scripts/install.sh
 ```
 
-See [Server Setup](docs/vps-setup.md) for full instructions.
+## Project Structure
+
+```
+home-ops/
+├── apps/                   # Application stacks
+│   ├── media/              # Plex, *arr, qBittorrent
+│   ├── vaultwarden/        # Password manager
+│   └── ...
+├── infra/                  # Core infrastructure
+│   ├── traefik/            # Reverse proxy
+│   └── doco-cd/            # GitOps controller
+├── scripts/
+│   ├── install.sh          # Full setup
+│   ├── uninstall.sh        # Clean removal
+│   ├── backup.sh           # Backup to NAS
+│   └── restore.sh          # Restore from backup
+└── docs/                   # Documentation
+```
+
+## Data Storage
+
+All persistent data stored in `~/data/` for easy backup:
+
+```
+~/data/
+├── traefik/certs/          # SSL certificates
+├── vaultwarden/            # Password vault
+├── media/                  # Plex, *arr configs
+├── gitea/                  # Git repositories
+└── ...
+```
 
 ## Documentation
 
-- **[Server Setup](docs/vps-setup.md)** - Setting up a new server
-- **[Secrets Management](docs/secrets.md)** - Per-app SOPS encryption
-- **[Adding Apps](docs/adding-apps.md)** - Deploy new applications
-- **[Renovate Auto-Updates](docs/renovate.md)** - Auto-update private images
-
-## Quick Reference
-
-### Add an app
-```bash
-mkdir -p apps/myapp
-# Create apps/myapp/docker-compose.yml
-git add -A && git commit -m "add myapp" && git push
-```
-
-### Add app with secrets
-```bash
-# Create encrypted env file
-cat > apps/myapp/.env << 'EOF'
-API_KEY=secret
-EOF
-sops -e apps/myapp/.env > apps/myapp/.enc.env
-rm apps/myapp/.env
-
-# Reference in docker-compose.yml:
-# env_file:
-#   - .enc.env
-
-git add -A && git commit -m "add myapp" && git push
-```
-
-### Edit secrets
-```bash
-sops apps/myapp/.enc.env
-git add -A && git commit -m "update secrets" && git push
-# doco-cd auto-deploys with decrypted secrets
-```
-
-### Check services
-```bash
-ssh server 'sudo docker service ls'
-```
-
-### Force rolling update
-```bash
-ssh server 'sudo docker service update --force myapp_myapp'
-```
-
-### View logs
-```bash
-ssh server 'sudo docker service logs -f traefik_traefik'
-```
-
-## URLs
-
-- https://home.wajeht.com - Dashboard
-- https://traefik.wajeht.com - Traefik
-- https://whoami.wajeht.com - Test
-- https://commit.wajeht.com - AI Commits
-- https://git.wajeht.com - Gitea (GitHub mirror)
-- https://status.wajeht.com - Uptime Kuma
-- https://analytics.wajeht.com - Plausible
-- https://plex.wajeht.com - Plex
-- https://radarr.wajeht.com - Radarr
-- https://prowlarr.wajeht.com - Prowlarr
-- https://qbit.wajeht.com - qBittorrent
-- https://sonarr.wajeht.com - Sonarr
-- https://tautulli.wajeht.com - Tautulli
-- https://requests.wajeht.com - Overseerr
-- https://ntfy.wajeht.com - Ntfy
-- https://vault.wajeht.com - Vaultwarden
-- https://pdf.wajeht.com - Stirling PDF
-- https://changes.wajeht.com - Changedetection
-- https://music.wajeht.com - Navidrome
-- https://audiobooks.wajeht.com - Audiobookshelf
-- https://tools.wajeht.com - IT-Tools
-- https://linx.wajeht.com - Linx (file sharing)
-- https://rss.wajeht.com - Miniflux
+- [Disaster Recovery](docs/disaster-recovery.md)
+- [Adding Apps](docs/adding-apps.md)
+- [SSL/TLS Setup](docs/ssl.md)
+- [Secrets Management](docs/secrets.md)
