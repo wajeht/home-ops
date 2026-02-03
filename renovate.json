@@ -25,5 +25,11 @@
     "ghcr.io/wajeht/commit",
     "ghcr.io/wajeht/favicon",
     "ghcr.io/wajeht/calendar"
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    }
   ]
 }
