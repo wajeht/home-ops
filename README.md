@@ -11,22 +11,12 @@ GitOps-driven homelab running on Docker Swarm
 
 ## Overview
 
-Push to git, [doco-cd](https://github.com/kimdre/doco-cd) deploys with zero-downtime rolling updates. Secrets encrypted with SOPS. Private apps use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) for instant deploys.
+[Docker Swarm](https://docs.docker.com/engine/swarm/) orchestrates containers across nodes. [Traefik](https://traefik.io) handles reverse proxy with automatic Let's Encrypt SSL via Cloudflare DNS. [doco-cd](https://github.com/kimdre/doco-cd) watches this repo and deploys changes with zero-downtime rolling updates. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) auto-updates dependencies. Private apps use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) for instant deploys.
 
 ```
 public:  git push → webhook → doco-cd → deploy
 private: push tag → build → update home-ops → deploy
 ```
-
-## Tech Stack
-
-| Component | Purpose |
-|-----------|---------|
-| [Docker Swarm](https://docs.docker.com/engine/swarm/) | Container orchestration |
-| [doco-cd](https://github.com/kimdre/doco-cd) | GitOps controller |
-| [Traefik](https://traefik.io) | Reverse proxy + Let's Encrypt |
-| [SOPS](https://github.com/getsops/sops) | Secrets encryption |
-| [Renovate](https://github.com/renovatebot/renovate) | Dependency updates |
 
 
 ## Hardware
