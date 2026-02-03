@@ -40,10 +40,19 @@ flowchart LR
 
 ### Deploy Flow
 
-| Type | Flow |
-|------|------|
-| **Public** | `git push` → `webhook` → `doco-cd` → `deploy` |
-| **Private** | `push tag` → `build image` → `update home-ops` → `webhook` → `deploy` |
+```mermaid
+flowchart LR
+    subgraph Public Images
+        A[git push] --> B[webhook] --> C[doco-cd] --> D[deploy]
+    end
+```
+
+```mermaid
+flowchart LR
+    subgraph Private Images
+        E[push tag] --> F[build image] --> G[update home-ops] --> H[webhook] --> I[deploy]
+    end
+```
 
 Private apps use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) to build images and auto-update this repo.
 
