@@ -5,10 +5,10 @@
     ":semanticCommits"
   ],
   "docker-compose": {
-    "fileMatch": [
-      "(^|/)docker-compose\\.ya?ml$",
-      "apps/.+/docker-compose\\.ya?ml$",
-      "infra/.+/docker-compose\\.ya?ml$"
+    "managerFilePatterns": [
+      "/(^|/)docker-compose\\.ya?ml$/",
+      "/apps/.+/docker-compose\\.ya?ml$/",
+      "/infra/.+/docker-compose\\.ya?ml$/"
     ]
   },
   "hostRules": [
@@ -21,17 +21,25 @@
   "packageRules": [
     {
       "description": "Auto-merge own ghcr images",
-      "matchDatasources": ["docker"],
-      "matchPackagePatterns": ["^ghcr\\.io/wajeht/"],
+      "matchDatasources": [
+        "docker"
+      ],
       "automerge": true,
       "automergeType": "branch",
-      "ignoreTests": true
+      "ignoreTests": true,
+      "matchPackageNames": [
+        "/^ghcr\\.io/wajeht//"
+      ]
     },
     {
       "description": "Third-party images - PR only",
-      "matchDatasources": ["docker"],
-      "excludePackagePatterns": ["^ghcr\\.io/wajeht/"],
-      "automerge": false
+      "matchDatasources": [
+        "docker"
+      ],
+      "automerge": false,
+      "matchPackageNames": [
+        "!/^ghcr\\.io/wajeht//"
+      ]
     }
   ]
 }
