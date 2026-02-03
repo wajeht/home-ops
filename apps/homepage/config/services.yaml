@@ -24,6 +24,18 @@
         description: GitOps Deployer
         siteMonitor: https://doco.wajeht.com/v1/health
 
+    - Changedetection:
+        icon: changedetection-io
+        href: https://changes.wajeht.com
+        description: Web Monitor
+        siteMonitor: https://changes.wajeht.com
+
+    - Ntfy:
+        icon: ntfy
+        href: https://ntfy.wajeht.com
+        description: Notifications
+        siteMonitor: https://ntfy.wajeht.com
+
 - Media:
     - Plex:
         icon: plex
@@ -46,6 +58,16 @@
         href: https://audiobooks.wajeht.com
         description: Audiobooks
         siteMonitor: https://audiobooks.wajeht.com
+
+    - Miniflux:
+        icon: miniflux
+        href: https://rss.wajeht.com
+        description: RSS Reader
+        siteMonitor: https://rss.wajeht.com
+        widget:
+          type: miniflux
+          url: https://rss.wajeht.com
+          key: {{HOMEPAGE_VAR_MINIFLUX_KEY}}
 
 - Downloads:
     - Overseerr:
@@ -102,15 +124,11 @@
         description: Passwords
         siteMonitor: https://vault.wajeht.com
 
-    - Miniflux:
-        icon: miniflux
-        href: https://rss.wajeht.com
-        description: RSS Reader
-        siteMonitor: https://rss.wajeht.com
-        widget:
-          type: miniflux
-          url: https://rss.wajeht.com
-          key: {{HOMEPAGE_VAR_MINIFLUX_KEY}}
+    - Gitea:
+        icon: gitea
+        href: https://git.wajeht.com
+        description: Git Mirror
+        siteMonitor: https://git.wajeht.com
 
     - Stirling PDF:
         icon: stirling-pdf
@@ -124,31 +142,12 @@
         description: Dev Utilities
         siteMonitor: https://tools.wajeht.com
 
-    - Changedetection:
-        icon: changedetection-io
-        href: https://changes.wajeht.com
-        description: Web Monitor
-        siteMonitor: https://changes.wajeht.com
-
     - Linx:
         icon: filerun
         href: https://linx.wajeht.com
         description: File Sharing
         siteMonitor: https://linx.wajeht.com
 
-    - Ntfy:
-        icon: ntfy
-        href: https://ntfy.wajeht.com
-        description: Notifications
-        siteMonitor: https://ntfy.wajeht.com
-
-    - Gitea:
-        icon: gitea
-        href: https://git.wajeht.com
-        description: Git Mirror
-        siteMonitor: https://git.wajeht.com
-
-- Apps:
     - UFC:
         icon: mdi-mixed-martial-arts
         href: https://ufc.wajeht.com
