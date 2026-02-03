@@ -53,16 +53,9 @@ home-ops/
 └── docs/                   # documentation
 ```
 
-## Quick Start
-
-```bash
-git clone https://github.com/wajeht/home-ops.git ~/home-ops
-scp ~/.sops/age-key.txt user@server:~/.sops/
-cd ~/home-ops && ./scripts/install.sh
-```
-
 ## Docs
 
+- [Quick Start](docs/quick-start.md)
 - [Disaster Recovery](docs/disaster-recovery.md)
 - [Adding Apps](docs/adding-apps.md)
 - [SSL Setup](docs/ssl.md)
