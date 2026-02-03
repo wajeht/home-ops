@@ -9,10 +9,11 @@ GitOps-driven homelab on Docker Swarm
 
 ## Overview
 
-Push to git, [doco-cd](https://github.com/kimdre/doco-cd) deploys with zero-downtime rolling updates. Secrets encrypted with SOPS.
+Push to git, [doco-cd](https://github.com/kimdre/doco-cd) deploys with zero-downtime rolling updates. Secrets encrypted with SOPS. Private apps use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) for instant deploys.
 
 ```
-git push → webhook → doco-cd → decrypts secrets → docker stack deploy
+public:  git push → webhook → doco-cd → deploy
+private: push tag → build → update home-ops → deploy
 ```
 
 ## Tech Stack
@@ -54,3 +55,8 @@ home-ops/
 - [Adding Apps](docs/adding-apps.md)
 - [SSL Setup](docs/ssl.md)
 - [Secrets](docs/secrets.md)
+
+
+# License
+
+Distributed under the MIT License © [wajeht](https://github.com/wajeht). See [LICENSE](./LICENSE) for more information.
