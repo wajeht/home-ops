@@ -59,7 +59,7 @@ Get token from: https://plex.tv/claim
 | Sonarr | https://sonarr.wajeht.com | TV show management |
 | Prowlarr | https://prowlarr.wajeht.com | Indexer manager |
 | Tautulli | https://tautulli.wajeht.com | Plex stats |
-| Overseerr | https://requests.wajeht.com | Media requests |
+| Overseerr | https://overseerr.wajeht.com | Media requests |
 | FlareSolverr | internal | Cloudflare bypass |
 
 **Note:** qBittorrent + Gluetun VPN is in `apps/vpn-qbit/` (docker-compose, not Swarm)

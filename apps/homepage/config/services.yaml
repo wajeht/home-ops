@@ -72,12 +72,12 @@
 - Downloads:
     - Overseerr:
         icon: overseerr
-        href: https://requests.wajeht.com
+        href: https://overseerr.wajeht.com
         description: Requests
-        siteMonitor: https://requests.wajeht.com
+        siteMonitor: https://overseerr.wajeht.com
         widget:
           type: overseerr
-          url: https://requests.wajeht.com
+          url: https://overseerr.wajeht.com
           key: {{HOMEPAGE_VAR_OVERSEERR_KEY}}
 
     - Radarr:

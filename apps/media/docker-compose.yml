@@ -173,7 +173,7 @@ services:
         condition: on-failure
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.overseerr.rule=Host(`requests.wajeht.com`)"
+        - "traefik.http.routers.overseerr.rule=Host(`overseerr.wajeht.com`)"
         - "traefik.http.routers.overseerr.entrypoints=websecure"
         - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
 
