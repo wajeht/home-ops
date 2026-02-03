@@ -45,3 +45,23 @@ notifier:
 identity_validation:
   reset_password:
     jwt_secret: "{{ secret '/run/secrets/authelia_jwt_secret' | msquote }}"
+
+# OIDC Identity Provider (uncomment to enable Google SSO)
+# identity_providers:
+#   oidc:
+#     hmac_secret: "{{ secret '/run/secrets/authelia_oidc_hmac_secret' | msquote }}"
+#     jwks:
+#       - key: "{{ secret '/run/secrets/authelia_oidc_jwks_key' | msquote }}"
+#     clients:
+#       - client_id: google
+#         client_name: Google
+#         client_secret: "YOUR_GOOGLE_CLIENT_SECRET_HASH"
+#         public: false
+#         authorization_policy: one_factor
+#         redirect_uris:
+#           - https://auth.wajeht.com/api/oidc/callback
+#         scopes:
+#           - openid
+#           - profile
+#           - email
+#         userinfo_signed_response_alg: none
