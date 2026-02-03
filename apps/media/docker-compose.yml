@@ -131,7 +131,7 @@ services:
 
   # Plex stats & monitoring
   tautulli:
-    image: linuxserver/tautulli:2.14.6
+    image: linuxserver/tautulli:2.16.0
     environment:
       - PUID=1000
       - PGID=1000
