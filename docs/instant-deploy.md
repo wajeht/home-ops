@@ -5,7 +5,7 @@ Push a tag → image builds → home-ops updates → doco-cd deploys. No Renovat
 ## How It Works
 
 ```
-App repo (ufc, hello-world, etc.)
+App repo (ufc, commit, etc.)
     ↓ push tag v1.0.0
 GitHub Actions builds image to ghcr.io
     ↓
@@ -88,7 +88,6 @@ In `home-ops/renovate.json`, add your image to prevent Renovate from also updati
 ```json
 "ignoreDeps": [
   "ghcr.io/wajeht/ufc",
-  "ghcr.io/wajeht/hello-world",
   "ghcr.io/wajeht/your-app"
 ]
 ```
@@ -129,7 +128,6 @@ Reusable workflow at `wajeht/doco-deploy-workflow` that:
 ## Apps Using Instant Deploy
 
 - `ufc`
-- `hello-world`
 - `commit`
 - `favicon`
 - `calendar`

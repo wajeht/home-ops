@@ -31,8 +31,7 @@ merge PR → doco-cd deploys
     }
   ],
   "ignoreDeps": [
-    "ghcr.io/wajeht/ufc",
-    "ghcr.io/wajeht/hello-world"
+    "ghcr.io/wajeht/ufc"
   ]
 }
 ```
