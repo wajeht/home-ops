@@ -1,6 +1,6 @@
 services:
   mm2us:
-    image: ghcr.io/wajeht/img-captain-mm2us:64
+    image: ghcr.io/wajeht/mm2us:latest
     env_file:
       - .enc.env
     environment:
