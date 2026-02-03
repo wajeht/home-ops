@@ -60,7 +60,7 @@ home-ops/
 | UniFi Cloud Gateway Ultra | - | - | - | Router |
 | TP-Link TL-SG608P | - | - | - | PoE Switch |
 | Raspberry Pi 5 + PoE HAT | 8GB | 128GB SD | Raspberry Pi OS | AdGuard |
-| CyberPower UPS | - | - | - | Power backup |
+| CyberPower 1500VA AVR | - | - | - | UPS |
 
 ## Docs
 
