@@ -49,7 +49,7 @@ mkdir -p "$HOME_DIR/backup"
 mkdir -p "$HOME_DIR/data"/{audiobookshelf/{config,metadata},changedetection,doco-cd,favicon,gitea,gluetun}
 mkdir -p "$HOME_DIR/data"/{linx/{files,meta},media/{plex,prowlarr,radarr,sonarr,tautulli,overseerr}}
 mkdir -p "$HOME_DIR/data"/{miniflux/db,ntfy,qbittorrent,screenshot,stirling-pdf}
-mkdir -p "$HOME_DIR/data"/{traefik/certs,uptime-kuma,vaultwarden}
+mkdir -p "$HOME_DIR/data"/{authelia,traefik/certs,uptime-kuma,vaultwarden}
 chmod 700 "$HOME_DIR/.sops"
 chown -R 1000:1000 "$HOME_DIR/plex" "$HOME_DIR/data" 2>/dev/null || true
 
@@ -84,6 +84,9 @@ create_secret() {
 create_secret gh_token "$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)"
 create_secret webhook_secret "$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^WEBHOOK_SECRET=" | cut -d= -f2 || true)"
 create_secret cf_dns_api_token "$(sops -d infra/traefik/.enc.env 2>/dev/null | grep "^CF_DNS_API_TOKEN=" | cut -d= -f2 || true)"
+create_secret authelia_jwt_secret "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^JWT_SECRET=" | cut -d= -f2 || true)"
+create_secret authelia_session_secret "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^SESSION_SECRET=" | cut -d= -f2 || true)"
+create_secret authelia_storage_encryption_key "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^STORAGE_ENCRYPTION_KEY=" | cut -d= -f2 || true)"
 
 # Deploy core (doco-cd handles rest)
 deploy() {
@@ -95,6 +98,7 @@ deploy() {
 
 # Deploy with registry auth for all stacks (needed to pull images)
 deploy infra/traefik traefik true
+deploy infra/authelia authelia true
 deploy infra/doco-cd doco-cd true
 
 # vpn-qbit (needs docker-compose - swarm doesn't support devices/network_mode)

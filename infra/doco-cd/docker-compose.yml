@@ -46,6 +46,7 @@ services:
         - "traefik.http.routers.doco-cd.rule=Host(`doco.wajeht.com`)"
         - "traefik.http.routers.doco-cd.entrypoints=websecure"
         - "traefik.http.routers.doco-cd.tls=true"
+        - "traefik.http.routers.doco-cd.middlewares=authelia@file"
         - "traefik.http.services.doco-cd.loadbalancer.server.port=80"
       placement:
         constraints:
