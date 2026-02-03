@@ -28,27 +28,6 @@ private: push tag → build → update home-ops → deploy
 | [SOPS](https://github.com/getsops/sops) | Secrets encryption |
 | [Renovate](https://github.com/renovatebot/renovate) | Dependency updates |
 
-## Repository Structure
-
-```
-home-ops/
-├── apps/
-│   ├── media/              # plex, radarr, sonarr, prowlarr, overseerr, tautulli
-│   ├── vpn-qbit/           # qbittorrent + gluetun vpn
-│   ├── audiobookshelf/     # audiobooks & podcasts
-│   ├── navidrome/          # music streaming
-│   ├── vaultwarden/        # password manager
-│   ├── miniflux/           # rss reader
-│   ├── gitea/              # git mirror
-│   ├── homepage/           # dashboard
-│   ├── uptime-kuma/        # monitoring
-│   └── ...                 # +10 more
-├── infra/
-│   ├── traefik/            # reverse proxy + ssl
-│   └── doco-cd/            # gitops controller
-├── scripts/                # install, backup, restore
-└── docs/                   # documentation
-```
 
 ## Hardware
 
