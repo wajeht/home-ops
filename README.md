@@ -50,6 +50,15 @@ home-ops/
 └── docs/                   # documentation
 ```
 
+## Hardware
+
+| Device | Storage | Function |
+|--------|---------|----------|
+| Dell OptiPlex 5050 | 100GB SSD | Docker Swarm |
+| Synology DS423+ | 25TB SHR | NAS |
+| UniFi Cloud Gateway Ultra | - | Router |
+| Raspberry Pi 5 | SD Card | AdGuard |
+
 ## Docs
 
 - [Quick Start](docs/quick-start.md)
