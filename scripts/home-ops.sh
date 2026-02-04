@@ -207,7 +207,11 @@ cmd_install() {
     # Deploy stacks
     deploy() {
         local dir=$1 name=$2
-        HOME="$HOME_DIR" $SUDO -E docker stack deploy -c "$dir/docker-compose.yml" --with-registry-auth "$name"
+        if [ -n "$SUDO" ]; then
+            HOME="$HOME_DIR" $SUDO -E docker stack deploy -c "$dir/docker-compose.yml" --with-registry-auth "$name"
+        else
+            HOME="$HOME_DIR" docker stack deploy -c "$dir/docker-compose.yml" --with-registry-auth "$name"
+        fi
     }
 
     deploy infra/traefik traefik
@@ -228,7 +232,7 @@ cmd_install() {
     echo "=== Done ==="
     $SUDO docker service ls
     echo ""
-    echo "doco-cd will auto-deploy apps within 60s: https://doco.wajeht.com"
+    echo "doco-cd will auto-deploy apps within 60s: https://doco.jaw.dev"
 }
 
 #=============================================================================
