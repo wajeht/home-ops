@@ -36,10 +36,18 @@ while true; do
   page=$((page + 1))
 done
 
-# Get existing Gitea repos
+# Get existing Gitea repos (paginated)
 echo "Fetching existing Gitea repos..."
-GITEA_REPOS=$(curl -s -H "Authorization: token $GITEA_TOKEN" \
-  "$GITEA_URL/api/v1/user/repos?limit=200" | jq -r '.[].name // empty')
+GITEA_REPOS=""
+page=1
+while true; do
+  repos=$(curl -s -H "Authorization: token $GITEA_TOKEN" \
+    "$GITEA_URL/api/v1/user/repos?limit=100&page=$page" | jq -r '.[].name // empty')
+  [ -z "$repos" ] && break
+  GITEA_REPOS="$GITEA_REPOS
+$repos"
+  page=$((page + 1))
+done
 
 # Create mirrors for missing repos
 created=0
