@@ -28,7 +28,7 @@ http:
   routers:
     # Catch-all for unknown subdomains (low priority)
     catchall:
-      rule: "HostRegexp(`^[a-z0-9-]+\\.jaw\\.dev$`)"
+      rule: "HostRegexp(`.+\\.jaw\\.dev`)"
       entrypoints:
         - websecure
       middlewares:
