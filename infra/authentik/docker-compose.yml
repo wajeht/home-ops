@@ -72,8 +72,8 @@ services:
         - "traefik.http.routers.authentik.rule=Host(`auth.jaw.dev`)"
         - "traefik.http.routers.authentik.entrypoints=websecure"
         - "traefik.http.services.authentik.loadbalancer.server.port=9000"
-        # Forward auth endpoint
-        - "traefik.http.routers.authentik-outpost.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.jaw.dev`) && PathPrefix(`/outpost.goauthentik.io/`)"
+        # Forward auth endpoint (Traefik v3 syntax)
+        - "traefik.http.routers.authentik-outpost.rule=HostRegexp(`^[a-z0-9-]+\\.jaw\\.dev$`) && PathPrefix(`/outpost.goauthentik.io/`)"
         - "traefik.http.routers.authentik-outpost.entrypoints=websecure"
       restart_policy:
         condition: on-failure

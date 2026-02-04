@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v2.11@sha256:1adaeaea44762d9735a60e55710defc920b643d857fb7be4b1cbddd17e7080a8
+    image: traefik:v3.3
     ports:
       - "80:80"
       - "443:443"
