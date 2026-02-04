@@ -1,0 +1,122 @@
+services:
+  postgresql:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/authentik_db_pass
+      POSTGRES_USER: authentik
+      POSTGRES_DB: authentik
+    secrets:
+      - authentik_db_pass
+    volumes:
+      - /home/jaw/data/authentik/db:/var/lib/postgresql/data
+    networks:
+      - authentik-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d authentik -U authentik"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  redis:
+    image: redis:7-alpine
+    command: --save 60 1 --loglevel warning
+    volumes:
+      - /home/jaw/data/authentik/redis:/data
+    networks:
+      - authentik-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  server:
+    image: ghcr.io/goauthentik/server:2024.12.3
+    command: server
+    environment:
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: file:///run/secrets/authentik_db_pass
+      AUTHENTIK_SECRET_KEY: file:///run/secrets/authentik_secret_key
+      # Bootstrap admin (first run only)
+      AUTHENTIK_BOOTSTRAP_EMAIL: file:///run/secrets/authentik_bootstrap_email
+      AUTHENTIK_BOOTSTRAP_PASSWORD: file:///run/secrets/authentik_bootstrap_password
+    secrets:
+      - authentik_db_pass
+      - authentik_secret_key
+      - authentik_bootstrap_email
+      - authentik_bootstrap_password
+    volumes:
+      - /home/jaw/data/authentik/media:/media
+      - /home/jaw/data/authentik/templates:/templates
+    networks:
+      - authentik-internal
+      - traefik
+    depends_on:
+      - postgresql
+      - redis
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.authentik.rule=Host(`auth.jaw.dev`)"
+        - "traefik.http.routers.authentik.entrypoints=websecure"
+        - "traefik.http.services.authentik.loadbalancer.server.port=9000"
+        # Forward auth endpoint
+        - "traefik.http.routers.authentik-outpost.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.jaw.dev`) && PathPrefix(`/outpost.goauthentik.io/`)"
+        - "traefik.http.routers.authentik-outpost.entrypoints=websecure"
+      restart_policy:
+        condition: on-failure
+
+  worker:
+    image: ghcr.io/goauthentik/server:2024.12.3
+    command: worker
+    environment:
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: file:///run/secrets/authentik_db_pass
+      AUTHENTIK_SECRET_KEY: file:///run/secrets/authentik_secret_key
+    secrets:
+      - authentik_db_pass
+      - authentik_secret_key
+    volumes:
+      - /home/jaw/data/authentik/media:/media
+      - /home/jaw/data/authentik/templates:/templates
+      - /home/jaw/data/authentik/certs:/certs
+    networks:
+      - authentik-internal
+    depends_on:
+      - postgresql
+      - redis
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  authentik-internal:
+    driver: overlay
+  traefik:
+    external: true
+
+secrets:
+  authentik_db_pass:
+    external: true
+  authentik_secret_key:
+    external: true
+  authentik_bootstrap_email:
+    external: true
+  authentik_bootstrap_password:
+    external: true
