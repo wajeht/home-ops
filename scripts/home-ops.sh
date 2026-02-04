@@ -17,7 +17,7 @@ export SOPS_AGE_KEY_FILE="$USER_HOME/.sops/age-key.txt"
 NAS_IP="192.168.4.160"
 NFS_MOUNTS=(
     "plex|/volume1/plex|$USER_HOME/plex"
-    "backup|/volume1/backup|$USER_HOME/backup/kopia"
+    "backup|/volume1/backup|$USER_HOME/backup"
 )
 
 # Data directories
@@ -34,10 +34,6 @@ DATA_DIRS=(
     "$USER_HOME/data/gains"
     "$USER_HOME/data/gitea"
     "$USER_HOME/data/gluetun"
-    "$USER_HOME/data/kopia/config"
-    "$USER_HOME/data/kopia/cache"
-    "$USER_HOME/data/kopia/logs"
-    "$USER_HOME/data/kopia/dumps"
     "$USER_HOME/data/linx/files"
     "$USER_HOME/data/linx/meta"
     "$USER_HOME/data/media/plex"
@@ -62,7 +58,6 @@ DATA_DIRS=(
     "$USER_HOME/plex/music"
     "$USER_HOME/plex/audiobooks"
     "$USER_HOME/plex/podcasts"
-    "$USER_HOME/backup/kopia"
     "$USER_HOME/.sops"
     "$USER_HOME/.docker"
 )
@@ -78,7 +73,6 @@ cmd_setup() {
             echo "  Created: $dir"
         fi
     done
-    mkdir -p /tmp/kopia 2>/dev/null || true
     chmod 700 "$USER_HOME/.sops" 2>/dev/null || true
     chown -R 1000:1000 "$USER_HOME/plex" "$USER_HOME/data" 2>/dev/null || true
     echo "Done."
@@ -201,7 +195,6 @@ cmd_install() {
     create_secret authelia_jwt_secret "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^JWT_SECRET=" | cut -d= -f2 || true)"
     create_secret authelia_session_secret "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^SESSION_SECRET=" | cut -d= -f2 || true)"
     create_secret authelia_storage_encryption_key "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^STORAGE_ENCRYPTION_KEY=" | cut -d= -f2 || true)"
-    create_secret kopia_password "$(sops -d infra/kopia/.enc.env 2>/dev/null | grep "^KOPIA_PASSWORD=" | cut -d= -f2 || true)"
 
     # Deploy stacks
     deploy() {
@@ -215,7 +208,6 @@ cmd_install() {
 
     deploy infra/traefik traefik
     deploy infra/authelia authelia
-    deploy infra/kopia kopia
     deploy infra/doco-cd doco-cd
 
     # vpn-qbit (docker-compose, not swarm)
