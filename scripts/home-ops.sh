@@ -139,7 +139,11 @@ cmd_install() {
     echo "[2/5] Docker..."
     if ! command -v docker &> /dev/null; then
         curl -fsSL https://get.docker.com | $SUDO sh
-        [ "$EUID" -ne 0 ] && $SUDO usermod -aG docker "$USER"
+    fi
+    # Always ensure current user is in docker group
+    if [ "$EUID" -ne 0 ]; then
+        $SUDO usermod -aG docker "$USER"
+        echo "  Added $USER to docker group (re-login to take effect)"
     fi
 
     # Install SOPS
