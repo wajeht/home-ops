@@ -3,13 +3,12 @@
 # Usage: ./scripts/home-ops.sh <command> [args]
 set -eo pipefail
 
+# Don't run as root - script uses sudo internally
+[ "$EUID" -eq 0 ] && { echo "ERROR: Don't run with sudo. Script uses sudo internally."; exit 1; }
+
 # Config
-USER_HOME="/home/jaw"  # Always use jaw's home for data paths
-if [ "$EUID" -eq 0 ]; then
-    SUDO=""
-else
-    SUDO="sudo"
-fi
+USER_HOME="/home/jaw"
+SUDO="sudo"
 REPO_DIR="$USER_HOME/home-ops"
 export SOPS_AGE_KEY_FILE="$USER_HOME/.sops/age-key.txt"
 
