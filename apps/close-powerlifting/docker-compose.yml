@@ -1,6 +1,6 @@
 services:
   close-powerlifting:
-    image: ghcr.io/wajeht/close-powerlifting:5b49633@sha256:bd777d12d002887b14699309fb1a45d51b67e47f2fc7528d8ecd59d3618920f8
+    image: ghcr.io/wajeht/close-powerlifting:5b49633
     env_file:
       - .enc.env
     environment:
@@ -18,7 +18,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.close-powerlifting.rule=Host(`closepowerlifting.com`) || Host(`www.closepowerlifting.com`)"
+        - "traefik.http.routers.close-powerlifting.rule=Host(`closepowerlifting.com`) || Host(`www.closepowerlifting.com`) || Host(`close-powerlifting.jaw.dev`)"
         - "traefik.http.routers.close-powerlifting.entrypoints=websecure"
         - "traefik.http.services.close-powerlifting.loadbalancer.server.port=80"
       update_config:
