@@ -22,7 +22,7 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.it-tools.rule=Host(`tools.jaw.dev`)"
         - "traefik.http.routers.it-tools.entrypoints=websecure"
-        - "traefik.http.routers.it-tools.middlewares=authentik@file"
+        - "traefik.http.routers.it-tools.middlewares=authelia@file"
         - "traefik.http.services.it-tools.loadbalancer.server.port=80"
 
 networks:
