@@ -33,6 +33,7 @@ DATA_DIRS=(
     "$USER_HOME/data/changedetection"
     "$USER_HOME/data/close-powerlifting"
     "$USER_HOME/data/doco-cd"
+    "$USER_HOME/data/dozzle"
     "$USER_HOME/data/favicon"
     "$USER_HOME/data/gains"
     "$USER_HOME/data/gitea"
