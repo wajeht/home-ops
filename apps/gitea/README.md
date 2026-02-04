@@ -1,43 +1,52 @@
 # Gitea - GitHub Mirror
 
-Auto-mirrors GitHub repos to self-hosted Gitea.
+Auto-mirrors all GitHub repos to self-hosted Gitea.
+
+## How It Works
+
+1. `gitea` - Main Gitea server
+2. `mirror-sync` - Sidecar that syncs GitHub repos every 6h
 
 ## Setup
 
-After deploy:
-
-1. Go to https://gitea.jaw.dev → create admin account
-2. Settings → Applications → Generate API token
-3. Run mirror script:
+1. Deploy stack: `docker stack deploy -c docker-compose.yml gitea`
+2. Go to https://gitea.jaw.dev → create admin account
+3. Settings → Applications → Generate API token
+4. Add tokens to `.enc.env`:
 
 ```bash
-GITEA_TOKEN=your_token GITHUB_TOKEN=your_gh_pat ./setup-mirrors.sh
+sops .enc.env
+# Add:
+# GITEA_TOKEN=your_gitea_token
+# GH_TOKEN=your_github_pat
 ```
 
-## Instant Sync via Webhook
+5. Redeploy to pick up tokens
 
-Instead of waiting 8h, trigger immediate sync on push.
+## Tokens Required
 
-On GitHub, for each repo: Settings → Webhooks → Add webhook:
-
-| Field | Value |
-|-------|-------|
-| URL | `https://gitea.jaw.dev/api/v1/repos/wajeht/{repo}/mirror-sync` |
-| Content type | `application/json` |
-| Events | Just `push` |
-
-Add custom header:
-```
-Authorization: token YOUR_GITEA_TOKEN
-```
-
-## Add More Mirrors
-
-Edit `setup-mirrors.sh` and add repos to the `REPOS` array, then re-run.
+| Token | Scope | Purpose |
+|-------|-------|---------|
+| GITEA_TOKEN | Gitea API token | Create mirrors |
+| GH_TOKEN | GitHub PAT with `repo` scope | Read private repos |
 
 ## Manual Sync
+
+Trigger sync immediately:
+
+```bash
+docker service update --force gitea_mirror-sync
+```
+
+Or call API directly:
 
 ```bash
 curl -X POST "https://gitea.jaw.dev/api/v1/repos/wajeht/REPO/mirror-sync" \
   -H "Authorization: token YOUR_GITEA_TOKEN"
+```
+
+## Logs
+
+```bash
+docker service logs gitea_mirror-sync -f
 ```
