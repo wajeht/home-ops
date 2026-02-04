@@ -1,196 +1,196 @@
 - Infrastructure:
     - Traefik:
         icon: traefik
-        href: https://traefik.wajeht.com
+        href: https://traefik.jaw.dev
         description: Reverse Proxy
-        siteMonitor: https://traefik.wajeht.com
+        siteMonitor: https://traefik.jaw.dev
         widget:
           type: traefik
-          url: https://traefik.wajeht.com
+          url: https://traefik.jaw.dev
 
     - Uptime Kuma:
         icon: uptime-kuma
-        href: https://status.wajeht.com
+        href: https://status.jaw.dev
         description: Status Monitor
-        siteMonitor: https://status.wajeht.com
+        siteMonitor: https://status.jaw.dev
         widget:
           type: uptimekuma
-          url: https://status.wajeht.com
+          url: https://status.jaw.dev
           slug: home
 
     - Doco-CD:
         icon: docker
-        href: https://doco.wajeht.com
+        href: https://doco.jaw.dev
         description: GitOps Deployer
-        siteMonitor: https://doco.wajeht.com/v1/health
+        siteMonitor: https://doco.jaw.dev/v1/health
 
     - Authelia:
         icon: authelia
-        href: https://auth.wajeht.com
+        href: https://auth.jaw.dev
         description: SSO Auth
-        siteMonitor: https://auth.wajeht.com
+        siteMonitor: https://auth.jaw.dev
 
     - Kopia:
         icon: kopia
-        href: https://backup.wajeht.com
+        href: https://backup.jaw.dev
         description: Backups
-        siteMonitor: https://backup.wajeht.com
+        siteMonitor: https://backup.jaw.dev
 
     - Changedetection:
         icon: changedetection-io
-        href: https://changes.wajeht.com
+        href: https://changes.jaw.dev
         description: Web Monitor
-        siteMonitor: https://changes.wajeht.com
+        siteMonitor: https://changes.jaw.dev
 
     - Ntfy:
         icon: ntfy
-        href: https://ntfy.wajeht.com
+        href: https://ntfy.jaw.dev
         description: Notifications
-        siteMonitor: https://ntfy.wajeht.com
+        siteMonitor: https://ntfy.jaw.dev
 
 - Media:
     - Tautulli:
         icon: tautulli
-        href: https://tautulli.wajeht.com
+        href: https://tautulli.jaw.dev
         description: Plex Stats
-        siteMonitor: https://tautulli.wajeht.com
+        siteMonitor: https://tautulli.jaw.dev
         widget:
           type: tautulli
-          url: https://tautulli.wajeht.com
+          url: https://tautulli.jaw.dev
           key: {{HOMEPAGE_VAR_TAUTULLI_KEY}}
 
     - Miniflux:
         icon: miniflux
-        href: https://rss.wajeht.com
+        href: https://rss.jaw.dev
         description: RSS Reader
-        siteMonitor: https://rss.wajeht.com
+        siteMonitor: https://rss.jaw.dev
         widget:
           type: miniflux
-          url: https://rss.wajeht.com
+          url: https://rss.jaw.dev
           key: {{HOMEPAGE_VAR_MINIFLUX_KEY}}
 
     - Audiobookshelf:
         icon: audiobookshelf
-        href: https://audiobooks.wajeht.com
+        href: https://audiobooks.jaw.dev
         description: Audiobooks
-        siteMonitor: https://audiobooks.wajeht.com
+        siteMonitor: https://audiobooks.jaw.dev
 
     - Plex:
         icon: plex
-        href: https://plex.wajeht.com
+        href: https://plex.jaw.dev
         description: Movies & TV
-        siteMonitor: https://plex.wajeht.com
+        siteMonitor: https://plex.jaw.dev
 
 - Downloads:
     - Overseerr:
         icon: overseerr
-        href: https://overseerr.wajeht.com
+        href: https://overseerr.jaw.dev
         description: Requests
-        siteMonitor: https://overseerr.wajeht.com
+        siteMonitor: https://overseerr.jaw.dev
         widget:
           type: overseerr
-          url: https://overseerr.wajeht.com
+          url: https://overseerr.jaw.dev
           key: {{HOMEPAGE_VAR_OVERSEERR_KEY}}
 
     - Radarr:
         icon: radarr
-        href: https://radarr.wajeht.com
+        href: https://radarr.jaw.dev
         description: Movies
-        siteMonitor: https://radarr.wajeht.com
+        siteMonitor: https://radarr.jaw.dev
         widget:
           type: radarr
-          url: https://radarr.wajeht.com
+          url: https://radarr.jaw.dev
           key: {{HOMEPAGE_VAR_RADARR_KEY}}
 
     - Sonarr:
         icon: sonarr
-        href: https://sonarr.wajeht.com
+        href: https://sonarr.jaw.dev
         description: TV Shows
-        siteMonitor: https://sonarr.wajeht.com
+        siteMonitor: https://sonarr.jaw.dev
         widget:
           type: sonarr
-          url: https://sonarr.wajeht.com
+          url: https://sonarr.jaw.dev
           key: {{HOMEPAGE_VAR_SONARR_KEY}}
 
     - qBittorrent:
         icon: qbittorrent
-        href: https://qbit.wajeht.com
+        href: https://qbit.jaw.dev
         description: Torrents
-        siteMonitor: https://qbit.wajeht.com
+        siteMonitor: https://qbit.jaw.dev
         widget:
           type: qbittorrent
-          url: https://qbit.wajeht.com
+          url: https://qbit.jaw.dev
           username: {{HOMEPAGE_VAR_QBIT_USER}}
           password: {{HOMEPAGE_VAR_QBIT_PASS}}
 
     - Prowlarr:
         icon: prowlarr
-        href: https://prowlarr.wajeht.com
+        href: https://prowlarr.jaw.dev
         description: Indexers
-        siteMonitor: https://prowlarr.wajeht.com
+        siteMonitor: https://prowlarr.jaw.dev
 
 - Tools:
     - Vaultwarden:
         icon: vaultwarden
-        href: https://vault.wajeht.com
+        href: https://vault.jaw.dev
         description: Passwords
-        siteMonitor: https://vault.wajeht.com
+        siteMonitor: https://vault.jaw.dev
 
     - Stirling PDF:
         icon: stirling-pdf
-        href: https://pdf.wajeht.com
+        href: https://pdf.jaw.dev
         description: PDF Tools
-        siteMonitor: https://pdf.wajeht.com
+        siteMonitor: https://pdf.jaw.dev
 
     - IT-Tools:
         icon: it-tools
-        href: https://tools.wajeht.com
+        href: https://tools.jaw.dev
         description: Dev Utilities
-        siteMonitor: https://tools.wajeht.com
+        siteMonitor: https://tools.jaw.dev
 
     - Linx:
         icon: filerun
-        href: https://linx.wajeht.com
+        href: https://linx.jaw.dev
         description: File Sharing
-        siteMonitor: https://linx.wajeht.com
+        siteMonitor: https://linx.jaw.dev
 
 - Apps:
     - UFC:
         icon: mdi-mixed-martial-arts
-        href: https://ufc.wajeht.com
+        href: https://ufc.jaw.dev
         description: MMA Calendar
-        siteMonitor: https://ufc.wajeht.com/health
+        siteMonitor: https://ufc.jaw.dev/health
 
     - Calendar:
         icon: mdi-calendar
-        href: https://calendar.wajeht.com
+        href: https://calendar.jaw.dev
         description: Personal Calendar
-        siteMonitor: https://calendar.wajeht.com/health
+        siteMonitor: https://calendar.jaw.dev/health
 
     - Commit:
         icon: git
-        href: https://commit.wajeht.com
+        href: https://commit.jaw.dev
         description: AI Commits
-        siteMonitor: https://commit.wajeht.com
+        siteMonitor: https://commit.jaw.dev
 
     - Favicon:
         icon: mdi-image-search
-        href: https://favicon.wajeht.com
+        href: https://favicon.jaw.dev
         description: Favicon Grabber
-        siteMonitor: https://favicon.wajeht.com/healthz
+        siteMonitor: https://favicon.jaw.dev/healthz
 
     - Screenshot:
         icon: mdi-monitor-screenshot
-        href: https://screenshot.wajeht.com
+        href: https://screenshot.jaw.dev
         description: Screenshot API
-        siteMonitor: https://screenshot.wajeht.com/healthz
+        siteMonitor: https://screenshot.jaw.dev/healthz
 
 - Dev:
     - Gitea:
         icon: gitea
-        href: https://gitea.wajeht.com
+        href: https://gitea.jaw.dev
         description: Git Mirror
-        siteMonitor: https://gitea.wajeht.com
+        siteMonitor: https://gitea.jaw.dev
 
     - GitHub:
         icon: github

@@ -14,7 +14,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.ufc.rule=Host(`ufc.wajeht.com`)"
+        - "traefik.http.routers.ufc.rule=Host(`ufc.jaw.dev`)"
         - "traefik.http.routers.ufc.entrypoints=websecure"
         - "traefik.http.routers.ufc.tls=true"
         - "traefik.http.services.ufc.loadbalancer.server.port=80"

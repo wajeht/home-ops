@@ -14,7 +14,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.commit.rule=Host(`commit.wajeht.com`)"
+        - "traefik.http.routers.commit.rule=Host(`commit.jaw.dev`)"
         - "traefik.http.routers.commit.entrypoints=websecure"
         - "traefik.http.routers.commit.tls=true"
         - "traefik.http.services.commit.loadbalancer.server.port=80"

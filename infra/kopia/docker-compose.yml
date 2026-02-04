@@ -33,7 +33,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.kopia.rule=Host(`backup.wajeht.com`)"
+        - "traefik.http.routers.kopia.rule=Host(`backup.jaw.dev`)"
         - "traefik.http.routers.kopia.entrypoints=websecure"
         - "traefik.http.routers.kopia.middlewares=authelia@file"
         - "traefik.http.services.kopia.loadbalancer.server.port=51515"

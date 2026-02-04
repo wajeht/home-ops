@@ -4,7 +4,7 @@ services:
     command: serve
     environment:
       - TZ=America/Chicago
-      - NTFY_BASE_URL=https://ntfy.wajeht.com
+      - NTFY_BASE_URL=https://ntfy.jaw.dev
       - NTFY_UPSTREAM_BASE_URL=https://ntfy.sh
       - NTFY_CACHE_FILE=/var/lib/ntfy/cache.db
     volumes:
@@ -28,7 +28,7 @@ services:
         max_attempts: 3
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.ntfy.rule=Host(`ntfy.wajeht.com`)"
+        - "traefik.http.routers.ntfy.rule=Host(`ntfy.jaw.dev`)"
         - "traefik.http.routers.ntfy.entrypoints=websecure"
         - "traefik.http.routers.ntfy.middlewares=authelia@file"
         - "traefik.http.services.ntfy.loadbalancer.server.port=80"

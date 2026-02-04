@@ -4,7 +4,7 @@ Web UI backup solution with deduplication, compression, and encryption.
 
 ## Access
 
-**Web UI:** https://backup.wajeht.com (protected by Authelia)
+**Web UI:** https://backup.jaw.dev (protected by Authelia)
 
 **Login:** jaw / (password in secrets)
 
@@ -17,7 +17,7 @@ Web UI backup solution with deduplication, compression, and encryption.
 ## First-Time Setup
 
 1. Deploy the stack
-2. Access https://backup.wajeht.com
+2. Access https://backup.jaw.dev
 3. Create repository:
    - Select "Local Directory or NAS"
    - Path: `/repository`

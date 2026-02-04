@@ -170,11 +170,11 @@ Point domains to new server IP if switching from 7050 to 5050 or vice versa.
 ```
 
 Check each app:
-- https://plex.wajeht.com
-- https://radarr.wajeht.com
-- https://prowlarr.wajeht.com
-- https://overseerr.wajeht.com
-- https://qbit.wajeht.com
+- https://plex.jaw.dev
+- https://radarr.jaw.dev
+- https://prowlarr.jaw.dev
+- https://overseerr.jaw.dev
+- https://qbit.jaw.dev
 
 ### Reconfigure Connections
 

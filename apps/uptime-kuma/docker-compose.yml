@@ -22,7 +22,7 @@ services:
         max_attempts: 3
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.uptime-kuma.rule=Host(`status.wajeht.com`)"
+        - "traefik.http.routers.uptime-kuma.rule=Host(`status.jaw.dev`)"
         - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
         - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
 

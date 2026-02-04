@@ -20,7 +20,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.screenshot.rule=Host(`screenshot.wajeht.com`)"
+        - "traefik.http.routers.screenshot.rule=Host(`screenshot.jaw.dev`)"
         - "traefik.http.routers.screenshot.entrypoints=websecure"
         - "traefik.http.routers.screenshot.tls=true"
         - "traefik.http.services.screenshot.loadbalancer.server.port=80"

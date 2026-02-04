@@ -19,7 +19,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.myapp.rule=Host(`myapp.wajeht.com`)"
+        - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
         - "traefik.http.routers.myapp.entrypoints=websecure"
         - "traefik.http.services.myapp.loadbalancer.server.port=80"
       update_config:
@@ -82,12 +82,12 @@ git add -A && git commit -m "update secrets" && git push
 deploy:
   labels:
     - "traefik.enable=true"
-    - "traefik.http.routers.myapp.rule=Host(`myapp.wajeht.com`)"
+    - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
     - "traefik.http.routers.myapp.entrypoints=websecure"
     - "traefik.http.services.myapp.loadbalancer.server.port=8080"
 ```
 
-**Note:** TLS uses the wildcard cert (*.wajeht.com) automatically. No need for per-app `certresolver`.
+**Note:** TLS uses the wildcard cert (*.jaw.dev) automatically. No need for per-app `certresolver`.
 
 **Important:** Labels must be under `deploy:` for Swarm mode.
 

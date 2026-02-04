@@ -37,7 +37,7 @@ cd ~/home-ops && ./scripts/setup.sh
 
 ### Local Network (AdGuard)
 Add DNS rewrite in AdGuard Home:
-- Domain: `*.wajeht.com`
+- Domain: `*.jaw.dev`
 - Answer: `192.168.x.x` (your server IP)
 
 ### Public Internet
