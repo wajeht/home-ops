@@ -4,68 +4,67 @@
 set -eo pipefail
 
 # Config
+USER_HOME="/home/jaw"  # Always use jaw's home for data paths
 if [ "$EUID" -eq 0 ]; then
-    HOME_DIR="/root"
     SUDO=""
 else
-    HOME_DIR="${HOME:-/home/jaw}"
     SUDO="sudo"
 fi
-REPO_DIR="$HOME_DIR/home-ops"
-export SOPS_AGE_KEY_FILE="$HOME_DIR/.sops/age-key.txt"
+REPO_DIR="$USER_HOME/home-ops"
+export SOPS_AGE_KEY_FILE="$USER_HOME/.sops/age-key.txt"
 
 # NFS config
 NAS_IP="192.168.4.160"
 NFS_MOUNTS=(
-    "plex|/volume1/plex|$HOME_DIR/plex"
-    "backup|/volume1/backup|$HOME_DIR/backup/kopia"
+    "plex|/volume1/plex|$USER_HOME/plex"
+    "backup|/volume1/backup|$USER_HOME/backup/kopia"
 )
 
 # Data directories
 DATA_DIRS=(
-    "$HOME_DIR/data/audiobookshelf/config"
-    "$HOME_DIR/data/audiobookshelf/metadata"
-    "$HOME_DIR/data/authelia"
-    "$HOME_DIR/data/bang"
-    "$HOME_DIR/data/calendar"
-    "$HOME_DIR/data/changedetection"
-    "$HOME_DIR/data/close-powerlifting"
-    "$HOME_DIR/data/doco-cd"
-    "$HOME_DIR/data/favicon"
-    "$HOME_DIR/data/gains"
-    "$HOME_DIR/data/gitea"
-    "$HOME_DIR/data/gluetun"
-    "$HOME_DIR/data/kopia/config"
-    "$HOME_DIR/data/kopia/cache"
-    "$HOME_DIR/data/kopia/logs"
-    "$HOME_DIR/data/kopia/dumps"
-    "$HOME_DIR/data/linx/files"
-    "$HOME_DIR/data/linx/meta"
-    "$HOME_DIR/data/media/plex"
-    "$HOME_DIR/data/media/prowlarr"
-    "$HOME_DIR/data/media/radarr"
-    "$HOME_DIR/data/media/sonarr"
-    "$HOME_DIR/data/media/tautulli"
-    "$HOME_DIR/data/media/overseerr"
-    "$HOME_DIR/data/miniflux/db"
-    "$HOME_DIR/data/mm2us"
-    "$HOME_DIR/data/notify"
-    "$HOME_DIR/data/ntfy"
-    "$HOME_DIR/data/qbittorrent"
-    "$HOME_DIR/data/screenshot"
-    "$HOME_DIR/data/stirling-pdf"
-    "$HOME_DIR/data/traefik/certs"
-    "$HOME_DIR/data/uptime-kuma"
-    "$HOME_DIR/data/vaultwarden"
-    "$HOME_DIR/plex/downloads"
-    "$HOME_DIR/plex/movies"
-    "$HOME_DIR/plex/tv"
-    "$HOME_DIR/plex/music"
-    "$HOME_DIR/plex/audiobooks"
-    "$HOME_DIR/plex/podcasts"
-    "$HOME_DIR/backup/kopia"
-    "$HOME_DIR/.sops"
-    "$HOME_DIR/.docker"
+    "$USER_HOME/data/audiobookshelf/config"
+    "$USER_HOME/data/audiobookshelf/metadata"
+    "$USER_HOME/data/authelia"
+    "$USER_HOME/data/bang"
+    "$USER_HOME/data/calendar"
+    "$USER_HOME/data/changedetection"
+    "$USER_HOME/data/close-powerlifting"
+    "$USER_HOME/data/doco-cd"
+    "$USER_HOME/data/favicon"
+    "$USER_HOME/data/gains"
+    "$USER_HOME/data/gitea"
+    "$USER_HOME/data/gluetun"
+    "$USER_HOME/data/kopia/config"
+    "$USER_HOME/data/kopia/cache"
+    "$USER_HOME/data/kopia/logs"
+    "$USER_HOME/data/kopia/dumps"
+    "$USER_HOME/data/linx/files"
+    "$USER_HOME/data/linx/meta"
+    "$USER_HOME/data/media/plex"
+    "$USER_HOME/data/media/prowlarr"
+    "$USER_HOME/data/media/radarr"
+    "$USER_HOME/data/media/sonarr"
+    "$USER_HOME/data/media/tautulli"
+    "$USER_HOME/data/media/overseerr"
+    "$USER_HOME/data/miniflux/db"
+    "$USER_HOME/data/mm2us"
+    "$USER_HOME/data/notify"
+    "$USER_HOME/data/ntfy"
+    "$USER_HOME/data/qbittorrent"
+    "$USER_HOME/data/screenshot"
+    "$USER_HOME/data/stirling-pdf"
+    "$USER_HOME/data/traefik/certs"
+    "$USER_HOME/data/uptime-kuma"
+    "$USER_HOME/data/vaultwarden"
+    "$USER_HOME/plex/downloads"
+    "$USER_HOME/plex/movies"
+    "$USER_HOME/plex/tv"
+    "$USER_HOME/plex/music"
+    "$USER_HOME/plex/audiobooks"
+    "$USER_HOME/plex/podcasts"
+    "$USER_HOME/backup/kopia"
+    "$USER_HOME/.sops"
+    "$USER_HOME/.docker"
 )
 
 #=============================================================================
@@ -80,8 +79,8 @@ cmd_setup() {
         fi
     done
     mkdir -p /tmp/kopia 2>/dev/null || true
-    chmod 700 "$HOME_DIR/.sops" 2>/dev/null || true
-    chown -R 1000:1000 "$HOME_DIR/plex" "$HOME_DIR/data" 2>/dev/null || true
+    chmod 700 "$USER_HOME/.sops" 2>/dev/null || true
+    chown -R 1000:1000 "$USER_HOME/plex" "$USER_HOME/data" 2>/dev/null || true
     echo "Done."
 }
 
@@ -139,7 +138,7 @@ cmd_install() {
 
     # Prerequisites
     echo "[1/5] Checking prerequisites..."
-    [ ! -f "$SOPS_AGE_KEY_FILE" ] && { echo "ERROR: Copy age key: scp ~/.sops/age-key.txt $(whoami)@$(hostname -I | awk '{print $1}'):$HOME_DIR/.sops/"; exit 1; }
+    [ ! -f "$SOPS_AGE_KEY_FILE" ] && { echo "ERROR: Copy age key: scp ~/.sops/age-key.txt $(whoami)@$(hostname -I | awk '{print $1}'):$USER_HOME/.sops/"; exit 1; }
     [ ! -d "$REPO_DIR" ] && { echo "ERROR: Clone repo: git clone https://github.com/wajeht/home-ops.git $REPO_DIR"; exit 1; }
 
     # Install Docker
@@ -179,10 +178,10 @@ cmd_install() {
     # Copy docker config
     if [ "$EUID" -ne 0 ]; then
         $SUDO mkdir -p /root/.docker /root/.sops
-        $SUDO cp /root/.docker/config.json "$HOME_DIR/.docker/config.json" 2>/dev/null || true
-        $SUDO cp "$HOME_DIR/.sops/age-key.txt" /root/.sops/
+        $SUDO cp /root/.docker/config.json "$USER_HOME/.docker/config.json" 2>/dev/null || true
+        $SUDO cp "$USER_HOME/.sops/age-key.txt" /root/.sops/
     fi
-    chmod 600 "$HOME_DIR/.docker/config.json" 2>/dev/null || true
+    chmod 600 "$USER_HOME/.docker/config.json" 2>/dev/null || true
 
     # Docker secrets
     echo "[5/5] Deploying..."
@@ -208,9 +207,9 @@ cmd_install() {
     deploy() {
         local dir=$1 name=$2
         if [ -n "$SUDO" ]; then
-            HOME="$HOME_DIR" $SUDO -E docker stack deploy -c "$dir/docker-compose.yml" --with-registry-auth "$name"
+            HOME="$USER_HOME" $SUDO -E docker stack deploy -c "$dir/docker-compose.yml" --with-registry-auth "$name"
         else
-            HOME="$HOME_DIR" docker stack deploy -c "$dir/docker-compose.yml" --with-registry-auth "$name"
+            HOME="$USER_HOME" docker stack deploy -c "$dir/docker-compose.yml" --with-registry-auth "$name"
         fi
     }
 
@@ -248,7 +247,7 @@ cmd_uninstall() {
     # Stop vpn-qbit
     echo "[1/6] Stopping vpn-qbit..."
     cd "$REPO_DIR/apps/vpn-qbit" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
-    cd "$HOME_DIR"
+    cd "$USER_HOME"
 
     echo "[2/6] Removing stacks..."
     for stack in $($SUDO docker stack ls --format '{{.Name}}'); do
@@ -298,7 +297,7 @@ cmd_status() {
     cmd_nfs status
     echo ""
     echo "Disk:"
-    df -h "$HOME_DIR/data" "$HOME_DIR/plex" 2>/dev/null | tail -n +2 || true
+    df -h "$USER_HOME/data" "$USER_HOME/plex" 2>/dev/null | tail -n +2 || true
 }
 
 #=============================================================================
