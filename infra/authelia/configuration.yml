@@ -55,7 +55,7 @@ notifier:
     username: konyeiin@icloud.com
     password: "{{ secret '/run/secrets/authelia_smtp_password' | msquote }}"
     sender: "Authelia <mail@jaw.dev>"
-    startup_check_address: zombyard@gmail.com
+    disable_startup_check: true
 
 identity_validation:
   reset_password:
