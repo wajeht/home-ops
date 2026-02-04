@@ -72,6 +72,9 @@ services:
         - "traefik.http.routers.authentik.rule=Host(`auth.jaw.dev`)"
         - "traefik.http.routers.authentik.entrypoints=websecure"
         - "traefik.http.services.authentik.loadbalancer.server.port=9000"
+        # Disable response buffering for WebSocket support
+        - "traefik.http.middlewares.authentik-buffering.buffering.maxResponseBodyBytes=0"
+        - "traefik.http.routers.authentik.middlewares=authentik-buffering"
         # Forward auth endpoint
         - "traefik.http.routers.authentik-outpost.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.jaw.dev`) && PathPrefix(`/outpost.goauthentik.io/`)"
         - "traefik.http.routers.authentik-outpost.entrypoints=websecure"
