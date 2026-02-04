@@ -50,8 +50,12 @@ storage:
     path: /config/db.sqlite3
 
 notifier:
-  filesystem:
-    filename: /config/notifications.txt
+  smtp:
+    address: "{{ secret '/run/secrets/authelia_smtp_host' | msquote }}:587"
+    username: "{{ secret '/run/secrets/authelia_smtp_username' | msquote }}"
+    password: "{{ secret '/run/secrets/authelia_smtp_password' | msquote }}"
+    sender: "Authelia <mail@jaw.dev>"
+    startup_check_address: zombyard@gmail.com
 
 identity_validation:
   reset_password:
