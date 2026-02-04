@@ -30,7 +30,7 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.changedetection.rule=Host(`changes.jaw.dev`)"
         - "traefik.http.routers.changedetection.entrypoints=websecure"
-        - "traefik.http.routers.changedetection.middlewares=authelia@file"
+        - "traefik.http.routers.changedetection.middlewares=authentik@file"
         - "traefik.http.services.changedetection.loadbalancer.server.port=5000"
 
   # Browser for JS-rendered pages

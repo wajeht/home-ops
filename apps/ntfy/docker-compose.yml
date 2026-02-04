@@ -30,7 +30,7 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.ntfy.rule=Host(`ntfy.jaw.dev`)"
         - "traefik.http.routers.ntfy.entrypoints=websecure"
-        - "traefik.http.routers.ntfy.middlewares=authelia@file"
+        - "traefik.http.routers.ntfy.middlewares=authentik@file"
         - "traefik.http.services.ntfy.loadbalancer.server.port=80"
 
 networks:
