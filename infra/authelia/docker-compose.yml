@@ -3,9 +3,6 @@ services:
     image: authelia/authelia:4
     environment:
       TZ: America/Chicago
-      AUTHELIA_JWT_SECRET_FILE: /run/secrets/authelia_jwt_secret
-      AUTHELIA_SESSION_SECRET_FILE: /run/secrets/authelia_session_secret
-      AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /run/secrets/authelia_storage_encryption_key
     volumes:
       - /home/jaw/data/authelia:/config
     configs:
@@ -20,7 +17,7 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "authelia", "healthcheck"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9091/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -31,8 +28,16 @@ services:
         - "traefik.http.routers.authelia.rule=Host(`auth.jaw.dev`)"
         - "traefik.http.routers.authelia.entrypoints=websecure"
         - "traefik.http.services.authelia.loadbalancer.server.port=9091"
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      rollback_config:
+        parallelism: 1
       restart_policy:
         condition: on-failure
+        delay: 5s
+        max_attempts: 3
 
 configs:
   authelia-config:
