@@ -20,19 +20,19 @@ SOPS_AGE_KEY_FILE=~/.sops/age-key.txt sops -d ../media/.enc.env > .env
 
 2. Deploy with docker-compose (NOT stack deploy):
 ```bash
-sudo docker compose up -d
+sudo docker compose -f docker-compose.manual.yml up -d
 ```
 
 ## After Server Reboot
 
 This stack doesn't auto-start like Swarm services. Manually restart:
 ```bash
-cd ~/home-ops/apps/vpn-qbit && sudo docker compose up -d
+cd ~/home-ops/apps/vpn-qbit && sudo docker compose -f docker-compose.manual.yml up -d
 ```
 
 Or add to crontab for auto-start:
 ```bash
-@reboot cd /home/jaw/home-ops/apps/vpn-qbit && /usr/bin/docker compose up -d
+@reboot cd /home/jaw/home-ops/apps/vpn-qbit && /usr/bin/docker compose -f docker-compose.manual.yml up -d
 ```
 
 ## Traffic Flow
