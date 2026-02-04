@@ -4,7 +4,7 @@ Traefik handles SSL automatically using Let's Encrypt with Cloudflare DNS challe
 
 ## How It Works
 
-1. Traefik requests a **wildcard certificate** for `wajeht.com` + `*.wajeht.com`
+1. Traefik requests a **wildcard certificate** for `jaw.dev` + `*.jaw.dev`
 2. Uses Cloudflare DNS challenge (creates `_acme-challenge` TXT records)
 3. All apps automatically use this wildcard cert - no per-app config needed
 
@@ -13,27 +13,27 @@ Traefik handles SSL automatically using Let's Encrypt with Cloudflare DNS challe
 ```yaml
 command:
   # ACME with Cloudflare DNS
-  - "--certificatesresolvers.cloudflare.acme.email=mail@wajeht.com"
+  - "--certificatesresolvers.cloudflare.acme.email=mail@jaw.dev"
   - "--certificatesresolvers.cloudflare.acme.storage=/certs/acme.json"
   - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
   - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
   - "--certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=30"
   - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53"
   # Wildcard cert at entrypoint level
-  - "--entrypoints.websecure.http.tls.domains[0].main=wajeht.com"
-  - "--entrypoints.websecure.http.tls.domains[0].sans=*.wajeht.com"
+  - "--entrypoints.websecure.http.tls.domains[0].main=jaw.dev"
+  - "--entrypoints.websecure.http.tls.domains[0].sans=*.jaw.dev"
   - "--entrypoints.websecure.http.tls.certresolver=cloudflare"
 ```
 
 ## App Config
 
-Apps don't need `certresolver` labels - the wildcard handles all `*.wajeht.com` subdomains:
+Apps don't need `certresolver` labels - the wildcard handles all `*.jaw.dev` subdomains:
 
 ```yaml
 deploy:
   labels:
     - "traefik.enable=true"
-    - "traefik.http.routers.myapp.rule=Host(`myapp.wajeht.com`)"
+    - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
     - "traefik.http.routers.myapp.entrypoints=websecure"
     - "traefik.http.services.myapp.loadbalancer.server.port=80"
 ```

@@ -25,7 +25,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.authelia.rule=Host(`auth.wajeht.com`)"
+        - "traefik.http.routers.authelia.rule=Host(`auth.jaw.dev`)"
         - "traefik.http.routers.authelia.entrypoints=websecure"
         - "traefik.http.services.authelia.loadbalancer.server.port=9091"
       update_config:

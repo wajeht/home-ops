@@ -43,7 +43,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.doco-cd.rule=Host(`doco.wajeht.com`)"
+        - "traefik.http.routers.doco-cd.rule=Host(`doco.jaw.dev`)"
         - "traefik.http.routers.doco-cd.entrypoints=websecure"
         - "traefik.http.routers.doco-cd.tls=true"
         - "traefik.http.routers.doco-cd.middlewares=authelia@file"

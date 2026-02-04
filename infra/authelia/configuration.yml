@@ -8,7 +8,7 @@ log:
   level: info
 
 totp:
-  issuer: wajeht.com
+  issuer: jaw.dev
 
 authentication_backend:
   file:
@@ -19,7 +19,7 @@ authentication_backend:
 access_control:
   default_policy: deny
   rules:
-    - domain: "*.wajeht.com"
+    - domain: "*.jaw.dev"
       policy: one_factor
 
 session:
@@ -30,8 +30,8 @@ session:
   inactivity: 5m
   remember_me: 1M
   cookies:
-    - domain: wajeht.com
-      authelia_url: https://auth.wajeht.com
+    - domain: jaw.dev
+      authelia_url: https://auth.jaw.dev
 
 storage:
   encryption_key: "{{ secret '/run/secrets/authelia_storage_encryption_key' | msquote }}"
@@ -59,7 +59,7 @@ identity_validation:
 #         public: false
 #         authorization_policy: one_factor
 #         redirect_uris:
-#           - https://auth.wajeht.com/api/oidc/callback
+#           - https://auth.jaw.dev/api/oidc/callback
 #         scopes:
 #           - openid
 #           - profile

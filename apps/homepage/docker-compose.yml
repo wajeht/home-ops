@@ -5,7 +5,7 @@ services:
       - .enc.env
     environment:
       TZ: America/Chicago
-      HOMEPAGE_ALLOWED_HOSTS: home.wajeht.com
+      HOMEPAGE_ALLOWED_HOSTS: home.jaw.dev
     volumes:
       - ./config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -22,7 +22,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.homepage.rule=Host(`home.wajeht.com`)"
+        - "traefik.http.routers.homepage.rule=Host(`home.jaw.dev`)"
         - "traefik.http.routers.homepage.entrypoints=websecure"
         - "traefik.http.routers.homepage.tls=true"
         - "traefik.http.routers.homepage.middlewares=authelia@file"

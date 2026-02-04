@@ -5,8 +5,8 @@ services:
       - USER_UID=1000
       - USER_GID=1000
       - GITEA__database__DB_TYPE=sqlite3
-      - GITEA__server__ROOT_URL=https://gitea.wajeht.com/
-      - GITEA__server__DOMAIN=gitea.wajeht.com
+      - GITEA__server__ROOT_URL=https://gitea.jaw.dev/
+      - GITEA__server__DOMAIN=gitea.jaw.dev
       - GITEA__mirror__ENABLED=true
       - GITEA__mirror__DEFAULT_INTERVAL=8h
       - GITEA__service__DISABLE_REGISTRATION=true
@@ -35,7 +35,7 @@ services:
         max_attempts: 3
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.gitea.rule=Host(`gitea.wajeht.com`)"
+        - "traefik.http.routers.gitea.rule=Host(`gitea.jaw.dev`)"
         - "traefik.http.routers.gitea.entrypoints=websecure"
         - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 

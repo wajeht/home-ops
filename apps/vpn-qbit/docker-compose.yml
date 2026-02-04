@@ -21,7 +21,7 @@ services:
       - "8085:8085"  # qBittorrent WebUI
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.qbittorrent.rule=Host(`qbit.wajeht.com`)"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qbit.jaw.dev`)"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port=8085"
     restart: unless-stopped

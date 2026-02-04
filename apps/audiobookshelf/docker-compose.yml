@@ -27,7 +27,7 @@ services:
         max_attempts: 3
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.audiobookshelf.rule=Host(`audiobooks.wajeht.com`)"
+        - "traefik.http.routers.audiobookshelf.rule=Host(`audiobooks.jaw.dev`)"
         - "traefik.http.routers.audiobookshelf.entrypoints=websecure"
         - "traefik.http.services.audiobookshelf.loadbalancer.server.port=80"
 

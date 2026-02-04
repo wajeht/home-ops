@@ -16,7 +16,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.ip.rule=Host(`ip.wajeht.com`)"
+        - "traefik.http.routers.ip.rule=Host(`ip.jaw.dev`)"
         - "traefik.http.routers.ip.entrypoints=websecure"
         - "traefik.http.services.ip.loadbalancer.server.port=80"
       update_config:

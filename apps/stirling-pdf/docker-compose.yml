@@ -25,7 +25,7 @@ services:
         max_attempts: 3
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.stirling-pdf.rule=Host(`pdf.wajeht.com`)"
+        - "traefik.http.routers.stirling-pdf.rule=Host(`pdf.jaw.dev`)"
         - "traefik.http.routers.stirling-pdf.entrypoints=websecure"
         - "traefik.http.routers.stirling-pdf.middlewares=authelia@file"
         - "traefik.http.services.stirling-pdf.loadbalancer.server.port=8080"

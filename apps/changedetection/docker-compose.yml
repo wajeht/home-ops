@@ -4,7 +4,7 @@ services:
     environment:
       - TZ=America/Chicago
       - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000
-      - BASE_URL=https://changes.wajeht.com
+      - BASE_URL=https://changes.jaw.dev
     volumes:
       - /home/jaw/data/changedetection:/datastore
     networks:
@@ -28,7 +28,7 @@ services:
         max_attempts: 3
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.changedetection.rule=Host(`changes.wajeht.com`)"
+        - "traefik.http.routers.changedetection.rule=Host(`changes.jaw.dev`)"
         - "traefik.http.routers.changedetection.entrypoints=websecure"
         - "traefik.http.routers.changedetection.middlewares=authelia@file"
         - "traefik.http.services.changedetection.loadbalancer.server.port=5000"

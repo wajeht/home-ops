@@ -25,7 +25,7 @@ services:
         max_attempts: 3
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.linx.rule=Host(`linx.wajeht.com`)"
+        - "traefik.http.routers.linx.rule=Host(`linx.jaw.dev`)"
         - "traefik.http.routers.linx.entrypoints=websecure"
         - "traefik.http.routers.linx.middlewares=authelia@file"
         - "traefik.http.services.linx.loadbalancer.server.port=8080"

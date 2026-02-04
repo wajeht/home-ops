@@ -13,7 +13,7 @@ http:
 
   routers:
     qbittorrent:
-      rule: "Host(`qbit.wajeht.com`)"
+      rule: "Host(`qbit.jaw.dev`)"
       entrypoints:
         - websecure
       service: qbittorrent
