@@ -50,12 +50,8 @@ storage:
     path: /config/db.sqlite3
 
 notifier:
-  smtp:
-    address: smtp://smtp.mail.me.com:587
-    username: konyeiin@icloud.com
-    password: "{{ secret '/run/secrets/authelia_smtp_password' | msquote }}"
-    sender: "Authelia <mail@jaw.dev>"
-    disable_startup_check: true
+  filesystem:
+    filename: /config/notifications.txt
 
 identity_validation:
   reset_password:
