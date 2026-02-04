@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.3
+    image: traefik:v2.11.0
     ports:
       - "80:80"
       - "443:443"
@@ -17,9 +17,10 @@ services:
     command:
       - "--api.dashboard=true"
       - "--api.insecure=true"
-      - "--providers.swarm=true"
-      - "--providers.swarm.exposedbydefault=false"
-      - "--providers.swarm.network=traefik"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=traefik"
+      - "--providers.docker.swarmMode=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
