@@ -1,6 +1,6 @@
 services:
   mirror-sync:
-    image: alpine:3.21
+    image: alpine:3.23
     entrypoint: /bin/sh
     command:
       - -c
