@@ -186,7 +186,49 @@
         description: Screenshot API
         siteMonitor: https://screenshot.jaw.dev/healthz
 
+    - Bang:
+        icon: duckduckgo
+        href: https://bang.jaw.dev
+        description: Search Redirector
+        siteMonitor: https://bang.jaw.dev
+
+    - Gains:
+        icon: mdi-weight-lifter
+        href: https://gains.jaw.dev
+        description: Workout Tracker
+        siteMonitor: https://gains.jaw.dev
+
+    - Notify:
+        icon: mdi-bell
+        href: https://notify.jaw.dev
+        description: Notifications
+        siteMonitor: https://notify.jaw.dev
+
+    - IP:
+        icon: mdi-ip-network
+        href: https://ip.jaw.dev
+        description: IP Lookup
+        siteMonitor: https://ip.jaw.dev
+
+    - Close Powerlifting:
+        icon: mdi-weight-lifter
+        href: https://close-powerlifting.jaw.dev
+        description: Powerlifting Stats
+        siteMonitor: https://close-powerlifting.jaw.dev
+
+    - MM2US:
+        icon: mdi-swap-horizontal
+        href: https://mm2us.com
+        description: Unit Converter
+        siteMonitor: https://mm2us.com
+
 - Dev:
+    - Code Server:
+        icon: vscode
+        href: https://code.jaw.dev
+        description: Web IDE
+        siteMonitor: https://code.jaw.dev
+
     - Gitea:
         icon: gitea
         href: https://gitea.jaw.dev
@@ -202,3 +244,16 @@
         icon: github
         href: https://github.com/wajeht/home-ops
         description: This Repo
+
+    - Git Redirect:
+        icon: git
+        href: https://git.jaw.dev
+        description: Git URL Shortener
+        siteMonitor: https://git.jaw.dev
+
+- Personal:
+    - jaw.dev:
+        icon: mdi-web
+        href: https://jaw.dev
+        description: Personal Site
+        siteMonitor: https://jaw.dev
