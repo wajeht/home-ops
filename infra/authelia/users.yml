@@ -1,7 +1,7 @@
 users:
   jaw:
     displayname: "Jaw"
-    password: "$argon2id$v=19$m=65536,t=3,p=4$7JQuf4As4udy7lPJxzbjBQ$aAPhtqKGbh91///HhxilWTzL8OtfcM3c/XoceeFErCs"
+    password: "$argon2id$v=19$m=65536,t=3,p=4$tkwFjyyinCLMM0cx7fVfNg$4gDUgEgTQFhzCBGkZctjtubmw/VTL/np3iNFEIfg4lI"
     email: zombyard@gmail.com
     groups:
       - admins
