@@ -1,6 +1,12 @@
 # Dynamic config for non-swarm services (docker-compose)
 http:
   middlewares:
+    redirect-to-main:
+      redirectRegex:
+        regex: ".*"
+        replacement: "https://jaw.dev"
+        permanent: true
+
     authelia:
       forwardAuth:
         address: http://authelia:9091/api/authz/forward-auth
@@ -12,6 +18,17 @@ http:
           - Remote-Name
 
   routers:
+    # Catch-all for unknown subdomains (low priority)
+    catchall:
+      rule: "HostRegexp(`{subdomain:[a-z0-9-]+}.jaw.dev`)"
+      entrypoints:
+        - websecure
+      middlewares:
+        - redirect-to-main
+      service: noop@internal
+      priority: 1
+      tls: {}
+
     qbittorrent:
       rule: "Host(`qbit.jaw.dev`)"
       entrypoints:
