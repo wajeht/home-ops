@@ -27,17 +27,9 @@ services:
         max_attempts: 3
       labels:
         - "traefik.enable=true"
-        # Main router for /audiobookshelf path
-        - "traefik.http.routers.audiobookshelf.rule=Host(`audiobooks.jaw.dev`) && PathPrefix(`/audiobookshelf`)"
+        - "traefik.http.routers.audiobookshelf.rule=Host(`audiobooks.jaw.dev`)"
         - "traefik.http.routers.audiobookshelf.entrypoints=websecure"
         - "traefik.http.services.audiobookshelf.loadbalancer.server.port=80"
-        # Redirect root to /audiobookshelf
-        - "traefik.http.routers.audiobookshelf-redirect.rule=Host(`audiobooks.jaw.dev`) && Path(`/`)"
-        - "traefik.http.routers.audiobookshelf-redirect.entrypoints=websecure"
-        - "traefik.http.routers.audiobookshelf-redirect.middlewares=audiobookshelf-redirect"
-        - "traefik.http.middlewares.audiobookshelf-redirect.redirectregex.regex=^https://audiobooks.jaw.dev/?$$"
-        - "traefik.http.middlewares.audiobookshelf-redirect.redirectregex.replacement=https://audiobooks.jaw.dev/audiobookshelf/"
-        - "traefik.http.middlewares.audiobookshelf-redirect.redirectregex.permanent=true"
 
 networks:
   traefik:
