@@ -30,12 +30,6 @@
         description: SSO Auth
         siteMonitor: https://auth.jaw.dev
 
-    - Kopia:
-        icon: kopia
-        href: https://backup.jaw.dev
-        description: Backups
-        siteMonitor: https://backup.jaw.dev
-
     - Changedetection:
         icon: changedetection-io
         href: https://changes.jaw.dev
