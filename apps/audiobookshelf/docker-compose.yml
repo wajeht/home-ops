@@ -3,7 +3,6 @@ services:
     image: ghcr.io/advplyr/audiobookshelf:2.32.1@sha256:a52dc5db694a5bf041ce38f285dd6c6a660a4b1b21e37ad6b6746433263b2ae5
     environment:
       - TZ=America/Chicago
-      - ROUTER_BASE_PATH=/
     volumes:
       - /home/jaw/data/audiobookshelf/config:/config
       - /home/jaw/data/audiobookshelf/metadata:/metadata
@@ -28,9 +27,17 @@ services:
         max_attempts: 3
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.audiobookshelf.rule=Host(`audiobooks.jaw.dev`)"
+        # Main router for /audiobookshelf path
+        - "traefik.http.routers.audiobookshelf.rule=Host(`audiobooks.jaw.dev`) && PathPrefix(`/audiobookshelf`)"
         - "traefik.http.routers.audiobookshelf.entrypoints=websecure"
         - "traefik.http.services.audiobookshelf.loadbalancer.server.port=80"
+        # Redirect root to /audiobookshelf
+        - "traefik.http.routers.audiobookshelf-redirect.rule=Host(`audiobooks.jaw.dev`) && Path(`/`)"
+        - "traefik.http.routers.audiobookshelf-redirect.entrypoints=websecure"
+        - "traefik.http.routers.audiobookshelf-redirect.middlewares=audiobookshelf-redirect"
+        - "traefik.http.middlewares.audiobookshelf-redirect.redirectregex.regex=^https://audiobooks.jaw.dev/?$$"
+        - "traefik.http.middlewares.audiobookshelf-redirect.redirectregex.replacement=https://audiobooks.jaw.dev/audiobookshelf/"
+        - "traefik.http.middlewares.audiobookshelf-redirect.redirectregex.permanent=true"
 
 networks:
   traefik:
