@@ -172,11 +172,10 @@ cmd_install() {
     [ -n "$DH_TOKEN" ] && echo "$DH_TOKEN" | $SUDO docker login -u "$DH_USER" --password-stdin
     [ -n "$GH_TOKEN" ] && echo "$GH_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
 
-    # Copy docker config
+    # Copy docker config from root (created by sudo docker login) to user home
     if [ "$EUID" -ne 0 ]; then
-        $SUDO mkdir -p /root/.docker /root/.sops
+        $SUDO mkdir -p /root/.docker
         $SUDO cp /root/.docker/config.json "$USER_HOME/.docker/config.json" 2>/dev/null || true
-        $SUDO cp "$USER_HOME/.sops/age-key.txt" /root/.sops/
     fi
     chmod 600 "$USER_HOME/.docker/config.json" 2>/dev/null || true
 
