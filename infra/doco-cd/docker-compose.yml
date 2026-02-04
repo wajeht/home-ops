@@ -25,8 +25,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/jaw/data/doco-cd:/data
-      - ${HOME}/.sops/age-key.txt:/sops/age-key.txt:ro
-      - ${HOME}/.docker/config.json:/root/.docker/config.json:ro
+      - /home/jaw/.sops/age-key.txt:/sops/age-key.txt:ro
+      - /home/jaw/.docker/config.json:/root/.docker/config.json:ro
     secrets:
       - gh_token
       - webhook_secret
