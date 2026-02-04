@@ -25,7 +25,7 @@ http:
         - websecure
       middlewares:
         - redirect-to-main
-      service: noop@internal
+      service: dummy
       priority: 1
       tls: {}
 
@@ -39,6 +39,12 @@ http:
       tls: {}
 
   services:
+    # Dummy service for redirects (never actually used)
+    dummy:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1"
+
     qbittorrent:
       loadBalancer:
         servers:
