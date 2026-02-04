@@ -51,8 +51,8 @@ storage:
 
 notifier:
   smtp:
-    address: "{{ secret '/run/secrets/authelia_smtp_host' | msquote }}:587"
-    username: "{{ secret '/run/secrets/authelia_smtp_username' | msquote }}"
+    address: smtp://smtp.mail.me.com:587
+    username: konyeiin@icloud.com
     password: "{{ secret '/run/secrets/authelia_smtp_password' | msquote }}"
     sender: "Authelia <mail@jaw.dev>"
     startup_check_address: zombyard@gmail.com
