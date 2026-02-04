@@ -199,7 +199,6 @@ cmd_install() {
     create_secret authelia_jwt_secret "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_JWT_SECRET=" | cut -d= -f2 || true)"
     create_secret authelia_session_secret "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_SESSION_SECRET=" | cut -d= -f2 || true)"
     create_secret authelia_storage_encryption_key "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_STORAGE_ENCRYPTION_KEY=" | cut -d= -f2 || true)"
-    create_secret authelia_smtp_password "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^SMTP_PASSWORD=" | cut -d= -f2 || true)"
 
     # Deploy stacks
     deploy() {
