@@ -23,11 +23,7 @@ NFS_MOUNTS=(
 DATA_DIRS=(
     "$USER_HOME/data/audiobookshelf/config"
     "$USER_HOME/data/audiobookshelf/metadata"
-    "$USER_HOME/data/authentik/db"
-    "$USER_HOME/data/authentik/redis"
-    "$USER_HOME/data/authentik/media"
-    "$USER_HOME/data/authentik/templates"
-    "$USER_HOME/data/authentik/certs"
+    "$USER_HOME/data/authelia"
     "$USER_HOME/data/bang"
     "$USER_HOME/data/calendar"
     "$USER_HOME/data/changedetection"
@@ -200,10 +196,9 @@ cmd_install() {
     create_secret gh_token "$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)"
     create_secret webhook_secret "$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^WEBHOOK_SECRET=" | cut -d= -f2 || true)"
     create_secret cf_dns_api_token "$(sops -d infra/traefik/.enc.env 2>/dev/null | grep "^CF_DNS_API_TOKEN=" | cut -d= -f2 || true)"
-    create_secret authentik_db_pass "$(sops -d infra/authentik/.enc.env 2>/dev/null | grep "^POSTGRES_PASSWORD=" | cut -d= -f2 || true)"
-    create_secret authentik_secret_key "$(sops -d infra/authentik/.enc.env 2>/dev/null | grep "^AUTHENTIK_SECRET_KEY=" | cut -d= -f2 || true)"
-    create_secret authentik_bootstrap_email "$(sops -d infra/authentik/.enc.env 2>/dev/null | grep "^AUTHENTIK_BOOTSTRAP_EMAIL=" | cut -d= -f2 || true)"
-    create_secret authentik_bootstrap_password "$(sops -d infra/authentik/.enc.env 2>/dev/null | grep "^AUTHENTIK_BOOTSTRAP_PASSWORD=" | cut -d= -f2 || true)"
+    create_secret authelia_jwt_secret "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_JWT_SECRET=" | cut -d= -f2 || true)"
+    create_secret authelia_session_secret "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_SESSION_SECRET=" | cut -d= -f2 || true)"
+    create_secret authelia_storage_encryption_key "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_STORAGE_ENCRYPTION_KEY=" | cut -d= -f2 || true)"
 
     # Deploy stacks
     deploy() {
@@ -216,7 +211,7 @@ cmd_install() {
     }
 
     deploy infra/traefik traefik
-    deploy infra/authentik authentik
+    deploy infra/authelia authelia
     deploy infra/doco-cd doco-cd
 
     # vpn-qbit (docker-compose, not swarm)
