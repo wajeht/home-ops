@@ -14,8 +14,6 @@ services:
       - authelia_jwt_secret
       - authelia_session_secret
       - authelia_storage_encryption_key
-      - authelia_smtp_host
-      - authelia_smtp_username
       - authelia_smtp_password
     networks:
       - traefik
@@ -54,10 +52,6 @@ secrets:
   authelia_session_secret:
     external: true
   authelia_storage_encryption_key:
-    external: true
-  authelia_smtp_host:
-    external: true
-  authelia_smtp_username:
     external: true
   authelia_smtp_password:
     external: true
