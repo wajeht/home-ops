@@ -42,6 +42,12 @@
         description: Notifications
         siteMonitor: https://ntfy.jaw.dev
 
+    - Dozzle:
+        icon: dozzle
+        href: https://logs.jaw.dev
+        description: Docker Logs
+        siteMonitor: https://logs.jaw.dev
+
 - Media:
     - Tautulli:
         icon: tautulli
