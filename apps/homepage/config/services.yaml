@@ -17,6 +17,7 @@
           type: uptimekuma
           url: https://status.jaw.dev
           slug: home
+          key: {{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}
 
     - Doco-CD:
         icon: docker
