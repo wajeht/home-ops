@@ -1,4 +1,32 @@
 services:
+  mirror-sync:
+    image: alpine:3.21
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        apk add --no-cache curl jq bash
+        while true; do
+          echo "=== Mirror sync started at $$(date) ==="
+          /scripts/mirror-sync.sh || echo "Sync failed"
+          echo "=== Sleeping 6h ==="
+          sleep 21600
+        done
+    environment:
+      - GITEA_URL=https://gitea.jaw.dev
+      - GITHUB_USER=wajeht
+    env_file:
+      - .enc.env
+    configs:
+      - source: mirror-sync-script
+        target: /scripts/mirror-sync.sh
+        mode: 0755
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+
   gitea:
     image: gitea/gitea:1.25@sha256:17d18218be2dad1f8ed402a4f906989505c90ab8b66ee9befcecfb5d470133e7
     environment:
@@ -42,3 +70,7 @@ services:
 networks:
   traefik:
     external: true
+
+configs:
+  mirror-sync-script:
+    file: ./mirror-sync.sh
