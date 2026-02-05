@@ -147,7 +147,7 @@ services:
     # ... rest of config
 ```
 
-The GH_TOKEN in `apps/swarm/doco-cd/.enc.env` handles authentication.
+The GH_TOKEN in `apps/infra/doco-cd/.enc.env` handles authentication.
 
 ## Health Checks
 

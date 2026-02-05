@@ -62,11 +62,11 @@ sops -d apps/swarm/traefik/.enc.env | grep CF_DNS_API_TOKEN | cut -d= -f2 | \
   docker secret create cf_dns_api_token -
 
 # GitHub token
-sops -d apps/swarm/doco-cd/.enc.env | grep GH_TOKEN | cut -d= -f2 | \
+sops -d apps/infra/doco-cd/.enc.env | grep GH_TOKEN | cut -d= -f2 | \
   docker secret create gh_token -
 
 # Webhook secret
-sops -d apps/swarm/doco-cd/.enc.env | grep WEBHOOK_SECRET | cut -d= -f2 | \
+sops -d apps/infra/doco-cd/.enc.env | grep WEBHOOK_SECRET | cut -d= -f2 | \
   docker secret create webhook_secret -
 ```
 
@@ -86,7 +86,7 @@ docker stack deploy -c apps/swarm/traefik/docker-compose.yml traefik
 docker service ls
 
 # doco-cd
-docker stack deploy -c apps/swarm/doco-cd/docker-compose.yml doco-cd
+docker stack deploy -c apps/infra/doco-cd/docker-compose.yml doco-cd
 ```
 
 ### 7. Deploy Apps

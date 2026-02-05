@@ -44,7 +44,6 @@ apps/
 ├── swarm/           # Swarm stacks (auto-deployed by doco-cd)
 │   ├── traefik/
 │   ├── authelia/
-│   ├── doco-cd/     # Deploys apps/swarm/ as Swarm
 │   ├── homepage/
 │   ├── media/
 │   └── ...
@@ -52,6 +51,7 @@ apps/
 │   ├── plex/        # Needs /dev/dri for hardware transcoding
 │   └── vpn-qbit/    # Needs /dev/net/tun for VPN
 └── infra/           # Infrastructure (manually deployed)
+    ├── doco-cd/          # Deploys apps/swarm/ as Swarm
     └── doco-cd-compose/  # Deploys apps/compose/ as Compose
 ```
 
