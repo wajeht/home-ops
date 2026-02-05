@@ -114,6 +114,8 @@ services:
       - /home/jaw/data/media/plex:/config
       - /home/jaw/plex/movies:/movies
       - /home/jaw/plex/tv:/tv
+      - /home/jaw/plex/music:/music
+      - /dev/dri:/dev/dri
     networks:
       - traefik
     ports:
