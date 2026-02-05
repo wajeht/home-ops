@@ -17,10 +17,11 @@ services:
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
           interval: 60
-          auto_discover: true
-          auto_discover_opts:
-            working_dir: apps/compose
-            delete: true
+          deployments:
+            - working_dir: apps/compose
+              auto_discover: true
+              auto_discover_opts:
+                delete: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/jaw/data/doco-cd:/data
