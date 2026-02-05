@@ -265,7 +265,11 @@ cmd_uninstall() {
     cd "$REPO_DIR/apps/compose/plex" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
     cd "$USER_HOME"
 
+    # Remove doco-cd first to prevent re-deployments during uninstall
     echo "[2/6] Removing stacks..."
+    echo "  Removing doco-cd first..."
+    $SUDO docker stack rm doco-cd 2>/dev/null || true
+    sleep 5
     for stack in $($SUDO docker stack ls --format '{{.Name}}'); do
         echo "  Removing $stack..."
         $SUDO docker stack rm "$stack" 2>/dev/null || true
