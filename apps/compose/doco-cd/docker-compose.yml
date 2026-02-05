@@ -24,7 +24,7 @@ services:
                 delete: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/jaw/data/doco-cd:/data
+      - /home/jaw/data/doco-cd-compose:/data
       - /home/jaw/.sops/age-key.txt:/sops/age-key.txt:ro
       - /home/jaw/.docker/config.json:/root/.docker/config.json:ro
     networks:
