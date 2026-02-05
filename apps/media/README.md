@@ -1,6 +1,6 @@
 # Media Stack
 
-Plex + *arr apps. qBittorrent is in separate `vpn-qbit` stack (requires docker-compose, not Swarm).
+*arr apps for media management. Plex is in separate `plex` stack (docker-compose for hardware transcoding).
 
 ## VPN Setup (AirVPN)
 
@@ -42,19 +42,10 @@ EOF
 sops -e .env > .enc.env && rm .env
 ```
 
-### Plex Claim Token (optional)
-
-Add to .env before encrypting:
-```
-PLEX_CLAIM=claim-xxxx
-```
-Get token from: https://plex.tv/claim
-
 ## Services
 
 | Service | URL | Purpose |
 |---------|-----|---------|
-| Plex | https://plex.jaw.dev | Media server |
 | Radarr | https://radarr.jaw.dev | Movie management |
 | Sonarr | https://sonarr.jaw.dev | TV show management |
 | Prowlarr | https://prowlarr.jaw.dev | Indexer manager |
@@ -62,16 +53,18 @@ Get token from: https://plex.tv/claim
 | Overseerr | https://overseerr.jaw.dev | Media requests |
 | FlareSolverr | internal | Cloudflare bypass |
 
-**Note:** qBittorrent + Gluetun VPN is in `apps/vpn-qbit/` (docker-compose, not Swarm)
+**Related stacks:**
+- `apps/plex/` - Plex media server (docker-compose for Intel Quick Sync)
+- `apps/vpn-qbit/` - qBittorrent + VPN (docker-compose)
 
 ## Traffic Flow
 
 ```
-Prowlarr (indexers) → Radarr (movies) → qBittorrent → Gluetun VPN → Internet
-                                              ↓
-                                          downloads/
-                                              ↓
-                                            Plex
+Prowlarr (indexers) → Radarr/Sonarr → qBittorrent → Gluetun VPN → Internet
+                                            ↓
+                                        downloads/
+                                            ↓
+                                          Plex
 ```
 
 ## Setup
@@ -79,7 +72,7 @@ Prowlarr (indexers) → Radarr (movies) → qBittorrent → Gluetun VPN → Inte
 1. Configure `.enc.env` with your VPN credentials
 2. Deploy stack
 3. Configure Prowlarr with indexers + FlareSolverr
-4. Connect Radarr to Prowlarr and qBittorrent
+4. Connect Radarr/Sonarr to Prowlarr and qBittorrent
 5. Point Plex to /movies and /tv directories
 
 ## Prowlarr → FlareSolverr
