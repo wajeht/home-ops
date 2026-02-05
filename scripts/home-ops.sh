@@ -223,15 +223,11 @@ cmd_install() {
     sops -d ../media/.enc.env > .env 2>/dev/null || echo "WARN: No VPN credentials"
     $SUDO docker compose up -d 2>/dev/null || echo "WARN: vpn-qbit not started"
 
-    # Plex hardware transcoding (Intel Quick Sync)
+    # Plex (docker-compose for Intel Quick Sync hardware transcoding)
     echo ""
-    echo "[plex-hwaccel] Setting up Intel Quick Sync..."
-    $SUDO cp "$REPO_DIR/infra/plex-hwaccel/plex-hwaccel.sh" /usr/local/bin/
-    $SUDO chmod +x /usr/local/bin/plex-hwaccel.sh
-    $SUDO cp "$REPO_DIR/infra/plex-hwaccel/plex-hwaccel.service" /etc/systemd/system/
-    $SUDO systemctl daemon-reload
-    $SUDO systemctl enable plex-hwaccel
-    $SUDO systemctl restart plex-hwaccel
+    echo "[plex] Setting up with Intel Quick Sync..."
+    cd "$REPO_DIR/apps/plex"
+    $SUDO docker compose up -d 2>/dev/null || echo "WARN: plex not started"
 
     echo ""
     echo "=== Done ==="
@@ -250,9 +246,10 @@ cmd_uninstall() {
     echo
     [[ ! $REPLY =~ ^[Yy]$ ]] && exit 1
 
-    # Stop vpn-qbit
-    echo "[1/6] Stopping vpn-qbit..."
+    # Stop docker-compose services
+    echo "[1/6] Stopping docker-compose services..."
     cd "$REPO_DIR/apps/vpn-qbit" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
+    cd "$REPO_DIR/apps/plex" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
     cd "$USER_HOME"
 
     echo "[2/6] Removing stacks..."
