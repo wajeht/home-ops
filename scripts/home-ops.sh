@@ -170,7 +170,7 @@ cmd_install() {
     cd "$REPO_DIR"
     DH_USER=$(sops -d apps/swarm/.enc.env 2>/dev/null | grep "^DOCKER_HUB_USER=" | cut -d= -f2 || true)
     DH_TOKEN=$(sops -d apps/swarm/.enc.env 2>/dev/null | grep "^DOCKER_HUB_TOKEN=" | cut -d= -f2 || true)
-    GH_TOKEN=$(sops -d apps/swarm/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)
+    GH_TOKEN=$(sops -d apps/infra/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)
 
     [ -n "$DH_TOKEN" ] && echo "$DH_TOKEN" | $SUDO docker login -u "$DH_USER" --password-stdin
     [ -n "$GH_TOKEN" ] && echo "$GH_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
@@ -194,8 +194,8 @@ cmd_install() {
         echo "$value" | $SUDO docker secret create "$name" -
     }
 
-    create_secret gh_token "$(sops -d apps/swarm/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)"
-    create_secret webhook_secret "$(sops -d apps/swarm/doco-cd/.enc.env 2>/dev/null | grep "^WEBHOOK_SECRET=" | cut -d= -f2 || true)"
+    create_secret gh_token "$(sops -d apps/infra/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)"
+    create_secret webhook_secret "$(sops -d apps/infra/doco-cd/.enc.env 2>/dev/null | grep "^WEBHOOK_SECRET=" | cut -d= -f2 || true)"
     create_secret cf_dns_api_token "$(sops -d apps/swarm/traefik/.enc.env 2>/dev/null | grep "^CF_DNS_API_TOKEN=" | cut -d= -f2 || true)"
     create_secret authelia_jwt_secret "$(sops -d apps/swarm/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_JWT_SECRET=" | cut -d= -f2 || true)"
     create_secret authelia_session_secret "$(sops -d apps/swarm/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_SESSION_SECRET=" | cut -d= -f2 || true)"
@@ -213,7 +213,7 @@ cmd_install() {
 
     deploy apps/swarm/traefik traefik
     deploy apps/swarm/authelia authelia
-    deploy apps/swarm/doco-cd doco-cd
+    deploy apps/infra/doco-cd doco-cd
 
     # doco-cd for compose (deploys apps/compose/*)
     echo ""
