@@ -218,7 +218,7 @@ cmd_install() {
     # doco-cd for compose (deploys apps/compose/*)
     echo ""
     echo "[doco-cd-compose] Setting up..."
-    cd "$REPO_DIR/apps/compose/doco-cd"
+    cd "$REPO_DIR/apps/infra/doco-cd-compose"
     # Decrypt for ${VAR} substitution in compose file
     sops -d .enc.env > .env 2>/dev/null || echo "WARN: No secrets"
     $SUDO docker compose --env-file .env up -d 2>/dev/null || echo "WARN: doco-cd not started"
@@ -261,7 +261,7 @@ cmd_uninstall() {
 
     # Stop docker-compose services
     echo "[1/6] Stopping docker-compose services..."
-    cd "$REPO_DIR/apps/compose/doco-cd" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
+    cd "$REPO_DIR/apps/infra/doco-cd-compose" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
     cd "$REPO_DIR/apps/compose/vpn-qbit" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
     cd "$REPO_DIR/apps/compose/plex" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
     cd "$USER_HOME"

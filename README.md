@@ -41,17 +41,18 @@ With all equipment connected: 82W idle, 2 hr UPS runtime, 60 kWh/mo ($7/mo).
 
 ```
 apps/
-├── swarm/           # Swarm stacks (auto via doco-cd)
+├── swarm/           # Swarm stacks (auto-deployed by doco-cd)
 │   ├── traefik/
 │   ├── authelia/
 │   ├── doco-cd/     # Deploys apps/swarm/ as Swarm
 │   ├── homepage/
 │   ├── media/
 │   └── ...
-└── compose/         # Compose services (auto via doco-cd)
-    ├── doco-cd/     # Deploys apps/compose/ as Compose
-    ├── plex/        # Needs /dev/dri for hardware transcoding
-    └── vpn-qbit/    # Needs /dev/net/tun for VPN
+├── compose/         # Compose services (auto-deployed by doco-cd-compose)
+│   ├── plex/        # Needs /dev/dri for hardware transcoding
+│   └── vpn-qbit/    # Needs /dev/net/tun for VPN
+└── infra/           # Infrastructure (manually deployed)
+    └── doco-cd-compose/  # Deploys apps/compose/ as Compose
 ```
 
 ## Docs
