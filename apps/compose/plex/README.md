@@ -65,10 +65,10 @@ environment:
 
 ```bash
 # Start
-cd ~/home-ops/apps/plex && sudo docker compose up -d
+cd ~/home-ops/apps/compose/plex && sudo docker compose up -d
 
 # Stop
-cd ~/home-ops/apps/plex && sudo docker compose down
+cd ~/home-ops/apps/compose/plex && sudo docker compose down
 
 # Logs
 sudo docker logs plex -f

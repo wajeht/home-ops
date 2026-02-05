@@ -17,7 +17,7 @@ flowchart LR
     User -->|https| Cloudflare -->|ssl| Traefik -->|route| Apps
 ```
 
-Push to git, [doco-cd](https://github.com/kimdre/doco-cd) picks it up via webhook and deploys to [Docker Swarm](https://docs.docker.com/engine/swarm/) with zero-downtime rolling updates. [Traefik](https://traefik.io) routes traffic with auto SSL via Cloudflare. Secrets stay encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps dependencies updated. Private apps use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) to build and deploy on tag push.
+Push to git, [doco-cd](https://github.com/kimdre/doco-cd) auto-deploys. Two instances: one for `apps/swarm/` (Swarm, zero-downtime), one for `apps/compose/` (Compose, device access). [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps deps updated.
 
 
 ## Hardware
@@ -36,6 +36,23 @@ Push to git, [doco-cd](https://github.com/kimdre/doco-cd) picks it up via webhoo
 | [CyberPower 1500VA AVR](https://www.amazon.com/CyberPower-CP1500AVRLCD-Intelligent-Outlets-Mini-Tower/dp/B000FBK3QK) | - | - | - | UPS |
 
 With all equipment connected: 82W idle, 2 hr UPS runtime, 60 kWh/mo ($7/mo).
+
+## Structure
+
+```
+apps/
+├── swarm/           # Swarm stacks (auto via doco-cd)
+│   ├── traefik/
+│   ├── authelia/
+│   ├── doco-cd/     # Deploys apps/swarm/ as Swarm
+│   ├── homepage/
+│   ├── media/
+│   └── ...
+└── compose/         # Compose services (auto via doco-cd)
+    ├── doco-cd/     # Deploys apps/compose/ as Compose
+    ├── plex/        # Needs /dev/dri for hardware transcoding
+    └── vpn-qbit/    # Needs /dev/net/tun for VPN
+```
 
 ## Docs
 

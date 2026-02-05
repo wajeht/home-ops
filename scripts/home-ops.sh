@@ -167,9 +167,9 @@ cmd_install() {
 
     # Registry auth
     cd "$REPO_DIR"
-    DH_USER=$(sops -d infra/.enc.env 2>/dev/null | grep "^DOCKER_HUB_USER=" | cut -d= -f2 || true)
-    DH_TOKEN=$(sops -d infra/.enc.env 2>/dev/null | grep "^DOCKER_HUB_TOKEN=" | cut -d= -f2 || true)
-    GH_TOKEN=$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)
+    DH_USER=$(sops -d apps/swarm/.enc.env 2>/dev/null | grep "^DOCKER_HUB_USER=" | cut -d= -f2 || true)
+    DH_TOKEN=$(sops -d apps/swarm/.enc.env 2>/dev/null | grep "^DOCKER_HUB_TOKEN=" | cut -d= -f2 || true)
+    GH_TOKEN=$(sops -d apps/swarm/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)
 
     [ -n "$DH_TOKEN" ] && echo "$DH_TOKEN" | $SUDO docker login -u "$DH_USER" --password-stdin
     [ -n "$GH_TOKEN" ] && echo "$GH_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
@@ -193,12 +193,12 @@ cmd_install() {
         echo "$value" | $SUDO docker secret create "$name" -
     }
 
-    create_secret gh_token "$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)"
-    create_secret webhook_secret "$(sops -d infra/doco-cd/.enc.env 2>/dev/null | grep "^WEBHOOK_SECRET=" | cut -d= -f2 || true)"
-    create_secret cf_dns_api_token "$(sops -d infra/traefik/.enc.env 2>/dev/null | grep "^CF_DNS_API_TOKEN=" | cut -d= -f2 || true)"
-    create_secret authelia_jwt_secret "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_JWT_SECRET=" | cut -d= -f2 || true)"
-    create_secret authelia_session_secret "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_SESSION_SECRET=" | cut -d= -f2 || true)"
-    create_secret authelia_storage_encryption_key "$(sops -d infra/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_STORAGE_ENCRYPTION_KEY=" | cut -d= -f2 || true)"
+    create_secret gh_token "$(sops -d apps/swarm/doco-cd/.enc.env 2>/dev/null | grep "^GH_TOKEN=" | cut -d= -f2 || true)"
+    create_secret webhook_secret "$(sops -d apps/swarm/doco-cd/.enc.env 2>/dev/null | grep "^WEBHOOK_SECRET=" | cut -d= -f2 || true)"
+    create_secret cf_dns_api_token "$(sops -d apps/swarm/traefik/.enc.env 2>/dev/null | grep "^CF_DNS_API_TOKEN=" | cut -d= -f2 || true)"
+    create_secret authelia_jwt_secret "$(sops -d apps/swarm/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_JWT_SECRET=" | cut -d= -f2 || true)"
+    create_secret authelia_session_secret "$(sops -d apps/swarm/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_SESSION_SECRET=" | cut -d= -f2 || true)"
+    create_secret authelia_storage_encryption_key "$(sops -d apps/swarm/authelia/.enc.env 2>/dev/null | grep "^AUTHELIA_STORAGE_ENCRYPTION_KEY=" | cut -d= -f2 || true)"
 
     # Deploy stacks
     deploy() {
@@ -210,23 +210,35 @@ cmd_install() {
         fi
     }
 
-    deploy infra/traefik traefik
-    deploy infra/authelia authelia
-    deploy infra/doco-cd doco-cd
+    deploy apps/swarm/traefik traefik
+    deploy apps/swarm/authelia authelia
+    deploy apps/swarm/doco-cd doco-cd
 
-    # vpn-qbit (docker-compose, not swarm)
+    # doco-cd for compose (deploys apps/compose/*)
     echo ""
-    echo "[vpn-qbit] Setting up..."
+    echo "[doco-cd-compose] Setting up..."
+    cd "$REPO_DIR/apps/compose/doco-cd"
+    # Decrypt for ${VAR} substitution in compose file
+    sops -d .enc.env > .env 2>/dev/null || echo "WARN: No secrets"
+    $SUDO docker compose --env-file .env up -d 2>/dev/null || echo "WARN: doco-cd not started"
+    rm -f .env 2>/dev/null || true
+
+    # vpn-qbit (ensure /dev/net/tun exists)
+    echo ""
+    echo "[vpn-qbit] Ensuring /dev/net/tun..."
     mkdir -p /dev/net 2>/dev/null || true
     [ ! -c /dev/net/tun ] && $SUDO mknod /dev/net/tun c 10 200 && $SUDO chmod 666 /dev/net/tun
-    cd "$REPO_DIR/apps/vpn-qbit"
-    sops -d ../media/.enc.env > .env 2>/dev/null || echo "WARN: No VPN credentials"
+    cd "$REPO_DIR/apps/compose/vpn-qbit"
+    # Decrypt .enc.env temporarily for manual bootstrap (doco-cd auto-decrypts)
+    cp .enc.env .enc.env.bak 2>/dev/null || true
+    sops -d .enc.env > .enc.env.tmp 2>/dev/null && mv .enc.env.tmp .enc.env || echo "WARN: No VPN credentials"
     $SUDO docker compose up -d 2>/dev/null || echo "WARN: vpn-qbit not started"
+    mv .enc.env.bak .enc.env 2>/dev/null || true
 
     # Plex (docker-compose for Intel Quick Sync hardware transcoding)
     echo ""
     echo "[plex] Setting up with Intel Quick Sync..."
-    cd "$REPO_DIR/apps/plex"
+    cd "$REPO_DIR/apps/compose/plex"
     $SUDO docker compose up -d 2>/dev/null || echo "WARN: plex not started"
 
     echo ""
@@ -248,8 +260,9 @@ cmd_uninstall() {
 
     # Stop docker-compose services
     echo "[1/6] Stopping docker-compose services..."
-    cd "$REPO_DIR/apps/vpn-qbit" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
-    cd "$REPO_DIR/apps/plex" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
+    cd "$REPO_DIR/apps/compose/doco-cd" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
+    cd "$REPO_DIR/apps/compose/vpn-qbit" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
+    cd "$REPO_DIR/apps/compose/plex" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
     cd "$USER_HOME"
 
     echo "[2/6] Removing stacks..."

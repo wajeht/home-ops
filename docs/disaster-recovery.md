@@ -58,15 +58,15 @@ echo 'YOUR_GH_TOKEN' | docker login ghcr.io -u USERNAME --password-stdin
 export SOPS_AGE_KEY_FILE=~/.sops/age-key.txt
 
 # Cloudflare token
-sops -d infra/traefik/.enc.env | grep CF_DNS_API_TOKEN | cut -d= -f2 | \
+sops -d apps/swarm/traefik/.enc.env | grep CF_DNS_API_TOKEN | cut -d= -f2 | \
   docker secret create cf_dns_api_token -
 
 # GitHub token
-sops -d infra/doco-cd/.enc.env | grep GH_TOKEN | cut -d= -f2 | \
+sops -d apps/swarm/doco-cd/.enc.env | grep GH_TOKEN | cut -d= -f2 | \
   docker secret create gh_token -
 
 # Webhook secret
-sops -d infra/doco-cd/.enc.env | grep WEBHOOK_SECRET | cut -d= -f2 | \
+sops -d apps/swarm/doco-cd/.enc.env | grep WEBHOOK_SECRET | cut -d= -f2 | \
   docker secret create webhook_secret -
 ```
 
@@ -80,13 +80,13 @@ docker network create --driver overlay --attachable traefik
 
 ```bash
 # Traefik first
-docker stack deploy -c infra/traefik/docker-compose.yml traefik
+docker stack deploy -c apps/swarm/traefik/docker-compose.yml traefik
 
 # Wait for traefik to be healthy
 docker service ls
 
 # doco-cd
-docker stack deploy -c infra/doco-cd/docker-compose.yml doco-cd
+docker stack deploy -c apps/swarm/doco-cd/docker-compose.yml doco-cd
 ```
 
 ### 7. Deploy Apps
@@ -94,7 +94,7 @@ docker stack deploy -c infra/doco-cd/docker-compose.yml doco-cd
 doco-cd will auto-deploy apps from git, or manually:
 
 ```bash
-for app in apps/*/; do
+for app in apps/swarm/*/; do
   name=$(basename $app)
   docker stack deploy -c ${app}docker-compose.yml $name
 done

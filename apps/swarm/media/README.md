@@ -54,8 +54,8 @@ sops -e .env > .enc.env && rm .env
 | FlareSolverr | internal | Cloudflare bypass |
 
 **Related stacks:**
-- `apps/plex/` - Plex media server (docker-compose for Intel Quick Sync)
-- `apps/vpn-qbit/` - qBittorrent + VPN (docker-compose)
+- `apps/compose/plex/` - Plex media server (docker-compose for Intel Quick Sync)
+- `apps/compose/vpn-qbit/` - qBittorrent + VPN (docker-compose)
 
 ## Traffic Flow
 
@@ -86,4 +86,4 @@ In Radarr/Sonarr: Settings → Download Clients → Add qBittorrent:
 - Host: `gluetun` (qBittorrent uses Gluetun's network)
 - Port: `8085`
 
-See `apps/vpn-qbit/README.md` for VPN setup.
+See `apps/compose/vpn-qbit/README.md` for VPN setup.

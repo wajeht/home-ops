@@ -8,7 +8,7 @@ Traefik handles SSL automatically using Let's Encrypt with Cloudflare DNS challe
 2. Uses Cloudflare DNS challenge (creates `_acme-challenge` TXT records)
 3. All apps automatically use this wildcard cert - no per-app config needed
 
-## Config (infra/traefik/docker-compose.yml)
+## Config (apps/swarm/traefik/docker-compose.yml)
 
 ```yaml
 command:

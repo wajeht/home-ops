@@ -5,7 +5,7 @@ Secrets are encrypted with [SOPS](https://github.com/getsops/sops) + [age](https
 ## How It Works
 
 ```
-apps/myapp/.enc.env  →  doco-cd auto-decrypts  →  container env vars
+apps/swarm/myapp/.enc.env  →  doco-cd auto-decrypts  →  container env vars
      encrypted            on deployment
      safe to commit
 ```
@@ -15,10 +15,10 @@ Each stack has its own `.enc.env` file. When doco-cd deploys (via webhook), it a
 ## Structure
 
 ```
-infra/
+apps/swarm/
 ├── traefik/.enc.env      # CF_DNS_API_TOKEN
 ├── doco-cd/.enc.env      # GH_TOKEN, WEBHOOK_SECRET, etc.
-apps/
+apps/swarm/
 ├── commit/.enc.env       # OPENAI_API_KEY, GEMINI_API_KEY, etc.
 ```
 
@@ -41,25 +41,25 @@ source ~/.zshrc
 
 ### View secrets
 ```bash
-sops -d apps/commit/.enc.env
+sops -d apps/swarm/commit/.enc.env
 ```
 
 ### Edit secrets
 ```bash
-sops apps/commit/.enc.env
+sops apps/swarm/commit/.enc.env
 # Make changes, save, auto re-encrypts
 ```
 
 ### Add secrets to new app
 ```bash
 # Create plain .env
-cat > apps/myapp/.env << 'EOF'
+cat > apps/swarm/myapp/.env << 'EOF'
 API_KEY=secret123
 EOF
 
 # Encrypt
-sops -e apps/myapp/.env > apps/myapp/.enc.env
-rm apps/myapp/.env
+sops -e apps/swarm/myapp/.env > apps/swarm/myapp/.enc.env
+rm apps/swarm/myapp/.env
 
 # Reference in compose
 # env_file:
@@ -69,7 +69,7 @@ rm apps/myapp/.env
 ### Deploy after changes
 ```bash
 # Local
-sops apps/myapp/.enc.env
+sops apps/swarm/myapp/.enc.env
 git add -A && git commit -m "update secrets" && git push
 
 # Server (if needed immediately)
