@@ -61,7 +61,7 @@ sudo docker service logs doco-cd_doco-cd
 
 ```bash
 # Local: edit and push
-sops apps/myapp/.enc.env
+sops apps/swarm/myapp/.enc.env
 git add -A && git commit -m "update secrets" && git push
 
 # doco-cd auto-deploys, or manually:

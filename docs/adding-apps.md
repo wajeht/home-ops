@@ -5,10 +5,10 @@ Push a docker-compose.yml → doco-cd auto-deploys with rolling updates.
 ## Quick Start
 
 ```bash
-mkdir -p apps/myapp
+mkdir -p apps/swarm/myapp
 ```
 
-Create `apps/myapp/docker-compose.yml`:
+Create `apps/swarm/myapp/docker-compose.yml`:
 ```yaml
 services:
   myapp:
@@ -45,14 +45,14 @@ doco-cd auto-decrypts `.enc.env` files on deployment.
 
 ```bash
 # Create plain env file
-cat > apps/myapp/.env << 'EOF'
+cat > apps/swarm/myapp/.env << 'EOF'
 DATABASE_URL=postgres://user:pass@host/db
 API_KEY=secret123
 EOF
 
 # Encrypt it
-sops -e apps/myapp/.env > apps/myapp/.enc.env
-rm apps/myapp/.env
+sops -e apps/swarm/myapp/.env > apps/swarm/myapp/.enc.env
+rm apps/swarm/myapp/.env
 ```
 
 Reference in docker-compose.yml:
@@ -70,7 +70,7 @@ services:
 
 Edit secrets:
 ```bash
-sops apps/myapp/.enc.env
+sops apps/swarm/myapp/.enc.env
 git add -A && git commit -m "update secrets" && git push
 ```
 
@@ -147,7 +147,7 @@ services:
     # ... rest of config
 ```
 
-The GH_TOKEN in `infra/doco-cd/.enc.env` handles authentication.
+The GH_TOKEN in `apps/swarm/doco-cd/.enc.env` handles authentication.
 
 ## Health Checks
 
@@ -165,7 +165,7 @@ services:
 ## Removing Apps
 
 ```bash
-rm -rf apps/myapp
+rm -rf apps/swarm/myapp
 git add -A && git commit -m "remove myapp" && git push
 ```
 

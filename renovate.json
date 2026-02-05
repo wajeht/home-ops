@@ -15,8 +15,8 @@
   "docker-compose": {
     "managerFilePatterns": [
       "/(^|/)docker-compose\\.ya?ml$/",
-      "/apps/.+/docker-compose\\.ya?ml$/",
-      "/infra/.+/docker-compose\\.ya?ml$/"
+      "/apps/swarm/.+/docker-compose\\.ya?ml$/",
+      "/apps/compose/.+/docker-compose\\.ya?ml$/"
     ]
   },
   "hostRules": [

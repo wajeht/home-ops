@@ -11,6 +11,7 @@ services:
       MAX_DEPLOYMENT_LOOP_COUNT: "3"
       APPRISE_API_URL: http://apprise:8000/notify
       APPRISE_NOTIFY_LEVEL: success
+      DOCKER_SWARM_FEATURES: "true"
       SOPS_AGE_KEY_FILE: /sops/age-key.txt
       GIT_ACCESS_TOKEN_FILE: /run/secrets/gh_token
       WEBHOOK_SECRET_FILE: /run/secrets/webhook_secret
@@ -20,7 +21,7 @@ services:
           interval: 60
           auto_discover: true
           auto_discover_opts:
-            working_dir: apps
+            working_dir: apps/swarm
             delete: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
