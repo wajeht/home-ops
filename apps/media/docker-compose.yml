@@ -100,37 +100,6 @@ services:
       restart_policy:
         condition: on-failure
 
-  # Media server
-  plex:
-    image: linuxserver/plex:1.43.0@sha256:66c6a46ec3dc244aea20508b49dce4b46291c2fd2dba8851117e675d1c5dd52d
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-      - VERSION=docker
-    env_file:
-      - .enc.env
-    volumes:
-      - /home/jaw/data/media/plex:/config
-      - /home/jaw/plex/movies:/movies
-      - /home/jaw/plex/tv:/tv
-      - /home/jaw/plex/music:/music
-      - /dev/dri:/dev/dri
-    networks:
-      - traefik
-    ports:
-      - "32400:32400"
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.plex.rule=Host(`plex.jaw.dev`)"
-        - "traefik.http.routers.plex.entrypoints=websecure"
-        - "traefik.http.routers.plex.middlewares=authelia@file"
-        - "traefik.http.services.plex.loadbalancer.server.port=32400"
-
   # Plex stats & monitoring
   tautulli:
     image: linuxserver/tautulli:2.16.0@sha256:5d2e1df34ea8c3a8fb1c387873866a43ec4e95470b1a4b601da94c2e71b23e74
