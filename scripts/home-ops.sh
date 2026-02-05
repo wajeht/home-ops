@@ -223,6 +223,16 @@ cmd_install() {
     sops -d ../media/.enc.env > .env 2>/dev/null || echo "WARN: No VPN credentials"
     $SUDO docker compose up -d 2>/dev/null || echo "WARN: vpn-qbit not started"
 
+    # Plex hardware transcoding (Intel Quick Sync)
+    echo ""
+    echo "[plex-hwaccel] Setting up Intel Quick Sync..."
+    $SUDO cp "$REPO_DIR/infra/plex-hwaccel/plex-hwaccel.sh" /usr/local/bin/
+    $SUDO chmod +x /usr/local/bin/plex-hwaccel.sh
+    $SUDO cp "$REPO_DIR/infra/plex-hwaccel/plex-hwaccel.service" /etc/systemd/system/
+    $SUDO systemctl daemon-reload
+    $SUDO systemctl enable plex-hwaccel
+    $SUDO systemctl restart plex-hwaccel
+
     echo ""
     echo "=== Done ==="
     $SUDO docker service ls
