@@ -1,6 +1,10 @@
+# Swarm-mode deployer for apps/swarm/*
+# Runs as compose container but deploys swarm stacks via DOCKER_SWARM_FEATURES=true
+
 services:
   doco-cd:
     image: ghcr.io/kimdre/doco-cd:0.62.0@sha256:13bae918ee72d1662e3283a0f422b9fab7d25acb3a87f673ea380ccead751a73
+    container_name: doco-cd
     depends_on:
       - apprise
     ports:
@@ -13,8 +17,8 @@ services:
       APPRISE_NOTIFY_LEVEL: success
       DOCKER_SWARM_FEATURES: "true"
       SOPS_AGE_KEY_FILE: /sops/age-key.txt
-      GIT_ACCESS_TOKEN_FILE: /run/secrets/gh_token
-      WEBHOOK_SECRET_FILE: /run/secrets/webhook_secret
+      GIT_ACCESS_TOKEN: ${GH_TOKEN}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
       POLL_CONFIG: |
         - url: https://github.com/wajeht/home-ops.git
           reference: refs/heads/main
@@ -29,66 +33,32 @@ services:
       - /home/jaw/data/doco-cd:/data
       - /home/jaw/.sops/age-key.txt:/sops/age-key.txt:ro
       - /home/jaw/.docker/config.json:/root/.docker/config.json:ro
-    secrets:
-      - gh_token
-      - webhook_secret
     networks:
       - traefik
       - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.doco-cd.rule=Host(`doco.jaw.dev`)"
+      - "traefik.http.routers.doco-cd.entrypoints=websecure"
+      - "traefik.http.services.doco-cd.loadbalancer.server.port=80"
     healthcheck:
       test: ["CMD", "/doco-cd", "healthcheck"]
       start_period: 15s
       interval: 30s
       timeout: 5s
       retries: 3
-    deploy:
-      replicas: 1
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.doco-cd.rule=Host(`doco.jaw.dev`)"
-        - "traefik.http.routers.doco-cd.entrypoints=websecure"
-        - "traefik.http.routers.doco-cd.tls=true"
-        - "traefik.http.services.doco-cd.loadbalancer.server.port=80"
-      placement:
-        constraints:
-          - node.role == manager
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
+    restart: unless-stopped
 
   apprise:
     image: caronc/apprise:v1.3.1@sha256:6b112f8f174244f4a73b8e1254c9bde1fa562a6a428010aeaff1c18bc98d2713
+    container_name: apprise
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/status"]
       interval: 30s
       timeout: 5s
       retries: 3
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: start-first
-      rollback_config:
-        parallelism: 1
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
+    restart: unless-stopped
 
 networks:
   traefik:
-    external: true
-
-secrets:
-  gh_token:
-    external: true
-  webhook_secret:
     external: true
