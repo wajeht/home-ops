@@ -53,7 +53,7 @@ apps/
 | [TP-Link TL-SG608P](https://www.amazon.com/s?k=TP-Link+TL-SG608P) | - | - | - | PoE Switch |
 | [CyberPower 1500VA AVR](https://www.amazon.com/CyberPower-CP1500AVRLCD-Intelligent-Outlets-Mini-Tower/dp/B000FBK3QK) | - | - | - | UPS |
 
-With all equipment connected: 82W idle, 2 hr UPS runtime, 60 kWh/mo ($7/mo).
+With all equipment connected: 69W idle @ 120V, 145 min UPS runtime, 50 kWh/mo (~$6/mo).
 
 
 ## Docs
