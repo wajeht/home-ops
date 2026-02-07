@@ -3,7 +3,7 @@
 
 services:
   doco-cd:
-    image: ghcr.io/kimdre/doco-cd:0.61.1@sha256:2908bfa327eb44a7187084d3b333a90d668dd63f3d4385954f1d78e958a78088
+    image: ghcr.io/kimdre/doco-cd:0.62.0@sha256:13bae918ee72d1662e3283a0f422b9fab7d25acb3a87f673ea380ccead751a73
     container_name: doco-cd-compose
     environment:
       TZ: America/Chicago
