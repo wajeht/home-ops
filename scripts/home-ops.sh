@@ -246,6 +246,9 @@ cmd_install() {
     echo "=== Done ==="
     $SUDO docker service ls
     echo ""
+    echo "Compose:"
+    $SUDO docker ps --format "table {{.Names}}\t{{.Status}}" --filter "label=com.docker.compose.project" 2>/dev/null || true
+    echo ""
     echo "doco-cd will auto-deploy apps within 60s: https://doco.jaw.dev"
 }
 
@@ -311,8 +314,11 @@ cmd_uninstall() {
 cmd_status() {
     echo "=== Status ==="
     echo ""
-    echo "Services:"
+    echo "Swarm Services:"
     $SUDO docker service ls 2>/dev/null || echo "  None"
+    echo ""
+    echo "Compose Containers:"
+    $SUDO docker ps --format "table {{.Names}}\t{{.Status}}" --filter "label=com.docker.compose.project" 2>/dev/null || echo "  None"
     echo ""
     echo "NFS Mounts:"
     cmd_nfs status
