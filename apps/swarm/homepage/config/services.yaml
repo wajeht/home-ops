@@ -22,8 +22,14 @@
     - Doco-CD:
         icon: docker
         href: https://doco.jaw.dev
-        description: GitOps Deployer
+        description: Swarm Deployer
         siteMonitor: https://doco.jaw.dev/v1/health
+
+    - Doco-CD Compose:
+        icon: docker
+        href: https://doco-compose.jaw.dev
+        description: Compose Deployer
+        siteMonitor: https://doco-compose.jaw.dev/v1/health
 
     - Authelia:
         icon: authelia
@@ -42,6 +48,12 @@
         href: https://ntfy.jaw.dev
         description: Notifications
         siteMonitor: https://ntfy.jaw.dev
+
+    - Portainer:
+        icon: portainer
+        href: https://portainer.jaw.dev
+        description: Docker Management
+        siteMonitor: https://portainer.jaw.dev
 
     - Dozzle:
         icon: dozzle
