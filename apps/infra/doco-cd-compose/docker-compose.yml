@@ -29,11 +29,7 @@ services:
       - /home/jaw/.docker/config.json:/root/.docker/config.json:ro
     networks:
       - traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.doco-cd-compose.rule=Host(`doco-compose.jaw.dev`)"
-      - "traefik.http.routers.doco-cd-compose.entrypoints=websecure"
-      - "traefik.http.services.doco-cd-compose.loadbalancer.server.port=80"
+    # Traefik routing handled via traefik/dynamic.yml (swarm provider can't read compose labels)
     healthcheck:
       test: ["CMD", "/doco-cd", "healthcheck"]
       start_period: 15s

@@ -38,6 +38,20 @@ http:
         - authelia
       tls: {}
 
+    doco-cd:
+      rule: "Host(`doco.jaw.dev`)"
+      entrypoints:
+        - websecure
+      service: doco-cd
+      tls: {}
+
+    doco-cd-compose:
+      rule: "Host(`doco-compose.jaw.dev`)"
+      entrypoints:
+        - websecure
+      service: doco-cd-compose
+      tls: {}
+
   services:
     # Dummy service for redirects (never actually used)
     dummy:
@@ -49,3 +63,13 @@ http:
       loadBalancer:
         servers:
           - url: "http://gluetun:8085"
+
+    doco-cd:
+      loadBalancer:
+        servers:
+          - url: "http://doco-cd:9120"
+
+    doco-cd-compose:
+      loadBalancer:
+        servers:
+          - url: "http://doco-cd-compose:9120"
