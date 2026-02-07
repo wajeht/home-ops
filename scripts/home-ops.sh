@@ -66,6 +66,7 @@ DATA_DIRS=(
     "$USER_HOME/data/mm2us"
     "$USER_HOME/data/notify"
     "$USER_HOME/data/ntfy"
+    "$USER_HOME/data/portainer"
     "$USER_HOME/data/qbittorrent"
     "$USER_HOME/data/screenshot"
     "$USER_HOME/data/stirling-pdf"
