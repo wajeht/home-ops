@@ -71,10 +71,12 @@ apps/
 ## Docs
 
 - [Quick Start](docs/quick-start.md)
-- [Disaster Recovery](docs/disaster-recovery.md)
 - [Adding Apps](docs/adding-apps.md)
-- [SSL Setup](docs/ssl.md)
 - [Secrets](docs/secrets.md)
+- [SSL Setup](docs/ssl.md)
+- [Renovate](docs/renovate.md)
+- [Instant Deploy](docs/instant-deploy.md)
+- [Disaster Recovery](docs/disaster-recovery.md)
 
 
 ## License
