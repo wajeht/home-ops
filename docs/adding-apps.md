@@ -1,8 +1,10 @@
 # Adding Apps
 
-Push a docker-compose.yml → doco-cd auto-deploys with rolling updates.
+Push a docker-compose.yml → doco-cd auto-deploys.
 
-## Quick Start
+## Swarm Apps (apps/swarm/)
+
+For most apps. Gets rolling updates and zero-downtime deploys.
 
 ```bash
 mkdir -p apps/swarm/myapp
@@ -32,12 +34,44 @@ networks:
     external: true
 ```
 
-Push:
+## Compose Apps (apps/compose/)
+
+For apps needing device access (e.g., `/dev/dri`, `/dev/net/tun`) which Swarm doesn't support.
+
+```bash
+mkdir -p apps/compose/myapp
+```
+
+Create `apps/compose/myapp/docker-compose.yml`:
+```yaml
+services:
+  myapp:
+    image: myimage:v1.0
+    devices:
+      - /dev/dri:/dev/dri
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
+      - "traefik.http.routers.myapp.entrypoints=websecure"
+      - "traefik.http.services.myapp.loadbalancer.server.port=80"
+    restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
+```
+
+**Note:** Compose apps use container `labels:` (not `deploy.labels:`).
+
+## Deploy
+
 ```bash
 git add -A && git commit -m "add myapp" && git push
 ```
 
-Done. doco-cd auto-deploys via webhook.
+doco-cd auto-deploys via webhook/polling within 60s.
 
 ## With Secrets (SOPS)
 
@@ -62,10 +96,6 @@ services:
     image: myimage:v1.0
     env_file:
       - .enc.env    # doco-cd auto-decrypts
-    networks:
-      - traefik
-    deploy:
-      # ... labels and config
 ```
 
 Edit secrets:
@@ -74,24 +104,21 @@ sops apps/swarm/myapp/.enc.env
 git add -A && git commit -m "update secrets" && git push
 ```
 
-## Template Explained
-
-### Labels (under deploy:)
+## Traefik Labels
 
 ```yaml
-deploy:
-  labels:
-    - "traefik.enable=true"
-    - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
-    - "traefik.http.routers.myapp.entrypoints=websecure"
-    - "traefik.http.services.myapp.loadbalancer.server.port=8080"
+labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
+  - "traefik.http.routers.myapp.entrypoints=websecure"
+  - "traefik.http.services.myapp.loadbalancer.server.port=8080"
 ```
 
-**Note:** TLS uses the wildcard cert (*.jaw.dev) automatically. No need for per-app `certresolver`.
+TLS uses the wildcard cert (*.jaw.dev) automatically. No per-app `certresolver` needed.
 
-**Important:** Labels must be under `deploy:` for Swarm mode.
+**Swarm:** Labels under `deploy.labels:` | **Compose:** Labels under `labels:`
 
-### Network
+## Network
 
 ```yaml
 networks:
@@ -101,66 +128,15 @@ networks:
 
 All apps must join the `traefik` network.
 
-## With Volumes
-
-```yaml
-services:
-  myapp:
-    image: myimage:v1.0
-    volumes:
-      - myapp-data:/data
-    networks:
-      - traefik
-    deploy:
-      labels:
-        # ... traefik labels
-
-volumes:
-  myapp-data:
-
-networks:
-  traefik:
-    external: true
-```
-
-## With Environment Variables
-
-```yaml
-services:
-  myapp:
-    image: myimage:v1.0
-    environment:
-      - NODE_ENV=production
-      - LOG_LEVEL=info
-    networks:
-      - traefik
-    deploy:
-      # ...
-```
-
 ## Private ghcr.io Images
 
 ```yaml
 services:
   myapp:
     image: ghcr.io/username/myapp:v1.0
-    # ... rest of config
 ```
 
 The GH_TOKEN in `apps/infra/doco-cd/.enc.env` handles authentication.
-
-## Health Checks
-
-```yaml
-services:
-  myapp:
-    image: myimage:v1.0
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-```
 
 ## Removing Apps
 
@@ -169,7 +145,7 @@ rm -rf apps/swarm/myapp
 git add -A && git commit -m "remove myapp" && git push
 ```
 
-doco-cd will stop and remove the service.
+doco-cd will stop and remove the service (auto_discover with `delete: true`).
 
 ## Pinning Image Versions
 
@@ -181,31 +157,4 @@ image: nginx:1.25.3
 
 # Bad
 image: nginx:latest
-```
-
-## Multiple Services
-
-```yaml
-services:
-  web:
-    image: myapp-web:v1.0
-    depends_on:
-      - api
-    networks:
-      - traefik
-      - internal
-    deploy:
-      labels:
-        - "traefik.enable=true"
-        # ...
-
-  api:
-    image: myapp-api:v1.0
-    networks:
-      - internal
-
-networks:
-  traefik:
-    external: true
-  internal:
 ```

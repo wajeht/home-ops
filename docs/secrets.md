@@ -10,16 +10,20 @@ apps/swarm/myapp/.enc.env  →  doco-cd auto-decrypts  →  container env vars
      safe to commit
 ```
 
-Each stack has its own `.enc.env` file. When doco-cd deploys (via webhook), it automatically decrypts SOPS-encrypted files.
+Each stack has its own `.enc.env` file. When doco-cd deploys (via webhook/polling), it automatically decrypts SOPS-encrypted files.
 
 ## Structure
 
 ```
 apps/swarm/
-├── traefik/.enc.env      # CF_DNS_API_TOKEN
-├── doco-cd/.enc.env      # GH_TOKEN, WEBHOOK_SECRET, etc.
-apps/swarm/
-├── commit/.enc.env       # OPENAI_API_KEY, GEMINI_API_KEY, etc.
+├── traefik/.enc.env         # CF_DNS_API_TOKEN
+├── commit/.enc.env          # OPENAI_API_KEY, GEMINI_API_KEY, etc.
+├── ...
+apps/infra/
+├── doco-cd/.enc.env         # GH_TOKEN, WEBHOOK_SECRET
+└── doco-cd-compose/.enc.env # GH_TOKEN, WEBHOOK_SECRET
+apps/compose/
+└── vpn-qbit/.enc.env       # VPN credentials
 ```
 
 ## Local Setup
@@ -68,15 +72,11 @@ rm apps/swarm/myapp/.env
 
 ### Deploy after changes
 ```bash
-# Local
 sops apps/swarm/myapp/.enc.env
 git add -A && git commit -m "update secrets" && git push
-
-# Server (if needed immediately)
-ssh server 'cd ~/home-ops && ./scripts/sync-secrets.sh'
 ```
 
-Or just push - doco-cd will auto-deploy with decrypted secrets.
+doco-cd will auto-deploy with decrypted secrets.
 
 ## Special Files
 

@@ -23,91 +23,32 @@ How to recreate the homelab from scratch.
 
 ## Recovery Steps
 
-### 1. Fresh Server Setup
+### 1. Restore Critical Files
 
 ```bash
-# Install Docker
-curl -fsSL https://get.docker.com | sh
-sudo usermod -aG docker $USER
-
-# Init Swarm
-docker swarm init
-```
-
-### 2. Restore Critical Files
-
-```bash
-# Restore from backup
 rsync -av backup:~/data/ ~/data/
 rsync -av backup:~/.sops/ ~/.sops/
-
-# Create directories
-mkdir -p ~/.docker ~/data
 ```
 
-### 3. Setup Docker Auth (ghcr.io)
+### 2. Run Install
 
 ```bash
-echo 'YOUR_GH_TOKEN' | docker login ghcr.io -u USERNAME --password-stdin
+git clone https://github.com/wajeht/home-ops.git ~/home-ops
+cd ~/home-ops && ./scripts/home-ops.sh install
 ```
 
-### 4. Create Docker Secrets
+The install script handles everything: Docker, Swarm, SOPS, secrets, networks, and all deployments.
+
+### 3. Mount NFS (for media)
 
 ```bash
-# Decrypt and create secrets
-export SOPS_AGE_KEY_FILE=~/.sops/age-key.txt
-
-# Cloudflare token
-sops -d apps/swarm/traefik/.enc.env | grep CF_DNS_API_TOKEN | cut -d= -f2 | \
-  docker secret create cf_dns_api_token -
-
-# GitHub token
-sops -d apps/infra/doco-cd/.enc.env | grep GH_TOKEN | cut -d= -f2 | \
-  docker secret create gh_token -
-
-# Webhook secret
-sops -d apps/infra/doco-cd/.enc.env | grep WEBHOOK_SECRET | cut -d= -f2 | \
-  docker secret create webhook_secret -
+./scripts/home-ops.sh nfs mount
 ```
 
-### 5. Create Traefik Network
+### 4. Verify
 
 ```bash
-docker network create --driver overlay --attachable traefik
-```
-
-### 6. Deploy Infrastructure
-
-```bash
-# Traefik first
-docker stack deploy -c apps/swarm/traefik/docker-compose.yml traefik
-
-# Wait for traefik to be healthy
-docker service ls
-
-# doco-cd
-docker stack deploy -c apps/infra/doco-cd/docker-compose.yml doco-cd
-```
-
-### 7. Deploy Apps
-
-doco-cd will auto-deploy apps from git, or manually:
-
-```bash
-for app in apps/swarm/*/; do
-  name=$(basename $app)
-  docker stack deploy -c ${app}docker-compose.yml $name
-done
-```
-
-### 8. Mount NFS (for media)
-
-```bash
-# Add to /etc/fstab
-NAS_IP:/volume1/plex /home/jaw/plex nfs defaults 0 0
-
-# Mount
-sudo mount -a
+./scripts/home-ops.sh status
 ```
 
 ## Backup Script
@@ -132,39 +73,6 @@ echo "Backup complete: $DATE"
 Add to cron:
 ```bash
 0 3 * * * /home/jaw/backup.sh >> /var/log/backup.log 2>&1
-```
-
-## Data Directory Structure
-
-```
-~/data/
-├── audiobookshelf/
-│   ├── config/
-│   └── metadata/
-├── changedetection/
-├── doco-cd/
-├── favicon/
-├── gitea/
-├── gluetun/
-├── linx/
-│   ├── files/
-│   └── meta/
-├── media/
-│   ├── plex/
-│   ├── prowlarr/
-│   ├── radarr/
-│   ├── sonarr/
-│   ├── tautulli/
-│   └── overseerr/
-├── miniflux/
-├── ntfy/
-├── qbittorrent/
-├── screenshot/
-├── stirling-pdf/
-├── traefik/
-│   └── certs/
-├── uptime-kuma/
-└── vaultwarden/
 ```
 
 ## Testing Recovery
