@@ -328,6 +328,34 @@ cmd_status() {
 }
 
 #=============================================================================
+# UPDATE-INFRA - Redeploy doco-cd instances (can't self-update)
+#=============================================================================
+cmd_update_infra() {
+    echo "=== Updating infra ==="
+    cd "$REPO_DIR"
+    git pull
+
+    # Swarm doco-cd
+    echo "[1/2] Redeploying doco-cd (swarm)..."
+    if [ -n "$SUDO" ]; then
+        HOME="$USER_HOME" $SUDO -E docker stack deploy -c apps/infra/doco-cd/docker-compose.yml --with-registry-auth doco-cd
+    else
+        HOME="$USER_HOME" docker stack deploy -c apps/infra/doco-cd/docker-compose.yml --with-registry-auth doco-cd
+    fi
+
+    # Compose doco-cd
+    echo "[2/2] Redeploying doco-cd-compose..."
+    cd "$REPO_DIR/apps/infra/doco-cd-compose"
+    sops -d .enc.env > .env 2>/dev/null || echo "WARN: No secrets"
+    $SUDO docker compose pull 2>/dev/null || true
+    $SUDO docker compose --env-file .env up -d 2>/dev/null || echo "WARN: doco-cd-compose not started"
+    rm -f .env 2>/dev/null || true
+
+    echo ""
+    echo "=== Done ==="
+}
+
+#=============================================================================
 # MAIN
 #=============================================================================
 case "${1:-}" in
@@ -347,6 +375,9 @@ case "${1:-}" in
     status)
         cmd_status
         ;;
+    update-infra)
+        cmd_update_infra
+        ;;
     *)
         echo "home-ops management script"
         echo ""
@@ -359,6 +390,7 @@ case "${1:-}" in
         echo "  nfs status               Show NFS mount status"
         echo "  install                  Deploy all swarm stacks"
         echo "  uninstall                Remove all stacks and cleanup"
+        echo "  update-infra             Redeploy doco-cd instances"
         echo "  status                   Show services, mounts, disk usage"
         echo ""
         echo "Examples:"
