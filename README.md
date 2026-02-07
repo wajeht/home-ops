@@ -16,6 +16,8 @@ flowchart LR
     Git -->|push| GitHub -->|webhook/poll| doco-cd
     doco-cd -->|docker stack deploy| Swarm[apps/swarm]
     doco-cd-compose -->|docker compose up| Compose[apps/compose]
+    AppRepo[app repo] -->|push tag| Actions[GitHub Actions] -->|build image| GHCR[ghcr.io]
+    Actions -->|doco-deploy-workflow| GitHub
     User -->|https| Cloudflare -->|ssl| Traefik -->|route| Apps
 ```
 
