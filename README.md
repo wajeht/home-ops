@@ -51,16 +51,6 @@ apps/
 ./scripts/home-ops.sh setup          # Create data directories
 ```
 
-## Docs
-
-- [Quick Start](docs/quick-start.md)
-- [Adding Apps](docs/adding-apps.md)
-- [Secrets](docs/secrets.md)
-- [SSL Setup](docs/ssl.md)
-- [Renovate](docs/renovate.md)
-- [Instant Deploy](docs/instant-deploy.md)
-- [Disaster Recovery](docs/disaster-recovery.md)
-
 
 
 ## Hardware
@@ -79,6 +69,18 @@ apps/
 | [CyberPower 1500VA AVR](https://www.amazon.com/CyberPower-CP1500AVRLCD-Intelligent-Outlets-Mini-Tower/dp/B000FBK3QK) | - | - | - | UPS |
 
 With all equipment connected: 82W idle, 2 hr UPS runtime, 60 kWh/mo ($7/mo).
+
+
+## Docs
+
+- [Quick Start](docs/quick-start.md)
+- [Adding Apps](docs/adding-apps.md)
+- [Secrets](docs/secrets.md)
+- [SSL Setup](docs/ssl.md)
+- [Renovate](docs/renovate.md)
+- [Instant Deploy](docs/instant-deploy.md)
+- [Disaster Recovery](docs/disaster-recovery.md)
+
 
 
 ## License
