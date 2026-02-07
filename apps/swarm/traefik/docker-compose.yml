@@ -71,10 +71,11 @@ services:
       placement:
         constraints:
           - node.role == manager
+      # stop-first required: host-mode ports (80/443) can't bind while old container holds them
       update_config:
         parallelism: 1
         delay: 10s
-        order: start-first
+        order: stop-first
       rollback_config:
         parallelism: 1
       restart_policy:
