@@ -24,6 +24,12 @@ services:
       - "traefik.http.routers.qbittorrent.rule=Host(`qbit.jaw.dev`)"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port=8085"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9999"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
     restart: unless-stopped
 
   qbittorrent:
@@ -31,7 +37,8 @@ services:
     container_name: qbittorrent
     network_mode: "service:gluetun"
     depends_on:
-      - gluetun
+      gluetun:
+        condition: service_healthy
     environment:
       - PUID=1000
       - PGID=1000
@@ -40,6 +47,12 @@ services:
     volumes:
       - /home/jaw/data/qbittorrent:/config
       - /home/jaw/plex/downloads:/downloads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
     restart: unless-stopped
 
 networks:
