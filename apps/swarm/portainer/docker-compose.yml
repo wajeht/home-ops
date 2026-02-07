@@ -1,7 +1,7 @@
 # Requires 2.33.5+ for Docker 29 API compatibility (older versions misdetect as Podman)
 services:
   portainer:
-    image: portainer/portainer-ce:2.33.6-alpine@sha256:a04e0ac3e99172e451055419e2ed46c67f24bff72209ab09235079d7642e87d8
+    image: portainer/portainer-ce:2.38.0-alpine@sha256:23e038b8c6cb628695726913540e96f0862d477dc5f772907e5a78227b642ca2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/jaw/data/portainer:/data
