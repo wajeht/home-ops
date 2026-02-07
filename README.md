@@ -19,7 +19,7 @@ flowchart LR
     User -->|https| Cloudflare -->|ssl| Traefik -->|route| Apps
 ```
 
-Push to git, [doco-cd](https://github.com/kimdre/doco-cd) auto-deploys. Two instances: one for `apps/swarm/` (Swarm, zero-downtime), one for `apps/compose/` (Compose, device access). Both run as compose containers in `apps/infra/`. [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps deps updated.
+Push to git, [doco-cd](https://github.com/kimdre/doco-cd) auto-deploys. Two instances: one for `apps/swarm/` (Swarm, zero-downtime), one for `apps/compose/` (Compose, device access). Both run as compose containers in `apps/infra/`. [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
 
 
 ## Structure
