@@ -1,6 +1,6 @@
 services:
   portainer:
-    image: portainer/portainer-ce:2.27.6-alpine@sha256:8ce114b137ee8f9db1a9c7e9b7d6e220886e57121a235da11946c029f92282e9
+    image: portainer/portainer-ce:2.24.1-alpine@sha256:432d730b97f375e5e34e9d48339d7dfe4a012f1db5d437067f7c91e4c1f35a66
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/jaw/data/portainer:/data
