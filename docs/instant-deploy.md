@@ -127,11 +127,19 @@ Reusable workflow at `wajeht/doco-deploy-workflow` that:
 
 ## Apps Using Instant Deploy
 
-- `ufc`
+- `bang`
+- `calendar`
+- `close-powerlifting`
 - `commit`
 - `favicon`
-- `calendar`
+- `gains`
+- `git`
+- `ip`
+- `jaw.dev` (www)
+- `mm2us.com`
+- `notify`
 - `screenshot`
+- `ufc`
 
 ## Renovate vs Instant Deploy
 

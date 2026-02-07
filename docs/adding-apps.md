@@ -51,11 +51,6 @@ services:
       - /dev/dri:/dev/dri
     networks:
       - traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
-      - "traefik.http.routers.myapp.entrypoints=websecure"
-      - "traefik.http.services.myapp.loadbalancer.server.port=80"
     restart: unless-stopped
 
 networks:
@@ -63,7 +58,7 @@ networks:
     external: true
 ```
 
-**Note:** Compose apps use container `labels:` (not `deploy.labels:`).
+**Note:** Traefik's swarm provider can't read compose container labels. Add routing for compose apps in `apps/swarm/traefik/dynamic.yml` instead (see qbittorrent/doco-cd entries for examples).
 
 ## Deploy
 
