@@ -16,14 +16,24 @@ Each stack has its own `.enc.env` file. When doco-cd deploys (via webhook/pollin
 
 ```
 apps/swarm/
-├── traefik/.enc.env         # CF_DNS_API_TOKEN
-├── commit/.enc.env          # OPENAI_API_KEY, GEMINI_API_KEY, etc.
+├── bang/.enc.env
+├── calendar/.enc.env
+├── close-powerlifting/.enc.env
+├── commit/.enc.env
+├── gains/.enc.env
+├── gitea/.enc.env
+├── homepage/.enc.env
+├── mm2us/.enc.env
+├── notify/.enc.env
+├── screenshot/.enc.env
+├── traefik/.enc.env
+├── vaultwarden/.enc.env
 ├── ...
 apps/infra/
-├── doco-cd/.enc.env         # GH_TOKEN, WEBHOOK_SECRET
-└── doco-cd-compose/.enc.env # GH_TOKEN, WEBHOOK_SECRET
+├── doco-cd/.enc.env
+└── doco-cd-compose/.enc.env
 apps/compose/
-└── vpn-qbit/.enc.env       # VPN credentials
+└── vpn-qbit/.enc.env
 ```
 
 ## Local Setup

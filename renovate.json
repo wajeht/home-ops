@@ -29,11 +29,19 @@
     }
   ],
   "ignoreDeps": [
-    "ghcr.io/wajeht/ufc",
+    "ghcr.io/wajeht/bang",
+    "ghcr.io/wajeht/calendar",
+    "ghcr.io/wajeht/close-powerlifting",
     "ghcr.io/wajeht/commit",
     "ghcr.io/wajeht/favicon",
-    "ghcr.io/wajeht/calendar",
-    "ghcr.io/wajeht/screenshot"
+    "ghcr.io/wajeht/gains",
+    "ghcr.io/wajeht/git",
+    "ghcr.io/wajeht/ip",
+    "ghcr.io/wajeht/jaw.dev",
+    "ghcr.io/wajeht/mm2us.com",
+    "ghcr.io/wajeht/notify",
+    "ghcr.io/wajeht/screenshot",
+    "ghcr.io/wajeht/ufc"
   ],
   "packageRules": [
     {
