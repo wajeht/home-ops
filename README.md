@@ -13,11 +13,13 @@ GitOps-driven homelab running on Docker Swarm
 
 ```mermaid
 flowchart LR
-    Git -->|push| GitHub -->|webhook| doco-cd -->|deploy| Docker-Swarm
+    Git -->|push| GitHub -->|webhook/poll| doco-cd
+    doco-cd -->|docker stack deploy| Swarm[apps/swarm]
+    doco-cd-compose -->|docker compose up| Compose[apps/compose]
     User -->|https| Cloudflare -->|ssl| Traefik -->|route| Apps
 ```
 
-Push to git, [doco-cd](https://github.com/kimdre/doco-cd) auto-deploys. Two instances: one for `apps/swarm/` (Swarm, zero-downtime), one for `apps/compose/` (Compose, device access). [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps deps updated.
+Push to git, [doco-cd](https://github.com/kimdre/doco-cd) auto-deploys. Two instances: one for `apps/swarm/` (Swarm, zero-downtime), one for `apps/compose/` (Compose, device access). Both run as compose containers in `apps/infra/`. [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps deps updated.
 
 
 ## Hardware
@@ -50,9 +52,20 @@ apps/
 ├── compose/         # Compose services (auto-deployed by doco-cd-compose)
 │   ├── plex/        # Needs /dev/dri for hardware transcoding
 │   └── vpn-qbit/    # Needs /dev/net/tun for VPN
-└── infra/           # Infrastructure (manually deployed)
-    ├── doco-cd/          # Deploys apps/swarm/ as Swarm
-    └── doco-cd-compose/  # Deploys apps/compose/ as Compose
+└── infra/           # Infrastructure (manual deploy via install/update-infra)
+    ├── doco-cd/          # Deploys apps/swarm/ as Swarm stacks
+    └── doco-cd-compose/  # Deploys apps/compose/ as Compose services
+```
+
+## Management
+
+```bash
+./scripts/home-ops.sh install        # Deploy everything
+./scripts/home-ops.sh uninstall      # Remove all stacks and cleanup
+./scripts/home-ops.sh update-infra   # Redeploy doco-cd instances
+./scripts/home-ops.sh status         # Show services, mounts, disk usage
+./scripts/home-ops.sh nfs mount      # Mount NFS shares
+./scripts/home-ops.sh setup          # Create data directories
 ```
 
 ## Docs
