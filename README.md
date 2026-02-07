@@ -59,20 +59,6 @@ apps/
 With all equipment connected: 82W idle, 2 hr UPS runtime, 60 kWh/mo ($7/mo).
 
 
-## Management
-
-```bash
-./scripts/home-ops.sh install        # Deploy everything
-./scripts/home-ops.sh uninstall      # Remove all stacks and cleanup
-./scripts/home-ops.sh update-infra   # Redeploy doco-cd instances
-./scripts/home-ops.sh status         # Show services, mounts, disk usage
-./scripts/home-ops.sh nfs mount      # Mount NFS shares
-./scripts/home-ops.sh setup          # Create data directories
-```
-
-
-
-
 ## Docs
 
 - [Quick Start](docs/quick-start.md)
