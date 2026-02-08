@@ -4,13 +4,14 @@ services:
     container_name: docker-cd
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /home/jaw/data/docker-cd:/data
+      - /home/jaw/data/docker-cd:/home/jaw/data/docker-cd
       - ./poll-config.yml:/config/poll-config.yml:ro
       - /home/jaw/.sops/age-key.txt:/sops/age-key.txt:ro
       - /home/jaw/.docker/config.json:/root/.docker/config.json:ro
     environment:
       TZ: America/Chicago
       HTTP_PORT: "80"
+      DATA_PATH: /home/jaw/data/docker-cd
       POLL_CONFIG_FILE: /config/poll-config.yml
       SOPS_AGE_KEY_FILE: /sops/age-key.txt
       GARBAGE_COLLECTION: "true"
