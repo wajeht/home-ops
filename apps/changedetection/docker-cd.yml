@@ -1,4 +1,4 @@
 rolling:
   enabled: true
   services:
-    - miniflux
+    - changedetection
