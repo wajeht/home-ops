@@ -8,7 +8,7 @@ services:
       - TZ=America/Chicago
       - VERSION=docker
     volumes:
-      - /home/jaw/data/media/plex:/config
+      - /home/jaw/data/plex:/config
       - /home/jaw/plex/movies:/movies
       - /home/jaw/plex/tv:/tv
       - /home/jaw/plex/music:/music

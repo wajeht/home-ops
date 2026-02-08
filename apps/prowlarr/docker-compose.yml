@@ -1,0 +1,35 @@
+services:
+  prowlarr:
+    image: linuxserver/prowlarr:2.3.0@sha256:5339e9050cfcc0cb5331e9c98610ed9d4ce70ef481a5461ea664a13dda3f1eb0
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/prowlarr:/config
+    networks:
+      - traefik
+      - media
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9696/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.jaw.dev`)"
+      - "traefik.http.routers.prowlarr.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr.middlewares=google-auth@file"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+
+networks:
+  traefik:
+    external: true
+  media:
+    external: true

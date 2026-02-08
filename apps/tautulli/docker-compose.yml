@@ -1,0 +1,32 @@
+services:
+  tautulli:
+    image: linuxserver/tautulli:2.16.0@sha256:31bce3c8457e74392c8c451eee315a759f8b96ec7cff6060596152d7e893b776
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/tautulli:/config
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8181/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tautulli.rule=Host(`tautulli.jaw.dev`)"
+      - "traefik.http.routers.tautulli.entrypoints=websecure"
+      - "traefik.http.routers.tautulli.middlewares=google-auth@file"
+      - "traefik.http.services.tautulli.loadbalancer.server.port=8181"
+
+networks:
+  traefik:
+    external: true
