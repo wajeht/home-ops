@@ -127,8 +127,8 @@
         widget:
           type: qbittorrent
           url: https://qbit.jaw.dev
-          username: {{HOMEPAGE_VAR_QBIT_USER}}
-          password: {{HOMEPAGE_VAR_QBIT_PASS}}
+          username: "{{HOMEPAGE_VAR_QBIT_USER}}"
+          password: "{{HOMEPAGE_VAR_QBIT_PASS}}"
 
     - Prowlarr:
         icon: prowlarr
