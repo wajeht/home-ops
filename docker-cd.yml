@@ -1,0 +1,8 @@
+auto_discover: true
+auto_discover_opts:
+  depth: 1
+working_dir: apps
+reference: main
+rolling: true
+force_image_pull: true
+webhook_filter: ^refs/heads/main$

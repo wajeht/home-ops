@@ -1,0 +1,46 @@
+services:
+  changedetection:
+    image: ghcr.io/dgtlmoon/changedetection.io:0.52.9@sha256:e95931043d68da46e90498ce74ad317b392caade07186dc06bdfa1710901bf90
+    environment:
+      - TZ=America/Chicago
+      - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000
+      - BASE_URL=https://changes.jaw.dev
+    volumes:
+      - /home/jaw/data/changedetection:/datastore
+    networks:
+      - traefik
+      - changedetection-internal
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:5000\", timeout=5)' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.changedetection.rule=Host(`changes.jaw.dev`)"
+      - "traefik.http.routers.changedetection.entrypoints=websecure"
+      - "traefik.http.routers.changedetection.middlewares=authelia@file"
+      - "traefik.http.services.changedetection.loadbalancer.server.port=5000"
+
+  # Browser for JS-rendered pages
+  playwright-chrome:
+    image: browserless/chrome:1.61.1-puppeteer-21.4.1@sha256:b6acad3ef2e1e0e3c2eb018add533570db2b34f5304682bad58c803b23ef7bd2
+    environment:
+      - SCREEN_WIDTH=1920
+      - SCREEN_HEIGHT=1080
+      - MAX_CONCURRENT_SESSIONS=10
+    networks:
+      - changedetection-internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
+  changedetection-internal:
