@@ -3,7 +3,7 @@ services:
     image: frooodle/s-pdf:2.4.5@sha256:005f4174c00006c0771b020c77fd9fdad334e112d629a8583671e8fe5eeb17f5
     environment:
       - TZ=America/Chicago
-      - DOCKER_ENABLE_SECURITY=false
+      - DOCKER_ENABLE_SECURITY=true
     volumes:
       - /home/jaw/data/stirling-pdf:/usr/share/tessdata
     networks:
@@ -14,6 +14,11 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.stirling-pdf.rule=Host(`pdf.jaw.dev`)"

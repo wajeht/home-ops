@@ -1,12 +1,11 @@
 services:
   miniflux:
     image: miniflux/miniflux:2.2.16@sha256:1f37163a178189eba09bf0a1c96d7335aa1fa474d4f958f51e0c5ad9f8136979
+    env_file:
+      - .enc.env
     environment:
-      - DATABASE_URL=postgres://miniflux:miniflux@miniflux-db/miniflux?sslmode=disable
       - RUN_MIGRATIONS=1
       - CREATE_ADMIN=1
-      - ADMIN_USERNAME=admin
-      - ADMIN_PASSWORD=changeme
       - BASE_URL=https://rss.jaw.dev
     networks:
       - traefik
@@ -17,6 +16,11 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.miniflux.rule=Host(`rss.jaw.dev`)"
@@ -25,9 +29,10 @@ services:
 
   miniflux-db:
     image: postgres:18-alpine@sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29
+    env_file:
+      - .enc.env
     environment:
       - POSTGRES_USER=miniflux
-      - POSTGRES_PASSWORD=miniflux
       - POSTGRES_DB=miniflux
     volumes:
       - /home/jaw/data/miniflux/db:/var/lib/postgresql/data
@@ -39,6 +44,11 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
 
 networks:
   traefik:

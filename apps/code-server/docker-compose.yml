@@ -1,7 +1,9 @@
 services:
   code-server:
     image: codercom/code-server:4.108.2
-    command: ["--auth", "none"]
+    command: ["--auth", "password"]
+    env_file:
+      - .enc.env
     environment:
       - TZ=America/Chicago
     volumes:
@@ -15,6 +17,11 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.code-server.rule=Host(`code.jaw.dev`)"

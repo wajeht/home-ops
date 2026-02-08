@@ -13,6 +13,11 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.favicon.rule=Host(`favicon.jaw.dev`)"

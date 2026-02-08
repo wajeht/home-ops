@@ -20,6 +20,11 @@ services:
     volumes:
       - ./mirror-sync.sh:/scripts/mirror-sync.sh:ro
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
 
   gitea:
     image: gitea/gitea:1.25@sha256:17d18218be2dad1f8ed402a4f906989505c90ab8b66ee9befcecfb5d470133e7
@@ -46,6 +51,11 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gitea.rule=Host(`gitea.jaw.dev`)"
