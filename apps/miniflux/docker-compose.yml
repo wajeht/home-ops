@@ -7,6 +7,9 @@ services:
       - RUN_MIGRATIONS=1
       - CREATE_ADMIN=1
       - BASE_URL=https://rss.jaw.dev
+    depends_on:
+      miniflux-db:
+        condition: service_healthy
     networks:
       - traefik
       - miniflux-internal
@@ -34,6 +37,7 @@ services:
     environment:
       - POSTGRES_USER=miniflux
       - POSTGRES_DB=miniflux
+      - PGDATA=/var/lib/postgresql/data
     volumes:
       - /home/jaw/data/miniflux/db:/var/lib/postgresql/data
     networks:
