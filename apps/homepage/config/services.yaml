@@ -25,10 +25,10 @@
         description: GitOps Deployer
         siteMonitor: https://cd.jaw.dev/v1/health
 
-    - Authelia:
-        icon: authelia
+    - Google Auth:
+        icon: google
         href: https://auth.jaw.dev
-        description: SSO Auth
+        description: OAuth Proxy
         siteMonitor: https://auth.jaw.dev
 
     - Changedetection:

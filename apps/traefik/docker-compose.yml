@@ -57,7 +57,7 @@ services:
       - "traefik.http.routers.dashboard.rule=Host(`traefik.jaw.dev`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.middlewares=authelia@file"
+      - "traefik.http.routers.dashboard.middlewares=google-auth@file"
       - "traefik.http.services.dummy.loadbalancer.server.port=9999"
 
 networks:
