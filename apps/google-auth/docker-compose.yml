@@ -1,6 +1,7 @@
 services:
   google-auth:
-    image: thomseddon/traefik-forward-auth:2
+    build: .
+    image: google-auth
     env_file:
       - .enc.env
     environment:
