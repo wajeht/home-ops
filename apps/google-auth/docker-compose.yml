@@ -9,6 +9,7 @@ services:
       - DEFAULT_PROVIDER=google
       - AUTH_HOST=auth.jaw.dev
       - COOKIE_DOMAIN=jaw.dev
+      - INSECURE_COOKIE=true
       - LOG_LEVEL=info
     networks:
       - traefik
