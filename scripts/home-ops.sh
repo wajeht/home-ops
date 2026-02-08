@@ -55,12 +55,12 @@ DATA_DIRS=(
     "$USER_HOME/data/gluetun"
     "$USER_HOME/data/linx/files"
     "$USER_HOME/data/linx/meta"
-    "$USER_HOME/data/media/plex"
-    "$USER_HOME/data/media/prowlarr"
-    "$USER_HOME/data/media/radarr"
-    "$USER_HOME/data/media/sonarr"
-    "$USER_HOME/data/media/tautulli"
-    "$USER_HOME/data/media/overseerr"
+    "$USER_HOME/data/plex"
+    "$USER_HOME/data/prowlarr"
+    "$USER_HOME/data/radarr"
+    "$USER_HOME/data/sonarr"
+    "$USER_HOME/data/tautulli"
+    "$USER_HOME/data/overseerr"
     "$USER_HOME/data/miniflux/db"
     "$USER_HOME/data/mm2us"
     "$USER_HOME/data/notify"
@@ -179,8 +179,9 @@ cmd_install() {
     step "3/4" "Directories..."
     cmd_setup
 
-    # Create traefik network
+    # Create external networks
     $SUDO docker network create traefik 2>/dev/null || true
+    $SUDO docker network create media 2>/dev/null || true
 
     # Registry auth
     cd "$REPO_DIR"
@@ -255,6 +256,7 @@ cmd_uninstall() {
     for i in 1 2 3; do
         $SUDO docker network prune -f 2>/dev/null || true
         $SUDO docker network rm traefik 2>/dev/null || true
+        $SUDO docker network rm media 2>/dev/null || true
         sleep 2
     done
 
