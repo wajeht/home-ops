@@ -9,7 +9,7 @@ How to recreate the homelab from scratch.
 | App configs/databases | `~/data/` | rsync to NAS |
 | SOPS age key | `~/.sops/age-key.txt` | Copy to secure location |
 | Docker auth | `~/.docker/config.json` | Recreatable via `docker login` |
-| Docker secrets | Swarm secrets | Recreate from .enc.env files |
+| Secrets | .enc.env files | Encrypted in git |
 | Media files | `~/plex/` (NFS) | NAS handles redundancy |
 | Compose files | Git repo | Already backed up |
 
@@ -37,7 +37,7 @@ git clone https://github.com/wajeht/home-ops.git ~/home-ops
 cd ~/home-ops && ./scripts/home-ops.sh install
 ```
 
-The install script handles everything: Docker, Swarm, SOPS, secrets, networks, and all deployments.
+The install script handles everything: Docker, SOPS, networks, and docker-cd deployment.
 
 ### 3. Mount NFS (for media)
 

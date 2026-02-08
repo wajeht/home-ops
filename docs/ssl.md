@@ -8,7 +8,7 @@ Traefik handles SSL automatically using Let's Encrypt with Cloudflare DNS challe
 2. Uses Cloudflare DNS challenge (creates `_acme-challenge` TXT records)
 3. All apps automatically use this wildcard cert - no per-app config needed
 
-## Config (apps/swarm/traefik/docker-compose.yml)
+## Config (apps/traefik/docker-compose.yml)
 
 ```yaml
 command:
@@ -30,17 +30,16 @@ command:
 Apps don't need `certresolver` labels - the wildcard handles all `*.jaw.dev` subdomains:
 
 ```yaml
-deploy:
-  labels:
-    - "traefik.enable=true"
-    - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
-    - "traefik.http.routers.myapp.entrypoints=websecure"
-    - "traefik.http.services.myapp.loadbalancer.server.port=80"
+labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
+  - "traefik.http.routers.myapp.entrypoints=websecure"
+  - "traefik.http.services.myapp.loadbalancer.server.port=80"
 ```
 
 ## Cloudflare Token
 
-Stored as Docker secret `cf_dns_api_token`. Needs permissions:
+Stored in `apps/traefik/.enc.env` as `CF_DNS_API_TOKEN`. Needs permissions:
 - Zone:DNS:Edit
 - Zone:Zone:Read
 
@@ -48,7 +47,7 @@ Stored as Docker secret `cf_dns_api_token`. Needs permissions:
 
 **Rate limited by Let's Encrypt:**
 - Wait 1 hour for rate limit to reset
-- Check logs: `docker service logs traefik_traefik`
+- Check logs: `docker logs traefik`
 
 **DNS propagation issues:**
 - The 30s delay before check helps with propagation

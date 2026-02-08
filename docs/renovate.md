@@ -13,7 +13,7 @@ Renovate detects new version
     ↓
 creates PR for review
     ↓
-merge PR → doco-cd deploys
+merge PR → docker-cd deploys
 ```
 
 ## Configuration

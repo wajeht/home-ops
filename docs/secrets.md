@@ -1,21 +1,21 @@
 # Secrets Management
 
-Secrets are encrypted with [SOPS](https://github.com/getsops/sops) + [age](https://github.com/FiloSottile/age), stored per-app in git. doco-cd auto-decrypts during deployment.
+Secrets are encrypted with [SOPS](https://github.com/getsops/sops) + [age](https://github.com/FiloSottile/age), stored per-app in git. docker-cd auto-decrypts during deployment.
 
 ## How It Works
 
 ```
-apps/swarm/myapp/.enc.env  →  doco-cd auto-decrypts  →  container env vars
+apps/myapp/.enc.env  →  docker-cd auto-decrypts  →  container env vars
      encrypted            on deployment
      safe to commit
 ```
 
-Each stack has its own `.enc.env` file. When doco-cd deploys (via webhook/polling), it automatically decrypts SOPS-encrypted files.
+Each stack has its own `.enc.env` file. When docker-cd deploys (via webhook/polling), it automatically decrypts SOPS-encrypted files.
 
 ## Structure
 
 ```
-apps/swarm/
+apps/
 ├── bang/.enc.env
 ├── calendar/.enc.env
 ├── close-powerlifting/.enc.env
@@ -29,11 +29,10 @@ apps/swarm/
 ├── traefik/.enc.env
 ├── vaultwarden/.enc.env
 ├── ...
-apps/infra/
-├── doco-cd/.enc.env
-└── doco-cd-compose/.enc.env
-apps/compose/
-└── vpn-qbit/.enc.env
+├── vpn-qbit/.enc.env
+└── ...
+infra/
+└── docker-cd/.enc.env
 ```
 
 ## Local Setup
@@ -55,25 +54,25 @@ source ~/.zshrc
 
 ### View secrets
 ```bash
-sops -d apps/swarm/commit/.enc.env
+sops -d apps/commit/.enc.env
 ```
 
 ### Edit secrets
 ```bash
-sops apps/swarm/commit/.enc.env
+sops apps/commit/.enc.env
 # Make changes, save, auto re-encrypts
 ```
 
 ### Add secrets to new app
 ```bash
 # Create plain .env
-cat > apps/swarm/myapp/.env << 'EOF'
+cat > apps/myapp/.env << 'EOF'
 API_KEY=secret123
 EOF
 
 # Encrypt
-sops -e apps/swarm/myapp/.env > apps/swarm/myapp/.enc.env
-rm apps/swarm/myapp/.env
+sops -e apps/myapp/.env > apps/myapp/.enc.env
+rm apps/myapp/.env
 
 # Reference in compose
 # env_file:
@@ -82,11 +81,11 @@ rm apps/swarm/myapp/.env
 
 ### Deploy after changes
 ```bash
-sops apps/swarm/myapp/.enc.env
+sops apps/myapp/.enc.env
 git add -A && git commit -m "update secrets" && git push
 ```
 
-doco-cd will auto-deploy with decrypted secrets.
+docker-cd will auto-deploy with decrypted secrets.
 
 ## Special Files
 
@@ -97,5 +96,5 @@ doco-cd will auto-deploy with decrypted secrets.
 
 - `.enc.env` files are safe to commit (encrypted)
 - Plain `.env` files are gitignored
-- doco-cd mounts age key at `/sops/age-key.txt`
+- docker-cd mounts age key at `/sops/age-key.txt`
 - Secrets passed as env vars at container runtime

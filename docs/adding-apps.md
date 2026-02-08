@@ -1,56 +1,25 @@
 # Adding Apps
 
-Push a docker-compose.yml → doco-cd auto-deploys.
+Push a docker-compose.yml → docker-cd auto-deploys.
 
-## Swarm Apps (apps/swarm/)
-
-For most apps. Gets rolling updates and zero-downtime deploys.
+## Create App
 
 ```bash
-mkdir -p apps/swarm/myapp
+mkdir -p apps/myapp
 ```
 
-Create `apps/swarm/myapp/docker-compose.yml`:
+Create `apps/myapp/docker-compose.yml`:
 ```yaml
 services:
   myapp:
     image: nginx:1.25
     networks:
       - traefik
-    deploy:
-      replicas: 1
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
-        - "traefik.http.routers.myapp.entrypoints=websecure"
-        - "traefik.http.services.myapp.loadbalancer.server.port=80"
-      update_config:
-        order: start-first
-      restart_policy:
-        condition: on-failure
-
-networks:
-  traefik:
-    external: true
-```
-
-## Compose Apps (apps/compose/)
-
-For apps needing device access (e.g., `/dev/dri`, `/dev/net/tun`) which Swarm doesn't support.
-
-```bash
-mkdir -p apps/compose/myapp
-```
-
-Create `apps/compose/myapp/docker-compose.yml`:
-```yaml
-services:
-  myapp:
-    image: myimage:v1.0
-    devices:
-      - /dev/dri:/dev/dri
-    networks:
-      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
+      - "traefik.http.routers.myapp.entrypoints=websecure"
+      - "traefik.http.services.myapp.loadbalancer.server.port=80"
     restart: unless-stopped
 
 networks:
@@ -58,30 +27,28 @@ networks:
     external: true
 ```
 
-**Note:** Traefik's swarm provider can't read compose container labels. Add routing for compose apps in `apps/swarm/traefik/dynamic.yml` instead (see qbittorrent/doco-cd entries for examples).
-
 ## Deploy
 
 ```bash
 git add -A && git commit -m "add myapp" && git push
 ```
 
-doco-cd auto-deploys via webhook/polling within 60s.
+docker-cd auto-deploys via webhook/polling within 60s.
 
 ## With Secrets (SOPS)
 
-doco-cd auto-decrypts `.enc.env` files on deployment.
+docker-cd auto-decrypts `.enc.env` files on deployment.
 
 ```bash
 # Create plain env file
-cat > apps/swarm/myapp/.env << 'EOF'
+cat > apps/myapp/.env << 'EOF'
 DATABASE_URL=postgres://user:pass@host/db
 API_KEY=secret123
 EOF
 
 # Encrypt it
-sops -e apps/swarm/myapp/.env > apps/swarm/myapp/.enc.env
-rm apps/swarm/myapp/.env
+sops -e apps/myapp/.env > apps/myapp/.enc.env
+rm apps/myapp/.env
 ```
 
 Reference in docker-compose.yml:
@@ -90,12 +57,12 @@ services:
   myapp:
     image: myimage:v1.0
     env_file:
-      - .enc.env    # doco-cd auto-decrypts
+      - .enc.env    # docker-cd auto-decrypts
 ```
 
 Edit secrets:
 ```bash
-sops apps/swarm/myapp/.enc.env
+sops apps/myapp/.enc.env
 git add -A && git commit -m "update secrets" && git push
 ```
 
@@ -110,8 +77,6 @@ labels:
 ```
 
 TLS uses the wildcard cert (*.jaw.dev) automatically. No per-app `certresolver` needed.
-
-**Swarm:** Labels under `deploy.labels:` | **Compose:** Labels under `labels:`
 
 ## Network
 
@@ -131,16 +96,25 @@ services:
     image: ghcr.io/username/myapp:v1.0
 ```
 
-The GH_TOKEN in `apps/infra/doco-cd/.enc.env` handles authentication.
+The server has docker login configured for ghcr.io.
+
+## Disable Rolling Deploy
+
+For apps that can't run multiple instances (e.g., BoltDB databases):
+
+Create `apps/myapp/docker-cd.yml`:
+```yaml
+rolling: false
+```
 
 ## Removing Apps
 
 ```bash
-rm -rf apps/swarm/myapp
+rm -rf apps/myapp
 git add -A && git commit -m "remove myapp" && git push
 ```
 
-doco-cd will stop and remove the service (auto_discover with `delete: true`).
+docker-cd will stop and remove the service (garbage collection enabled).
 
 ## Pinning Image Versions
 
