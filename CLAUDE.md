@@ -45,7 +45,7 @@ GitOps tool that auto-deploys Docker Compose stacks when git repo changes. Singl
 
 ### How It Works
 
-1. Polls git repo (or receives webhook)
+1. Polls git repo for changes
 2. Reads `docker-cd.yml` from repo root for auto-discover config
 3. Auto-discovers all `apps/*/docker-compose.yml` stacks
 4. Auto-decrypts `.enc.env` files via SOPS
