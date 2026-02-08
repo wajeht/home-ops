@@ -56,39 +56,6 @@
         siteMonitor: https://logs.jaw.dev
 
 - Media:
-    - Tautulli:
-        icon: tautulli
-        href: https://tautulli.jaw.dev
-        description: Plex Stats
-        siteMonitor: https://tautulli.jaw.dev
-        widget:
-          type: tautulli
-          url: http://tautulli:8181
-          key: {{HOMEPAGE_VAR_TAUTULLI_KEY}}
-
-    - Miniflux:
-        icon: miniflux
-        href: https://rss.jaw.dev
-        description: RSS Reader
-        siteMonitor: https://rss.jaw.dev
-        widget:
-          type: miniflux
-          url: http://miniflux:8080
-          key: {{HOMEPAGE_VAR_MINIFLUX_KEY}}
-
-    - Audiobookshelf:
-        icon: audiobookshelf
-        href: https://audiobooks.jaw.dev
-        description: Audiobooks
-        siteMonitor: https://audiobooks.jaw.dev
-
-    - Plex:
-        icon: plex
-        href: https://plex.jaw.dev
-        description: Movies & TV
-        siteMonitor: https://plex.jaw.dev
-
-- Downloads:
     - Overseerr:
         icon: overseerr
         href: https://overseerr.jaw.dev
@@ -129,6 +96,38 @@
           url: http://gluetun:8085
           username: "{{HOMEPAGE_VAR_QBIT_USER}}"
           password: "{{HOMEPAGE_VAR_QBIT_PASS}}"
+
+    - Tautulli:
+        icon: tautulli
+        href: https://tautulli.jaw.dev
+        description: Plex Stats
+        siteMonitor: https://tautulli.jaw.dev
+        widget:
+          type: tautulli
+          url: http://tautulli:8181
+          key: {{HOMEPAGE_VAR_TAUTULLI_KEY}}
+
+    - Miniflux:
+        icon: miniflux
+        href: https://rss.jaw.dev
+        description: RSS Reader
+        siteMonitor: https://rss.jaw.dev
+        widget:
+          type: miniflux
+          url: http://miniflux:8080
+          key: {{HOMEPAGE_VAR_MINIFLUX_KEY}}
+
+    - Audiobookshelf:
+        icon: audiobookshelf
+        href: https://audiobooks.jaw.dev
+        description: Audiobooks
+        siteMonitor: https://audiobooks.jaw.dev
+
+    - Plex:
+        icon: plex
+        href: https://plex.jaw.dev
+        description: Movies & TV
+        siteMonitor: https://plex.jaw.dev
 
     - Prowlarr:
         icon: prowlarr
@@ -173,12 +172,6 @@
         href: https://calendar.jaw.dev
         description: Personal Calendar
         siteMonitor: https://calendar.jaw.dev/health
-
-    - Commit:
-        icon: git
-        href: https://commit.jaw.dev
-        description: AI Commits
-        siteMonitor: https://commit.jaw.dev
 
     - Favicon:
         icon: mdi-image-search
@@ -234,6 +227,12 @@
         href: https://code.jaw.dev
         description: Web IDE
         siteMonitor: https://code.jaw.dev
+
+    - Commit:
+        icon: git
+        href: https://commit.jaw.dev
+        description: AI Commits
+        siteMonitor: https://commit.jaw.dev
 
     - Gitea:
         icon: gitea
