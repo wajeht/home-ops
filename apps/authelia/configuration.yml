@@ -34,7 +34,7 @@ access_control:
       policy: one_factor
 
 session:
-  secret: "{{ secret '/run/secrets/authelia_session_secret' | msquote }}"
+  secret: "{{ env "AUTHELIA_SESSION_SECRET" }}"
   name: authelia_session
   same_site: lax
   expiration: 1h
@@ -45,7 +45,7 @@ session:
       authelia_url: https://auth.jaw.dev
 
 storage:
-  encryption_key: "{{ secret '/run/secrets/authelia_storage_encryption_key' | msquote }}"
+  encryption_key: "{{ env "AUTHELIA_STORAGE_ENCRYPTION_KEY" }}"
   local:
     path: /config/db.sqlite3
 
@@ -55,4 +55,4 @@ notifier:
 
 identity_validation:
   reset_password:
-    jwt_secret: "{{ secret '/run/secrets/authelia_jwt_secret' | msquote }}"
+    jwt_secret: "{{ env "AUTHELIA_JWT_SECRET" }}"
