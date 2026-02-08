@@ -1,60 +1,3 @@
-- Infrastructure:
-    - Traefik:
-        icon: traefik
-        href: https://traefik.jaw.dev
-        description: Reverse Proxy
-        siteMonitor: https://traefik.jaw.dev
-        widget:
-          type: traefik
-          url: http://traefik:8080
-
-    - Uptime Kuma:
-        icon: uptime-kuma
-        href: https://status.jaw.dev
-        description: Status Monitor
-        siteMonitor: https://status.jaw.dev
-        widget:
-          type: uptimekuma
-          url: http://uptime-kuma:3001
-          slug: status
-          key: {{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}
-
-    - Docker-CD:
-        icon: docker
-        href: https://cd.jaw.dev
-        description: GitOps Deployer
-        siteMonitor: https://cd.jaw.dev/v1/health
-
-    - Google Auth:
-        icon: google
-        href: https://auth.jaw.dev
-        description: OAuth Proxy
-        siteMonitor: https://auth.jaw.dev
-
-    - Changedetection:
-        icon: changedetection-io
-        href: https://changes.jaw.dev
-        description: Web Monitor
-        siteMonitor: https://changes.jaw.dev
-
-    - Ntfy:
-        icon: ntfy
-        href: https://ntfy.jaw.dev
-        description: Notifications
-        siteMonitor: https://ntfy.jaw.dev
-
-    - Portainer:
-        icon: portainer
-        href: https://portainer.jaw.dev
-        description: Docker Management
-        siteMonitor: https://portainer.jaw.dev
-
-    - Dozzle:
-        icon: dozzle
-        href: https://logs.jaw.dev
-        description: Docker Logs
-        siteMonitor: https://logs.jaw.dev
-
 - Media:
     - Overseerr:
         icon: overseerr
@@ -135,30 +78,62 @@
         description: Indexers
         siteMonitor: https://prowlarr.jaw.dev
 
-- Tools:
-    - Vaultwarden:
-        icon: vaultwarden
-        href: https://vault.jaw.dev
-        description: Passwords
-        siteMonitor: https://vault.jaw.dev
+- Infrastructure:
+    - Traefik:
+        icon: traefik
+        href: https://traefik.jaw.dev
+        description: Reverse Proxy
+        siteMonitor: https://traefik.jaw.dev
+        widget:
+          type: traefik
+          url: http://traefik:8080
 
-    - Stirling PDF:
-        icon: stirling-pdf
-        href: https://pdf.jaw.dev
-        description: PDF Tools
-        siteMonitor: https://pdf.jaw.dev
+    - Uptime Kuma:
+        icon: uptime-kuma
+        href: https://status.jaw.dev
+        description: Status Monitor
+        siteMonitor: https://status.jaw.dev
+        widget:
+          type: uptimekuma
+          url: http://uptime-kuma:3001
+          slug: status
+          key: {{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}
 
-    - IT-Tools:
-        icon: it-tools
-        href: https://tools.jaw.dev
-        description: Dev Utilities
-        siteMonitor: https://tools.jaw.dev
+    - Docker-CD:
+        icon: docker
+        href: https://cd.jaw.dev
+        description: GitOps Deployer
+        siteMonitor: https://cd.jaw.dev/v1/health
 
-    - Linx:
-        icon: filerun
-        href: https://linx.jaw.dev
-        description: File Sharing
-        siteMonitor: https://linx.jaw.dev
+    - Google Auth:
+        icon: google
+        href: https://auth.jaw.dev
+        description: OAuth Proxy
+        siteMonitor: https://auth.jaw.dev
+
+    - Changedetection:
+        icon: changedetection-io
+        href: https://changes.jaw.dev
+        description: Web Monitor
+        siteMonitor: https://changes.jaw.dev
+
+    - Ntfy:
+        icon: ntfy
+        href: https://ntfy.jaw.dev
+        description: Notifications
+        siteMonitor: https://ntfy.jaw.dev
+
+    - Portainer:
+        icon: portainer
+        href: https://portainer.jaw.dev
+        description: Docker Management
+        siteMonitor: https://portainer.jaw.dev
+
+    - Dozzle:
+        icon: dozzle
+        href: https://logs.jaw.dev
+        description: Docker Logs
+        siteMonitor: https://logs.jaw.dev
 
 - Apps:
     - UFC:
@@ -221,6 +196,31 @@
         description: Unit Converter
         siteMonitor: https://mm2us.com
 
+- Tools:
+    - Vaultwarden:
+        icon: vaultwarden
+        href: https://vault.jaw.dev
+        description: Passwords
+        siteMonitor: https://vault.jaw.dev
+
+    - Stirling PDF:
+        icon: stirling-pdf
+        href: https://pdf.jaw.dev
+        description: PDF Tools
+        siteMonitor: https://pdf.jaw.dev
+
+    - IT-Tools:
+        icon: it-tools
+        href: https://tools.jaw.dev
+        description: Dev Utilities
+        siteMonitor: https://tools.jaw.dev
+
+    - Linx:
+        icon: filerun
+        href: https://linx.jaw.dev
+        description: File Sharing
+        siteMonitor: https://linx.jaw.dev
+
 - Dev:
     - Code Server:
         icon: vscode
@@ -255,10 +255,3 @@
         href: https://git.jaw.dev
         description: Git URL Shortener
         siteMonitor: https://git.jaw.dev
-
-- Personal:
-    - jaw.dev:
-        icon: mdi-web
-        href: https://jaw.dev
-        description: Personal Site
-        siteMonitor: https://jaw.dev
