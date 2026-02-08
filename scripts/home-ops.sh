@@ -206,7 +206,10 @@ cmd_install() {
         info "Deploying $name..."
         cd "$dir"
         if [ -f .enc.env ]; then
-            $SUDO docker compose --env-file <(sops -d .enc.env) up -d 2>/dev/null || warn "$name not started"
+            local tmp=$(mktemp)
+            sops -d .enc.env > "$tmp"
+            $SUDO docker compose --env-file "$tmp" up -d 2>/dev/null || warn "$name not started"
+            rm -f "$tmp"
         else
             $SUDO docker compose up -d 2>/dev/null || warn "$name not started"
         fi
@@ -291,7 +294,10 @@ cmd_update_infra() {
     step "1/1" "Redeploying docker-cd..."
     cd "$REPO_DIR/infra/docker-cd"
     $SUDO docker compose pull 2>/dev/null || true
-    $SUDO docker compose --env-file <(sops -d .enc.env) up -d 2>/dev/null || warn "docker-cd not started"
+    local tmp=$(mktemp)
+    sops -d .enc.env > "$tmp"
+    $SUDO docker compose --env-file "$tmp" up -d 2>/dev/null || warn "docker-cd not started"
+    rm -f "$tmp"
 
     header "Done"
 }
