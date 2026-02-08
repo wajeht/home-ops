@@ -1,0 +1,57 @@
+services:
+  mirror-sync:
+    image: alpine:3.23
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        apk add --no-cache curl jq bash
+        while true; do
+          echo "=== Mirror sync started at $$(date) ==="
+          /scripts/mirror-sync.sh || echo "Sync failed"
+          echo "=== Sleeping 6h ==="
+          sleep 21600
+        done
+    environment:
+      - GITEA_URL=https://gitea.jaw.dev
+      - GITHUB_USER=wajeht
+    env_file:
+      - .enc.env
+    volumes:
+      - ./mirror-sync.sh:/scripts/mirror-sync.sh:ro
+    restart: unless-stopped
+
+  gitea:
+    image: gitea/gitea:1.25@sha256:17d18218be2dad1f8ed402a4f906989505c90ab8b66ee9befcecfb5d470133e7
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__server__ROOT_URL=https://gitea.jaw.dev/
+      - GITEA__server__DOMAIN=gitea.jaw.dev
+      - GITEA__mirror__ENABLED=true
+      - GITEA__mirror__DEFAULT_INTERVAL=8h
+      - GITEA__service__DISABLE_REGISTRATION=true
+    env_file:
+      - .enc.env
+    volumes:
+      - /home/jaw/data/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitea.rule=Host(`gitea.jaw.dev`)"
+      - "traefik.http.routers.gitea.entrypoints=websecure"
+      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+
+networks:
+  traefik:
+    external: true

@@ -1,0 +1,26 @@
+services:
+  mm2us:
+    image: ghcr.io/wajeht/mm2us.com:7378b89
+    env_file:
+      - .enc.env
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/mm2us:/usr/src/app/dist/src/db/sqlite
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mm2us.rule=Host(`mm2us.com`) || Host(`www.mm2us.com`)"
+      - "traefik.http.routers.mm2us.entrypoints=websecure"
+      - "traefik.http.services.mm2us.loadbalancer.server.port=80"
+
+networks:
+  traefik:
+    external: true

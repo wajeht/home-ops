@@ -1,0 +1,24 @@
+services:
+  favicon:
+    image: ghcr.io/wajeht/favicon:484ef1a
+    environment:
+      TZ: America/Chicago
+    volumes:
+      - /home/jaw/data/favicon:/app/data
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.favicon.rule=Host(`favicon.jaw.dev`)"
+      - "traefik.http.routers.favicon.entrypoints=websecure"
+      - "traefik.http.services.favicon.loadbalancer.server.port=80"
+
+networks:
+  traefik:
+    external: true

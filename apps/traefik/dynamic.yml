@@ -1,0 +1,36 @@
+http:
+  middlewares:
+    redirect-to-main:
+      redirectRegex:
+        regex: ".*"
+        replacement: "https://jaw.dev"
+        permanent: true
+
+    authelia:
+      forwardAuth:
+        address: http://authelia:9091/api/authz/forward-auth
+        trustForwardHeader: true
+        authResponseHeaders:
+          - Remote-User
+          - Remote-Groups
+          - Remote-Email
+          - Remote-Name
+
+  routers:
+    # Catch-all for unknown subdomains (low priority)
+    catchall:
+      rule: "HostRegexp(`[a-z0-9-]+\\.jaw\\.dev`)"
+      entrypoints:
+        - websecure
+      middlewares:
+        - redirect-to-main
+      service: dummy
+      priority: 1
+      tls: {}
+
+  services:
+    # Dummy service for redirects (never actually used)
+    dummy:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1"

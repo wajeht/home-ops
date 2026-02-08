@@ -1,0 +1,26 @@
+services:
+  close-powerlifting:
+    image: ghcr.io/wajeht/close-powerlifting:19dc646
+    env_file:
+      - .enc.env
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/close-powerlifting:/usr/src/app/dist/src/db/sqlite
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.close-powerlifting.rule=Host(`closepowerlifting.com`) || Host(`www.closepowerlifting.com`) || Host(`close-powerlifting.jaw.dev`)"
+      - "traefik.http.routers.close-powerlifting.entrypoints=websecure"
+      - "traefik.http.services.close-powerlifting.loadbalancer.server.port=80"
+
+networks:
+  traefik:
+    external: true

@@ -1,0 +1,31 @@
+services:
+  docker-cd:
+    image: ghcr.io/wajeht/docker-cd:latest
+    container_name: docker-cd
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/jaw/data/docker-cd:/data
+      - ./poll-config.yml:/config/poll-config.yml:ro
+      - /home/jaw/.sops/age-key.txt:/sops/age-key.txt:ro
+      - /home/jaw/.docker/config.json:/root/.docker/config.json:ro
+    env_file:
+      - .enc.env
+    environment:
+      TZ: America/Chicago
+      HTTP_PORT: "80"
+      POLL_CONFIG_FILE: /config/poll-config.yml
+      SOPS_AGE_KEY_FILE: /sops/age-key.txt
+      GARBAGE_COLLECTION: "true"
+      MAX_HISTORY_ENTRIES: "500"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.docker-cd.rule=Host(`cd.jaw.dev`)"
+      - "traefik.http.routers.docker-cd.entrypoints=websecure"
+      - "traefik.http.services.docker-cd.loadbalancer.server.port=80"
+    networks:
+      - traefik
+    restart: unless-stopped
+
+networks:
+  traefik:
+    external: true

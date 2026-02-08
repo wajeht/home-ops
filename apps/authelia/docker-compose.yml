@@ -1,0 +1,28 @@
+services:
+  authelia:
+    image: authelia/authelia:4
+    env_file:
+      - .enc.env
+    environment:
+      TZ: America/Chicago
+    volumes:
+      - /home/jaw/data/authelia:/config
+      - ./configuration.yml:/config/configuration.yml:ro
+      - ./users.yml:/config/users.yml:ro
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9091/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.authelia.rule=Host(`auth.jaw.dev`)"
+      - "traefik.http.routers.authelia.entrypoints=websecure"
+      - "traefik.http.services.authelia.loadbalancer.server.port=9091"
+
+networks:
+  traefik:
+    external: true
