@@ -29,8 +29,8 @@ services:
       - "traefik.http.routers.code-server.entrypoints=websecure"
       - "traefik.http.routers.code-server.middlewares=google-auth@file"
       - "traefik.http.services.code-server.loadbalancer.server.port=8080"
-      # WebSocket router without auth (browser already authenticated via cookie)
-      - "traefik.http.routers.code-server-ws.rule=Host(`code.jaw.dev`) && HeaderRegexp(`Connection`, `(?i)upgrade`) && HeaderRegexp(`Upgrade`, `(?i)websocket`)"
+      # WebSocket router without forward-auth (HTTP/2 strips Upgrade headers)
+      - "traefik.http.routers.code-server-ws.rule=Host(`code.jaw.dev`) && PathPrefix(`/stable-`)"
       - "traefik.http.routers.code-server-ws.entrypoints=websecure"
       - "traefik.http.routers.code-server-ws.service=code-server"
       - "traefik.http.routers.code-server-ws.priority=20"
