@@ -1,6 +1,6 @@
 # Instant Deploy
 
-Push a tag → image builds → home-ops updates → doco-cd deploys. No Renovate delays.
+Push a tag → image builds → home-ops updates → docker-cd deploys. No Renovate delays.
 
 ## How It Works
 
@@ -11,7 +11,7 @@ GitHub Actions builds image to ghcr.io
     ↓
 doco-deploy-workflow updates home-ops
     ↓
-doco-cd detects change and deploys (within 60s)
+docker-cd detects change and deploys (within 60s)
 ```
 
 ## Setup for New Apps
@@ -67,7 +67,7 @@ jobs:
     needs: build-and-push
     uses: wajeht/doco-deploy-workflow/.github/workflows/deploy.yaml@main
     with:
-      app-path: apps/swarm/your-app-name
+      app-path: apps/your-app-name
       tag: ${{ needs.build-and-push.outputs.version }}
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -108,7 +108,7 @@ gh run watch -R wajeht/your-app
 
 Reusable workflow at `wajeht/doco-deploy-workflow` that:
 1. Checks out home-ops using GH_TOKEN
-2. Updates image tag in `apps/swarm/{app}/docker-compose.yml`
+2. Updates image tag in `apps/{app}/docker-compose.yml`
 3. Commits and pushes
 
 ### Inputs
@@ -116,7 +116,7 @@ Reusable workflow at `wajeht/doco-deploy-workflow` that:
 | Input | Required | Default | Description |
 |-------|----------|---------|-------------|
 | `home-ops-repo` | No | `wajeht/home-ops` | Target repo |
-| `app-path` | Yes | - | Path to app (e.g., `apps/swarm/ufc`) |
+| `app-path` | Yes | - | Path to app (e.g., `apps/ufc`) |
 | `tag` | Yes | - | Image tag (e.g., `v1.0.0`) |
 
 ### Secrets
