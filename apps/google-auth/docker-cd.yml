@@ -1,0 +1,2 @@
+force_image_pull: false
+build_opts: {}
