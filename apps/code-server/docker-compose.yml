@@ -24,16 +24,10 @@ services:
           memory: 2G
     labels:
       - "traefik.enable=true"
-      # Main router with auth
       - "traefik.http.routers.code-server.rule=Host(`code.jaw.dev`)"
       - "traefik.http.routers.code-server.entrypoints=websecure"
       - "traefik.http.routers.code-server.middlewares=google-auth@file"
       - "traefik.http.services.code-server.loadbalancer.server.port=8080"
-      # WebSocket router without forward-auth (HTTP/2 strips Upgrade headers)
-      - "traefik.http.routers.code-server-ws.rule=Host(`code.jaw.dev`) && PathPrefix(`/stable-`)"
-      - "traefik.http.routers.code-server-ws.entrypoints=websecure"
-      - "traefik.http.routers.code-server-ws.service=code-server"
-      - "traefik.http.routers.code-server-ws.priority=20"
 
 networks:
   traefik:
