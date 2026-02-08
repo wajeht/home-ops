@@ -19,17 +19,11 @@
           slug: home
           key: {{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}
 
-    - Doco-CD:
+    - Docker-CD:
         icon: docker
-        href: https://doco.jaw.dev
-        description: Swarm Deployer
-        siteMonitor: https://doco.jaw.dev/v1/health
-
-    - Doco-CD Compose:
-        icon: docker
-        href: https://doco-compose.jaw.dev
-        description: Compose Deployer
-        siteMonitor: https://doco-compose.jaw.dev/v1/health
+        href: https://cd.jaw.dev
+        description: GitOps Deployer
+        siteMonitor: https://cd.jaw.dev/v1/health
 
     - Authelia:
         icon: authelia
