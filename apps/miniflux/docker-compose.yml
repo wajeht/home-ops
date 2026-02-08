@@ -28,6 +28,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.miniflux.rule=Host(`rss.jaw.dev`)"
       - "traefik.http.routers.miniflux.entrypoints=websecure"
+      - "traefik.http.routers.miniflux.middlewares=google-auth@file"
       - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
 
   miniflux-db:
