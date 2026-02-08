@@ -2,12 +2,13 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    ":semanticCommits"
+    ":semanticCommits",
+    ":pinDigestsDisabled",
+    ":rebaseStalePrs"
   ],
   "timezone": "America/Chicago",
   "labels": ["dependencies"],
   "prConcurrentLimit": 5,
-  "pinDigests": false,
   "vulnerabilityAlerts": {
     "labels": ["security"],
     "automerge": true
@@ -48,10 +49,16 @@
       "groupName": "linuxserver images"
     },
     {
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
+      "description": "automerge non-major during off-hours with 1 day delay",
+      "groupName": "all non-major updates",
+      "matchUpdateTypes": ["digest", "minor", "patch"],
+      "minimumReleaseAge": "1 day",
+      "automerge": true,
+      "automergeType": "branch",
+      "automergeSchedule": ["* 2-5 * * *"]
     },
     {
+      "description": "major updates require manual review",
       "matchUpdateTypes": ["major"],
       "automerge": false,
       "labels": ["major"]
