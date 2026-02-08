@@ -103,7 +103,7 @@
         icon: docker
         href: https://cd.jaw.dev
         description: GitOps Deployer
-        siteMonitor: https://cd.jaw.dev/v1/health
+        siteMonitor: http://docker-cd:80
 
     - Google Auth:
         icon: google
