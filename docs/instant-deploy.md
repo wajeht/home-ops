@@ -9,7 +9,7 @@ App repo (ufc, commit, etc.)
     ↓ push tag v1.0.0
 GitHub Actions builds image to ghcr.io
     ↓
-doco-deploy-workflow updates home-ops
+docker-cd-deploy-workflow updates home-ops
     ↓
 docker-cd detects change and deploys (within 60s)
 ```
@@ -65,7 +65,7 @@ jobs:
 
   deploy:
     needs: build-and-push
-    uses: wajeht/doco-deploy-workflow/.github/workflows/deploy.yaml@main
+    uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@main
     with:
       app-path: apps/your-app-name
       tag: ${{ needs.build-and-push.outputs.version }}
@@ -104,9 +104,9 @@ Watch progress:
 gh run watch -R wajeht/your-app
 ```
 
-## doco-deploy-workflow
+## docker-cd-deploy-workflow
 
-Reusable workflow at `wajeht/doco-deploy-workflow` that:
+Reusable workflow at `wajeht/docker-cd-deploy-workflow` that:
 1. Checks out home-ops using GH_TOKEN
 2. Updates image tag in `apps/{app}/docker-compose.yml`
 3. Commits and pushes

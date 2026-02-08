@@ -16,11 +16,11 @@ flowchart LR
     Git -->|push| GitHub -->|webhook/poll| docker-cd
     docker-cd -->|docker compose up| Apps[apps/*]
     AppRepo[app repo] -->|push tag| Actions[GitHub Actions] -->|build image| GHCR[ghcr.io]
-    Actions -->|doco-deploy-workflow| GitHub
+    Actions -->|docker-cd-deploy-workflow| GitHub
     User -->|https| Cloudflare -->|ssl| Traefik -->|route| Apps
 ```
 
-Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [doco-deploy-workflow](https://github.com/wajeht/doco-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
+Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
 
 
 ## Structure
