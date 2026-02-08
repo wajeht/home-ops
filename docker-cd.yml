@@ -6,3 +6,6 @@ reference: main
 rolling: true
 force_image_pull: true
 webhook_filter: ^refs/heads/main$
+env_files:
+  - .env
+  - .enc.env

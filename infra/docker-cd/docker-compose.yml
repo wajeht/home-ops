@@ -8,8 +8,6 @@ services:
       - ./poll-config.yml:/config/poll-config.yml:ro
       - /home/jaw/.sops/age-key.txt:/sops/age-key.txt:ro
       - /home/jaw/.docker/config.json:/root/.docker/config.json:ro
-    env_file:
-      - .enc.env
     environment:
       TZ: America/Chicago
       HTTP_PORT: "80"
@@ -17,6 +15,9 @@ services:
       SOPS_AGE_KEY_FILE: /sops/age-key.txt
       GARBAGE_COLLECTION: "true"
       MAX_HISTORY_ENTRIES: "500"
+      GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
+      NOTIFICATION_URL: ${NOTIFICATION_URL:-}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.docker-cd.rule=Host(`cd.jaw.dev`)"

@@ -201,15 +201,12 @@ cmd_install() {
     # Deploy core services (order matters)
     step "4/4" "Deploying..."
 
-    # Helper: decrypt .enc.env in place, deploy, restore from git
     deploy_compose() {
         local dir=$1 name=$2
         info "Deploying $name..."
         cd "$dir"
         if [ -f .enc.env ]; then
-            sops -d -i .enc.env 2>/dev/null || warn "No secrets for $name"
-            $SUDO docker compose up -d 2>/dev/null || warn "$name not started"
-            git checkout .enc.env 2>/dev/null || true
+            $SUDO docker compose --env-file <(sops -d .enc.env) up -d 2>/dev/null || warn "$name not started"
         else
             $SUDO docker compose up -d 2>/dev/null || warn "$name not started"
         fi
@@ -294,9 +291,7 @@ cmd_update_infra() {
     step "1/1" "Redeploying docker-cd..."
     cd "$REPO_DIR/infra/docker-cd"
     $SUDO docker compose pull 2>/dev/null || true
-    sops -d -i .enc.env 2>/dev/null || warn "No secrets"
-    $SUDO docker compose up -d 2>/dev/null || warn "docker-cd not started"
-    git checkout .enc.env 2>/dev/null || true
+    $SUDO docker compose --env-file <(sops -d .enc.env) up -d 2>/dev/null || warn "docker-cd not started"
 
     header "Done"
 }
