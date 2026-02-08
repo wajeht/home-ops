@@ -4,10 +4,9 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    env_file:
-      - .enc.env
     environment:
       TZ: America/Chicago
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
     command:
       - "--api.dashboard=true"
       - "--api.insecure=true"

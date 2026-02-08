@@ -1,10 +1,11 @@
 services:
   authelia:
     image: authelia/authelia:4
-    env_file:
-      - .enc.env
     environment:
       TZ: America/Chicago
+      AUTHELIA_JWT_SECRET: ${AUTHELIA_JWT_SECRET}
+      AUTHELIA_SESSION_SECRET: ${AUTHELIA_SESSION_SECRET}
+      AUTHELIA_STORAGE_ENCRYPTION_KEY: ${AUTHELIA_STORAGE_ENCRYPTION_KEY}
     volumes:
       - /home/jaw/data/authelia:/config
       - ./configuration.yml:/config/configuration.yml:ro
