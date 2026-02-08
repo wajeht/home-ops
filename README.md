@@ -13,7 +13,7 @@ GitOps-driven homelab running on Docker Compose
 
 ```mermaid
 flowchart LR
-    Git -->|push| GitHub -->|webhook/poll| docker-cd
+    Git -->|push| GitHub -->|poll| docker-cd
     docker-cd -->|docker compose up| Apps[apps/*]
     AppRepo[app repo] -->|push tag| Actions[GitHub Actions] -->|build image| GHCR[ghcr.io]
     Actions -->|docker-cd-deploy-workflow| GitHub
