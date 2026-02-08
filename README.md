@@ -16,7 +16,7 @@ GitOps-driven homelab running on Docker Compose
 
 ```mermaid
 flowchart LR
-    subgraph Dell[Dell OptiPlex]
+    subgraph Dell[Dell OptiPlex 5050 Micro]
         docker-cd -->|docker compose up| Apps[apps/*]
         Traefik -->|route| Apps
     end
@@ -26,9 +26,9 @@ flowchart LR
     Actions -->|build image| GHCR[ghcr.io]
     Actions -->|deploy workflow| GitHub
     Renovate -->|auto-merge| GitHub
-    User -->|https| Cloudflare -->|ssl| UniFi -->|forward| Traefik
-    NAS[Synology NAS] -->|NFS| Apps
-    Pi[Raspberry Pi] -->|DNS| UniFi
+    User -->|https| Cloudflare -->|ssl| UniFi[UniFi Cloud Gateway Ultra] -->|forward| Traefik
+    NAS[Synology DS923+] -->|NFS| Apps
+    Pi[Raspberry Pi 5] -->|DNS| UniFi
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
