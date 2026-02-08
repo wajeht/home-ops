@@ -16,7 +16,7 @@
         widget:
           type: uptimekuma
           url: http://uptime-kuma:3001
-          slug: home
+          slug: status
           key: {{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}
 
     - Docker-CD:
