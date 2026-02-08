@@ -28,6 +28,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.google-auth.rule=Host(`auth.jaw.dev`)"
       - "traefik.http.routers.google-auth.entrypoints=websecure"
+      - "traefik.http.routers.google-auth.middlewares=google-auth@file"
       - "traefik.http.services.google-auth.loadbalancer.server.port=4181"
 
 networks:
