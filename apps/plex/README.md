@@ -2,10 +2,6 @@
 
 Plex with Intel Quick Sync hardware transcoding.
 
-## Why docker-compose?
-
-Docker Swarm doesn't support `devices:` directive. Plex needs `/dev/dri` access for Intel Quick Sync hardware transcoding, so it runs via `docker compose` instead of Swarm.
-
 ## Hardware Transcoding
 
 Intel Quick Sync is enabled by passing `/dev/dri` to the container:
@@ -38,12 +34,6 @@ renderD128  - Render device (used for transcoding)
 2. Enable "Use hardware acceleration when available"
 3. Optionally enable "Use hardware-accelerated video encoding"
 
-## Services
-
-| Service | URL | Purpose |
-|---------|-----|---------|
-| Plex | https://plex.jaw.dev | Media server |
-
 ## First-Time Setup
 
 Get a claim token from https://plex.tv/claim and add to environment:
@@ -60,19 +50,3 @@ environment:
 | `/movies` | Movie library |
 | `/tv` | TV show library |
 | `/music` | Music library |
-
-## Management
-
-```bash
-# Start
-cd ~/home-ops/apps/compose/plex && sudo docker compose up -d
-
-# Stop
-cd ~/home-ops/apps/compose/plex && sudo docker compose down
-
-# Logs
-sudo docker logs plex -f
-
-# Restart
-sudo docker restart plex
-```

@@ -88,7 +88,7 @@ rolling: false  # BoltDB can't handle 2 instances
 - `infra/docker-cd/` - docker-cd deployer (runs as compose, not auto-discovered)
 - docker-cd source: `~/dev/docker-cd` — we own it, fix bugs/add features there
 - Traefik uses Docker provider (reads container labels directly)
-- All services run as Docker Compose (no Swarm)
+- All services run as Docker Compose
 
 ### Private ghcr.io Images
 
