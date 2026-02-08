@@ -1,6 +1,6 @@
 services:
   docker-cd:
-    image: ghcr.io/wajeht/docker-cd:v0.0.9
+    image: ghcr.io/wajeht/docker-cd:v0.1.0
     container_name: docker-cd
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -17,7 +17,6 @@ services:
       GARBAGE_COLLECTION: "true"
       MAX_HISTORY_ENTRIES: "500"
       GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
-      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
       NOTIFICATION_URL: ${NOTIFICATION_URL:-}
     labels:
       - "traefik.enable=true"
