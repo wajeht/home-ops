@@ -16,16 +16,18 @@ GitOps-driven homelab running on Docker Compose
 
 ```mermaid
 flowchart LR
-    Git -->|push| GitHub -->|poll| docker-cd
-    docker-cd -->|docker compose up| Apps[apps/*]
-    AppRepo[app repo] -->|push tag| Actions[GitHub Actions] -->|build image| GHCR[ghcr.io]
-    Actions -->|docker-cd-deploy-workflow| GitHub
-    User -->|https| Cloudflare -->|ssl| UniFi -->|forward| Traefik -->|route| Apps
     subgraph Dell[Dell OptiPlex]
-        docker-cd
-        Traefik
-        Apps
+        docker-cd -->|docker compose up| Apps[apps/*]
+        Traefik -->|route| Apps
     end
+
+    Git -->|push| GitHub -->|poll| docker-cd
+    AppRepo[app repo] -->|push tag| Actions[GitHub Actions]
+    Actions -->|build image| GHCR[ghcr.io]
+    Actions -->|deploy workflow| GitHub
+    Renovate -->|auto-merge| GitHub
+    NAS[Synology NAS] -->|NFS| Dell
+    User -->|https| Cloudflare -->|ssl| UniFi -->|forward| Traefik
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
