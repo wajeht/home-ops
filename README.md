@@ -23,22 +23,6 @@ flowchart LR
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
 
 
-## Structure
-
-```
-apps/                    # All stacks (auto-deployed by docker-cd)
-├── traefik/
-├── authelia/
-├── homepage/
-├── media/
-├── plex/
-├── vpn-qbit/
-└── ...
-infra/
-└── docker-cd/           # GitOps deployer (manual deploy)
-```
-
-
 ## Hardware
 
 | Device | RAM | Storage | OS | Function |
