@@ -5,23 +5,20 @@ headerStyle: clean
 hideVersion: true
 showStats: false
 cardBlur: sm
-fiveColumns: false
+fiveColumns: true
 layout:
-  Infrastructure:
-    style: column
-    column: 1
   Media:
     style: column
+    column: 1
+  Infrastructure:
+    style: column
     column: 2
-  Downloads:
+  Apps:
     style: column
     column: 3
   Tools:
     style: column
-    column: 1
-  Apps:
-    style: column
-    column: 2
+    column: 4
   Dev:
     style: column
-    column: 3
+    column: 5
