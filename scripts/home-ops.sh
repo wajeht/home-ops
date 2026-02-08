@@ -93,7 +93,7 @@ cmd_setup() {
         if [ ! -d "$dir" ]; then
             mkdir -p "$dir"
             dim "Created: $dir"
-            ((created++))
+            created=$((created + 1))
         fi
     done
     chmod 700 "$USER_HOME/.sops" 2>/dev/null || true
