@@ -6,7 +6,7 @@
         siteMonitor: https://traefik.jaw.dev
         widget:
           type: traefik
-          url: https://traefik.jaw.dev
+          url: http://traefik:8080
 
     - Uptime Kuma:
         icon: uptime-kuma
@@ -15,7 +15,7 @@
         siteMonitor: https://status.jaw.dev
         widget:
           type: uptimekuma
-          url: https://status.jaw.dev
+          url: http://uptime-kuma:3001
           slug: home
           key: {{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}
 
@@ -63,7 +63,7 @@
         siteMonitor: https://tautulli.jaw.dev
         widget:
           type: tautulli
-          url: https://tautulli.jaw.dev
+          url: http://tautulli:8181
           key: {{HOMEPAGE_VAR_TAUTULLI_KEY}}
 
     - Miniflux:
@@ -73,7 +73,7 @@
         siteMonitor: https://rss.jaw.dev
         widget:
           type: miniflux
-          url: https://rss.jaw.dev
+          url: http://miniflux:8080
           key: {{HOMEPAGE_VAR_MINIFLUX_KEY}}
 
     - Audiobookshelf:
@@ -96,7 +96,7 @@
         siteMonitor: https://overseerr.jaw.dev
         widget:
           type: overseerr
-          url: https://overseerr.jaw.dev
+          url: http://overseerr:5055
           key: {{HOMEPAGE_VAR_OVERSEERR_KEY}}
 
     - Radarr:
@@ -106,7 +106,7 @@
         siteMonitor: https://radarr.jaw.dev
         widget:
           type: radarr
-          url: https://radarr.jaw.dev
+          url: http://radarr:7878
           key: {{HOMEPAGE_VAR_RADARR_KEY}}
 
     - Sonarr:
@@ -116,7 +116,7 @@
         siteMonitor: https://sonarr.jaw.dev
         widget:
           type: sonarr
-          url: https://sonarr.jaw.dev
+          url: http://sonarr:8989
           key: {{HOMEPAGE_VAR_SONARR_KEY}}
 
     - qBittorrent:
@@ -126,7 +126,7 @@
         siteMonitor: https://qbit.jaw.dev
         widget:
           type: qbittorrent
-          url: https://qbit.jaw.dev
+          url: http://gluetun:8085
           username: "{{HOMEPAGE_VAR_QBIT_USER}}"
           password: "{{HOMEPAGE_VAR_QBIT_PASS}}"
 
