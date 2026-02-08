@@ -6,15 +6,12 @@ http:
         replacement: "https://jaw.dev"
         permanent: true
 
-    authelia:
+    google-auth:
       forwardAuth:
-        address: http://authelia:9091/api/authz/forward-auth
+        address: http://google-auth:4181
         trustForwardHeader: true
         authResponseHeaders:
-          - Remote-User
-          - Remote-Groups
-          - Remote-Email
-          - Remote-Name
+          - X-Forwarded-User
 
   routers:
     # Catch-all for unknown subdomains (low priority)
