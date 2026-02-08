@@ -22,6 +22,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.qbittorrent.rule=Host(`qbit.jaw.dev`)"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent.middlewares=google-auth@file"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port=8085"
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:9999 || exit 1"]
