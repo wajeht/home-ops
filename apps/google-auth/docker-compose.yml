@@ -13,7 +13,7 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4181"]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:4181/ || [ $? -eq 8 ]"]
       interval: 30s
       timeout: 5s
       retries: 3
