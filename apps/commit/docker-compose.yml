@@ -11,6 +11,11 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.commit.rule=Host(`commit.jaw.dev`)"

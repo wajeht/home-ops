@@ -3,7 +3,7 @@ services:
   portainer:
     image: portainer/portainer-ce:2.33.6-alpine@sha256:a04e0ac3e99172e451055419e2ed46c67f24bff72209ab09235079d7642e87d8
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/jaw/data/portainer:/data
     networks:
       - traefik
@@ -13,6 +13,11 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.portainer.rule=Host(`portainer.jaw.dev`)"

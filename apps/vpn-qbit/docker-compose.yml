@@ -2,6 +2,8 @@ services:
   gluetun:
     image: qmcgaw/gluetun:v3.41@sha256:6b54856716d0de56e5bb00a77029b0adea57284cf5a466f23aad5979257d3045
     container_name: gluetun
+    cap_drop:
+      - ALL
     cap_add:
       - NET_ADMIN
     devices:
@@ -28,6 +30,11 @@ services:
       start_period: 60s
       retries: 5
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
 
   qbittorrent:
     image: linuxserver/qbittorrent:20.04.1@sha256:fc98c8af048936d0070dc5e5992feab08664f8a61a860d91be02f782f8721485
@@ -51,6 +58,11 @@ services:
       start_period: 60s
       retries: 3
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
 
 networks:
   traefik:
