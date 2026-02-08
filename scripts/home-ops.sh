@@ -201,26 +201,23 @@ cmd_install() {
     # Deploy core services (order matters)
     step "4/4" "Deploying..."
 
-    # Traefik (must be first - other services need it for routing)
-    info "Deploying traefik..."
-    cd "$REPO_DIR/apps/traefik"
-    sops -d .enc.env > .env 2>/dev/null || warn "No secrets"
-    $SUDO docker compose --env-file .env up -d 2>/dev/null || warn "traefik not started"
-    rm -f .env 2>/dev/null || true
+    # Helper: decrypt .enc.env in place, deploy, restore from git
+    deploy_compose() {
+        local dir=$1 name=$2
+        info "Deploying $name..."
+        cd "$dir"
+        if [ -f .enc.env ]; then
+            sops -d -i .enc.env 2>/dev/null || warn "No secrets for $name"
+            $SUDO docker compose up -d 2>/dev/null || warn "$name not started"
+            git checkout .enc.env 2>/dev/null || true
+        else
+            $SUDO docker compose up -d 2>/dev/null || warn "$name not started"
+        fi
+    }
 
-    # Authelia (must be before docker-cd - other services reference it)
-    info "Deploying authelia..."
-    cd "$REPO_DIR/apps/authelia"
-    sops -d .enc.env > .env 2>/dev/null || warn "No secrets"
-    $SUDO docker compose --env-file .env up -d 2>/dev/null || warn "authelia not started"
-    rm -f .env 2>/dev/null || true
-
-    # docker-cd (auto-deploys all remaining apps)
-    info "Deploying docker-cd..."
-    cd "$REPO_DIR/infra/docker-cd"
-    sops -d .enc.env > .env 2>/dev/null || warn "No secrets"
-    $SUDO docker compose --env-file .env up -d 2>/dev/null || warn "docker-cd not started"
-    rm -f .env 2>/dev/null || true
+    deploy_compose "$REPO_DIR/apps/traefik" traefik
+    deploy_compose "$REPO_DIR/apps/authelia" authelia
+    deploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
 
     header "Done"
     echo ""
@@ -296,10 +293,10 @@ cmd_update_infra() {
 
     step "1/1" "Redeploying docker-cd..."
     cd "$REPO_DIR/infra/docker-cd"
-    sops -d .enc.env > .env 2>/dev/null || warn "No secrets"
     $SUDO docker compose pull 2>/dev/null || true
-    $SUDO docker compose --env-file .env up -d 2>/dev/null || warn "docker-cd not started"
-    rm -f .env 2>/dev/null || true
+    sops -d -i .enc.env 2>/dev/null || warn "No secrets"
+    $SUDO docker compose up -d 2>/dev/null || warn "docker-cd not started"
+    git checkout .enc.env 2>/dev/null || true
 
     header "Done"
 }
