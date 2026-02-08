@@ -228,6 +228,12 @@
         description: Web IDE
         siteMonitor: https://code.jaw.dev
 
+    - WWW:
+        icon: mdi-web
+        href: https://jaw.dev
+        description: Personal Site
+        siteMonitor: https://jaw.dev
+
     - Commit:
         icon: git
         href: https://commit.jaw.dev
