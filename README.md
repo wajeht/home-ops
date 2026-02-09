@@ -1,10 +1,10 @@
 # home-ops
 
-![CPU](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/cpu&style=flat)
-![RAM](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/ram&style=flat)
-![Uptime](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/uptime&style=flat)
-![Containers](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/containers&style=flat)
-![Temp](https://img.shields.io/endpoint?url=https%3A%2F%2Fcd.jaw.dev%2Fbadges%2Ftemperature%3Funit%3Df&style=flat)
+![CPU](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/cpu&style=flat&cacheSeconds=300)
+![RAM](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/ram&style=flat&cacheSeconds=300)
+![Uptime](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/uptime&style=flat&cacheSeconds=300)
+![Containers](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/containers&style=flat&cacheSeconds=300)
+![Temp](https://img.shields.io/endpoint?url=https%3A%2F%2Fcd.jaw.dev%2Fbadges%2Ftemperature%3Funit%3Df&style=flat&cacheSeconds=300)
 
 GitOps-driven homelab running on Docker Compose
 
