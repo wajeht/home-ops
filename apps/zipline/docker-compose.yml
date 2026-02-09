@@ -1,0 +1,64 @@
+services:
+  zipline:
+    image: ghcr.io/diced/zipline:v4.4.1@sha256:5f02af4d6b6b11386d443d42b8dc65726aa048693a5aa07c0ed7a992d78bafc8
+    env_file:
+      - .enc.env
+    environment:
+      - DATABASE_URL=postgres://zipline:${POSTGRES_PASSWORD}@zipline-db:5432/zipline
+      - TZ=America/Chicago
+    depends_on:
+      zipline-db:
+        condition: service_healthy
+    volumes:
+      - /home/jaw/data/zipline/uploads:/zipline/uploads
+      - /home/jaw/data/zipline/public:/zipline/public
+      - /home/jaw/data/zipline/themes:/zipline/themes
+    networks:
+      - traefik
+      - zipline-internal
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.zipline.rule=Host(`img.jaw.dev`)"
+      - "traefik.http.routers.zipline.entrypoints=websecure"
+      - "traefik.http.routers.zipline.middlewares=google-auth@file"
+      - "traefik.http.services.zipline.loadbalancer.server.port=3000"
+
+  zipline-db:
+    image: postgres:17-alpine
+    env_file:
+      - .enc.env
+    environment:
+      - POSTGRES_USER=zipline
+      - POSTGRES_DB=zipline
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - /home/jaw/data/zipline/db:/var/lib/postgresql/data
+    networks:
+      - zipline-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zipline"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+networks:
+  traefik:
+    external: true
+  zipline-internal:
