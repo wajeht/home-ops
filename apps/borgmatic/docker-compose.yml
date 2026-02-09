@@ -5,13 +5,13 @@ services:
       - .enc.env
     environment:
       - TZ=America/Chicago
-      - CRON=0 3 * * *
     volumes:
       - /home/jaw/data:/source/data:ro
       - /home/jaw/.sops:/source/sops:ro
       - /home/jaw/backup/borg:/repository
       - /home/jaw/data/borgmatic:/borgmatic/state
       - ./config.yml:/etc/borgmatic/config.yaml:ro
+      - ./crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     restart: unless-stopped
     deploy:
       resources:
