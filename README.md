@@ -4,7 +4,7 @@
 ![RAM](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/ram&style=flat)
 ![Uptime](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/uptime&style=flat)
 ![Containers](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/containers&style=flat)
-![Temp](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/temperature&style=flat)
+![Temp](https://img.shields.io/endpoint?url=https%3A%2F%2Fcd.jaw.dev%2Fbadges%2Ftemperature%3Funit%3Df&style=flat)
 
 GitOps-driven homelab running on Docker Compose
 
