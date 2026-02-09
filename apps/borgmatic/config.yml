@@ -21,4 +21,4 @@ commands:
       - echo "Starting backup"
   - after: error
     run:
-      - echo "Borgmatic backup FAILED" | curl -sS -X POST "${DISCORD_WEBHOOK}" -H "Content-Type:\ application/json" -d '{"content":"**Borgmatic backup FAILED** on this host"}'
+      - printf '{"content":"**Borgmatic backup FAILED**"}' | curl -sS -X POST "${DISCORD_WEBHOOK}" -H "Content-Type: application/json" -d @-
