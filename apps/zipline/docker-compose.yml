@@ -35,7 +35,7 @@ services:
       - "traefik.http.services.zipline.loadbalancer.server.port=3000"
 
   zipline-db:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     env_file:
       - .enc.env
     environment:
