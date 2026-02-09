@@ -6,8 +6,6 @@ repositories:
   - path: /repository
     label: nas
 
-encryption_passphrase: ${BORG_PASSPHRASE}
-
 archive_name_format: '{hostname}-{now:%Y-%m-%d-%H%M%S}'
 
 compression: zstd,3
@@ -23,6 +21,4 @@ commands:
       - echo "Starting backup"
   - after: error
     run:
-      - |
-        curl -sS -X POST "${DISCORD_WEBHOOK}" -H "Content-Type: application/json" \
-          -d '{"content": "**Borgmatic backup FAILED** on '"$(hostname)"': {error}"}'
+      - echo "Borgmatic backup FAILED" | curl -sS -X POST "${DISCORD_WEBHOOK}" -H "Content-Type:\ application/json" -d '{"content":"**Borgmatic backup FAILED** on this host"}'
