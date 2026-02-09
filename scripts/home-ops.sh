@@ -43,6 +43,7 @@ DATA_DIRS=(
     "$USER_HOME/data/audiobookshelf/config"
     "$USER_HOME/data/audiobookshelf/metadata"
     "$USER_HOME/data/authelia"
+    "$USER_HOME/data/borgmatic"
     "$USER_HOME/data/bang"
     "$USER_HOME/data/calendar"
     "$USER_HOME/data/changedetection"
@@ -93,6 +94,7 @@ DATA_DIRS=(
     "$USER_HOME/plex/music"
     "$USER_HOME/plex/audiobooks"
     "$USER_HOME/plex/podcasts"
+    "$USER_HOME/backup/borg"
     "$USER_HOME/.sops"
     "$USER_HOME/.docker"
 )

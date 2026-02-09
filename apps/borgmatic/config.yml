@@ -1,0 +1,24 @@
+source_directories:
+  - /source/data
+  - /source/sops
+
+repositories:
+  - path: /repository
+    label: nas
+    encryption_passphrase: ${BORG_PASSPHRASE}
+
+archive_name_format: '{hostname}-{now:%Y-%m-%d-%H%M%S}'
+
+compression: zstd,3
+
+keep_daily: 7
+keep_weekly: 4
+keep_monthly: 6
+
+before_backup:
+  - echo "Starting backup"
+
+on_error:
+  - |
+    curl -sS -X POST "${DISCORD_WEBHOOK}" -H "Content-Type: application/json" \
+      -d '{"content": "**Borgmatic backup FAILED** on '"$(hostname)"' at '"$(date)"'"}'
