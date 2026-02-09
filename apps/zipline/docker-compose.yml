@@ -1,6 +1,6 @@
 services:
   zipline:
-    image: ghcr.io/diced/zipline:v4.4.1
+    image: ghcr.io/diced/zipline:v4
     env_file:
       - .enc.env
     environment:
