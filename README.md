@@ -1,14 +1,12 @@
 # home-ops
 
-
+![CPU](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/cpu&style=flat)
+![RAM](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/ram&style=flat)
+![Uptime](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/uptime&style=flat)
 [![Docker Compose](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat&logo=docker&logoColor=white)](https://docs.docker.com/compose/)
 [![Traefik](https://img.shields.io/badge/Traefik-Proxy-24A1C1?style=flat&logo=traefikproxy&logoColor=white)](https://traefik.io)
 [![Renovate](https://img.shields.io/badge/Renovate-enabled-1A1F6C?style=flat&logo=renovatebot&logoColor=white)](https://github.com/renovatebot/renovate)
 [![SOPS](https://img.shields.io/badge/SOPS-encrypted-FF6F00?style=flat&logo=mozilla&logoColor=white)](https://github.com/getsops/sops)
-![CPU](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/cpu&style=flat)
-![RAM](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/ram&style=flat)
-![Uptime](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/uptime&style=flat)
-
 GitOps-driven homelab running on Docker Compose
 
 
