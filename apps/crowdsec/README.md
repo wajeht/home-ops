@@ -6,25 +6,25 @@ Intrusion detection + Traefik bouncer. No web UI — use CLI.
 
 ```bash
 # View alerts
-docker exec $(docker ps -qf name=crowdsec-crowdsec) cscli alerts list
+docker compose -p crowdsec exec crowdsec cscli alerts list
 
 # View active bans/decisions
-docker exec $(docker ps -qf name=crowdsec-crowdsec) cscli decisions list
+docker compose -p crowdsec exec crowdsec cscli decisions list
 
 # Parsing/bucket metrics
-docker exec $(docker ps -qf name=crowdsec-crowdsec) cscli metrics
+docker compose -p crowdsec exec crowdsec cscli metrics
 
 # List installed collections
-docker exec $(docker ps -qf name=crowdsec-crowdsec) cscli collections list
+docker compose -p crowdsec exec crowdsec cscli collections list
 
 # List bouncers
-docker exec $(docker ps -qf name=crowdsec-crowdsec) cscli bouncers list
+docker compose -p crowdsec exec crowdsec cscli bouncers list
 
 # Manually ban an IP
-docker exec $(docker ps -qf name=crowdsec-crowdsec) cscli decisions add --ip 1.2.3.4 --reason "manual ban"
+docker compose -p crowdsec exec crowdsec cscli decisions add --ip 1.2.3.4 --reason "manual ban"
 
 # Unban an IP
-docker exec $(docker ps -qf name=crowdsec-crowdsec) cscli decisions delete --ip 1.2.3.4
+docker compose -p crowdsec exec crowdsec cscli decisions delete --ip 1.2.3.4
 ```
 
 ## Architecture
