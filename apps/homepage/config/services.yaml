@@ -147,6 +147,12 @@
         description: Monitoring Dashboards
         siteMonitor: https://grafana.jaw.dev
 
+    - Renovate:
+        icon: renovate
+        href: https://renovate.jaw.dev
+        description: Dependency Updates
+        siteMonitor: https://renovate.jaw.dev
+
     - Dozzle:
         icon: dozzle
         href: https://logs.jaw.dev
