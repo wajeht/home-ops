@@ -13,7 +13,10 @@ services:
       - /home/jaw/plex/tv:/tv
       - /home/jaw/plex/music:/music
     devices:
-      - /dev/dri:/dev/dri
+      - /dev/dri:/dev/dri # Intel Quick Sync (card0=HDR tone mapping, renderD128=transcode)
+    shm_size: "2g" # shared memory for 4K transcoding (default 64MB crashes)
+    tmpfs:
+      - /transcode:size=8G # RAM-based transcode dir (set in Plex Settings > Transcoder)
     ports:
       - "32400:32400"
     networks:
