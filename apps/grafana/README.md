@@ -16,9 +16,9 @@ sudo chown -R 472:472 ~/data/grafana/data
 ## CrowdSec CLI (no UI needed)
 
 ```bash
-docker exec crowdsec-crowdsec-1 cscli alerts list
-docker exec crowdsec-crowdsec-1 cscli decisions list
-docker exec crowdsec-crowdsec-1 cscli metrics
+docker exec $(docker ps -qf name=crowdsec-crowdsec) cscli alerts list
+docker exec $(docker ps -qf name=crowdsec-crowdsec) cscli decisions list
+docker exec $(docker ps -qf name=crowdsec-crowdsec) cscli metrics
 ```
 
 ## Update Grafana admin password
