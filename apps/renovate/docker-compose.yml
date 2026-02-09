@@ -1,6 +1,6 @@
 services:
   renovate:
-    image: ghcr.io/mend/renovate-ce:8
+    image: ghcr.io/mend/renovate-ce:13.4.0
     container_name: renovate
     environment:
       MEND_RNV_ACCEPT_TOS: "y"
