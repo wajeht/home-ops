@@ -22,6 +22,7 @@
     "ghcr.io/wajeht/mm2us.com",
     "ghcr.io/wajeht/notify",
     "ghcr.io/wajeht/screenshot",
-    "ghcr.io/wajeht/ufc"
+    "ghcr.io/wajeht/ufc",
+    "ghcr.io/diced/zipline"
   ]
 }
