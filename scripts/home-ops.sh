@@ -47,6 +47,8 @@ DATA_DIRS=(
     "$USER_HOME/data/calendar"
     "$USER_HOME/data/changedetection"
     "$USER_HOME/data/close-powerlifting"
+    "$USER_HOME/data/crowdsec/data"
+    "$USER_HOME/data/crowdsec/config"
     "$USER_HOME/data/docker-cd"
     "$USER_HOME/data/dozzle"
     "$USER_HOME/data/favicon"
@@ -192,6 +194,7 @@ cmd_install() {
     # Create external networks
     $SUDO docker network create traefik 2>/dev/null || true
     $SUDO docker network create media 2>/dev/null || true
+    $SUDO docker volume create traefik-logs 2>/dev/null || true
 
     # Registry auth
     cd "$REPO_DIR"

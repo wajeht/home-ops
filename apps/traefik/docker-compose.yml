@@ -7,6 +7,7 @@ services:
     environment:
       TZ: America/Chicago
       CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
+      CROWDSEC_BOUNCER_KEY: ${CROWDSEC_BOUNCER_KEY}
     command:
       - "--api.dashboard=true"
       - "--api.insecure=true"
@@ -16,7 +17,7 @@ services:
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websecure.http.middlewares=gzip@file"
+      - "--entrypoints.websecure.http.middlewares=crowdsec-bouncer@file,gzip@file"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       # Trust X-Forwarded-* headers from Cloudflare
@@ -32,6 +33,11 @@ services:
       - "--entrypoints.websecure.http.tls.domains[0].main=jaw.dev"
       - "--entrypoints.websecure.http.tls.domains[0].sans=*.jaw.dev"
       - "--entrypoints.websecure.http.tls.certresolver=cloudflare"
+      - "--accesslog=true"
+      - "--accesslog.filepath=/var/log/traefik/access.log"
+      - "--accesslog.format=json"
+      - "--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+      - "--experimental.plugins.bouncer.version=v1.5.0"
       - "--log.level=INFO"
       - "--ping=true"
       - "--providers.file.filename=/etc/traefik/dynamic.yml"
@@ -40,6 +46,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/jaw/data/traefik/certs:/certs
       - ./dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - traefik-logs:/var/log/traefik
     networks:
       - traefik
     healthcheck:
@@ -63,4 +70,8 @@ services:
 
 networks:
   traefik:
+    external: true
+
+volumes:
+  traefik-logs:
     external: true

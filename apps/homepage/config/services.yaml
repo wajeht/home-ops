@@ -135,6 +135,10 @@
         description: Docker Management
         siteMonitor: https://portainer.jaw.dev
 
+    - CrowdSec:
+        icon: crowdsec
+        description: Intrusion Detection
+
     - Dozzle:
         icon: dozzle
         href: https://logs.jaw.dev

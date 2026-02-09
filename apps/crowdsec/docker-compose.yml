@@ -1,0 +1,33 @@
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec:v1.6.6
+    environment:
+      TZ: America/Chicago
+      COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/http-dos"
+      BOUNCER_KEY_traefik: ${BOUNCER_KEY_traefik}
+    volumes:
+      - /home/jaw/data/crowdsec/data:/var/lib/crowdsec/data
+      - /home/jaw/data/crowdsec/config:/etc/crowdsec
+      - ./acquis.yaml:/etc/crowdsec/acquis.d/traefik.yaml:ro
+      - traefik-logs:/var/log/traefik:ro
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "cscli", "version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+networks:
+  traefik:
+    external: true
+
+volumes:
+  traefik-logs:
+    external: true

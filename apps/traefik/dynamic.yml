@@ -14,6 +14,13 @@ http:
           - image/gif
           - image/webp
 
+    crowdsec-bouncer:
+      plugin:
+        bouncer:
+          crowdsecLapiKey: '{{ env "CROWDSEC_BOUNCER_KEY" }}'
+          crowdsecLapiHost: http://crowdsec:8080
+          crowdsecMode: stream
+
     google-auth:
       forwardAuth:
         address: http://google-auth:4181
