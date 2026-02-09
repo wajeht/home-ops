@@ -1,0 +1,20 @@
+services:
+  borgmatic:
+    image: ghcr.io/borgmatic-collective/borgmatic
+    env_file:
+      - .enc.env
+    environment:
+      - TZ=America/Chicago
+      - CRON=0 3 * * *
+    volumes:
+      - /home/jaw/data:/source/data:ro
+      - /home/jaw/.sops:/source/sops:ro
+      - /home/jaw/backup/borg:/repository
+      - /home/jaw/data/borgmatic:/borgmatic/state
+      - ./config.yml:/etc/borgmatic/config.yaml:ro
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G

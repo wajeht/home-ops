@@ -6,8 +6,8 @@ How to recreate the homelab from scratch.
 
 | Data | Location | Backup Strategy |
 |------|----------|-----------------|
-| App configs/databases | `~/data/` | rsync to NAS |
-| SOPS age key | `~/.sops/age-key.txt` | Copy to secure location |
+| App configs/databases | `~/data/` | Borgmatic → NAS (`~/backup/borg`) |
+| SOPS age key | `~/.sops/age-key.txt` | Borgmatic → NAS |
 | Docker auth | `~/.docker/config.json` | Recreatable via `docker login` |
 | Secrets | .enc.env files | Encrypted in git |
 | Media files | `~/plex/` (NFS) | NAS handles redundancy |
@@ -21,14 +21,65 @@ How to recreate the homelab from scratch.
 ~/data/                  # All app configs and databases
 ```
 
+## Borgmatic Backups
+
+Automated daily backups via borgmatic (borg wrapper). Encrypted, deduplicated, compressed (zstd).
+
+- **Schedule**: Daily at 3am CT
+- **Source**: `~/data/` + `~/.sops/`
+- **Destination**: `~/backup/borg/` (NFS from NAS)
+- **Retention**: 7 daily, 4 weekly, 6 monthly
+- **Notifications**: Discord webhook on failure
+
+### List Archives
+
+```bash
+docker compose -f ~/home-ops/apps/borgmatic/docker-compose.yml exec borgmatic borgmatic list
+```
+
+### Extract Full Archive
+
+```bash
+# List archives first
+docker compose -f ~/home-ops/apps/borgmatic/docker-compose.yml exec borgmatic borgmatic list
+
+# Extract latest archive to /restore
+docker compose -f ~/home-ops/apps/borgmatic/docker-compose.yml exec borgmatic borgmatic extract --archive latest --destination /restore
+```
+
+### Extract Specific Files
+
+```bash
+docker compose -f ~/home-ops/apps/borgmatic/docker-compose.yml exec borgmatic borgmatic extract \
+  --archive latest --destination /restore --path source/data/gitea
+```
+
+### Manual Backup
+
+```bash
+docker compose -f ~/home-ops/apps/borgmatic/docker-compose.yml exec borgmatic borgmatic create --verbosity 1
+```
+
 ## Recovery Steps
 
 ### 1. Restore Critical Files
 
+If borg repo is accessible (NAS intact):
+
 ```bash
-rsync -av backup:~/data/ ~/data/
-rsync -av backup:~/.sops/ ~/.sops/
+# Mount NFS backup share
+./scripts/home-ops.sh nfs mount backup
+
+# Extract latest borgmatic archive
+docker run --rm -e BORG_PASSPHRASE='<passphrase>' \
+  -v ~/backup/borg:/repository:ro \
+  -v ~/data:/restore/data \
+  -v ~/.sops:/restore/sops \
+  ghcr.io/borgmatic-collective/borgmatic \
+  borgmatic extract --archive latest --destination /restore
 ```
+
+If borg repo is NOT accessible, restore from wherever you have a copy of `~/data/` and `~/.sops/`.
 
 ### 2. Run Install
 
@@ -49,30 +100,6 @@ The install script handles everything: Docker, SOPS, networks, and docker-cd dep
 
 ```bash
 ./scripts/home-ops.sh status
-```
-
-## Backup Script
-
-```bash
-#!/bin/bash
-# ~/backup.sh
-
-BACKUP_DEST="$HOME/backup"
-DATE=$(date +%Y-%m-%d)
-
-# Backup app data
-rsync -av --delete ~/data/ $BACKUP_DEST/data/
-
-# Backup critical configs
-rsync -av ~/.sops/ $BACKUP_DEST/sops/
-rsync -av ~/.docker/config.json $BACKUP_DEST/docker-config.json
-
-echo "Backup complete: $DATE"
-```
-
-Add to cron:
-```bash
-0 3 * * * /home/jaw/backup.sh >> /var/log/backup.log 2>&1
 ```
 
 ## Testing Recovery
