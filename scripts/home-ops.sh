@@ -56,6 +56,7 @@ DATA_DIRS=(
     "$USER_HOME/data/linx/files"
     "$USER_HOME/data/linx/meta"
     "$USER_HOME/data/plex"
+    "$USER_HOME/data/jellyfin"
     "$USER_HOME/data/prowlarr"
     "$USER_HOME/data/radarr"
     "$USER_HOME/data/sonarr"
