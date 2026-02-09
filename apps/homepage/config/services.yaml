@@ -221,6 +221,12 @@
         description: Dev Utilities
         siteMonitor: https://tools.jaw.dev
 
+    - Paperless:
+        icon: paperless-ngx
+        href: https://paperless.jaw.dev
+        description: Documents
+        siteMonitor: https://paperless.jaw.dev
+
     - Linx:
         icon: filerun
         href: https://linx.jaw.dev
