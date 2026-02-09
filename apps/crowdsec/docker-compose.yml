@@ -5,6 +5,7 @@ services:
       TZ: America/Chicago
       COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/http-dos"
       BOUNCER_KEY_traefik: ${BOUNCER_KEY_traefik}
+      PROMETHEUS_ENABLED: "true"
     volumes:
       - /home/jaw/data/crowdsec/data:/var/lib/crowdsec/data
       - /home/jaw/data/crowdsec/config:/etc/crowdsec

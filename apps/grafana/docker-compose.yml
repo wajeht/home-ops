@@ -1,0 +1,56 @@
+services:
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /home/jaw/data/grafana/prometheus:/prometheus
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    env_file:
+      - .enc.env
+    environment:
+      - GF_SERVER_ROOT_URL=https://grafana.jaw.dev
+    volumes:
+      - /home/jaw/data/grafana/data:/var/lib/grafana
+      - ./provisioning/:/etc/grafana/provisioning/:ro
+      - ./dashboards/:/var/lib/grafana/dashboards/:ro
+    networks:
+      - traefik
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.jaw.dev`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.middlewares=google-auth@file"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+
+networks:
+  traefik:
+    external: true

@@ -137,7 +137,15 @@
 
     - CrowdSec:
         icon: crowdsec
+        href: https://grafana.jaw.dev
         description: Intrusion Detection
+        siteMonitor: https://grafana.jaw.dev
+
+    - Grafana:
+        icon: grafana
+        href: https://grafana.jaw.dev
+        description: Monitoring Dashboards
+        siteMonitor: https://grafana.jaw.dev
 
     - Dozzle:
         icon: dozzle
