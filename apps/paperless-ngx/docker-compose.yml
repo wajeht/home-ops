@@ -72,7 +72,7 @@ services:
           memory: 512M
 
   paperless-redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     volumes:
       - /home/jaw/data/paperless/redis:/data
     networks:
