@@ -18,7 +18,7 @@ http:
       plugin:
         bouncer:
           crowdsecLapiKey: '{{ env "CROWDSEC_BOUNCER_KEY" }}'
-          crowdsecLapiHost: http://crowdsec:8080
+          crowdsecLapiHost: crowdsec:8080
           crowdsecMode: stream
 
     google-auth:
