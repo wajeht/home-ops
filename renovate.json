@@ -1,25 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":semanticCommits",
-    ":pinDigestsDisabled",
-    ":rebaseStalePrs"
-  ],
-  "timezone": "America/Chicago",
-  "labels": ["dependencies"],
-  "prConcurrentLimit": 5,
-  "vulnerabilityAlerts": {
-    "labels": ["security"],
-    "automerge": true
-  },
-  "docker-compose": {
-    "managerFilePatterns": [
-      "/(^|/)docker-compose\\.ya?ml$/",
-      "/apps/.+/docker-compose\\.ya?ml$/",
-      "/infra/.+/docker-compose\\.ya?ml$/"
-    ]
-  },
+  "extends": ["github>wajeht/renovate-config"],
   "hostRules": [
     {
       "matchHost": "ghcr.io",
@@ -42,26 +23,5 @@
     "ghcr.io/wajeht/notify",
     "ghcr.io/wajeht/screenshot",
     "ghcr.io/wajeht/ufc"
-  ],
-  "packageRules": [
-    {
-      "matchPackagePatterns": ["^linuxserver/"],
-      "groupName": "linuxserver images"
-    },
-    {
-      "description": "automerge non-major during off-hours with 1 day delay",
-      "groupName": "all non-major updates",
-      "matchUpdateTypes": ["digest", "minor", "patch"],
-      "minimumReleaseAge": "1 day",
-      "automerge": true,
-      "automergeType": "branch",
-      "automergeSchedule": ["* 2-5 * * *"]
-    },
-    {
-      "description": "major updates require manual review",
-      "matchUpdateTypes": ["major"],
-      "automerge": false,
-      "labels": ["major"]
-    }
   ]
 }
