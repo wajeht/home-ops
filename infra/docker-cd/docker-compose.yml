@@ -23,6 +23,9 @@ services:
       - "traefik.http.routers.docker-cd.rule=Host(`cd.jaw.dev`)"
       - "traefik.http.routers.docker-cd.entrypoints=websecure"
       - "traefik.http.routers.docker-cd.middlewares=google-auth@file"
+      - "traefik.http.routers.docker-cd-badges.rule=Host(`cd.jaw.dev`) && PathPrefix(`/badges/`)"
+      - "traefik.http.routers.docker-cd-badges.entrypoints=websecure"
+      - "traefik.http.routers.docker-cd-badges.priority=100"
       - "traefik.http.services.docker-cd.loadbalancer.server.port=80"
     networks:
       - traefik
