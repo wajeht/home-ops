@@ -1,0 +1,4 @@
+rolling:
+  enabled: true
+  services:
+    - paperless

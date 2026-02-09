@@ -1,0 +1,94 @@
+services:
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    env_file:
+      - .enc.env
+    environment:
+      - PAPERLESS_REDIS=redis://paperless-redis:6379
+      - PAPERLESS_DBHOST=paperless-db
+      - PAPERLESS_DBUSER=paperless
+      - PAPERLESS_DBNAME=paperless
+      - PAPERLESS_URL=https://paperless.jaw.dev
+      - PAPERLESS_CSRF_TRUSTED_ORIGINS=https://paperless.jaw.dev
+      - PAPERLESS_USE_X_FORWARD_HOST=true
+      - PAPERLESS_USE_X_FORWARD_PORT=true
+      - PAPERLESS_USE_X_FORWARD_PROTO=true
+      - USERMAP_UID=1000
+      - USERMAP_GID=1000
+      - TZ=America/Chicago
+    depends_on:
+      paperless-db:
+        condition: service_healthy
+      paperless-redis:
+        condition: service_healthy
+    volumes:
+      - /home/jaw/data/paperless/data:/usr/src/paperless/data
+      - /home/jaw/data/paperless/media:/usr/src/paperless/media
+      - /home/jaw/data/paperless/consume:/usr/src/paperless/consume
+    networks:
+      - traefik
+      - paperless-internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.paperless.rule=Host(`paperless.jaw.dev`)"
+      - "traefik.http.routers.paperless.entrypoints=websecure"
+      - "traefik.http.routers.paperless.middlewares=google-auth@file"
+      - "traefik.http.services.paperless.loadbalancer.server.port=8000"
+
+  paperless-db:
+    image: postgres:17-alpine
+    env_file:
+      - .enc.env
+    environment:
+      - POSTGRES_USER=paperless
+      - POSTGRES_DB=paperless
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - /home/jaw/data/paperless/db:/var/lib/postgresql/data
+    networks:
+      - paperless-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paperless"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  paperless-redis:
+    image: redis:7-alpine
+    volumes:
+      - /home/jaw/data/paperless/redis:/data
+    networks:
+      - paperless-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  traefik:
+    external: true
+  paperless-internal:
