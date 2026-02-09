@@ -5,7 +5,8 @@ source_directories:
 repositories:
   - path: /repository
     label: nas
-    encryption_passphrase: ${BORG_PASSPHRASE}
+
+encryption_passphrase: ${BORG_PASSPHRASE}
 
 archive_name_format: '{hostname}-{now:%Y-%m-%d-%H%M%S}'
 
