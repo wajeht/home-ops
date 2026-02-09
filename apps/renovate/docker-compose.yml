@@ -1,0 +1,40 @@
+services:
+  renovate:
+    image: ghcr.io/mend/renovate-ce:8
+    container_name: renovate
+    environment:
+      MEND_RNV_ACCEPT_TOS: "y"
+      MEND_RNV_PLATFORM: github
+      MEND_RNV_GITHUB_APP_ID: "2825559"
+      MEND_RNV_GITHUB_APP_KEY: ${MEND_RNV_GITHUB_APP_KEY}
+      MEND_RNV_WEBHOOK_SECRET: ${MEND_RNV_WEBHOOK_SECRET}
+      MEND_RNV_LICENSE_KEY: ${MEND_RNV_LICENSE_KEY}
+      MEND_RNV_SQLITE_FILE_PATH: /data/renovate.db
+      MEND_RNV_SERVER_PORT: "8080"
+      GITHUB_COM_TOKEN: ${GITHUB_COM_TOKEN}
+      LOG_LEVEL: info
+    volumes:
+      - /home/jaw/data/renovate:/data
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.renovate.rule=Host(`renovate.jaw.dev`)"
+      - "traefik.http.routers.renovate.entrypoints=websecure"
+      - "traefik.http.routers.renovate.middlewares=google-auth@file"
+      - "traefik.http.services.renovate.loadbalancer.server.port=8080"
+
+networks:
+  traefik:
+    external: true
