@@ -1,6 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>wajeht/renovate-config"],
+  "extends": [
+    "github>wajeht/renovate-config"
+  ],
   "hostRules": [
     {
       "matchHost": "ghcr.io",
@@ -11,11 +13,15 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": ["^ghcr\\.io/wajeht/"],
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": [
+        "/^ghcr\\.io/wajeht//"
+      ]
     },
     {
-      "matchPackageNames": ["ghcr.io/diced/zipline"],
+      "matchPackageNames": [
+        "ghcr.io/diced/zipline"
+      ],
       "enabled": false
     }
   ]
