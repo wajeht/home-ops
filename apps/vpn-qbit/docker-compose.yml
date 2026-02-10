@@ -12,6 +12,7 @@ services:
       - .enc.env
     environment:
       - TZ=America/Chicago
+      - FIREWALL_VPN_INPUT_PORTS=45839
     volumes:
       - /home/jaw/data/gluetun:/gluetun
     networks:
