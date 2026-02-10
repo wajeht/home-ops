@@ -1,0 +1,23 @@
+services:
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:latest
+    user: 1000:1000
+    env_file:
+      - .enc.env
+    environment:
+      - TZ=America/Chicago
+      - CRON_SCHEDULE=@daily
+    volumes:
+      - /home/jaw/data/recyclarr:/config
+    networks:
+      - media
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  media:
+    external: true
