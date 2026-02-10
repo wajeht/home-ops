@@ -9,20 +9,14 @@
       "password": "{{ secrets.GH_TOKEN }}"
     }
   ],
-  "ignoreDeps": [
-    "ghcr.io/wajeht/bang",
-    "ghcr.io/wajeht/calendar",
-    "ghcr.io/wajeht/close-powerlifting",
-    "ghcr.io/wajeht/commit",
-    "ghcr.io/wajeht/favicon",
-    "ghcr.io/wajeht/gains",
-    "ghcr.io/wajeht/git",
-    "ghcr.io/wajeht/ip",
-    "ghcr.io/wajeht/jaw.dev",
-    "ghcr.io/wajeht/mm2us.com",
-    "ghcr.io/wajeht/notify",
-    "ghcr.io/wajeht/screenshot",
-    "ghcr.io/wajeht/ufc",
-    "ghcr.io/diced/zipline"
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^ghcr\\.io/wajeht/"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["ghcr.io/diced/zipline"],
+      "enabled": false
+    }
   ]
 }
