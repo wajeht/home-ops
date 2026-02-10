@@ -10,6 +10,7 @@ services:
       CROWDSEC_BOUNCER_KEY: ${CROWDSEC_BOUNCER_KEY}
     command:
       - "--api.dashboard=true"
+      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.network=traefik"
