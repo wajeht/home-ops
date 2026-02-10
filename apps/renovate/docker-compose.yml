@@ -35,6 +35,9 @@ services:
       - "traefik.http.routers.renovate.rule=Host(`renovate.jaw.dev`)"
       - "traefik.http.routers.renovate.entrypoints=websecure"
       - "traefik.http.routers.renovate.middlewares=google-auth@file"
+      - "traefik.http.routers.renovate-webhook.rule=Host(`renovate.jaw.dev`) && Path(`/webhook`)"
+      - "traefik.http.routers.renovate-webhook.entrypoints=websecure"
+      - "traefik.http.routers.renovate-webhook.priority=100"
       - "traefik.http.services.renovate.loadbalancer.server.port=8080"
 
 networks:
