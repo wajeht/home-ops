@@ -235,7 +235,7 @@ cmd_install() {
     }
 
     deploy_compose "$REPO_DIR/apps/traefik" traefik
-    deploy_compose "$REPO_DIR/apps/authelia" authelia
+    deploy_compose "$REPO_DIR/apps/google-auth" google-auth
     deploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
 
     header "Done"
