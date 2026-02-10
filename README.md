@@ -38,8 +38,8 @@ Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto
 
 | Device | RAM | Storage | OS | Function |
 |--------|-----|---------|----|---------|
-| [Dell OptiPlex 7050 Micro](https://www.amazon.com/s?k=dell+optiplex+7050+micro) | 32GB | 1TB SSD | Ubuntu 24.04 | Docker Host |
-| [Raspberry Pi 5 + PoE HAT](https://www.raspberrypi.com/products/raspberry-pi-5/) | 8GB | 128GB SD | Raspberry Pi OS | AdGuard |
+| [Dell OptiPlex 7050 Micro (i7-7700)](https://www.amazon.com/s?k=dell+optiplex+7050+micro+i7-7700) | 32GB | 1TB SSD | Ubuntu 24.04 | Docker Host |
+| [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/) + [GeeekPi P33 NVMe PoE+ HAT](https://www.amazon.com/dp/B0DMW98LBR) | 8GB | 128GB SD | Raspberry Pi OS | AdGuard |
 | [Synology DS923+](https://www.amazon.com/dp/B0BM7KDN6R)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [WD Red Plus 8TB](https://www.amazon.com/s?k=WD+Red+Plus+8TB) x2<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Seagate IronWolf 12TB](https://www.amazon.com/s?k=Seagate+IronWolf+12TB) x2 | 4GB | 25TB SHR | DSM | NAS |
 | [UniFi Cloud Gateway Ultra](https://store.ui.com/us/en/products/ucg-ultra) | 3GB | 16GB | UniFi OS | Firewall |
 | [UniFi U6+](https://store.ui.com/us/en/products/u6-plus) | - | - | - | WiFi 6 AP |
