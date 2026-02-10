@@ -1,6 +1,6 @@
 services:
   docker-cd:
-    image: ghcr.io/wajeht/docker-cd:v0.1.8
+    image: ghcr.io/wajeht/docker-cd:v0.1.10
     container_name: docker-cd
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -9,6 +9,7 @@ services:
       - /home/jaw/.sops/age-key.txt:/sops/age-key.txt:ro
       - /home/jaw/.docker/config.json:/root/.docker/config.json:ro
       - /sys/class/thermal:/sys/class/thermal:ro
+      - /proc/meminfo:/proc/meminfo:ro
     environment:
       TZ: America/Chicago
       HTTP_PORT: "80"
