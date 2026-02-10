@@ -16,8 +16,6 @@ services:
       - /home/jaw/data/gluetun:/gluetun
     networks:
       - traefik
-    ports:
-      - "8085:8085"  # qBittorrent WebUI
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.qbittorrent.rule=Host(`qbit.jaw.dev`)"
