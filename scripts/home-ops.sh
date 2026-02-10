@@ -32,7 +32,7 @@ REPO_DIR="$USER_HOME/home-ops"
 export SOPS_AGE_KEY_FILE="$USER_HOME/.sops/age-key.txt"
 
 # NFS config
-NAS_IP="192.168.4.160"
+NAS_IP="192.168.4.219"
 NFS_MOUNTS=(
     "plex|/volume1/plex|$USER_HOME/plex"
     "backup|/volume1/backup|$USER_HOME/backup"
