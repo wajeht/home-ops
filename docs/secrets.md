@@ -10,7 +10,7 @@ apps/myapp/.enc.env  →  docker-cd auto-decrypts  →  container env vars
      safe to commit
 ```
 
-Each stack has its own `.enc.env` file. When docker-cd deploys (via webhook/polling), it automatically decrypts SOPS-encrypted files.
+Each stack has its own `.enc.env` file. When docker-cd deploys (via polling), it automatically decrypts SOPS-encrypted files.
 
 ## Structure
 

@@ -33,7 +33,7 @@ networks:
 git add -A && git commit -m "add myapp" && git push
 ```
 
-docker-cd auto-deploys via webhook/polling within 60s.
+docker-cd auto-deploys via polling (interval configured in `infra/docker-cd/poll-config.yml`).
 
 ## With Secrets (SOPS)
 
