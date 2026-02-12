@@ -23,8 +23,8 @@ flowchart LR
 
     Git -->|push| GitHub -->|poll| docker-cd
     AppRepo[app repo] -->|push tag| Actions[GitHub Actions]
-    Actions -->|build image| GHCR[ghcr.io] -->|pull image| docker-cd
-    Actions -->|deploy workflow| GitHub
+    Actions -->|build image| GHCR[ghcr.io] -.->|pull| Apps
+    Actions -->|update tag| GitHub
     Renovate -->|auto-merge| GitHub
     User -->|https| Cloudflare -->|ssl| UniFi[UniFi Cloud Gateway Ultra] -->|forward| Traefik
     NAS[Synology DS923+] -->|NFS| Apps
