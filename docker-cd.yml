@@ -3,7 +3,7 @@ auto_discover_opts:
   depth: 1
 working_dir: apps
 reference: main
-rolling: true
+rolling_update: true
 force_image_pull: true
 env_files:
   - .env

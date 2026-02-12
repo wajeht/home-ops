@@ -13,7 +13,7 @@ These are required for VPN traffic routing.
 
 ## Deployment
 
-docker-cd auto-deploys this stack with `rolling: false` (can't scale due to `container_name`).
+docker-cd auto-deploys this stack with `rolling_update: false` (can't scale due to `container_name`).
 
 ## Traffic Flow
 
