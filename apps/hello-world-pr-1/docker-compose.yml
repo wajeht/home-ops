@@ -34,7 +34,7 @@ services:
           cpus: "0.5"
           memory: 256M
   hello-world-db:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     env_file:
       - .enc.env
       - .enc-temp.env
