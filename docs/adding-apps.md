@@ -104,7 +104,7 @@ For apps that can't run multiple instances (e.g., BoltDB databases):
 
 Create `apps/myapp/docker-cd.yml`:
 ```yaml
-rolling: false
+rolling_update: false
 ```
 
 ## Removing Apps

@@ -42,4 +42,4 @@ docker compose -p crowdsec exec crowdsec cscli decisions delete --ip 1.2.3.4
 
 ## Monitoring
 
-Grafana dashboards available in `apps/grafana/` (currently `ignore: true`).
+Grafana dashboards available in `apps/grafana/` (currently `ignore_deployment: true`).

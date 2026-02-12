@@ -1,10 +1,10 @@
 # Grafana + Prometheus (CrowdSec Monitoring)
 
-Currently disabled via `docker-cd.yml` → `ignore: true`.
+Currently disabled via `docker-cd.yml` → `ignore_deployment: true`.
 
 ## Enable
 
-Set `ignore: false` in `apps/grafana/docker-cd.yml` and push. docker-cd will auto-deploy.
+Set `ignore_deployment: false` in `apps/grafana/docker-cd.yml` and push. docker-cd will auto-deploy.
 
 ## Fix data dir permissions (first deploy only)
 

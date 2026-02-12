@@ -1,4 +1,4 @@
-rolling:
+rolling_update:
   enabled: true
   services:
     - changedetection
