@@ -1,14 +1,30 @@
 services:
   bang:
-    image: ghcr.io/wajeht/bang:d8364c2
+    image: ghcr.io/wajeht/bang:e55891a
+    env_file:
+      - .enc.env
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/bang-pr-174:/usr/src/app/dist/src/db/sqlite
     networks:
       - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bang-pr-174.rule=Host(`pr-174-bang.jaw.dev`)"
       - "traefik.http.routers.bang-pr-174.entrypoints=websecure"
       - "traefik.http.services.bang-pr-174.loadbalancer.server.port=80"
-    restart: unless-stopped
 
 networks:
   traefik:
