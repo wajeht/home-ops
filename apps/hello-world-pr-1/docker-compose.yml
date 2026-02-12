@@ -1,6 +1,6 @@
 services:
   hello-world:
-    image: ghcr.io/wajeht/docker-cd-hello-world:25c4329
+    image: ghcr.io/wajeht/docker-cd-hello-world:93e08d7
     env_file:
       - .enc.env
       - .enc-temp.env
