@@ -28,8 +28,10 @@ flowchart LR
     Renovate -->|auto-merge| GitHub
     User -->|https| Cloudflare -->|ssl| UniFi[UniFi Cloud Gateway Ultra] -->|forward| Traefik
     NAS[Synology DS923+] -->|NFS| Apps
-    Pi[Raspberry Pi 5] -->|DNS| UniFi
-    style Pi fill:#fff3cd,stroke:#ffc107,color:#000
+    subgraph Pi[Raspberry Pi 5]
+        AdGuard
+    end
+    AdGuard -->|DNS| UniFi
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
