@@ -1,6 +1,6 @@
 services:
   hello-world:
-    image: ghcr.io/wajeht/docker-cd-hello-world:e2035b8
+    image: ghcr.io/wajeht/docker-cd-hello-world:d220756
     env_file:
       - .enc.env
       - .enc-temp.env
@@ -37,7 +37,7 @@ services:
       - POSTGRES_USER=hello
       - POSTGRES_DB=hello
     volumes:
-      - data-db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     networks:
       - internal
     healthcheck:
@@ -54,4 +54,4 @@ networks:
     external: true
   internal: null
 volumes:
-  data-db: null
+  db: null
