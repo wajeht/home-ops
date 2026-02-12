@@ -1,6 +1,6 @@
 services:
   ip:
-    image: ghcr.io/wajeht/ip:1e13236
+    image: ghcr.io/wajeht/ip:bbf0d22
     environment:
       - TZ=America/Chicago
       - PORT=80
