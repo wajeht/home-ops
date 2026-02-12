@@ -1,6 +1,6 @@
 services:
   hello-world:
-    image: ghcr.io/wajeht/docker-cd-hello-world:d220756
+    image: ghcr.io/wajeht/docker-cd-hello-world:f63564d
     env_file:
       - .enc.env
       - .enc-temp.env
@@ -31,7 +31,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 256M
   hello-world-db:
     image: postgres:17-alpine
@@ -57,7 +57,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 256M
 networks:
   traefik:
