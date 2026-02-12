@@ -1,6 +1,6 @@
 services:
   bang:
-    image: ghcr.io/wajeht/bang:d566cff
+    image: ghcr.io/wajeht/bang:f93a7ee
     networks:
       - traefik
     labels:
