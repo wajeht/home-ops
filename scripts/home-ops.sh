@@ -51,6 +51,7 @@ DATA_DIRS=(
     "$USER_HOME/data/crowdsec/data"
     "$USER_HOME/data/crowdsec/config"
     "$USER_HOME/data/docker-cd"
+    "$USER_HOME/data/hello-world/db"
     "$USER_HOME/data/grafana/data"
     "$USER_HOME/data/grafana/prometheus"
     "$USER_HOME/data/dozzle"
