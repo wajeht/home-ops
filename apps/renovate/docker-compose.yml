@@ -14,7 +14,7 @@ services:
       GITHUB_COM_TOKEN: ${GITHUB_COM_TOKEN}
       RENOVATE_SECRETS: ${RENOVATE_SECRETS}
       NODE_OPTIONS: "--max-old-space-size=2048" # OOM on large repos (e.g. docker-cd) at 1536
-      LOG_LEVEL: info
+      LOG_LEVEL: debug
     volumes:
       - /home/jaw/data/renovate:/data
     networks:
