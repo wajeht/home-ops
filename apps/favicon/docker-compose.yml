@@ -1,6 +1,6 @@
 services:
   favicon:
-    image: ghcr.io/wajeht/favicon:4db47d6
+    image: ghcr.io/wajeht/favicon:5bb3991
     environment:
       TZ: America/Chicago
     volumes:
