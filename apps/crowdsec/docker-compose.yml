@@ -1,6 +1,6 @@
 services:
   crowdsec:
-    image: crowdsecurity/crowdsec:v1.6.6
+    image: crowdsecurity/crowdsec:v1.7.6
     environment:
       TZ: America/Chicago
       COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/http-dos"
