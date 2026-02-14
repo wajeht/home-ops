@@ -1,6 +1,6 @@
 services:
   hello-world:
-    image: ghcr.io/wajeht/docker-cd-hello-world:6074702
+    image: ghcr.io/wajeht/docker-cd-hello-world:03eaab7
     env_file:
       - .env
     networks:
