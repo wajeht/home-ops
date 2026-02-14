@@ -15,7 +15,7 @@ Mend Renovate Community Edition — auto-updates dependencies across all repos.
 - **Webhook:** https://renovate.jaw.dev/webhook
 - **Health:** https://renovate.jaw.dev/health
 
-## Secrets (.enc.env)
+## Secrets (.env.sops)
 
 | Variable | Description |
 |---|---|
@@ -26,10 +26,10 @@ Mend Renovate Community Edition — auto-updates dependencies across all repos.
 
 ```bash
 # View secrets
-sops apps/renovate/.enc.env
+sops apps/renovate/.env.sops
 
 # Edit secrets
-sops apps/renovate/.enc.env
+sops apps/renovate/.env.sops
 ```
 
 ## Setup from scratch
@@ -41,7 +41,7 @@ sops apps/renovate/.enc.env
 2. Generate private key from app settings page
 3. Install app on account (all repos)
 4. Register for free license key at https://www.mend.io/mend-renovate-community/
-5. Create `.env` with secrets, encrypt with `sops -e .env > .enc.env`
+5. Create `.env` with secrets, encrypt with `sops -e .env > .env.sops`
 
 ## Notes
 

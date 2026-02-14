@@ -3,7 +3,7 @@ services:
     image: ghcr.io/recyclarr/recyclarr:latest
     user: 1000:1000
     env_file:
-      - .enc.env
+      - .env
     environment:
       - TZ=America/Chicago
       - CRON_SCHEDULE=@daily

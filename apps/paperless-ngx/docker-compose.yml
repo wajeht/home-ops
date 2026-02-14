@@ -2,7 +2,7 @@ services:
   paperless:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
     env_file:
-      - .enc.env
+      - .env
     environment:
       - PAPERLESS_REDIS=redis://paperless-redis:6379
       - PAPERLESS_DBHOST=paperless-db
@@ -50,7 +50,7 @@ services:
   paperless-db:
     image: postgres:17-alpine
     env_file:
-      - .enc.env
+      - .env
     environment:
       - POSTGRES_USER=paperless
       - POSTGRES_DB=paperless

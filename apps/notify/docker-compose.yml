@@ -2,7 +2,7 @@ services:
   notify:
     image: ghcr.io/wajeht/notify:161ad53
     env_file:
-      - .enc.env
+      - .env
     environment:
       - TZ=America/Chicago
     volumes:

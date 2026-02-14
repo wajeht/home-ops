@@ -3,7 +3,7 @@ services:
     build: .
     image: google-auth
     env_file:
-      - .enc.env
+      - .env
     environment:
       - TZ=America/Chicago
       - DEFAULT_PROVIDER=google

@@ -21,7 +21,7 @@ services:
   grafana:
     image: grafana/grafana:11.6.10
     env_file:
-      - .enc.env
+      - .env
     environment:
       - GF_SERVER_ROOT_URL=https://grafana.jaw.dev
     volumes:

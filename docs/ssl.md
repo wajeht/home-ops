@@ -39,7 +39,7 @@ labels:
 
 ## Cloudflare Token
 
-Stored in `apps/traefik/.enc.env` as `CF_DNS_API_TOKEN`. Needs permissions:
+Stored in `apps/traefik/.env.sops` as `CF_DNS_API_TOKEN`. Needs permissions:
 - Zone:DNS:Edit
 - Zone:Zone:Read
 

@@ -2,7 +2,7 @@ services:
   zipline:
     image: ghcr.io/diced/zipline:v4
     env_file:
-      - .enc.env
+      - .env
     environment:
       - DATABASE_URL=postgres://zipline:${POSTGRES_PASSWORD}@zipline-db:5432/zipline
       - TZ=America/Chicago
@@ -37,7 +37,7 @@ services:
   zipline-db:
     image: postgres:17-alpine
     env_file:
-      - .enc.env
+      - .env
     environment:
       - POSTGRES_USER=zipline
       - POSTGRES_DB=zipline

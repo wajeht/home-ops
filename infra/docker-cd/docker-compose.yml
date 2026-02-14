@@ -1,11 +1,11 @@
 services:
   docker-cd:
-    image: ghcr.io/wajeht/docker-cd:v0.1.13
+    image: ghcr.io/wajeht/docker-cd:v0.1.15
     container_name: docker-cd
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/jaw/data/docker-cd:/home/jaw/data/docker-cd
-      - ./poll-config.yml:/config/poll-config.yml:ro
+      - ./docker-cd.yml:/config/docker-cd.yml:ro
       - /home/jaw/.sops/age-key.txt:/sops/age-key.txt:ro
       - /home/jaw/.docker/config.json:/root/.docker/config.json:ro
       - /sys/class/thermal:/sys/class/thermal:ro
@@ -14,10 +14,10 @@ services:
       TZ: America/Chicago
       HTTP_PORT: "80"
       DATA_PATH: /home/jaw/data/docker-cd
-      POLL_CONFIG_FILE: /config/poll-config.yml
+      CONFIG_FILE: /config/docker-cd.yml
+      BRANCH: main
+      INTERVAL: 30s
       SOPS_AGE_KEY_FILE: /sops/age-key.txt
-      GARBAGE_COLLECTION: "true"
-      MAX_HISTORY_ENTRIES: "500"
       GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
       NOTIFICATION_URL: ${NOTIFICATION_URL:-}
     labels:

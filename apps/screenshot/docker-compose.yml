@@ -6,7 +6,7 @@ services:
       APP_ENV: production
       APP_PORT: 80
     env_file:
-      - .enc.env
+      - .env
     volumes:
       - /home/jaw/data/screenshot:/app/data
     networks:

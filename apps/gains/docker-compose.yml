@@ -2,7 +2,7 @@ services:
   gains:
     image: ghcr.io/wajeht/gains:f5f7c0f
     env_file:
-      - .enc.env
+      - .env
     environment:
       - TZ=America/Chicago
     volumes:

@@ -9,7 +9,7 @@ How to recreate the homelab from scratch.
 | App configs/databases | `~/data/` | Borgmatic → NAS (`~/backup/borg`) |
 | SOPS age key | `~/.sops/age-key.txt` | Borgmatic → NAS |
 | Docker auth | `~/.docker/config.json` | Recreatable via `docker login` |
-| Secrets | .enc.env files | Encrypted in git |
+| Secrets | .env.sops files | Encrypted in git |
 | Media files | `~/plex/` (NFS) | NAS handles redundancy |
 | Compose files | Git repo | Already backed up |
 
@@ -17,7 +17,7 @@ How to recreate the homelab from scratch.
 
 ```bash
 # These MUST be backed up - can't recreate without them
-~/.sops/age-key.txt      # Decrypts all .enc.env secrets
+~/.sops/age-key.txt      # Decrypts all .env.sops secrets
 ~/data/                  # All app configs and databases
 ```
 
