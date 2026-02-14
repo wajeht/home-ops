@@ -32,6 +32,42 @@ decrypt_dotenv_sops() {
 	sops --decrypt --input-type dotenv --output-type dotenv "$1"
 }
 
+docker_relogin() {
+	local secret_file="$REPO_DIR/infra/docker-cd/.env.sops"
+	local decrypted=""
+	local dh_user="" dh_token="" gh_token=""
+
+	if [ ! -f "$secret_file" ]; then
+		warn "Missing $secret_file, skipping docker registry login"
+		return 0
+	fi
+
+	decrypted=$(decrypt_dotenv_sops "$secret_file")
+	dh_user=$(printf '%s\n' "$decrypted" | grep "^DOCKER_HUB_USER=" | cut -d= -f2- || true)
+	dh_token=$(printf '%s\n' "$decrypted" | grep "^DOCKER_HUB_TOKEN=" | cut -d= -f2- || true)
+	gh_token=$(printf '%s\n' "$decrypted" | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2- || true)
+
+	if [ -n "$dh_user" ] && [ -n "$dh_token" ]; then
+		printf '%s' "$dh_token" | $SUDO docker login -u "$dh_user" --password-stdin
+	else
+		warn "DOCKER_HUB_USER/DOCKER_HUB_TOKEN missing, skipping docker.io login"
+	fi
+
+	if [ -n "$gh_token" ]; then
+		printf '%s' "$gh_token" | $SUDO docker login ghcr.io -u wajeht --password-stdin
+	else
+		warn "GIT_ACCESS_TOKEN missing, skipping ghcr.io login"
+	fi
+
+	if [ "$EUID" -ne 0 ] && [ -f /root/.docker/config.json ]; then
+		$SUDO install -m 600 /root/.docker/config.json "$USER_HOME/.docker/config.json"
+	fi
+
+	if [ -f "$USER_HOME/.docker/config.json" ]; then
+		python3 -c 'import json,sys;json.load(open(sys.argv[1]))' "$USER_HOME/.docker/config.json"
+	fi
+}
+
 # Config
 USER_HOME="/home/jaw"
 SUDO="sudo"
@@ -221,19 +257,7 @@ cmd_install() {
 
 	# Registry auth
 	cd "$REPO_DIR"
-	DH_USER=$(decrypt_dotenv_sops infra/docker-cd/.env.sops 2>/dev/null | grep "^DOCKER_HUB_USER=" | cut -d= -f2 || true)
-	DH_TOKEN=$(decrypt_dotenv_sops infra/docker-cd/.env.sops 2>/dev/null | grep "^DOCKER_HUB_TOKEN=" | cut -d= -f2 || true)
-	GH_TOKEN=$(decrypt_dotenv_sops infra/docker-cd/.env.sops 2>/dev/null | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2 || true)
-
-	[ -n "$DH_TOKEN" ] && echo "$DH_TOKEN" | $SUDO docker login -u "$DH_USER" --password-stdin
-	[ -n "$GH_TOKEN" ] && echo "$GH_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
-
-	# Copy docker config from root (created by sudo docker login) to user home
-	if [ "$EUID" -ne 0 ]; then
-		$SUDO mkdir -p /root/.docker
-		$SUDO cp /root/.docker/config.json "$USER_HOME/.docker/config.json" 2>/dev/null || true
-	fi
-	chmod 600 "$USER_HOME/.docker/config.json" 2>/dev/null || true
+	docker_relogin
 
 	# Deploy core services (order matters)
 	step "4/4" "Deploying..."
@@ -328,6 +352,16 @@ cmd_status() {
 }
 
 #=============================================================================
+# RELOGIN - Refresh docker registry auth
+#=============================================================================
+cmd_relogin() {
+	header "Docker registry relogin"
+	cd "$REPO_DIR"
+	docker_relogin
+	ok "Docker registry credentials refreshed"
+}
+
+#=============================================================================
 # UPDATE-INFRA - Redeploy docker-cd (can't self-update)
 #=============================================================================
 cmd_update_infra() {
@@ -338,6 +372,7 @@ cmd_update_infra() {
 
 	step "1/1" "Redeploying docker-cd..."
 	cd "$REPO_DIR/infra/docker-cd"
+	docker_relogin
 	$SUDO docker compose pull 2>/dev/null || true
 	local tmp=$(mktemp)
 	decrypt_dotenv_sops .env.sops >"$tmp"
@@ -367,6 +402,9 @@ uninstall)
 status)
 	cmd_status
 	;;
+relogin)
+	cmd_relogin
+	;;
 update-infra)
 	cmd_update_infra
 	;;
@@ -382,6 +420,7 @@ update-infra)
 	echo -e "  ${GREEN}nfs status${NC}               Show NFS mount status"
 	echo -e "  ${GREEN}install${NC}                  Deploy all services"
 	echo -e "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
+	echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
 	echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
 	echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
 	echo ""

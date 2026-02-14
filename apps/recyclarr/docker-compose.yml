@@ -11,6 +11,11 @@ services:
       - /home/jaw/data/recyclarr:/config
     networks:
       - media
+    healthcheck:
+      test: ["CMD-SHELL", "recyclarr --version >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
     deploy:
       resources:
