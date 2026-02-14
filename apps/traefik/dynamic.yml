@@ -35,7 +35,7 @@ http:
     custom-errors:
       errors:
         status:
-          - "400-599"
+          - "500-599"
         service: dummy
         query: "/"
 
