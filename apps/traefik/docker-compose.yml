@@ -17,7 +17,7 @@ services:
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websecure.http.middlewares=crowdsec-bouncer@file,gzip@file"
+      - "--entrypoints.websecure.http.middlewares=crowdsec-bouncer@file,gzip@file,custom-errors@file"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       # Trust X-Forwarded-* headers from Cloudflare
