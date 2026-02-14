@@ -21,6 +21,17 @@ http:
           crowdsecLapiHost: crowdsec:8080
           crowdsecMode: stream
 
+    security-headers:
+      headers:
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+        contentTypeNosniff: true
+        frameDeny: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+
     custom-errors:
       errors:
         status:
