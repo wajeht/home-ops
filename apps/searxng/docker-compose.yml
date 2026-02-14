@@ -1,6 +1,6 @@
 services:
   searxng:
-    image: searxng/searxng:2025.2.9.1-b8e0017d2@sha256:ae3e78ee4afcc89ba9f6e1f8093977de1908b00af9e3830078b9ab9a0df42611
+    image: searxng/searxng@sha256:4d3e9dbb1cabe0fb77b831f55350f81fe3eb46ad5e3147c0a8169189fb5380c0
     env_file:
       - .env
     environment:
