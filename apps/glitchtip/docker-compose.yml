@@ -10,7 +10,7 @@ services:
       - GLITCHTIP_DOMAIN=https://glitchtip.jaw.dev
       - DEFAULT_FROM_EMAIL=glitchtip@jaw.dev
       - EMAIL_URL=consolemail://
-      - ENABLE_USER_REGISTRATION=True
+      - ENABLE_USER_REGISTRATION=False
       - ENABLE_ORGANIZATION_CREATION=False
       - ENABLE_ADMIN=False
       - ENABLE_OPENAPI=False
