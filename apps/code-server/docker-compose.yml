@@ -1,6 +1,6 @@
 services:
   code-server:
-    image: codercom/code-server:4.108.2
+    image: codercom/code-server:4.109.2
     command: ["--auth", "password"]
     env_file:
       - .env
