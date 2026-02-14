@@ -101,6 +101,8 @@ DATA_DIRS=(
 	"$USER_HOME/data/favicon"
 	"$USER_HOME/data/gains"
 	"$USER_HOME/data/gitea"
+	"$USER_HOME/data/glitchtip/uploads"
+	"$USER_HOME/data/glitchtip/db"
 	"$USER_HOME/data/gluetun"
 	"$USER_HOME/data/linx/files"
 	"$USER_HOME/data/linx/meta"

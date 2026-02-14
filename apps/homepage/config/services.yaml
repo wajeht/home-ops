@@ -153,6 +153,12 @@
         description: Dependency Updates
         siteMonitor: https://renovate.jaw.dev
 
+    - GlitchTip:
+        icon: glitchtip
+        href: https://glitchtip.jaw.dev
+        description: Error Tracking
+        siteMonitor: https://glitchtip.jaw.dev
+
     - Dozzle:
         icon: dozzle
         href: https://logs.jaw.dev

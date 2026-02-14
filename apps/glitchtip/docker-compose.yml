@@ -1,0 +1,71 @@
+services:
+  glitchtip:
+    image: glitchtip/glitchtip:6
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgres://glitchtip:${POSTGRES_PASSWORD}@glitchtip-db:5432/glitchtip
+      - VALKEY_URL=
+      - SERVER_ROLE=all_in_one
+      - GLITCHTIP_DOMAIN=https://glitchtip.jaw.dev
+      - DEFAULT_FROM_EMAIL=glitchtip@jaw.dev
+      - EMAIL_URL=consolemail://
+      - ENABLE_USER_REGISTRATION=False
+      - ENABLE_ORGANIZATION_CREATION=False
+      - ENABLE_ADMIN=False
+      - ENABLE_OPENAPI=False
+      - GLITCHTIP_MAX_EVENT_LIFE_DAYS=90
+    depends_on:
+      glitchtip-db:
+        condition: service_healthy
+    volumes:
+      - /home/jaw/data/glitchtip/uploads:/code/uploads
+    networks:
+      - traefik
+      - glitchtip-internal
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/_health/', timeout=5)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.glitchtip.rule=Host(`glitchtip.jaw.dev`)"
+      - "traefik.http.routers.glitchtip.entrypoints=websecure"
+      - "traefik.http.routers.glitchtip.middlewares=google-auth@file"
+      - "traefik.http.services.glitchtip.loadbalancer.server.port=8000"
+
+  glitchtip-db:
+    image: postgres:18-alpine
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=glitchtip
+      - POSTGRES_DB=glitchtip
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - /home/jaw/data/glitchtip/db:/var/lib/postgresql/data
+    networks:
+      - glitchtip-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glitchtip"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+networks:
+  traefik:
+    external: true
+  glitchtip-internal:
