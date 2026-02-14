@@ -21,6 +21,13 @@ http:
           crowdsecLapiHost: crowdsec:8080
           crowdsecMode: stream
 
+    custom-errors:
+      errors:
+        status:
+          - "400-599"
+        service: dummy
+        query: "/"
+
     google-auth:
       forwardAuth:
         address: http://google-auth:4181
