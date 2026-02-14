@@ -28,6 +28,10 @@ step() { echo -e "\n${CYAN}${BOLD}[$1]${NC} $2"; }
 header() { echo -e "\n${BOLD}━━━ $* ━━━${NC}"; }
 dim() { echo -e "${DIM}  $*${NC}"; }
 
+decrypt_dotenv_sops() {
+	sops --decrypt --input-type dotenv --output-type dotenv "$1"
+}
+
 # Config
 USER_HOME="/home/jaw"
 SUDO="sudo"
@@ -217,9 +221,9 @@ cmd_install() {
 
 	# Registry auth
 	cd "$REPO_DIR"
-	DH_USER=$(sops -d infra/docker-cd/.env.sops 2>/dev/null | grep "^DOCKER_HUB_USER=" | cut -d= -f2 || true)
-	DH_TOKEN=$(sops -d infra/docker-cd/.env.sops 2>/dev/null | grep "^DOCKER_HUB_TOKEN=" | cut -d= -f2 || true)
-	GH_TOKEN=$(sops -d infra/docker-cd/.env.sops 2>/dev/null | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2 || true)
+	DH_USER=$(decrypt_dotenv_sops infra/docker-cd/.env.sops 2>/dev/null | grep "^DOCKER_HUB_USER=" | cut -d= -f2 || true)
+	DH_TOKEN=$(decrypt_dotenv_sops infra/docker-cd/.env.sops 2>/dev/null | grep "^DOCKER_HUB_TOKEN=" | cut -d= -f2 || true)
+	GH_TOKEN=$(decrypt_dotenv_sops infra/docker-cd/.env.sops 2>/dev/null | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2 || true)
 
 	[ -n "$DH_TOKEN" ] && echo "$DH_TOKEN" | $SUDO docker login -u "$DH_USER" --password-stdin
 	[ -n "$GH_TOKEN" ] && echo "$GH_TOKEN" | $SUDO docker login ghcr.io -u wajeht --password-stdin
@@ -246,7 +250,7 @@ cmd_install() {
 
 		if [ -n "$secret_file" ]; then
 			tmp=$(mktemp)
-			sops -d "$secret_file" >"$tmp"
+			decrypt_dotenv_sops "$secret_file" >"$tmp"
 			cp "$tmp" .env
 			$SUDO docker compose --env-file "$tmp" up -d 2>/dev/null || warn "$name not started"
 			rm -f "$tmp" .env
@@ -336,7 +340,7 @@ cmd_update_infra() {
 	cd "$REPO_DIR/infra/docker-cd"
 	$SUDO docker compose pull 2>/dev/null || true
 	local tmp=$(mktemp)
-	sops -d .env.sops >"$tmp"
+	decrypt_dotenv_sops .env.sops >"$tmp"
 	$SUDO docker compose --env-file "$tmp" up -d 2>/dev/null || warn "docker-cd not started"
 	rm -f "$tmp"
 

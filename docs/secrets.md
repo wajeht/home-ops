@@ -76,7 +76,7 @@ rm apps/myapp/.env
 
 # Reference in compose
 # env_file:
-#   - .env.sops
+#   - .env
 ```
 
 ### Deploy after changes

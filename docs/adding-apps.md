@@ -57,7 +57,7 @@ services:
   myapp:
     image: myimage:v1.0
     env_file:
-      - .env.sops    # docker-cd auto-decrypts
+      - .env         # docker-cd decrypts .env.sops -> .env
 ```
 
 Edit secrets:
