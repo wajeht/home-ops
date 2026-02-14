@@ -17,7 +17,7 @@ services:
       DATA_PATH: /home/jaw/data/docker-cd
       CONFIG_FILE: /config/docker-cd.yml
       BRANCH: main
-      INTERVAL: 30s
+      INTERVAL: 60s
       SOPS_AGE_KEY_FILE: /sops/age-key.txt
       GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
       NOTIFICATION_URL: ${NOTIFICATION_URL:-}
