@@ -251,6 +251,12 @@
         description: Image Sharing
         siteMonitor: https://img.jaw.dev
 
+    - SearXNG:
+        icon: searxng
+        href: https://search.jaw.dev
+        description: Search Engine
+        siteMonitor: https://search.jaw.dev
+
     - Linx:
         icon: filerun
         href: https://linx.jaw.dev
