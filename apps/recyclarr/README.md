@@ -4,11 +4,11 @@ Auto-syncs [TRaSH Guide](https://trash-guides.info/) quality profiles, custom fo
 
 ## Secrets
 
-API keys stored in `.enc.env` (SOPS encrypted), auto-decrypted by docker-cd. Config at `~/data/recyclarr/recyclarr.yml` references them via `!env_var`.
+API keys stored in `.env.sops` (SOPS encrypted), auto-decrypted by docker-cd. Config at `~/data/recyclarr/recyclarr.yml` references them via `!env_var`.
 
 ```bash
 # Edit secrets
-sops apps/recyclarr/.enc.env
+sops apps/recyclarr/.env.sops
 ```
 
 ## Server Config

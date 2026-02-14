@@ -33,11 +33,11 @@ networks:
 git add -A && git commit -m "add myapp" && git push
 ```
 
-docker-cd auto-deploys via polling (interval configured in `infra/docker-cd/poll-config.yml`).
+docker-cd auto-deploys via polling (interval configured in `infra/docker-cd/docker-cd.yml`).
 
 ## With Secrets (SOPS)
 
-docker-cd auto-decrypts `.enc.env` files on deployment.
+docker-cd auto-decrypts `.env.sops` files on deployment.
 
 ```bash
 # Create plain env file
@@ -47,7 +47,7 @@ API_KEY=secret123
 EOF
 
 # Encrypt it
-sops -e apps/myapp/.env > apps/myapp/.enc.env
+sops -e apps/myapp/.env > apps/myapp/.env.sops
 rm apps/myapp/.env
 ```
 
@@ -57,12 +57,12 @@ services:
   myapp:
     image: myimage:v1.0
     env_file:
-      - .enc.env    # docker-cd auto-decrypts
+      - .env.sops    # docker-cd auto-decrypts
 ```
 
 Edit secrets:
 ```bash
-sops apps/myapp/.enc.env
+sops apps/myapp/.env.sops
 git add -A && git commit -m "update secrets" && git push
 ```
 

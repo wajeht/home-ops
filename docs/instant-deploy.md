@@ -11,7 +11,7 @@ GitHub Actions builds image to ghcr.io
     ↓
 docker-cd-deploy-workflow updates home-ops
     ↓
-docker-cd detects change and deploys (poll interval configured in `infra/docker-cd/poll-config.yml`)
+docker-cd detects change and deploys (poll interval configured in `infra/docker-cd/docker-cd.yml`)
 ```
 
 ## Setup for New Apps

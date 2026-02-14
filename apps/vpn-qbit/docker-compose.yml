@@ -9,7 +9,7 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     env_file:
-      - .enc.env
+      - .env
     environment:
       - TZ=America/Chicago
       - FIREWALL_VPN_INPUT_PORTS=45839

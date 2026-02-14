@@ -5,34 +5,34 @@ Secrets are encrypted with [SOPS](https://github.com/getsops/sops) + [age](https
 ## How It Works
 
 ```
-apps/myapp/.enc.env  →  docker-cd auto-decrypts  →  container env vars
+apps/myapp/.env.sops  →  docker-cd auto-decrypts  →  container env vars
      encrypted            on deployment
      safe to commit
 ```
 
-Each stack has its own `.enc.env` file. When docker-cd deploys (via polling), it automatically decrypts SOPS-encrypted files.
+Each stack has its own `.env.sops` file. When docker-cd deploys (via polling), it automatically decrypts SOPS-encrypted files.
 
 ## Structure
 
 ```
 apps/
-├── bang/.enc.env
-├── calendar/.enc.env
-├── close-powerlifting/.enc.env
-├── commit/.enc.env
-├── gains/.enc.env
-├── gitea/.enc.env
-├── homepage/.enc.env
-├── mm2us/.enc.env
-├── notify/.enc.env
-├── screenshot/.enc.env
-├── traefik/.enc.env
-├── vaultwarden/.enc.env
+├── bang/.env.sops
+├── calendar/.env.sops
+├── close-powerlifting/.env.sops
+├── commit/.env.sops
+├── gains/.env.sops
+├── gitea/.env.sops
+├── homepage/.env.sops
+├── mm2us/.env.sops
+├── notify/.env.sops
+├── screenshot/.env.sops
+├── traefik/.env.sops
+├── vaultwarden/.env.sops
 ├── ...
-├── vpn-qbit/.enc.env
+├── vpn-qbit/.env.sops
 └── ...
 infra/
-└── docker-cd/.enc.env
+└── docker-cd/.env.sops
 ```
 
 ## Local Setup
@@ -54,12 +54,12 @@ source ~/.zshrc
 
 ### View secrets
 ```bash
-sops -d apps/commit/.enc.env
+sops -d apps/commit/.env.sops
 ```
 
 ### Edit secrets
 ```bash
-sops apps/commit/.enc.env
+sops apps/commit/.env.sops
 # Make changes, save, auto re-encrypts
 ```
 
@@ -71,17 +71,17 @@ API_KEY=secret123
 EOF
 
 # Encrypt
-sops -e apps/myapp/.env > apps/myapp/.enc.env
+sops -e apps/myapp/.env > apps/myapp/.env.sops
 rm apps/myapp/.env
 
 # Reference in compose
 # env_file:
-#   - .enc.env
+#   - .env.sops
 ```
 
 ### Deploy after changes
 ```bash
-sops apps/myapp/.enc.env
+sops apps/myapp/.env.sops
 git add -A && git commit -m "update secrets" && git push
 ```
 
@@ -94,7 +94,7 @@ docker-cd will auto-deploy with decrypted secrets.
 
 ## Security Notes
 
-- `.enc.env` files are safe to commit (encrypted)
+- `.env.sops` files are safe to commit (encrypted)
 - Plain `.env` files are gitignored
 - docker-cd mounts age key at `/sops/age-key.txt`
 - Secrets passed as env vars at container runtime

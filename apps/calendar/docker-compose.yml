@@ -2,7 +2,7 @@ services:
   calendar:
     image: ghcr.io/wajeht/calendar:b07fbeb
     env_file:
-      - .enc.env
+      - .env
     environment:
       - TZ=America/Chicago
     volumes:

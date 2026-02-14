@@ -2,7 +2,7 @@ services:
   close-powerlifting:
     image: ghcr.io/wajeht/close-powerlifting:7afca77
     env_file:
-      - .enc.env
+      - .env
     environment:
       - TZ=America/Chicago
     volumes:

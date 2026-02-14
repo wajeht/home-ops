@@ -12,10 +12,10 @@ Auto-mirrors all GitHub repos to self-hosted Gitea.
 1. Deploy stack: `docker stack deploy -c docker-compose.yml gitea`
 2. Go to https://gitea.jaw.dev → create admin account
 3. Settings → Applications → Generate API token
-4. Add tokens to `.enc.env`:
+4. Add tokens to `.env.sops`:
 
 ```bash
-sops .enc.env
+sops .env.sops
 # Add:
 # GITEA_TOKEN=your_gitea_token
 # GH_TOKEN=your_github_pat

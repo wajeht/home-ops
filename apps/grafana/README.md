@@ -24,7 +24,7 @@ docker compose -p crowdsec exec crowdsec cscli metrics
 ## Update Grafana admin password
 
 ```bash
-SOPS_AGE_KEY_FILE=~/.sops/age-key.txt sops apps/grafana/.enc.env
+SOPS_AGE_KEY_FILE=~/.sops/age-key.txt sops apps/grafana/.env.sops
 ```
 
 ## Dashboards

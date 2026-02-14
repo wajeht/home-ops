@@ -16,7 +16,7 @@ services:
       - GITEA_URL=https://gitea.jaw.dev
       - GITHUB_USER=wajeht
     env_file:
-      - .enc.env
+      - .env
     volumes:
       - ./mirror-sync.sh:/scripts/mirror-sync.sh:ro
     restart: unless-stopped
@@ -38,7 +38,7 @@ services:
       - GITEA__mirror__DEFAULT_INTERVAL=8h
       - GITEA__service__DISABLE_REGISTRATION=true
     env_file:
-      - .enc.env
+      - .env
     volumes:
       - /home/jaw/data/gitea:/data
       - /etc/timezone:/etc/timezone:ro

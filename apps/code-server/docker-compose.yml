@@ -3,7 +3,7 @@ services:
     image: codercom/code-server:4.108.2
     command: ["--auth", "password"]
     env_file:
-      - .enc.env
+      - .env
     environment:
       - TZ=America/Chicago
     volumes:

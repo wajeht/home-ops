@@ -31,7 +31,7 @@ docker compose -p crowdsec exec crowdsec cscli decisions delete --ip 1.2.3.4
 
 - Reads Traefik access logs via shared `traefik-logs` volume
 - Acquisition config: `acquis.yaml` → `/etc/crowdsec/acquis.d/traefik.yaml`
-- Bouncer key in `.enc.env` → Traefik bouncer plugin authenticates with it
+- Bouncer key in `.env.sops` → Traefik bouncer plugin authenticates with it
 - Prometheus metrics enabled on `:6060` (for Grafana, currently disabled)
 
 ## Collections

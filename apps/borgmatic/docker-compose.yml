@@ -2,7 +2,7 @@ services:
   borgmatic:
     image: ghcr.io/borgmatic-collective/borgmatic
     env_file:
-      - .enc.env
+      - .env
     environment:
       - TZ=America/Chicago
     volumes:
