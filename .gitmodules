@@ -1,0 +1,3 @@
+[submodule "apps/adguard"]
+	path = apps/adguard
+	url = https://github.com/wajeht/adguard
