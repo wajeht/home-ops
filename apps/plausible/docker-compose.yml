@@ -1,6 +1,6 @@
 services:
   plausible:
-    image: ghcr.io/plausible/community-edition:v2.1.4
+    image: ghcr.io/plausible/community-edition:v2.1.4@sha256:4c2553516d09e3c7b1b9c39cca04a04c28c871f525adc8dbb7a2a8a20fed0857
     command: sh -c "/entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
     env_file:
       - .env
@@ -36,7 +36,7 @@ services:
       - "traefik.http.services.plausible.loadbalancer.server.port=8000"
 
   plausible-db:
-    image: postgres:18-alpine
+    image: postgres:18-alpine@sha256:88f300be8635fe8a9ed4c18a68ba497fb6df1215fd2b074895afd027bd3e1006
     env_file:
       - .env
     environment:
@@ -60,7 +60,7 @@ services:
           memory: 256M
 
   plausible-events-db:
-    image: clickhouse/clickhouse-server:24.12-alpine
+    image: clickhouse/clickhouse-server:24.12-alpine@sha256:cd450891db46cc6ffe313ca2b0fb7dbfb897a6873ca74a724cbe050a2cf62621
     volumes:
       - /home/jaw/data/plausible/events:/var/lib/clickhouse
       - ./clickhouse/clickhouse-config.xml:/etc/clickhouse-server/config.d/logging.xml:ro

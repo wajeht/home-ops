@@ -1,6 +1,6 @@
 services:
   prometheus:
-    image: prom/prometheus:v3.9.1
+    image: prom/prometheus:v3.9.1@sha256:1f0f50f06acaceb0f5670d2c8a658a599affe7b0d8e78b898c1035653849a702
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - /home/jaw/data/grafana/prometheus:/prometheus
@@ -19,7 +19,7 @@ services:
           memory: 256M
 
   grafana:
-    image: grafana/grafana:11.6.11
+    image: grafana/grafana:11.6.11@sha256:ef40abf9a6465c5ec7564bcdf3aa11969a192e494f24b761c671c4ee0c08a665
     env_file:
       - .env
     environment:
