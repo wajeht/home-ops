@@ -1,6 +1,6 @@
 services:
   bang:
-    image: ghcr.io/wajeht/bang:37d5918
+    image: ghcr.io/wajeht/bang:8b0ec49
     env_file:
       - .env
     environment:
