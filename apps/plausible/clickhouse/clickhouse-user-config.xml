@@ -5,4 +5,10 @@
             <log_query_threads>0</log_query_threads>
         </default>
     </profiles>
+    <users>
+        <default>
+            <password remove="remove"/>
+            <no_password>1</no_password>
+        </default>
+    </users>
 </clickhouse>
