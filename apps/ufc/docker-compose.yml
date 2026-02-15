@@ -10,14 +10,12 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-    init: true
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "0.5"
           memory: 256M
-          pids: 100
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ufc.rule=Host(`ufc.jaw.dev`)"

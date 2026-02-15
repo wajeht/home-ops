@@ -14,14 +14,12 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-    # init: true — not used, linuxserver s6-overlay is PID 1
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "1.0"
           memory: 256M
-          pids: 200 # fork bomb protection
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tautulli.rule=Host(`tautulli.jaw.dev`)"
