@@ -11,7 +11,11 @@ services:
       - traefik
       - changedetection-internal
     healthcheck:
-      test: ["CMD-SHELL", "python3 -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:5000\", timeout=5)' || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          'python3 -c ''import urllib.request; urllib.request.urlopen("http://localhost:5000", timeout=5)'' || exit 1',
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -20,7 +24,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 512M
     labels:
       - "traefik.enable=true"
@@ -47,7 +51,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2.0'
+          cpus: "2.0"
           memory: 1G
 
 networks:

@@ -25,7 +25,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4.0'
+          cpus: "4.0"
           memory: 4G
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:32400/identity"]

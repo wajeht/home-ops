@@ -25,10 +25,10 @@ sops .env.sops
 
 ## Tokens Required
 
-| Token | Scope | Purpose |
-|-------|-------|---------|
-| GITEA_TOKEN | Gitea API token | Create mirrors |
-| GH_TOKEN | GitHub PAT with `repo` scope | Read private repos |
+| Token       | Scope                        | Purpose            |
+| ----------- | ---------------------------- | ------------------ |
+| GITEA_TOKEN | Gitea API token              | Create mirrors     |
+| GH_TOKEN    | GitHub PAT with `repo` scope | Read private repos |
 
 ## Manual Sync
 

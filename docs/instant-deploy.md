@@ -26,7 +26,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 env:
   REGISTRY: ghcr.io
@@ -100,6 +100,7 @@ git push origin v1.0.0
 ```
 
 Watch progress:
+
 ```bash
 gh run watch -R wajeht/your-app
 ```
@@ -107,22 +108,23 @@ gh run watch -R wajeht/your-app
 ## docker-cd-deploy-workflow
 
 Reusable workflow at `wajeht/docker-cd-deploy-workflow` that:
+
 1. Checks out home-ops using GH_TOKEN
 2. Updates image tag in `apps/{app}/docker-compose.yml`
 3. Commits and pushes
 
 ### Inputs
 
-| Input | Required | Default | Description |
-|-------|----------|---------|-------------|
-| `home-ops-repo` | No | `wajeht/home-ops` | Target repo |
-| `app-path` | Yes | - | Path to app (e.g., `apps/ufc`) |
-| `tag` | Yes | - | Image tag (e.g., `v1.0.0`) |
+| Input           | Required | Default           | Description                    |
+| --------------- | -------- | ----------------- | ------------------------------ |
+| `home-ops-repo` | No       | `wajeht/home-ops` | Target repo                    |
+| `app-path`      | Yes      | -                 | Path to app (e.g., `apps/ufc`) |
+| `tag`           | Yes      | -                 | Image tag (e.g., `v1.0.0`)     |
 
 ### Secrets
 
-| Secret | Description |
-|--------|-------------|
+| Secret     | Description          |
+| ---------- | -------------------- |
 | `GH_TOKEN` | PAT with repo access |
 
 ## Apps Using Instant Deploy
@@ -143,8 +145,8 @@ Reusable workflow at `wajeht/docker-cd-deploy-workflow` that:
 
 ## Renovate vs Instant Deploy
 
-| | Renovate | Instant Deploy |
-|---|----------|----------------|
-| Speed | ~15min (polling) | ~1min |
-| Setup | Mend UI config | GH_TOKEN secret |
+|         | Renovate           | Instant Deploy  |
+| ------- | ------------------ | --------------- |
+| Speed   | ~15min (polling)   | ~1min           |
+| Setup   | Mend UI config     | GH_TOKEN secret |
 | Use for | Third-party images | Your own images |

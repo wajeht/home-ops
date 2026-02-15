@@ -53,17 +53,20 @@ source ~/.zshrc
 ## Common Operations
 
 ### View secrets
+
 ```bash
 sops -d apps/commit/.env.sops
 ```
 
 ### Edit secrets
+
 ```bash
 sops apps/commit/.env.sops
 # Make changes, save, auto re-encrypts
 ```
 
 ### Add secrets to new app
+
 ```bash
 # Create plain .env
 cat > apps/myapp/.env << 'EOF'
@@ -80,6 +83,7 @@ rm apps/myapp/.env
 ```
 
 ### Deploy after changes
+
 ```bash
 sops apps/myapp/.env.sops
 git add -A && git commit -m "update secrets" && git push

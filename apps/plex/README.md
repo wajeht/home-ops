@@ -12,17 +12,20 @@ devices:
 ```
 
 Requires:
+
 - Intel CPU with integrated graphics (Sandy Bridge or newer)
 - Plex Pass subscription
 
 ## Verify Hardware Transcoding
 
 Check device access:
+
 ```bash
 docker exec plex ls -la /dev/dri
 ```
 
 Should show:
+
 ```
 card0       - GPU device
 renderD128  - Render device (used for transcoding)
@@ -37,6 +40,7 @@ renderD128  - Render device (used for transcoding)
 ## First-Time Setup
 
 Get a claim token from https://plex.tv/claim and add to environment:
+
 ```yaml
 environment:
   - PLEX_CLAIM=claim-xxxx
@@ -44,9 +48,9 @@ environment:
 
 ## Volumes
 
-| Path | Purpose |
-|------|---------|
+| Path      | Purpose                    |
+| --------- | -------------------------- |
 | `/config` | Plex database and settings |
-| `/movies` | Movie library |
-| `/tv` | TV show library |
-| `/music` | Music library |
+| `/movies` | Movie library              |
+| `/tv`     | TV show library            |
+| `/music`  | Music library              |

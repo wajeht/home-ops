@@ -4,14 +4,14 @@ How to recreate the homelab from scratch.
 
 ## What's Backed Up Where
 
-| Data | Location | Backup Strategy |
-|------|----------|-----------------|
-| App configs/databases | `~/data/` | Borgmatic → NAS (`~/backup/borg`) |
-| SOPS age key | `~/.sops/age-key.txt` | Borgmatic → NAS |
-| Docker auth | `~/.docker/config.json` | Recreatable via `docker login` |
-| Secrets | .env.sops files | Encrypted in git |
-| Media files | `~/plex/` (NFS) | NAS handles redundancy |
-| Compose files | Git repo | Already backed up |
+| Data                  | Location                | Backup Strategy                   |
+| --------------------- | ----------------------- | --------------------------------- |
+| App configs/databases | `~/data/`               | Borgmatic → NAS (`~/backup/borg`) |
+| SOPS age key          | `~/.sops/age-key.txt`   | Borgmatic → NAS                   |
+| Docker auth           | `~/.docker/config.json` | Recreatable via `docker login`    |
+| Secrets               | .env.sops files         | Encrypted in git                  |
+| Media files           | `~/plex/` (NFS)         | NAS handles redundancy            |
+| Compose files         | Git repo                | Already backed up                 |
 
 ## Critical Files
 
@@ -105,6 +105,7 @@ The install script handles everything: Docker, SOPS, networks, and docker-cd dep
 ## Testing Recovery
 
 Periodically test by:
+
 1. Spin up a test VM
 2. Follow recovery steps
 3. Verify services come up with data intact

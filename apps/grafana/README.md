@@ -30,6 +30,7 @@ SOPS_AGE_KEY_FILE=~/.sops/age-key.txt sops apps/grafana/.env.sops
 ## Dashboards
 
 4 official CrowdSec dashboards auto-provisioned from `dashboards/`:
+
 - Crowdsec Overview
 - Crowdsec Details per instance
 - Crowdsec Insight
