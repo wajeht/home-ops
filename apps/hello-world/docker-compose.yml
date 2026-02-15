@@ -52,7 +52,7 @@ services:
       resources:
         limits:
           cpus: "0.5"
-          memory: 256M
+          memory: 256M # 256MB
 
 networks:
   traefik:
