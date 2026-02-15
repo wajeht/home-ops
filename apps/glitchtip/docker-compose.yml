@@ -32,12 +32,14 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    init: true # proper PID 1 signal handling and zombie reaping
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "1.0"
           memory: 512M
+          pids: 200 # fork bomb protection
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.glitchtip.rule=Host(`glitchtip.jaw.dev`)"
@@ -62,12 +64,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    init: true # proper PID 1 signal handling and zombie reaping
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "1.0"
           memory: 512M
+          pids: 200 # fork bomb protection
 
 networks:
   traefik:
