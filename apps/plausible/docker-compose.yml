@@ -1,6 +1,7 @@
 services:
   plausible:
     image: ghcr.io/plausible/community-edition:v2.1.4
+    command: sh -c "/entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
     env_file:
       - .env
     environment:
@@ -21,6 +22,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+      start_period: 30s
     restart: unless-stopped
     deploy:
       resources:
@@ -65,12 +67,14 @@ services:
       - ./clickhouse/clickhouse-user-config.xml:/etc/clickhouse-server/users.d/logging.xml:ro
     networks:
       - plausible-internal
+    environment:
+      - CLICKHOUSE_SKIP_USER_SETUP=1
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8123/ping"]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 -O - http://127.0.0.1:8123/ping || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 1m
     restart: unless-stopped
     deploy:
       resources:
