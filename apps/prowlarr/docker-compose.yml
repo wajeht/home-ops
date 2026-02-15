@@ -1,6 +1,6 @@
 services:
   prowlarr:
-    image: linuxserver/prowlarr:2.3.0@sha256:5339e9050cfcc0cb5331e9c98610ed9d4ce70ef481a5461ea664a13dda3f1eb0
+    image: linuxserver/prowlarr:2.3.2-develop@sha256:e505c41f5f89a2c8cf31ff3a5479cd7d30e15075d633ec818cf273f8737a79ee
     environment:
       - PUID=1000
       - PGID=1000

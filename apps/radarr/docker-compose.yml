@@ -1,6 +1,6 @@
 services:
   radarr:
-    image: linuxserver/radarr:6.0.4@sha256:f08dda38e7d12e5a722d9a5cb6e54acaf63c8598fefeefec88effe0c0d0038dd
+    image: linuxserver/radarr:6.1.0-develop@sha256:d019e21503cd032833b5cfe3e9f853a546770a6fc9ce25fde7036ea2fa40d1b4
     environment:
       - PUID=1000
       - PGID=1000

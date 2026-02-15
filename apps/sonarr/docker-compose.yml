@@ -1,6 +1,6 @@
 services:
   sonarr:
-    image: linuxserver/sonarr:4.0.16@sha256:6f73bbba33391a338e20d836a60c86beaf2a865a89b706b339fc8cb0b8ce1559
+    image: linuxserver/sonarr:4.0.16.2944-ls302@sha256:6f73bbba33391a338e20d836a60c86beaf2a865a89b706b339fc8cb0b8ce1559
     environment:
       - PUID=1000
       - PGID=1000
