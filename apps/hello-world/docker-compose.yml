@@ -21,12 +21,14 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+    init: true # proper PID 1 signal handling and zombie reaping
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "0.5"
           memory: 256M
+          pids: 100 # fork bomb protection
 
   hello-world-db:
     image: postgres:17-alpine
@@ -45,12 +47,14 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    init: true # proper PID 1 signal handling and zombie reaping
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "0.5"
           memory: 256M
+          pids: 200 # fork bomb protection
 
 networks:
   traefik:

@@ -13,12 +13,14 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+    init: true # proper PID 1 signal handling and zombie reaping
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "2.0"
           memory: 1.5G
+          pids: 500 # fork bomb protection
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.stirling-pdf.rule=Host(`pdf.jaw.dev`)"

@@ -10,12 +10,14 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+    init: true # proper PID 1 signal handling and zombie reaping
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "0.5"
           memory: 256M
+          pids: 100 # fork bomb protection
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.commit.rule=Host(`commit.jaw.dev`)"

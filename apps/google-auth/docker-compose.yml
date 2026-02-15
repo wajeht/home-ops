@@ -12,12 +12,14 @@ services:
       - LOG_LEVEL=info
     networks:
       - traefik
+    init: true # proper PID 1 signal handling and zombie reaping
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "0.5"
           memory: 128M
+          pids: 100 # fork bomb protection
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.google-auth.rule=Host(`auth.jaw.dev`)"
