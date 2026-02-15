@@ -9,6 +9,7 @@ mkdir -p apps/myapp
 ```
 
 Create `apps/myapp/docker-compose.yml`:
+
 ```yaml
 services:
   myapp:
@@ -52,15 +53,17 @@ rm apps/myapp/.env
 ```
 
 Reference in docker-compose.yml:
+
 ```yaml
 services:
   myapp:
     image: myimage:v1.0
     env_file:
-      - .env         # docker-cd decrypts .env.sops -> .env
+      - .env # docker-cd decrypts .env.sops -> .env
 ```
 
 Edit secrets:
+
 ```bash
 sops apps/myapp/.env.sops
 git add -A && git commit -m "update secrets" && git push
@@ -76,7 +79,7 @@ labels:
   - "traefik.http.services.myapp.loadbalancer.server.port=8080"
 ```
 
-TLS uses the wildcard cert (*.jaw.dev) automatically. No per-app `certresolver` needed.
+TLS uses the wildcard cert (\*.jaw.dev) automatically. No per-app `certresolver` needed.
 
 ## Network
 
@@ -103,6 +106,7 @@ The server has docker login configured for ghcr.io.
 For apps that can't run multiple instances (e.g., BoltDB databases):
 
 Create `apps/myapp/docker-cd.yml`:
+
 ```yaml
 rolling_update: false
 ```

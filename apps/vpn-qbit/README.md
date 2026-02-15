@@ -5,6 +5,7 @@ VPN-tunneled qBittorrent using gluetun.
 ## Requirements
 
 Uses Docker features:
+
 - `devices: /dev/net/tun`
 - `network_mode: service:*`
 - `cap_add: NET_ADMIN`

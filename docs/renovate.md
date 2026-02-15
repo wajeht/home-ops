@@ -2,7 +2,7 @@
 
 Renovate automatically creates PRs when third-party Docker image versions are available.
 
-> **Note:** Your own images (ghcr.io/wajeht/*) use [instant deploy](instant-deploy.md) instead.
+> **Note:** Your own images (ghcr.io/wajeht/\*) use [instant deploy](instant-deploy.md) instead.
 
 ## How It Works
 
@@ -30,11 +30,7 @@ merge PR → docker-cd deploys
       "password": "{{ secrets.GH_TOKEN }}"
     }
   ],
-  "ignoreDeps": [
-    "ghcr.io/wajeht/bang",
-    "ghcr.io/wajeht/ufc",
-    "..."
-  ]
+  "ignoreDeps": ["ghcr.io/wajeht/bang", "ghcr.io/wajeht/ufc", "..."]
 }
 ```
 
@@ -58,10 +54,10 @@ merge PR → docker-cd deploys
 
 ## Behavior
 
-| Image | Action |
-|-------|--------|
+| Image              | Action                        |
+| ------------------ | ----------------------------- |
 | `ghcr.io/wajeht/*` | Ignored (uses instant deploy) |
-| Third-party images | Creates PR for review |
+| Third-party images | Creates PR for review         |
 
 ## Troubleshooting
 
@@ -75,6 +71,7 @@ merge PR → docker-cd deploys
 ### Token Requirements
 
 Create a GitHub **classic** PAT with:
+
 - `read:packages` scope (required)
 
 Fine-grained tokens do NOT work for packages.

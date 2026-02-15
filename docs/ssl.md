@@ -40,20 +40,24 @@ labels:
 ## Cloudflare Token
 
 Stored in `apps/traefik/.env.sops` as `CF_DNS_API_TOKEN`. Needs permissions:
+
 - Zone:DNS:Edit
 - Zone:Zone:Read
 
 ## Troubleshooting
 
 **Rate limited by Let's Encrypt:**
+
 - Wait 1 hour for rate limit to reset
 - Check logs: `docker logs traefik`
 
 **DNS propagation issues:**
+
 - The 30s delay before check helps with propagation
 - Using 1.1.1.1 resolvers sees Cloudflare changes faster
 
 **Certificate not obtained:**
+
 1. Check acme.json: `docker exec <traefik> cat /certs/acme.json`
 2. Verify Cloudflare token has correct permissions
 3. Check for stale `_acme-challenge` TXT records in Cloudflare DNS

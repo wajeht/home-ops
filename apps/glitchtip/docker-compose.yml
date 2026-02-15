@@ -24,7 +24,11 @@ services:
       - traefik
       - glitchtip-internal
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/_health/', timeout=5)\""]
+      test:
+        [
+          "CMD-SHELL",
+          'python -c "import urllib.request; urllib.request.urlopen(''http://localhost:8000/_health/'', timeout=5)"',
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -32,7 +36,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 512M
     labels:
       - "traefik.enable=true"
@@ -62,7 +66,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 512M
 
 networks:

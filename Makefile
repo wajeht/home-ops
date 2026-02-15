@@ -1,6 +1,12 @@
 INFRA_LINKS = traefik google-auth
 
-.PHONY: link unlink push fix-git clean help
+.PHONY: format lint link unlink push fix-git clean help
+
+format:
+	@npx oxfmt "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
+
+lint:
+	@npx oxfmt --check "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
 
 link:
 	@for app in $(INFRA_LINKS); do \

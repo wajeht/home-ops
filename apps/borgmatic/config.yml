@@ -6,7 +6,7 @@ repositories:
   - path: /repository
     label: nas
 
-archive_name_format: '{hostname}-{now:%Y-%m-%d-%H%M%S}'
+archive_name_format: "{hostname}-{now:%Y-%m-%d-%H%M%S}"
 
 compression: zstd,3
 

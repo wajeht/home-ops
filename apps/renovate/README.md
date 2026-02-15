@@ -17,12 +17,12 @@ Mend Renovate Community Edition — auto-updates dependencies across all repos.
 
 ## Secrets (.env.sops)
 
-| Variable | Description |
-|---|---|
-| `MEND_RNV_GITHUB_APP_KEY` | GitHub App private key (PEM, `\n` escaped) |
+| Variable                  | Description                                   |
+| ------------------------- | --------------------------------------------- |
+| `MEND_RNV_GITHUB_APP_KEY` | GitHub App private key (PEM, `\n` escaped)    |
 | `MEND_RNV_WEBHOOK_SECRET` | Webhook secret (must match GitHub App config) |
-| `MEND_RNV_LICENSE_KEY` | Mend Community Edition license key |
-| `GITHUB_COM_TOKEN` | PAT for changelog fetching |
+| `MEND_RNV_LICENSE_KEY`    | Mend Community Edition license key            |
+| `GITHUB_COM_TOKEN`        | PAT for changelog fetching                    |
 
 ```bash
 # View secrets

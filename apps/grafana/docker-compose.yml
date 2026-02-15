@@ -15,7 +15,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 256M
 
   grafana:
@@ -42,7 +42,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 256M
     labels:
       - "traefik.enable=true"
