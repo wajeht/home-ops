@@ -47,6 +47,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    # init: true — not used, postgres manages its own signals
     restart: unless-stopped
     deploy:
       resources:
