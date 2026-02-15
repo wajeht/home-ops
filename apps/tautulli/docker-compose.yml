@@ -14,7 +14,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-    init: true # proper PID 1 signal handling and zombie reaping
+    # init: true — not used, linuxserver s6-overlay is PID 1
     restart: unless-stopped
     deploy:
       resources:

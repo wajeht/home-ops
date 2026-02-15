@@ -12,7 +12,7 @@ services:
       - /home/jaw/data/borgmatic:/borgmatic/state
       - ./config.yml:/etc/borgmatic/config.yaml:ro
       - ./crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    init: true # proper PID 1 signal handling and zombie reaping
+    # init: true — not used, borgmatic manages its own crond
     restart: unless-stopped
     deploy:
       resources:

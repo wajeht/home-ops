@@ -54,7 +54,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    init: true # proper PID 1 signal handling and zombie reaping
+    # init: true — not used, postgres manages its own signals
     restart: unless-stopped
     deploy:
       resources:
@@ -79,7 +79,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 1m
-    init: true # proper PID 1 signal handling and zombie reaping
+    # init: true — not used, clickhouse manages its own signals
     restart: unless-stopped
     deploy:
       resources:
