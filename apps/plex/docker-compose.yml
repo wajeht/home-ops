@@ -21,14 +21,12 @@ services:
       - "32400:32400"
     networks:
       - traefik
-    # init: true — not used, linuxserver s6-overlay is PID 1
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "4.0"
           memory: 4G
-          pids: 500 # fork bomb protection
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:32400/identity"]
       interval: 30s

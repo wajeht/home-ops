@@ -22,14 +22,12 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-    # init: true — not used, linuxserver s6-overlay is PID 1
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "4.0"
           memory: 4G
-          pids: 500 # fork bomb protection
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.jaw.dev`)"

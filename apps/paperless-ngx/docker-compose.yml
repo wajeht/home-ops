@@ -34,14 +34,12 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-    # init: true — not used, paperless has its own supervisor
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "2.0"
           memory: 2G
-          pids: 500 # fork bomb protection
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.paperless.rule=Host(`paperless.jaw.dev`)"
@@ -66,14 +64,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    # init: true — not used, postgres manages its own signals
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "1.0"
           memory: 512M
-          pids: 200 # fork bomb protection
 
   paperless-redis:
     image: redis:7-alpine
@@ -86,14 +82,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    # init: true — not used, redis manages its own signals
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "0.5"
           memory: 256M
-          pids: 200 # fork bomb protection
 
 networks:
   traefik:
