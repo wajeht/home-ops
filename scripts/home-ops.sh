@@ -119,6 +119,8 @@ DATA_DIRS=(
 	"$USER_HOME/data/paperless/db"
 	"$USER_HOME/data/paperless/redis"
 	"$USER_HOME/data/miniflux/db"
+	"$USER_HOME/data/plausible/db"
+	"$USER_HOME/data/plausible/events"
 	"$USER_HOME/data/zipline/uploads"
 	"$USER_HOME/data/zipline/public"
 	"$USER_HOME/data/zipline/themes"
