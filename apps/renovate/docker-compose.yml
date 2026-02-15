@@ -15,6 +15,13 @@ services:
       RENOVATE_SECRETS: ${RENOVATE_SECRETS}
       NODE_OPTIONS: "--max-old-space-size=2048" # OOM on large repos (e.g. docker-cd) at 1536
       LOG_LEVEL: info
+      MEND_RNV_CRON_JOB_SCHEDULER: "0 0,2,4 * * *" # run at midnight, 2am, 4am only
+      RENOVATE_REPOSITORY_CACHE: enabled
+      RENOVATE_OPTIMIZE_FOR_DISABLED: "true"
+      RENOVATE_EXECUTION_TIMEOUT: "30"
+      RENOVATE_CACHE_HARD_TTL_MINUTES: "20160"
+      RENOVATE_ONBOARDING_CONFIG_FILE_NAME: ".github/renovate.json"
+      MEND_RNV_AUTODISCOVER_FILTER: "wajeht/*"
     volumes:
       - /home/jaw/data/renovate:/data
     networks:
