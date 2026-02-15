@@ -76,7 +76,7 @@ services:
           pids: 200 # fork bomb protection
 
   paperless-redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     volumes:
       - /home/jaw/data/paperless/redis:/data
     networks:
