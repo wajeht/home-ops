@@ -17,7 +17,7 @@ services:
         limits:
           cpus: "0.5"
           memory: 256M
-          pids: 100 # fork bomb protection
+          pids: 100
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ufc.rule=Host(`ufc.jaw.dev`)"
