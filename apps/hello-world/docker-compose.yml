@@ -54,7 +54,7 @@ services:
         limits:
           cpus: "0.5"
           memory: 256M
-          pids: 200 # fork bomb protection
+          pids: 200 # fork bomb protections
 
 networks:
   traefik:
