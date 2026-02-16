@@ -1,4 +1,4 @@
-title: "{{- if eq .severity \"error\" }}❌{{ else if eq .severity \"warn\" }}⚠️{{ else }}✅{{ end }} {{ .title }}: {{ .stack }}"
+title: '{{- if eq .severity "error" }}❌{{ else if eq .severity "warn" }}⚠️{{ else }}✅{{ end }} {{ .title }}: {{ .stack }}'
 
 message: |
   {{- if .ref }}

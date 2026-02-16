@@ -1,0 +1,30 @@
+services:
+  huntarr:
+    image: huntarr/huntarr:9.2.4.1
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/huntarr:/config
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:9705/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.huntarr.rule=Host(`huntarr.jaw.dev`)"
+      - "traefik.http.routers.huntarr.entrypoints=websecure"
+      - "traefik.http.routers.huntarr.middlewares=google-auth@file"
+      - "traefik.http.services.huntarr.loadbalancer.server.port=9705"
+
+networks:
+  traefik:
+    external: true
