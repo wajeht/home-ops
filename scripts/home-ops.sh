@@ -113,6 +113,7 @@ DATA_DIRS=(
 	"$USER_HOME/data/sonarr"
 	"$USER_HOME/data/tautulli"
 	"$USER_HOME/data/overseerr"
+	"$USER_HOME/data/seerr"
 	"$USER_HOME/data/paperless/data"
 	"$USER_HOME/data/paperless/media"
 	"$USER_HOME/data/paperless/consume"
