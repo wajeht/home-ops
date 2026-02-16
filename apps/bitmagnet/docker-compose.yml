@@ -1,0 +1,63 @@
+services:
+  bitmagnet:
+    image: ghcr.io/bitmagnet-io/bitmagnet:v0.10.0
+    command: worker run --all
+    environment:
+      - TZ=America/Chicago
+      - POSTGRES_HOST=bitmagnet-db
+      - POSTGRES_PASSWORD=bitmagnet
+      - POSTGRES_DB=bitmagnet
+    depends_on:
+      bitmagnet-db:
+        condition: service_healthy
+    ports:
+      - "3334:3334/tcp"
+      - "3334:3334/udp"
+    networks:
+      - traefik
+      - bitmagnet-internal
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:3333"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bitmagnet.rule=Host(`bitmagnet.jaw.dev`)"
+      - "traefik.http.routers.bitmagnet.entrypoints=websecure"
+      - "traefik.http.routers.bitmagnet.middlewares=google-auth@file"
+      - "traefik.http.services.bitmagnet.loadbalancer.server.port=3333"
+
+  bitmagnet-db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_PASSWORD=bitmagnet
+      - POSTGRES_DB=bitmagnet
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - /home/jaw/data/bitmagnet/db:/var/lib/postgresql/data
+    networks:
+      - bitmagnet-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+networks:
+  traefik:
+    external: true
+  bitmagnet-internal:

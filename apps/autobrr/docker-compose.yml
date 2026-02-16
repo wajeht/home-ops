@@ -1,0 +1,32 @@
+services:
+  autobrr:
+    image: ghcr.io/autobrr/autobrr:v1.73.0
+    environment:
+      - TZ=America/Chicago
+      - AUTOBRR__HOST=0.0.0.0
+      - AUTOBRR__PORT=7474
+    volumes:
+      - /home/jaw/data/autobrr:/config
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:7474"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.autobrr.rule=Host(`autobrr.jaw.dev`)"
+      - "traefik.http.routers.autobrr.entrypoints=websecure"
+      - "traefik.http.routers.autobrr.middlewares=google-auth@file"
+      - "traefik.http.services.autobrr.loadbalancer.server.port=7474"
+
+networks:
+  traefik:
+    external: true
