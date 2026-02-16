@@ -14,6 +14,7 @@ services:
       - PAPERLESS_USE_X_FORWARD_PORT=true
       - PAPERLESS_USE_X_FORWARD_PROTO=true
       - 'PAPERLESS_OCR_USER_ARGS={"continue_on_soft_render_error": true}'
+      - PAPERLESS_POST_CONSUME_SCRIPT=/usr/src/paperless/scripts/notify-ntfy.sh
       - USERMAP_UID=1000
       - USERMAP_GID=1000
       - TZ=America/Chicago
@@ -26,6 +27,7 @@ services:
       - /home/jaw/data/paperless/data:/usr/src/paperless/data
       - /home/jaw/data/paperless/media:/usr/src/paperless/media
       - /home/jaw/data/paperless/consume:/usr/src/paperless/consume
+      - ./notify-ntfy.sh:/usr/src/paperless/scripts/notify-ntfy.sh:ro
     networks:
       - traefik
       - paperless-internal

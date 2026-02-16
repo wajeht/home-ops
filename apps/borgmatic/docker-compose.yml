@@ -12,9 +12,15 @@ services:
       - /home/jaw/data/borgmatic:/borgmatic/state
       - ./config.yml:/etc/borgmatic/config.yaml:ro
       - ./crontab.txt:/etc/borgmatic.d/crontab.txt:ro
+    networks:
+      - traefik
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "2.0"
           memory: 1G
+
+networks:
+  traefik:
+    external: true
