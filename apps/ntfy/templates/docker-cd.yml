@@ -1,35 +1,29 @@
 title: "{{ .title }}: {{ .stack }}"
 
 message: |
-  {{- if .ref }}
-  ref: {{ .ref }}
+  {{- if or .ref .commitSHA }}
+  **Stack** {{ .stack }}  **Ref** {{ .ref }}  **Commit** {{ .commitSHA }}
   {{- end }}
-  {{- if .commitSHA }}
-  commit: {{ .commitSHA }}
-  {{- end }}
-  {{- if .elapsedMs }}
-  elapsed: {{ div .elapsedMs 1000 }}.{{ mod .elapsedMs 1000 }}s
+  {{- if or .elapsedMs .strategy }}
+  **Duration** {{ div .elapsedMs 1000 }}.{{ mod .elapsedMs 1000 }}s  **Strategy** {{ .strategy }}
   {{- end }}
   {{- if .service }}
-  service: {{ .service }}
-  {{- end }}
-  {{- if .strategy }}
-  strategy: {{ .strategy }}
+  **Service** {{ .service }}
   {{- end }}
   {{- if .services }}
-  services: {{ join ", " .services }}
+  **Services** {{ join ", " .services }}
   {{- end }}
   {{- if .reason }}
-  reason: {{ .reason }}
+  **Reason** {{ .reason }}
   {{- end }}
   {{- if .retries }}
-  retries: {{ .retries }}
+  **Retries** {{ .retries }}
   {{- end }}
   {{- if .error }}
-  error: {{ .error }}
+  **Error** {{ .error }}
   {{- end }}
   {{- if .removedStacks }}
-  removed: {{ join ", " .removedStacks }}
+  **Removed Apps** {{ join ", " .removedStacks }}
   {{- end }}
 
 priority: |
