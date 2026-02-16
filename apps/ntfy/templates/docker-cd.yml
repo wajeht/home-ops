@@ -1,29 +1,35 @@
 title: "{{ .title }}: {{ .stack }}"
 
 message: |
-  {{- if or .ref .commitSHA }}
-  **Stack** {{ .stack }}  **Ref** {{ .ref }}  **Commit** {{ .commitSHA }}
+  {{- if .ref }}
+  **ref:** {{ .ref }}
   {{- end }}
-  {{- if or .elapsedMs .strategy }}
-  **Duration** {{ div .elapsedMs 1000 }}.{{ mod .elapsedMs 1000 }}s  **Strategy** {{ .strategy }}
+  {{- if .commitSHA }}
+  **commit:** [{{ printf "%.7s" .commitSHA }}](https://github.com/wajeht/home-ops/commit/{{ .commitSHA }})
+  {{- end }}
+  {{- if .elapsedMs }}
+  **duration:** {{ div .elapsedMs 1000 }}.{{ mod .elapsedMs 1000 }}s
+  {{- end }}
+  {{- if .strategy }}
+  **strategy:** {{ .strategy }}
   {{- end }}
   {{- if .service }}
-  **Service** {{ .service }}
+  **service:** {{ .service }}
   {{- end }}
   {{- if .services }}
-  **Services** {{ join ", " .services }}
+  **services:** {{ join ", " .services }}
   {{- end }}
   {{- if .reason }}
-  **Reason** {{ .reason }}
+  **reason:** {{ .reason }}
   {{- end }}
   {{- if .retries }}
-  **Retries** {{ .retries }}
+  **retries:** {{ .retries }}
   {{- end }}
   {{- if .error }}
-  **Error** {{ .error }}
+  **error:** {{ .error }}
   {{- end }}
   {{- if .removedStacks }}
-  **Removed Apps** {{ join ", " .removedStacks }}
+  **removed:** {{ join ", " .removedStacks }}
   {{- end }}
 
 priority: |
