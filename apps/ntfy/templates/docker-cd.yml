@@ -37,3 +37,9 @@ priority: |
   {{- else if eq .severity "warn" }}4
   {{- else }}3
   {{- end }}
+
+tags: |
+  {{- if eq .severity "error" }}x
+  {{- else if eq .severity "warn" }}warning
+  {{- else }}white_check_mark
+  {{- end }}
