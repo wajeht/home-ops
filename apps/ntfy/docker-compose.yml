@@ -9,6 +9,7 @@ services:
       - NTFY_CACHE_FILE=/var/lib/ntfy/cache.db
     volumes:
       - /home/jaw/data/ntfy:/var/lib/ntfy
+      - ./templates:/etc/ntfy/templates:ro
     networks:
       - traefik
     healthcheck:
