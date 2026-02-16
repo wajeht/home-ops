@@ -14,11 +14,19 @@ keep_daily: 7
 keep_weekly: 4
 keep_monthly: 6
 
-commands:
-  - before: action
-    when: [create]
-    run:
-      - echo "Starting backup"
-  - after: error
-    run:
-      - printf '{"content":"**Borgmatic backup FAILED**"}' | curl -sS -X POST "${DISCORD_WEBHOOK}" -H "Content-Type: application/json" -d @-
+ntfy:
+  topic: borgmatic
+  server: http://ntfy:80
+  finish:
+    title: Backup complete
+    message: Borgmatic backup finished successfully
+    priority: min
+    tags: white_check_mark
+  fail:
+    title: Backup FAILED
+    message: Borgmatic backup has failed
+    priority: max
+    tags: skull
+  states:
+    - finish
+    - fail
