@@ -1,4 +1,4 @@
-title: "{{ .title }}: {{ .stack }}"
+title: "{{- if eq .severity \"error\" }}❌{{ else if eq .severity \"warn\" }}⚠️{{ else }}✅{{ end }} {{ .title }}: {{ .stack }}"
 
 message: |
   {{- if .ref }}
@@ -36,10 +36,4 @@ priority: |
   {{- if eq .severity "error" }}5
   {{- else if eq .severity "warn" }}4
   {{- else }}3
-  {{- end }}
-
-tags: |
-  {{- if eq .severity "error" }}x
-  {{- else if eq .severity "warn" }}warning
-  {{- else }}white_check_mark
   {{- end }}
