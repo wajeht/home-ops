@@ -8,16 +8,13 @@ message: |
   commit: {{ .commitSHA }}
   {{- end }}
   {{- if .elapsedMs }}
-  elapsed: {{ printf "%.1f" (divf .elapsedMs 1000) }}s
+  elapsed: {{ .elapsedMs }}ms
   {{- end }}
   {{- if .service }}
   service: {{ .service }}
   {{- end }}
   {{- if .strategy }}
   strategy: {{ .strategy }}
-  {{- end }}
-  {{- if .services }}
-  services: {{ join .services ", " }}
   {{- end }}
   {{- if .reason }}
   reason: {{ .reason }}
@@ -27,9 +24,6 @@ message: |
   {{- end }}
   {{- if .error }}
   error: {{ .error }}
-  {{- end }}
-  {{- if .removedStacks }}
-  removed: {{ join .removedStacks ", " }}
   {{- end }}
 
 priority: |
