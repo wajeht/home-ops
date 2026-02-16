@@ -36,7 +36,7 @@ services:
       - "traefik.http.services.bitmagnet.loadbalancer.server.port=3333"
 
   bitmagnet-db:
-    image: postgres:16-alpine
+    image: postgres:16.12-alpine
     environment:
       - POSTGRES_PASSWORD=bitmagnet
       - POSTGRES_DB=bitmagnet
