@@ -29,7 +29,7 @@ Automated daily backups via borgmatic (borg wrapper). Encrypted, deduplicated, c
 - **Source**: `~/data/` + `~/.sops/`
 - **Destination**: `~/backup/borg/` (NFS from NAS)
 - **Retention**: 7 daily, 4 weekly, 6 monthly
-- **Notifications**: Discord webhook on failure
+- **Notifications**: Webhook on failure
 
 ### List Archives
 
