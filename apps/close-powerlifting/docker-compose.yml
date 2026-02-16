@@ -22,9 +22,17 @@ services:
           memory: 512M
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.close-powerlifting.rule=Host(`closepowerlifting.com`) || Host(`www.closepowerlifting.com`) || Host(`close-powerlifting.jaw.dev`)"
+      # main router
+      - "traefik.http.routers.close-powerlifting.rule=Host(`closepowerlifting.com`) || Host(`www.closepowerlifting.com`)"
       - "traefik.http.routers.close-powerlifting.entrypoints=websecure"
       - "traefik.http.services.close-powerlifting.loadbalancer.server.port=80"
+      # jaw.dev → closepowerlifting.com 301 redirect
+      - "traefik.http.routers.close-powerlifting-redirect.rule=Host(`close-powerlifting.jaw.dev`)"
+      - "traefik.http.routers.close-powerlifting-redirect.entrypoints=websecure"
+      - "traefik.http.routers.close-powerlifting-redirect.middlewares=close-powerlifting-redirect"
+      - "traefik.http.middlewares.close-powerlifting-redirect.redirectregex.regex=^https://close-powerlifting\\.jaw\\.dev(.*)"
+      - "traefik.http.middlewares.close-powerlifting-redirect.redirectregex.replacement=https://closepowerlifting.com$${1}"
+      - "traefik.http.middlewares.close-powerlifting-redirect.redirectregex.permanent=true"
 
 networks:
   traefik:
