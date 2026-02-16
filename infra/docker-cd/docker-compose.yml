@@ -20,7 +20,7 @@ services:
       INTERVAL: 30s
       SOPS_AGE_KEY_FILE: /sops/age-key.txt
       GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
-      NOTIFICATION_URL: ${NOTIFICATION_URL:-}
+      NOTIFICATION_URL: http://ntfy:80/docker-cd?template=docker-cd
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.docker-cd.rule=Host(`cd.jaw.dev`)"

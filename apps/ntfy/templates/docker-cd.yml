@@ -1,0 +1,39 @@
+title: "{{ .title }}: {{ .stack }}"
+
+message: |
+  {{- if .ref }}
+  ref: {{ .ref }}
+  {{- end }}
+  {{- if .commitSHA }}
+  commit: {{ .commitSHA }}
+  {{- end }}
+  {{- if .elapsedMs }}
+  elapsed: {{ printf "%.1f" (divf .elapsedMs 1000) }}s
+  {{- end }}
+  {{- if .service }}
+  service: {{ .service }}
+  {{- end }}
+  {{- if .strategy }}
+  strategy: {{ .strategy }}
+  {{- end }}
+  {{- if .services }}
+  services: {{ join .services ", " }}
+  {{- end }}
+  {{- if .reason }}
+  reason: {{ .reason }}
+  {{- end }}
+  {{- if .retries }}
+  retries: {{ .retries }}
+  {{- end }}
+  {{- if .error }}
+  error: {{ .error }}
+  {{- end }}
+  {{- if .removedStacks }}
+  removed: {{ join .removedStacks ", " }}
+  {{- end }}
+
+priority: |
+  {{- if eq .severity "error" }}5
+  {{- else if eq .severity "warn" }}4
+  {{- else }}3
+  {{- end }}
