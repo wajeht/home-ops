@@ -1,0 +1,15 @@
+name: Trigger docker-cd sync
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger sync
+        run: |
+          curl -sf -X POST \
+            -H "Authorization: Bearer ${{ secrets.DOCKER_CD_API_SECRET }}" \
+            "${{ secrets.DOCKER_CD_URL }}/api/sync"
