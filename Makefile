@@ -1,6 +1,6 @@
 INFRA_LINKS = traefik google-auth
 
-.PHONY: format lint link unlink push fix-git clean help
+.PHONY: format lint validate link unlink push fix-git clean help
 
 format:
 	@npx oxfmt "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
@@ -26,7 +26,25 @@ unlink:
 		fi \
 	done
 
-push:
+validate: lint
+	@fail=0; \
+	for f in $$(find . -name '.env.sops' -not -path './.git/*'); do \
+		if ! grep -q 'sops_mac=' "$$f"; then \
+			echo "ERROR: $$f is not SOPS-encrypted"; \
+			fail=1; \
+		fi; \
+	done; \
+	for f in $$(find . -name 'docker-compose.yml' -not -path './.git/*'); do \
+		dir=$$(dirname "$$f"); \
+		touch "$$dir/.env"; \
+		if ! docker compose -f "$$f" config -q 2>/dev/null; then \
+			echo "ERROR: $$f is invalid"; \
+			fail=1; \
+		fi; \
+	done; \
+	exit $$fail
+
+push: validate
 	@git add -A
 	@curl -s https://commit.jaw.dev/ | sh -s -- --no-verify
 	@git push --no-verify
