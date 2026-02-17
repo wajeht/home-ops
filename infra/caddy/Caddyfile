@@ -143,28 +143,8 @@ auth.jaw.dev {
 	import defaults
 }
 
-(error-pages) {
-	handle_errors {
-		@unauthorized expression `{http.error.status_code} == 401`
-		handle @unauthorized {
-			respond "Sign in required. Your session is missing or expired." 401
-		}
-
-		@forbidden expression `{http.error.status_code} == 403`
-		handle @forbidden {
-			respond "Access denied. This account is not allowed for this service." 403
-		}
-
-		@upstream expression `{http.error.status_code} >= 500`
-		handle @upstream {
-			respond "Service unavailable. The upstream service is currently unavailable." 502
-		}
-	}
-}
-
 (defaults) {
 	encode zstd gzip
-	import error-pages
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 		X-Content-Type-Options "nosniff"
