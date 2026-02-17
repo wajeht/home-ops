@@ -31,6 +31,7 @@ services:
           memory: 256M
     labels:
       caddy: plausible.jaw.dev
+      caddy.import: public
       caddy.reverse_proxy: "{{upstreams 8000}}"
 
   plausible-db:

@@ -20,6 +20,7 @@ services:
           memory: 128M
     labels:
       caddy: favicon.jaw.dev
+      caddy.import: public
       caddy.reverse_proxy: "{{upstreams 80}}"
 
 networks:
