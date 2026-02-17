@@ -112,16 +112,28 @@ redeploy_compose() {
 
 	info "Redeploying $name..."
 	cd "$dir"
-	$SUDO docker compose pull 2>/dev/null || true
+	if ! $SUDO docker compose pull; then
+		err "Failed to pull images for $name"
+		return 1
+	fi
 
 	if [ -f .env.sops ]; then
 		tmp=$(mktemp)
 		decrypt_dotenv_sops .env.sops >"$tmp"
-		$SUDO docker compose --env-file "$tmp" up -d 2>/dev/null || warn "$name not started"
+		if ! $SUDO docker compose --env-file "$tmp" up -d; then
+			rm -f "$tmp"
+			err "Failed to redeploy $name"
+			return 1
+		fi
 		rm -f "$tmp"
 	else
-		$SUDO docker compose up -d 2>/dev/null || warn "$name not started"
+		if ! $SUDO docker compose up -d; then
+			err "Failed to redeploy $name"
+			return 1
+		fi
 	fi
+
+	ok "$name redeployed"
 }
 
 # Config
