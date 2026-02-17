@@ -26,79 +26,48 @@
 
 			# Admin allowlist (set in infra/caddy/.env.sops).
 			transform user {
-				match origin google
 				match email {env.AUTH_ADMIN_EMAIL_1}
-				action add role authp/admin
-			}
-			transform user {
-				match origin google
-				match email {env.AUTH_ADMIN_EMAIL_2}
-				action add role authp/admin
-			}
-			transform user {
-				match origin google
-				match email {env.AUTH_ADMIN_EMAIL_3}
-				action add role authp/admin
-			}
-			transform user {
-				match origin google
-				match email {env.AUTH_ADMIN_EMAIL_4}
-				action add role authp/admin
-			}
-			transform user {
-				match origin google
-				match email {env.AUTH_ADMIN_EMAIL_5}
 				action add role authp/admin
 			}
 
 			# User allowlist (set in infra/caddy/.env.sops).
 			transform user {
-				match origin google
 				match email {env.AUTH_USER_EMAIL_1}
 				action add role authp/user
 			}
 			transform user {
-				match origin google
 				match email {env.AUTH_USER_EMAIL_2}
 				action add role authp/user
 			}
 			transform user {
-				match origin google
 				match email {env.AUTH_USER_EMAIL_3}
 				action add role authp/user
 			}
 			transform user {
-				match origin google
 				match email {env.AUTH_USER_EMAIL_4}
 				action add role authp/user
 			}
 			transform user {
-				match origin google
 				match email {env.AUTH_USER_EMAIL_5}
 				action add role authp/user
 			}
 			transform user {
-				match origin google
 				match email {env.AUTH_USER_EMAIL_6}
 				action add role authp/user
 			}
 			transform user {
-				match origin google
 				match email {env.AUTH_USER_EMAIL_7}
 				action add role authp/user
 			}
 			transform user {
-				match origin google
 				match email {env.AUTH_USER_EMAIL_8}
 				action add role authp/user
 			}
 			transform user {
-				match origin google
 				match email {env.AUTH_USER_EMAIL_9}
 				action add role authp/user
 			}
 			transform user {
-				match origin google
 				match email {env.AUTH_USER_EMAIL_10}
 				action add role authp/user
 			}
@@ -158,7 +127,6 @@ auth.jaw.dev {
 	}
 }
 
-# Catch-all: redirect unknown *.jaw.dev subdomains to jaw.dev
 http://*.jaw.dev {
 	redir https://jaw.dev{uri} permanent
 }
