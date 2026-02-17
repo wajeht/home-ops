@@ -365,6 +365,28 @@ cmd_install() {
 	ok "docker-cd will auto-deploy remaining apps within 60s: ${CYAN}https://cd.jaw.dev${NC}"
 }
 
+reset_docker_cd_state() {
+	local docker_cd_data_dir="$USER_HOME/data/docker-cd"
+
+	info "Resetting docker-cd state/cache..."
+
+	# Stop docker-cd first so it cannot rewrite state while files are removed.
+	$SUDO docker stop docker-cd 2>/dev/null || true
+
+	$SUDO rm -f "$docker_cd_data_dir/state.json" "$docker_cd_data_dir/history.json"
+	$SUDO rm -rf "$docker_cd_data_dir/wajeht"
+
+	ok "Cleared docker-cd state and repository cache"
+}
+
+#=============================================================================
+# INSTALL-FRESH - Reset docker-cd state and re-run install
+#=============================================================================
+cmd_install_fresh() {
+	reset_docker_cd_state
+	cmd_install
+}
+
 #=============================================================================
 # UNINSTALL - Remove all services
 #=============================================================================
@@ -477,6 +499,9 @@ nfs)
 install)
 	cmd_install
 	;;
+install-fresh)
+	cmd_install_fresh
+	;;
 uninstall)
 	cmd_uninstall
 	;;
@@ -500,6 +525,7 @@ update-infra)
 	echo -e "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
 	echo -e "  ${GREEN}nfs status${NC}               Show NFS mount status"
 	echo -e "  ${GREEN}install${NC}                  Deploy all services"
+	echo -e "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
 	echo -e "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
 	echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
 	echo -e "  ${GREEN}update-infra${NC}             Redeploy caddy and docker-cd"
@@ -510,6 +536,7 @@ update-infra)
 	echo -e "  ${DIM}$0 nfs mount${NC}             # Mount all NFS shares"
 	echo -e "  ${DIM}$0 nfs mount plex${NC}        # Mount only plex"
 	echo -e "  ${DIM}$0 install${NC}               # Deploy everything"
+	echo -e "  ${DIM}$0 install-fresh${NC}         # Force full docker-cd app reconcile"
 	echo -e "  ${DIM}$0 status${NC}                # Show status"
 	exit 1
 	;;

@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install uninstall update status relogin format lint validate push fix-git clean help
+.PHONY: setup install install-fresh uninstall update status relogin format lint validate push fix-git clean help
 
 ## setup: Create all data directories
 setup:
@@ -9,6 +9,10 @@ setup:
 ## install: Deploy core infra and bootstrap docker-cd
 install:
 	@./scripts/home-ops.sh install
+
+## install-fresh: Reset docker-cd state then deploy infra (forces full app reconcile)
+install-fresh:
+	@./scripts/home-ops.sh install-fresh
 
 ## uninstall: Remove all stacks and cleanup
 uninstall:
