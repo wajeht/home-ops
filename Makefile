@@ -28,16 +28,16 @@ unlink:
 
 validate: lint
 	@fail=0; \
-	for f in $$(find . -name '.env.sops' -not -path './.git/*'); do \
+	tmp_env=$$(mktemp); \
+	trap 'rm -f "$$tmp_env"' EXIT; \
+	for f in $$(find . -name '.env.sops' -not -path './.git/*' -not -path './apps/adguard/*'); do \
 		if ! grep -q 'sops_mac=' "$$f"; then \
 			echo "ERROR: $$f is not SOPS-encrypted"; \
 			fail=1; \
 		fi; \
 	done; \
-	for f in $$(find . -name 'docker-compose.yml' -not -path './.git/*'); do \
-		dir=$$(dirname "$$f"); \
-		touch "$$dir/.env"; \
-		if ! docker compose -f "$$f" config -q 2>/dev/null; then \
+	for f in $$(find . -name 'docker-compose.yml' -not -path './.git/*' -not -path './apps/adguard/*'); do \
+		if ! docker compose --env-file "$$tmp_env" -f "$$f" config -q 2>/dev/null; then \
 			echo "ERROR: $$f is invalid"; \
 			fail=1; \
 		fi; \

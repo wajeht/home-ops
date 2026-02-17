@@ -236,6 +236,10 @@ cmd_install() {
 		err "Clone repo: git clone https://github.com/wajeht/home-ops.git $REPO_DIR"
 		exit 1
 	}
+	if ! command -v git &>/dev/null; then
+		err "Install git first"
+		exit 1
+	fi
 
 	# Install Docker
 	step "2/4" "Docker..."
@@ -264,6 +268,14 @@ cmd_install() {
 
 	# Registry auth
 	cd "$REPO_DIR"
+
+	# Keep submodules in sync (e.g. apps/adguard) before deployments.
+	if [ -f .gitmodules ]; then
+		info "Syncing git submodules..."
+		git submodule sync --recursive
+		git submodule update --init --recursive
+	fi
+
 	docker_relogin
 
 	# Deploy core services (order matters)
@@ -314,6 +326,16 @@ cmd_uninstall() {
 	# Stop docker-cd first to prevent re-deployments
 	step "1/4" "Stopping docker-cd..."
 	cd "$REPO_DIR/infra/docker-cd" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
+
+	# Best-effort submodule sync so uninstall also sees submodule apps.
+	if [ -f "$REPO_DIR/.gitmodules" ] && command -v git &>/dev/null; then
+		info "Syncing git submodules..."
+		(
+			cd "$REPO_DIR"
+			git submodule sync --recursive
+			git submodule update --init --recursive
+		) || warn "Submodule sync failed, continuing uninstall"
+	fi
 
 	# Stop all app compose projects
 	step "2/4" "Stopping all apps..."
