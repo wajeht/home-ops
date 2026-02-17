@@ -48,8 +48,8 @@ services:
           memory: 512M
     labels:
       caddy: caddy.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 2019}}"
+      caddy.import: auth-admin
+      caddy.reverse_proxy: 127.0.0.1:2019
 
 networks:
   proxy:
