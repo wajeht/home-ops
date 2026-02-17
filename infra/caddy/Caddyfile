@@ -147,47 +147,17 @@ auth.jaw.dev {
 	handle_errors {
 		@unauthorized expression `{http.error.status_code} == 401`
 		handle @unauthorized {
-			header Content-Type "text/html; charset=utf-8"
-			respond <<-HTML 401
-				<!doctype html>
-				<html lang="en">
-				<head><meta charset="utf-8"><title>Sign In Required</title></head>
-				<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0b1020; color:#e2e8f0; padding:40px;">
-				  <h1 style="margin:0 0 10px;">Sign In Required</h1>
-				  <p style="margin:0;">Your session is missing or expired. Please sign in again.</p>
-				</body>
-				</html>
-			HTML
+			respond "Sign in required. Your session is missing or expired." 401
 		}
 
 		@forbidden expression `{http.error.status_code} == 403`
 		handle @forbidden {
-			header Content-Type "text/html; charset=utf-8"
-			respond <<-HTML 403
-				<!doctype html>
-				<html lang="en">
-				<head><meta charset="utf-8"><title>Access Denied</title></head>
-				<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0b1020; color:#e2e8f0; padding:40px;">
-				  <h1 style="margin:0 0 10px;">Access Denied</h1>
-				  <p style="margin:0;">You are signed in, but this account is not allowed for this service.</p>
-				</body>
-				</html>
-			HTML
+			respond "Access denied. This account is not allowed for this service." 403
 		}
 
 		@upstream expression `{http.error.status_code} >= 500`
 		handle @upstream {
-			header Content-Type "text/html; charset=utf-8"
-			respond <<-HTML 502
-				<!doctype html>
-				<html lang="en">
-				<head><meta charset="utf-8"><title>Service Unavailable</title></head>
-				<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0b1020; color:#e2e8f0; padding:40px;">
-				  <h1 style="margin:0 0 10px;">Service Unavailable</h1>
-				  <p style="margin:0;">The upstream service is currently unavailable. Please try again shortly.</p>
-				</body>
-				</html>
-			HTML
+			respond "Service unavailable. The upstream service is currently unavailable." 502
 		}
 	}
 }

@@ -46,7 +46,8 @@ lint:
 validate: lint
 	@fail=0; \
 	tmp_env=$$(mktemp); \
-	trap 'rm -f "$$tmp_env"' EXIT; \
+	tmp_caddy=$$(mktemp); \
+	trap 'rm -f "$$tmp_env" "$$tmp_caddy"' EXIT; \
 	for f in $$(find . -name '.env.sops' -not -path './.git/*' -not -path './apps/adguard/*'); do \
 		if ! grep -q 'sops_mac=' "$$f"; then \
 			echo "ERROR: $$f is not SOPS-encrypted"; \
@@ -59,8 +60,10 @@ validate: lint
 			fail=1; \
 		fi; \
 	done; \
+	cat "$$PWD/infra/caddy/Caddyfile" > "$$tmp_caddy"; \
+	printf '\nvalidate.local {\n\timport public\n\treverse_proxy 127.0.0.1:8080\n}\n' >> "$$tmp_caddy"; \
 	if ! docker run --rm \
-		-v "$$PWD/infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+		-v "$$tmp_caddy:/etc/caddy/Caddyfile:ro" \
 		-v "$$PWD/infra/caddy/ui:/etc/caddy/ui:ro" \
 		ghcr.io/wajeht/docker-cd-caddy:sha-1e84728 \
 		caddy adapt --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then \
