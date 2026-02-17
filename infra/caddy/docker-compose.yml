@@ -31,6 +31,7 @@ services:
       - /home/jaw/data/caddy/data:/data
       - /home/jaw/data/caddy/config:/config
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./ui:/etc/caddy/ui:ro
     networks:
       - proxy
     healthcheck:
