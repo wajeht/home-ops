@@ -68,6 +68,44 @@ docker_relogin() {
 	fi
 }
 
+sync_submodules() {
+	local secret_file="$REPO_DIR/infra/docker-cd/.env.sops"
+	local decrypted="" gh_token="" askpass="" rc=0
+
+	[ ! -f .gitmodules ] && return 0
+
+	info "Syncing git submodules..."
+
+	if [ -f "$secret_file" ]; then
+		decrypted=$(decrypt_dotenv_sops "$secret_file")
+		gh_token=$(printf '%s\n' "$decrypted" | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2- || true)
+	fi
+
+	if [ -n "$gh_token" ]; then
+		askpass=$(mktemp)
+		cat >"$askpass" <<'EOF'
+#!/bin/sh
+case "$1" in
+*Username*) printf '%s\n' "x-access-token" ;;
+*Password*) printf '%s\n' "${GIT_ACCESS_TOKEN:-}" ;;
+*) printf '\n' ;;
+esac
+EOF
+		chmod 700 "$askpass"
+
+		GIT_TERMINAL_PROMPT=0 GIT_ASKPASS="$askpass" GIT_ACCESS_TOKEN="$gh_token" git submodule sync --recursive || rc=$?
+		if [ "$rc" -eq 0 ]; then
+			GIT_TERMINAL_PROMPT=0 GIT_ASKPASS="$askpass" GIT_ACCESS_TOKEN="$gh_token" git submodule update --init --recursive || rc=$?
+		fi
+
+		rm -f "$askpass"
+		return "$rc"
+	fi
+
+	GIT_TERMINAL_PROMPT=0 git submodule sync --recursive
+	GIT_TERMINAL_PROMPT=0 git submodule update --init --recursive
+}
+
 # Config
 USER_HOME="/home/jaw"
 SUDO="sudo"
@@ -270,11 +308,7 @@ cmd_install() {
 	cd "$REPO_DIR"
 
 	# Keep submodules in sync (e.g. apps/adguard) before deployments.
-	if [ -f .gitmodules ]; then
-		info "Syncing git submodules..."
-		git submodule sync --recursive
-		git submodule update --init --recursive
-	fi
+	sync_submodules
 
 	docker_relogin
 
@@ -329,11 +363,9 @@ cmd_uninstall() {
 
 	# Best-effort submodule sync so uninstall also sees submodule apps.
 	if [ -f "$REPO_DIR/.gitmodules" ] && command -v git &>/dev/null; then
-		info "Syncing git submodules..."
 		(
 			cd "$REPO_DIR"
-			git submodule sync --recursive
-			git submodule update --init --recursive
+			sync_submodules
 		) || warn "Submodule sync failed, continuing uninstall"
 	fi
 
