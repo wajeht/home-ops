@@ -6,7 +6,7 @@ services:
     volumes:
       - /home/jaw/data/favicon:/app/data
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/healthz"]
       interval: 30s
@@ -19,11 +19,9 @@ services:
           cpus: "0.5"
           memory: 128M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.favicon.rule=Host(`favicon.jaw.dev`)"
-      - "traefik.http.routers.favicon.entrypoints=websecure"
-      - "traefik.http.services.favicon.loadbalancer.server.port=80"
+      caddy: favicon.jaw.dev
+      caddy.reverse_proxy: "{{upstreams 80}}"
 
 networks:
-  traefik:
+  proxy:
     external: true

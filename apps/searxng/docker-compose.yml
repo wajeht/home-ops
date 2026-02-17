@@ -8,7 +8,7 @@ services:
     volumes:
       - /home/jaw/data/searxng:/etc/searxng
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/healthz"]
       interval: 30s
@@ -21,12 +21,10 @@ services:
           cpus: "1.0"
           memory: 512M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.searxng.rule=Host(`search.jaw.dev`)"
-      - "traefik.http.routers.searxng.entrypoints=websecure"
-      - "traefik.http.routers.searxng.middlewares=google-auth@file"
-      - "traefik.http.services.searxng.loadbalancer.server.port=8080"
+      caddy: search.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 8080}}"
 
 networks:
-  traefik:
+  proxy:
     external: true

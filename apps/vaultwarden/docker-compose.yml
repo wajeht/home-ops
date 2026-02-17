@@ -12,7 +12,7 @@ services:
     volumes:
       - /home/jaw/data/vaultwarden:/data
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/alive"]
       interval: 30s
@@ -25,11 +25,9 @@ services:
           cpus: "1.0"
           memory: 256M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.vaultwarden.rule=Host(`vault.jaw.dev`)"
-      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
-      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+      caddy: vault.jaw.dev
+      caddy.reverse_proxy: "{{upstreams 80}}"
 
 networks:
-  traefik:
+  proxy:
     external: true

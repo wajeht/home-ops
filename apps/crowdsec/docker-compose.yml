@@ -12,7 +12,7 @@ services:
       - ./acquis.yaml:/etc/crowdsec/acquis.d/traefik.yaml:ro
       - traefik-logs:/var/log/traefik:ro
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "cscli", "version"]
       interval: 30s
@@ -26,7 +26,7 @@ services:
           memory: 512M
 
 networks:
-  traefik:
+  proxy:
     external: true
 
 volumes:

@@ -8,7 +8,7 @@ services:
     volumes:
       - /home/jaw/data/prowlarr:/config
     networks:
-      - traefik
+      - proxy
       - media
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9696/ping"]
@@ -22,14 +22,12 @@ services:
           cpus: "1.0"
           memory: 512M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.jaw.dev`)"
-      - "traefik.http.routers.prowlarr.entrypoints=websecure"
-      - "traefik.http.routers.prowlarr.middlewares=google-auth@file"
-      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+      caddy: prowlarr.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 9696}}"
 
 networks:
-  traefik:
+  proxy:
     external: true
   media:
     external: true

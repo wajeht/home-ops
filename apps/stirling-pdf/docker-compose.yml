@@ -7,7 +7,7 @@ services:
     volumes:
       - /home/jaw/data/stirling-pdf:/usr/share/tessdata
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/info/status"]
       interval: 30s
@@ -20,12 +20,10 @@ services:
           cpus: "2.0"
           memory: 1.5G
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.stirling-pdf.rule=Host(`pdf.jaw.dev`)"
-      - "traefik.http.routers.stirling-pdf.entrypoints=websecure"
-      - "traefik.http.routers.stirling-pdf.middlewares=google-auth@file"
-      - "traefik.http.services.stirling-pdf.loadbalancer.server.port=8080"
+      caddy: pdf.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 8080}}"
 
 networks:
-  traefik:
+  proxy:
     external: true

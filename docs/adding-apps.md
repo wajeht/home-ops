@@ -1,6 +1,6 @@
 # Adding Apps
 
-Push a docker-compose.yml → docker-cd auto-deploys.
+Push a `docker-compose.yml` to `apps/<name>/` and docker-cd auto-deploys it.
 
 ## Create App
 
@@ -15,18 +15,19 @@ services:
   myapp:
     image: nginx:1.25
     networks:
-      - traefik
+      - proxy
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
-      - "traefik.http.routers.myapp.entrypoints=websecure"
-      - "traefik.http.services.myapp.loadbalancer.server.port=80"
+      caddy: myapp.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 80}}"
     restart: unless-stopped
 
 networks:
-  traefik:
+  proxy:
     external: true
 ```
+
+Use `caddy.import: auth` for protected apps. Omit it for public apps.
 
 ## Deploy
 
@@ -69,27 +70,46 @@ sops apps/myapp/.env.sops
 git add -A && git commit -m "update secrets" && git push
 ```
 
-## Traefik Labels
+## Routing Patterns
+
+Private app:
 
 ```yaml
 labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
-  - "traefik.http.routers.myapp.entrypoints=websecure"
-  - "traefik.http.services.myapp.loadbalancer.server.port=8080"
+  caddy: myapp.jaw.dev
+  caddy.import: auth
+  caddy.reverse_proxy: "{{upstreams 8080}}"
 ```
 
-TLS uses the wildcard cert (\*.jaw.dev) automatically. No per-app `certresolver` needed.
+Public app:
+
+```yaml
+labels:
+  caddy: myapp.jaw.dev
+  caddy.reverse_proxy: "{{upstreams 8080}}"
+```
+
+Path-based auth bypass:
+
+```yaml
+labels:
+  caddy: myapp.jaw.dev
+  caddy.handle_0: /webhook
+  caddy.handle_0.reverse_proxy: "{{upstreams 8080}}"
+  caddy.handle_1: "*"
+  caddy.handle_1.import: auth
+  caddy.handle_1.reverse_proxy: "{{upstreams 8080}}"
+```
 
 ## Network
 
 ```yaml
 networks:
-  traefik:
+  proxy:
     external: true
 ```
 
-All apps must join the `traefik` network.
+All internet-facing apps must join the `proxy` network.
 
 ## Private ghcr.io Images
 
@@ -103,7 +123,7 @@ The server has docker login configured for ghcr.io.
 
 ## Disable Rolling Deploy
 
-For apps that can't run multiple instances (e.g., BoltDB databases):
+For apps that cannot run multiple instances:
 
 Create `apps/myapp/docker-cd.yml`:
 
@@ -116,18 +136,4 @@ rolling_update: false
 ```bash
 rm -rf apps/myapp
 git add -A && git commit -m "remove myapp" && git push
-```
-
-docker-cd will stop and remove the service (garbage collection enabled).
-
-## Pinning Image Versions
-
-Always pin versions:
-
-```yaml
-# Good
-image: nginx:1.25.3
-
-# Bad
-image: nginx:latest
 ```
