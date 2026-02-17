@@ -1,0 +1,90 @@
+:root {
+  --jaw-bg-1: #0f172a;
+  --jaw-bg-2: #1e293b;
+  --jaw-panel: #f8fafc;
+  --jaw-text: #1f2937;
+  --jaw-muted: #64748b;
+  --jaw-primary: #2563eb;
+  --jaw-primary-2: #1d4ed8;
+}
+
+html,
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  background: radial-gradient(1200px 700px at 10% 10%, #334155 0%, transparent 45%),
+    linear-gradient(135deg, var(--jaw-bg-1) 0%, var(--jaw-bg-2) 100%) !important;
+}
+
+main,
+.container,
+.auth-container,
+.login-container {
+  background: transparent !important;
+}
+
+.card,
+.panel,
+.auth-card,
+.login-card,
+form {
+  border-radius: 16px !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.28) !important;
+}
+
+h1,
+h2,
+.title,
+.auth-title {
+  letter-spacing: -0.02em;
+  color: var(--jaw-text) !important;
+}
+
+p,
+small,
+.muted,
+.subtitle {
+  color: var(--jaw-muted) !important;
+}
+
+button,
+.btn,
+input[type="submit"],
+a.btn {
+  border-radius: 12px !important;
+}
+
+button:hover,
+.btn:hover,
+input[type="submit"]:hover,
+a.btn:hover {
+  filter: brightness(0.96);
+}
+
+button:focus,
+.btn:focus,
+input[type="submit"]:focus,
+a.btn:focus {
+  outline: 2px solid color-mix(in oklab, var(--jaw-primary) 55%, white);
+  outline-offset: 2px;
+}
+
+a,
+a:visited {
+  color: var(--jaw-primary);
+}
+
+a:hover {
+  color: var(--jaw-primary-2);
+}
+
+@media (max-width: 640px) {
+  .card,
+  .panel,
+  .auth-card,
+  .login-card,
+  form {
+    border-radius: 14px !important;
+    margin: 0 12px;
+  }
+}

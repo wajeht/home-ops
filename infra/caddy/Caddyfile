@@ -16,18 +16,25 @@
 			client_id {env.GOOGLE_CLIENT_ID}
 			client_secret {env.GOOGLE_CLIENT_SECRET}
 			scopes openid email profile
+			icon "Google" "lab la-google la-2x" "white" "#e53935" priority 100
 		}
 
 		authentication portal authportal {
 			crypto default token lifetime 86400
 			crypto key sign-verify {env.JWT_SECRET}
 			cookie domain jaw.dev
+			cookie path /
+			cookie lifetime 86400
+			cookie samesite lax
+			enable source ip tracking
 			enable identity provider google
 
 			# Admin allowlist (set in infra/caddy/.env.sops).
 			transform user {
 				match email {env.AUTH_ADMIN_EMAIL_1}
 				action add role authp/admin
+				ui link "Logs" https://logs.jaw.dev icon "las la-file-alt"
+				ui link "Caddy" https://caddy.jaw.dev icon "las la-cog"
 			}
 
 			# User allowlist (set in infra/caddy/.env.sops).
@@ -72,10 +79,27 @@
 				action add role authp/user
 			}
 
+			# Drop guest role after allowlist mapping succeeds.
+			transform user {
+				regex match any role "^authp/guest$"
+				action drop matched role
+			}
+
+			# Deny logins not present in admin/user allowlists.
+			transform user {
+				no regex match any role "^authp/(admin|user)$"
+				action deny
+			}
+
 			ui {
+				theme basic
 				links {
 					"Home" https://home.jaw.dev/ icon "las la-home"
+					"Plex" https://plex.jaw.dev/ icon "las la-photo-video"
+					"Seerr" https://seerr.jaw.dev/ icon "las la-tv"
 				}
+				custom css path /etc/caddy/ui/custom.css
+				custom js path /etc/caddy/ui/custom.js
 			}
 		}
 
@@ -83,14 +107,24 @@
 			set auth url https://auth.jaw.dev/auth
 			crypto key verify {env.JWT_SECRET}
 			allow roles authp/user authp/admin
+			validate source address
 			inject headers with claims
+			inject header "X-Auth-Email" from email
+			inject header "X-Auth-Name" from name
+			inject header "X-Auth-Roles" from roles
+			enable strip token
 		}
 
 		authorization policy authpolicy_admin {
 			set auth url https://auth.jaw.dev/auth
 			crypto key verify {env.JWT_SECRET}
 			allow roles authp/admin
+			validate source address
 			inject headers with claims
+			inject header "X-Auth-Email" from email
+			inject header "X-Auth-Name" from name
+			inject header "X-Auth-Roles" from roles
+			enable strip token
 		}
 	}
 }
