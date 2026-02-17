@@ -1,6 +1,6 @@
 services:
   docker-cd:
-    image: ghcr.io/wajeht/docker-cd:v0.1.43
+    image: ghcr.io/wajeht/docker-cd:v0.1.44
     container_name: docker-cd
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -20,6 +20,7 @@ services:
       INTERVAL: 30s
       SOPS_AGE_KEY_FILE: /sops/age-key.txt
       GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
+      ENABLE_BADGES: "true"
       NOTIFICATION_URL: http://ntfy:80/docker-cd?template=docker-cd&markdown=yes
     labels:
       - "traefik.enable=true"
