@@ -106,6 +106,24 @@ EOF
 	GIT_TERMINAL_PROMPT=0 git submodule update --init --recursive
 }
 
+redeploy_compose() {
+	local dir=$1 name=$2
+	local tmp=""
+
+	info "Redeploying $name..."
+	cd "$dir"
+	$SUDO docker compose pull 2>/dev/null || true
+
+	if [ -f .env.sops ]; then
+		tmp=$(mktemp)
+		decrypt_dotenv_sops .env.sops >"$tmp"
+		$SUDO docker compose --env-file "$tmp" up -d 2>/dev/null || warn "$name not started"
+		rm -f "$tmp"
+	else
+		$SUDO docker compose up -d 2>/dev/null || warn "$name not started"
+	fi
+}
+
 # Config
 USER_HOME="/home/jaw"
 SUDO="sudo"
@@ -336,7 +354,7 @@ cmd_install() {
 		fi
 	}
 
-	deploy_compose "$REPO_DIR/apps/caddy" caddy
+	deploy_compose "$REPO_DIR/infra/caddy" caddy
 	deploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
 
 	header "Done"
@@ -357,9 +375,10 @@ cmd_uninstall() {
 	echo
 	[[ ! $REPLY =~ ^[Yy]$ ]] && exit 1
 
-	# Stop docker-cd first to prevent re-deployments
-	step "1/4" "Stopping docker-cd..."
+	# Stop core infra first to prevent re-deployments.
+	step "1/4" "Stopping core infra..."
 	cd "$REPO_DIR/infra/docker-cd" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
+	cd "$REPO_DIR/infra/caddy" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
 
 	# Best-effort submodule sync so uninstall also sees submodule apps.
 	if [ -f "$REPO_DIR/.gitmodules" ] && command -v git &>/dev/null; then
@@ -422,7 +441,7 @@ cmd_relogin() {
 }
 
 #=============================================================================
-# UPDATE-INFRA - Redeploy docker-cd (can't self-update)
+# UPDATE-INFRA - Redeploy caddy + docker-cd
 #=============================================================================
 cmd_update_infra() {
 	header "Updating infra"
@@ -430,14 +449,16 @@ cmd_update_infra() {
 	info "Pulling latest..."
 	git pull
 
-	step "1/1" "Redeploying docker-cd..."
-	cd "$REPO_DIR/infra/docker-cd"
+	# Keep submodules current after pull.
+	sync_submodules || warn "Submodule sync failed, continuing"
+
 	docker_relogin
-	$SUDO docker compose pull 2>/dev/null || true
-	local tmp=$(mktemp)
-	decrypt_dotenv_sops .env.sops >"$tmp"
-	$SUDO docker compose --env-file "$tmp" up -d 2>/dev/null || warn "docker-cd not started"
-	rm -f "$tmp"
+
+	step "1/2" "Redeploying caddy..."
+	redeploy_compose "$REPO_DIR/infra/caddy" caddy
+
+	step "2/2" "Redeploying docker-cd..."
+	redeploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
 
 	header "Done"
 }
@@ -481,7 +502,7 @@ update-infra)
 	echo -e "  ${GREEN}install${NC}                  Deploy all services"
 	echo -e "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
 	echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
-	echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
+	echo -e "  ${GREEN}update-infra${NC}             Redeploy caddy and docker-cd"
 	echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
 	echo ""
 	echo -e "${BOLD}Examples:${NC}"
