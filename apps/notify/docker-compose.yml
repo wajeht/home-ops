@@ -8,7 +8,7 @@ services:
     volumes:
       - /home/jaw/data/notify:/usr/src/app/dist/src/db/sqlite
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
       interval: 30s
@@ -21,11 +21,9 @@ services:
           cpus: "0.5"
           memory: 256M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.notify.rule=Host(`notify.jaw.dev`)"
-      - "traefik.http.routers.notify.entrypoints=websecure"
-      - "traefik.http.services.notify.loadbalancer.server.port=80"
+      caddy: notify.jaw.dev
+      caddy.reverse_proxy: "{{upstreams 80}}"
 
 networks:
-  traefik:
+  proxy:
     external: true

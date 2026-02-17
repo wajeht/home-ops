@@ -8,7 +8,7 @@ services:
     volumes:
       - /home/jaw/data/close-powerlifting:/usr/src/app/dist/src/db/sqlite
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
       interval: 30s
@@ -21,19 +21,14 @@ services:
           cpus: "0.5"
           memory: 512M
     labels:
-      - "traefik.enable=true"
-      # main router
-      - "traefik.http.routers.close-powerlifting.rule=Host(`closepowerlifting.com`) || Host(`www.closepowerlifting.com`)"
-      - "traefik.http.routers.close-powerlifting.entrypoints=websecure"
-      - "traefik.http.services.close-powerlifting.loadbalancer.server.port=80"
+      # main site
+      caddy_0: "closepowerlifting.com www.closepowerlifting.com"
+      caddy_0.import: cf-tls
+      caddy_0.reverse_proxy: "{{upstreams 80}}"
       # jaw.dev → closepowerlifting.com 301 redirect
-      - "traefik.http.routers.close-powerlifting-redirect.rule=Host(`close-powerlifting.jaw.dev`)"
-      - "traefik.http.routers.close-powerlifting-redirect.entrypoints=websecure"
-      - "traefik.http.routers.close-powerlifting-redirect.middlewares=close-powerlifting-redirect"
-      - "traefik.http.middlewares.close-powerlifting-redirect.redirectregex.regex=^https://close-powerlifting\\.jaw\\.dev(.*)"
-      - "traefik.http.middlewares.close-powerlifting-redirect.redirectregex.replacement=https://closepowerlifting.com$${1}"
-      - "traefik.http.middlewares.close-powerlifting-redirect.redirectregex.permanent=true"
+      caddy_1: close-powerlifting.jaw.dev
+      caddy_1.redir: "https://closepowerlifting.com{uri} permanent"
 
 networks:
-  traefik:
+  proxy:
     external: true

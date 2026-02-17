@@ -11,7 +11,7 @@ services:
       - INSECURE_COOKIE=true
       - LOG_LEVEL=info
     networks:
-      - traefik
+      - proxy
     restart: unless-stopped
     deploy:
       resources:
@@ -26,5 +26,5 @@ services:
       - "traefik.http.services.google-auth.loadbalancer.server.port=4181"
 
 networks:
-  traefik:
+  proxy:
     external: true

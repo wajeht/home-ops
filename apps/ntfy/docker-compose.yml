@@ -17,7 +17,7 @@ services:
       - /home/jaw/data/ntfy:/var/lib/ntfy
       - ./templates:/etc/ntfy/templates:ro
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/v1/health"]
       interval: 30s
@@ -30,11 +30,9 @@ services:
           cpus: "0.5"
           memory: 256M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ntfy.rule=Host(`ntfy.jaw.dev`)"
-      - "traefik.http.routers.ntfy.entrypoints=websecure"
-      - "traefik.http.services.ntfy.loadbalancer.server.port=80"
+      caddy: ntfy.jaw.dev
+      caddy.reverse_proxy: "{{upstreams 80}}"
 
 networks:
-  traefik:
+  proxy:
     external: true

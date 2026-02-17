@@ -14,7 +14,7 @@ services:
       - "3334:3334/tcp"
       - "3334:3334/udp"
     networks:
-      - traefik
+      - proxy
       - bitmagnet-internal
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:3333"]
@@ -29,11 +29,9 @@ services:
           cpus: "1.0"
           memory: 512M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.bitmagnet.rule=Host(`bitmagnet.jaw.dev`)"
-      - "traefik.http.routers.bitmagnet.entrypoints=websecure"
-      - "traefik.http.routers.bitmagnet.middlewares=google-auth@file"
-      - "traefik.http.services.bitmagnet.loadbalancer.server.port=3333"
+      caddy: bitmagnet.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 3333}}"
 
   bitmagnet-db:
     image: postgres:16.12-alpine
@@ -58,6 +56,6 @@ services:
           memory: 256M
 
 networks:
-  traefik:
+  proxy:
     external: true
   bitmagnet-internal:

@@ -48,7 +48,7 @@ services:
       - ./dynamic.yml:/etc/traefik/dynamic.yml:ro
       - traefik-logs:/var/log/traefik
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       interval: 30s
@@ -69,7 +69,7 @@ services:
       - "traefik.http.services.dummy.loadbalancer.server.port=9999"
 
 networks:
-  traefik:
+  proxy:
     external: true
 
 volumes:

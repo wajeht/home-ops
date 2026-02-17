@@ -1,4 +1,4 @@
-INFRA_LINKS = traefik google-auth
+INFRA_LINKS = caddy
 
 .PHONY: format lint validate link unlink push fix-git clean help
 

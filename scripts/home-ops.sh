@@ -93,8 +93,8 @@ DATA_DIRS=(
 	"$USER_HOME/data/calendar"
 	"$USER_HOME/data/changedetection"
 	"$USER_HOME/data/close-powerlifting"
-	"$USER_HOME/data/crowdsec/data"
-	"$USER_HOME/data/crowdsec/config"
+	"$USER_HOME/data/caddy/data"
+	"$USER_HOME/data/caddy/config"
 	"$USER_HOME/data/docker-cd"
 	"$USER_HOME/data/hello-world/db"
 	"$USER_HOME/data/huntarr"
@@ -138,7 +138,6 @@ DATA_DIRS=(
 	"$USER_HOME/data/renovate"
 	"$USER_HOME/data/screenshot"
 	"$USER_HOME/data/stirling-pdf"
-	"$USER_HOME/data/traefik/certs"
 	"$USER_HOME/data/uptime-kuma"
 	"$USER_HOME/data/vaultwarden"
 	"$USER_HOME/data/code-server"
@@ -260,9 +259,8 @@ cmd_install() {
 	cmd_setup
 
 	# Create external networks
-	$SUDO docker network create traefik 2>/dev/null || true
+	$SUDO docker network create proxy 2>/dev/null || true
 	$SUDO docker network create media 2>/dev/null || true
-	$SUDO docker volume create traefik-logs 2>/dev/null || true
 
 	# Registry auth
 	cd "$REPO_DIR"
@@ -292,8 +290,7 @@ cmd_install() {
 		fi
 	}
 
-	deploy_compose "$REPO_DIR/apps/traefik" traefik
-	deploy_compose "$REPO_DIR/apps/google-auth" google-auth
+	deploy_compose "$REPO_DIR/apps/caddy" caddy
 	deploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
 
 	header "Done"
@@ -331,7 +328,7 @@ cmd_uninstall() {
 	step "3/4" "Removing networks..."
 	for i in 1 2 3; do
 		$SUDO docker network prune -f 2>/dev/null || true
-		$SUDO docker network rm traefik 2>/dev/null || true
+		$SUDO docker network rm proxy 2>/dev/null || true
 		$SUDO docker network rm media 2>/dev/null || true
 		sleep 2
 	done

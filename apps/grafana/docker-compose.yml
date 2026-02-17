@@ -5,7 +5,7 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - /home/jaw/data/grafana/prometheus:/prometheus
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
       interval: 30s
@@ -29,7 +29,7 @@ services:
       - ./provisioning/:/etc/grafana/provisioning/:ro
       - ./dashboards/:/var/lib/grafana/dashboards/:ro
     networks:
-      - traefik
+      - proxy
     depends_on:
       prometheus:
         condition: service_healthy
@@ -45,12 +45,10 @@ services:
           cpus: "0.5"
           memory: 256M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.jaw.dev`)"
-      - "traefik.http.routers.grafana.entrypoints=websecure"
-      - "traefik.http.routers.grafana.middlewares=google-auth@file"
-      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      caddy: grafana.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 3000}}"
 
 networks:
-  traefik:
+  proxy:
     external: true

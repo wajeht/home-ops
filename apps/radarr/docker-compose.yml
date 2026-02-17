@@ -10,7 +10,7 @@ services:
       - /home/jaw/plex/downloads:/downloads
       - /home/jaw/plex/movies:/movies
     networks:
-      - traefik
+      - proxy
       - media
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7878/ping"]
@@ -24,14 +24,12 @@ services:
           cpus: "1.0"
           memory: 1G
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`radarr.jaw.dev`)"
-      - "traefik.http.routers.radarr.entrypoints=websecure"
-      - "traefik.http.routers.radarr.middlewares=google-auth@file"
-      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+      caddy: radarr.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 7878}}"
 
 networks:
-  traefik:
+  proxy:
     external: true
   media:
     external: true

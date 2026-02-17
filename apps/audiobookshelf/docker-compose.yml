@@ -9,7 +9,7 @@ services:
       - /home/jaw/plex/audiobooks:/audiobooks
       - /home/jaw/plex/podcasts:/podcasts
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/healthcheck"]
       interval: 30s
@@ -22,17 +22,10 @@ services:
           cpus: "1.0"
           memory: 512M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.audiobookshelf.rule=Host(`audiobooks.jaw.dev`)"
-      - "traefik.http.routers.audiobookshelf.entrypoints=websecure"
-      - "traefik.http.routers.audiobookshelf.middlewares=google-auth@file"
-      - "traefik.http.services.audiobookshelf.loadbalancer.server.port=80"
-      # Sticky sessions for socket.io websocket support
-      - "traefik.http.services.audiobookshelf.loadbalancer.sticky.cookie=true"
-      - "traefik.http.services.audiobookshelf.loadbalancer.sticky.cookie.name=abs_sticky"
-      - "traefik.http.services.audiobookshelf.loadbalancer.sticky.cookie.httponly=true"
-      - "traefik.http.services.audiobookshelf.loadbalancer.sticky.cookie.secure=true"
+      caddy: audiobooks.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 80}}"
 
 networks:
-  traefik:
+  proxy:
     external: true

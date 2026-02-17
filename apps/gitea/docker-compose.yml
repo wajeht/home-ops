@@ -44,7 +44,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
       interval: 30s
@@ -57,12 +57,10 @@ services:
           cpus: "2.0"
           memory: 1G
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.gitea.rule=Host(`gitea.jaw.dev`)"
-      - "traefik.http.routers.gitea.entrypoints=websecure"
-      - "traefik.http.routers.gitea.middlewares=google-auth@file"
-      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+      caddy: gitea.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 3000}}"
 
 networks:
-  traefik:
+  proxy:
     external: true

@@ -1,0 +1,43 @@
+services:
+  caddy:
+    # Built/published by https://github.com/wajeht/docker-cd-caddy
+    # Pinned to an immutable image tag for repeatable deploys.
+    image: ghcr.io/wajeht/docker-cd-caddy:sha-1e84728
+    command: ["caddy", "docker-proxy"]
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      TZ: America/Chicago
+      CADDY_INGRESS_NETWORKS: proxy
+      CADDY_DOCKER_CADDYFILE_PATH: /etc/caddy/Caddyfile
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/jaw/data/caddy/data:/data
+      - /home/jaw/data/caddy/config:/config
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      - proxy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    labels:
+      caddy: caddy.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 2019}}"
+
+networks:
+  proxy:
+    external: true
