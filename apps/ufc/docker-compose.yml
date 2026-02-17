@@ -18,6 +18,7 @@ services:
           memory: 256M
     labels:
       caddy: ufc.jaw.dev
+      caddy.import: public
       caddy.reverse_proxy: "{{upstreams 80}}"
 
 networks:

@@ -59,6 +59,14 @@ validate: lint
 			fail=1; \
 		fi; \
 	done; \
+	if ! docker run --rm \
+		-v "$$PWD/infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+		-v "$$PWD/infra/caddy/ui:/etc/caddy/ui:ro" \
+		ghcr.io/wajeht/docker-cd-caddy:sha-1e84728 \
+		caddy adapt --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then \
+		echo "ERROR: infra/caddy/Caddyfile failed caddy adapt validation"; \
+		fail=1; \
+	fi; \
 	exit $$fail
 
 ## push: Format, validate, commit, and push changes

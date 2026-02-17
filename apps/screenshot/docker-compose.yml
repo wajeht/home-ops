@@ -24,6 +24,7 @@ services:
           memory: 1G
     labels:
       caddy: screenshot.jaw.dev
+      caddy.import: public
       caddy.reverse_proxy: "{{upstreams 80}}"
 
 networks:

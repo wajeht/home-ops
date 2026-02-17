@@ -124,6 +124,8 @@
 }
 
 auth.jaw.dev {
+	# Optional: add endpoint rate limiting once the custom image includes
+	# github.com/mholt/caddy-ratelimit in docker-cd-caddy.
 	authenticate with authportal
 }
 
@@ -137,8 +139,62 @@ auth.jaw.dev {
 	authorize with authpolicy_admin
 }
 
+(public) {
+	import defaults
+}
+
+(error-pages) {
+	handle_errors {
+		@unauthorized expression `{http.error.status_code} == 401`
+		handle @unauthorized {
+			header Content-Type "text/html; charset=utf-8"
+			respond <<-HTML 401
+				<!doctype html>
+				<html lang="en">
+				<head><meta charset="utf-8"><title>Sign In Required</title></head>
+				<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0b1020; color:#e2e8f0; padding:40px;">
+				  <h1 style="margin:0 0 10px;">Sign In Required</h1>
+				  <p style="margin:0;">Your session is missing or expired. Please sign in again.</p>
+				</body>
+				</html>
+			HTML
+		}
+
+		@forbidden expression `{http.error.status_code} == 403`
+		handle @forbidden {
+			header Content-Type "text/html; charset=utf-8"
+			respond <<-HTML 403
+				<!doctype html>
+				<html lang="en">
+				<head><meta charset="utf-8"><title>Access Denied</title></head>
+				<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0b1020; color:#e2e8f0; padding:40px;">
+				  <h1 style="margin:0 0 10px;">Access Denied</h1>
+				  <p style="margin:0;">You are signed in, but this account is not allowed for this service.</p>
+				</body>
+				</html>
+			HTML
+		}
+
+		@upstream expression `{http.error.status_code} >= 500`
+		handle @upstream {
+			header Content-Type "text/html; charset=utf-8"
+			respond <<-HTML 502
+				<!doctype html>
+				<html lang="en">
+				<head><meta charset="utf-8"><title>Service Unavailable</title></head>
+				<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0b1020; color:#e2e8f0; padding:40px;">
+				  <h1 style="margin:0 0 10px;">Service Unavailable</h1>
+				  <p style="margin:0;">The upstream service is currently unavailable. Please try again shortly.</p>
+				</body>
+				</html>
+			HTML
+		}
+	}
+}
+
 (defaults) {
-	encode gzip
+	encode zstd gzip
+	import error-pages
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 		X-Content-Type-Options "nosniff"
