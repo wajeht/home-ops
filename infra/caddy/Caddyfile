@@ -33,8 +33,7 @@
 		authorization policy authpolicy {
 			set auth url https://auth.jaw.dev/auth
 			crypto key verify {env.JWT_SECRET}
-			allow roles authp/user
-			allow roles authp/admin
+			allow roles authp/user authp/admin
 			inject headers with claims
 		}
 	}

@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update status relogin format lint validate push fix-git clean help
+.PHONY: setup install install-fresh uninstall update update-force status relogin format lint validate push fix-git clean help
 
 ## setup: Create all data directories
 setup:
@@ -21,6 +21,10 @@ uninstall:
 ## update: Redeploy infra (caddy + docker-cd)
 update:
 	@./scripts/home-ops.sh update-infra
+
+## update-force: Force-recreate infra containers (caddy + docker-cd)
+update-force:
+	@./scripts/home-ops.sh update-infra-force
 
 ## status: Show containers, mounts, and disk usage
 status:

@@ -107,8 +107,13 @@ EOF
 }
 
 redeploy_compose() {
-	local dir=$1 name=$2
+	local dir=$1 name=$2 force=${3:-0}
 	local tmp=""
+	local -a up_args=(-d)
+
+	if [ "$force" = "1" ]; then
+		up_args+=(--force-recreate)
+	fi
 
 	info "Redeploying $name..."
 	cd "$dir"
@@ -121,7 +126,7 @@ redeploy_compose() {
 			err "Failed to pull images for $name"
 			return 1
 		fi
-		if ! $SUDO docker compose --env-file "$tmp" up -d; then
+		if ! $SUDO docker compose --env-file "$tmp" up "${up_args[@]}"; then
 			rm -f "$tmp"
 			err "Failed to redeploy $name"
 			return 1
@@ -132,7 +137,7 @@ redeploy_compose() {
 			err "Failed to pull images for $name"
 			return 1
 		fi
-		if ! $SUDO docker compose up -d; then
+		if ! $SUDO docker compose up "${up_args[@]}"; then
 			err "Failed to redeploy $name"
 			return 1
 		fi
@@ -503,6 +508,29 @@ cmd_update_infra() {
 }
 
 #=============================================================================
+# UPDATE-INFRA-FORCE - Force recreate caddy + docker-cd
+#=============================================================================
+cmd_update_infra_force() {
+	header "Updating infra (force recreate)"
+	cd "$REPO_DIR"
+	info "Pulling latest..."
+	git pull
+
+	# Keep submodules current after pull.
+	sync_submodules || warn "Submodule sync failed, continuing"
+
+	docker_relogin
+
+	step "1/2" "Force-redeploying caddy..."
+	redeploy_compose "$REPO_DIR/infra/caddy" caddy 1
+
+	step "2/2" "Force-redeploying docker-cd..."
+	redeploy_compose "$REPO_DIR/infra/docker-cd" docker-cd 1
+
+	header "Done"
+}
+
+#=============================================================================
 # MAIN
 #=============================================================================
 case "${1:-}" in
@@ -531,6 +559,9 @@ relogin)
 update-infra)
 	cmd_update_infra
 	;;
+update-infra-force)
+	cmd_update_infra_force
+	;;
 *)
 	echo -e "${BOLD}home-ops${NC} management script"
 	echo ""
@@ -546,6 +577,7 @@ update-infra)
 	echo -e "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
 	echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
 	echo -e "  ${GREEN}update-infra${NC}             Redeploy caddy and docker-cd"
+	echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate caddy and docker-cd"
 	echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
 	echo ""
 	echo -e "${BOLD}Examples:${NC}"
@@ -554,6 +586,7 @@ update-infra)
 	echo -e "  ${DIM}$0 nfs mount plex${NC}        # Mount only plex"
 	echo -e "  ${DIM}$0 install${NC}               # Deploy everything"
 	echo -e "  ${DIM}$0 install-fresh${NC}         # Force full docker-cd app reconcile"
+	echo -e "  ${DIM}$0 update-infra-force${NC}    # Force-recreate infra containers"
 	echo -e "  ${DIM}$0 status${NC}                # Show status"
 	exit 1
 	;;
