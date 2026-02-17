@@ -57,8 +57,8 @@ validate: lint
 	done; \
 	exit $$fail
 
-## push: Validate, commit, and push changes
-push: validate
+## push: Format, validate, commit, and push changes
+push: format validate
 	@git add -A
 	@curl -s https://commit.jaw.dev/ | sh -s -- --no-verify
 	@git push --no-verify
