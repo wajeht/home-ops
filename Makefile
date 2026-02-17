@@ -1,30 +1,10 @@
-INFRA_LINKS = caddy
-
-.PHONY: format lint validate link unlink push fix-git clean help
+.PHONY: format lint validate push fix-git clean help
 
 format:
 	@npx oxfmt "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
 
 lint:
 	@npx oxfmt --check "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
-
-link:
-	@for app in $(INFRA_LINKS); do \
-		if [ -L infra/$$app ]; then \
-			echo "already linked: infra/$$app"; \
-		else \
-			ln -s ../apps/$$app infra/$$app && echo "linked: infra/$$app -> apps/$$app"; \
-		fi \
-	done
-
-unlink:
-	@for app in $(INFRA_LINKS); do \
-		if [ -L infra/$$app ]; then \
-			rm infra/$$app && echo "unlinked: infra/$$app"; \
-		else \
-			echo "not linked: infra/$$app"; \
-		fi \
-	done
 
 validate: lint
 	@fail=0; \
