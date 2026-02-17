@@ -4,7 +4,7 @@ services:
     volumes:
       - /home/jaw/data/uptime-kuma:/app/data
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "node", "extra/healthcheck.js"]
       interval: 30s
@@ -17,12 +17,10 @@ services:
           cpus: "1.0"
           memory: 256M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.uptime-kuma.rule=Host(`status.jaw.dev`)"
-      - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
-      - "traefik.http.routers.uptime-kuma.middlewares=google-auth@file"
-      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
+      caddy: status.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 3001}}"
 
 networks:
-  traefik:
+  proxy:
     external: true

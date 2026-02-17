@@ -8,7 +8,7 @@ services:
     volumes:
       - /home/jaw/data/tautulli:/config
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8181/status"]
       interval: 30s
@@ -21,12 +21,10 @@ services:
           cpus: "1.0"
           memory: 256M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.tautulli.rule=Host(`tautulli.jaw.dev`)"
-      - "traefik.http.routers.tautulli.entrypoints=websecure"
-      - "traefik.http.routers.tautulli.middlewares=google-auth@file"
-      - "traefik.http.services.tautulli.loadbalancer.server.port=8181"
+      caddy: tautulli.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 8181}}"
 
 networks:
-  traefik:
+  proxy:
     external: true

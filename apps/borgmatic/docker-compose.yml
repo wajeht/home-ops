@@ -13,7 +13,7 @@ services:
       - ./config.yml:/etc/borgmatic/config.yaml:ro
       - ./crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
-      - traefik
+      - proxy
     restart: unless-stopped
     deploy:
       resources:
@@ -22,5 +22,5 @@ services:
           memory: 1G
 
 networks:
-  traefik:
+  proxy:
     external: true

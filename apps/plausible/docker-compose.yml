@@ -15,7 +15,7 @@ services:
       plausible-events-db:
         condition: service_healthy
     networks:
-      - traefik
+      - proxy
       - plausible-internal
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:8000/api/health || exit 1"]
@@ -30,10 +30,8 @@ services:
           cpus: "1.0"
           memory: 256M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.plausible.rule=Host(`plausible.jaw.dev`)"
-      - "traefik.http.routers.plausible.entrypoints=websecure"
-      - "traefik.http.services.plausible.loadbalancer.server.port=8000"
+      caddy: plausible.jaw.dev
+      caddy.reverse_proxy: "{{upstreams 8000}}"
 
   plausible-db:
     image: postgres:18-alpine
@@ -87,6 +85,6 @@ services:
         hard: 262144
 
 networks:
-  traefik:
+  proxy:
     external: true
   plausible-internal:

@@ -21,7 +21,7 @@ services:
     volumes:
       - /home/jaw/data/glitchtip/uploads:/code/uploads
     networks:
-      - traefik
+      - proxy
       - glitchtip-internal
     healthcheck:
       test:
@@ -39,11 +39,9 @@ services:
           cpus: "1.0"
           memory: 512M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.glitchtip.rule=Host(`glitchtip.jaw.dev`)"
-      - "traefik.http.routers.glitchtip.entrypoints=websecure"
-      - "traefik.http.routers.glitchtip.middlewares=google-auth@file"
-      - "traefik.http.services.glitchtip.loadbalancer.server.port=8000"
+      caddy: glitchtip.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 8000}}"
 
   glitchtip-db:
     image: postgres:18-alpine
@@ -70,6 +68,6 @@ services:
           memory: 512M
 
 networks:
-  traefik:
+  proxy:
     external: true
   glitchtip-internal:

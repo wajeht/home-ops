@@ -85,14 +85,11 @@
         siteMonitor: https://prowlarr.jaw.dev
 
 - Infrastructure:
-    - Traefik:
-        icon: traefik
-        href: https://traefik.jaw.dev
+    - Caddy:
+        icon: caddy
+        href: https://caddy.jaw.dev
         description: Reverse Proxy
-        siteMonitor: https://traefik.jaw.dev
-        widget:
-          type: traefik
-          url: http://traefik:8080
+        siteMonitor: https://caddy.jaw.dev
 
     - Uptime Kuma:
         icon: uptime-kuma
@@ -111,10 +108,10 @@
         description: GitOps Deployer
         siteMonitor: http://docker-cd:80
 
-    - Google Auth:
-        icon: google
+    - Auth Portal:
+        icon: mdi-shield-lock-outline
         href: https://auth.jaw.dev
-        description: OAuth Proxy
+        description: Caddy Security Login
         siteMonitor: https://auth.jaw.dev
 
     - Changedetection:
@@ -134,12 +131,6 @@
         href: https://portainer.jaw.dev
         description: Docker Management
         siteMonitor: https://portainer.jaw.dev
-
-    - CrowdSec:
-        icon: crowdsec
-        href: https://grafana.jaw.dev
-        description: Intrusion Detection
-        siteMonitor: https://grafana.jaw.dev
 
     - Grafana:
         icon: grafana

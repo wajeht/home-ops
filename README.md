@@ -17,7 +17,7 @@ GitOps-driven homelab running on Docker Compose
 flowchart LR
     subgraph Dell[Dell OptiPlex 7050 Micro]
         docker-cd -->|docker compose up| Apps[apps/*]
-        Traefik -->|route| Apps
+        Caddy -->|route| Apps
     end
 
     Git -->|push| GitHub -->|poll| docker-cd
@@ -25,7 +25,7 @@ flowchart LR
     Actions -->|build image| GHCR[ghcr.io]
     Actions -->|update tag| GitHub
     Renovate -->|auto-merge| GitHub
-    User -->|https| Cloudflare -->|ssl| UniFi[UniFi Cloud Gateway Ultra] -->|forward| Traefik
+    User -->|https| Cloudflare -->|ssl| UniFi[UniFi Cloud Gateway Ultra] -->|forward| Caddy
     NAS[Synology DS923+] -->|NFS| Apps
     subgraph Pi[Raspberry Pi 5]
         AdGuard
@@ -33,7 +33,7 @@ flowchart LR
     AdGuard -->|DNS| UniFi
 ```
 
-Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Traefik](https://traefik.io) routes with auto SSL via Cloudflare. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
+Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Caddy](https://caddyserver.com) routes via Docker labels with auto SSL via Cloudflare DNS challenge. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
 
 ## Hardware
 

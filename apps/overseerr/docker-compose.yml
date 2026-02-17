@@ -8,7 +8,7 @@ services:
     volumes:
       - /home/jaw/data/overseerr:/config
     networks:
-      - traefik
+      - proxy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5055/api/v1/status"]
       interval: 30s
@@ -21,12 +21,10 @@ services:
           cpus: "1.0"
           memory: 512M
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.overseerr.rule=Host(`overseerr.jaw.dev`)"
-      - "traefik.http.routers.overseerr.entrypoints=websecure"
-      - "traefik.http.routers.overseerr.middlewares=google-auth@file"
-      - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
+      caddy: overseerr.jaw.dev
+      caddy.import: auth
+      caddy.reverse_proxy: "{{upstreams 5055}}"
 
 networks:
-  traefik:
+  proxy:
     external: true
