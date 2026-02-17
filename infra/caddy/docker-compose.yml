@@ -50,6 +50,7 @@ services:
       caddy: caddy.jaw.dev
       caddy.import: auth-admin
       caddy.reverse_proxy: 127.0.0.1:2019
+      caddy.reverse_proxy.header_up: Host localhost:2019
 
 networks:
   proxy:
