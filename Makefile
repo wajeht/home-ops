@@ -1,11 +1,40 @@
-.PHONY: format lint validate push fix-git clean help
+.DEFAULT_GOAL := help
 
+.PHONY: setup install uninstall update status relogin format lint validate push fix-git clean help
+
+## setup: Create all data directories
+setup:
+	@./scripts/home-ops.sh setup
+
+## install: Deploy core infra and bootstrap docker-cd
+install:
+	@./scripts/home-ops.sh install
+
+## uninstall: Remove all stacks and cleanup
+uninstall:
+	@./scripts/home-ops.sh uninstall
+
+## update: Redeploy infra (caddy + docker-cd)
+update:
+	@./scripts/home-ops.sh update-infra
+
+## status: Show containers, mounts, and disk usage
+status:
+	@./scripts/home-ops.sh status
+
+## relogin: Refresh docker registry credentials
+relogin:
+	@./scripts/home-ops.sh relogin
+
+## format: Format YAML/Markdown/JSON files
 format:
 	@npx oxfmt "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
 
+## lint: Check formatting
 lint:
 	@npx oxfmt --check "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
 
+## validate: Validate encryption + docker compose files
 validate: lint
 	@fail=0; \
 	tmp_env=$$(mktemp); \
@@ -24,20 +53,24 @@ validate: lint
 	done; \
 	exit $$fail
 
+## push: Validate, commit, and push changes
 push: validate
 	@git add -A
 	@curl -s https://commit.jaw.dev/ | sh -s -- --no-verify
 	@git push --no-verify
 
+## fix-git: Rebuild index while respecting .gitignore
 fix-git:
 	@git rm -r --cached . -f
 	@git add .
 	@git commit -m "untrack files in .gitignore"
 
+## clean: Prune docker system objects
 clean:
 	@docker system prune -a -f
 	@docker volume prune -f
 	@docker network prune -f
 
+## help: Show available make targets
 help:
 	@grep -E '^## ' Makefile | sed 's/## /  /'
