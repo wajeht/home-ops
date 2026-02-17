@@ -21,7 +21,7 @@ services:
           memory: 256M
     labels:
       caddy: logs.jaw.dev
-      caddy.import: auth
+      caddy.import: auth-admin
       caddy.reverse_proxy: "{{upstreams 8080}}"
 
 networks:

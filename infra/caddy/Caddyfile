@@ -23,6 +23,86 @@
 			crypto key sign-verify {env.JWT_SECRET}
 			cookie domain jaw.dev
 			enable identity provider google
+
+			# Admin allowlist (set in infra/caddy/.env.sops).
+			transform user {
+				match origin google
+				match email {env.AUTH_ADMIN_EMAIL_1}
+				action add role authp/admin
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_ADMIN_EMAIL_2}
+				action add role authp/admin
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_ADMIN_EMAIL_3}
+				action add role authp/admin
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_ADMIN_EMAIL_4}
+				action add role authp/admin
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_ADMIN_EMAIL_5}
+				action add role authp/admin
+			}
+
+			# User allowlist (set in infra/caddy/.env.sops).
+			transform user {
+				match origin google
+				match email {env.AUTH_USER_EMAIL_1}
+				action add role authp/user
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_USER_EMAIL_2}
+				action add role authp/user
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_USER_EMAIL_3}
+				action add role authp/user
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_USER_EMAIL_4}
+				action add role authp/user
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_USER_EMAIL_5}
+				action add role authp/user
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_USER_EMAIL_6}
+				action add role authp/user
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_USER_EMAIL_7}
+				action add role authp/user
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_USER_EMAIL_8}
+				action add role authp/user
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_USER_EMAIL_9}
+				action add role authp/user
+			}
+			transform user {
+				match origin google
+				match email {env.AUTH_USER_EMAIL_10}
+				action add role authp/user
+			}
+
 			ui {
 				links {
 					"Home" https://home.jaw.dev/ icon "las la-home"
@@ -36,6 +116,13 @@
 			allow roles authp/user authp/admin
 			inject headers with claims
 		}
+
+		authorization policy authpolicy_admin {
+			set auth url https://auth.jaw.dev/auth
+			crypto key verify {env.JWT_SECRET}
+			allow roles authp/admin
+			inject headers with claims
+		}
 	}
 }
 
@@ -46,6 +133,11 @@ auth.jaw.dev {
 (auth) {
 	import defaults
 	authorize with authpolicy
+}
+
+(auth-admin) {
+	import defaults
+	authorize with authpolicy_admin
 }
 
 (defaults) {
