@@ -10,6 +10,6 @@ jobs:
     steps:
       - name: Trigger sync
         run: |
-          curl -sSf -X POST \
+          curl -sS -X POST \
             -H "Authorization: Bearer ${{ secrets.DOCKER_CD_API_SECRET }}" \
             "${{ secrets.DOCKER_CD_URL }}/api/sync" | jq .
