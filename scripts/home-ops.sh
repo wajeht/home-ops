@@ -112,14 +112,15 @@ redeploy_compose() {
 
 	info "Redeploying $name..."
 	cd "$dir"
-	if ! $SUDO docker compose pull; then
-		err "Failed to pull images for $name"
-		return 1
-	fi
 
 	if [ -f .env.sops ]; then
 		tmp=$(mktemp)
 		decrypt_dotenv_sops .env.sops >"$tmp"
+		if ! $SUDO docker compose --env-file "$tmp" pull; then
+			rm -f "$tmp"
+			err "Failed to pull images for $name"
+			return 1
+		fi
 		if ! $SUDO docker compose --env-file "$tmp" up -d; then
 			rm -f "$tmp"
 			err "Failed to redeploy $name"
@@ -127,6 +128,10 @@ redeploy_compose() {
 		fi
 		rm -f "$tmp"
 	else
+		if ! $SUDO docker compose pull; then
+			err "Failed to pull images for $name"
+			return 1
+		fi
 		if ! $SUDO docker compose up -d; then
 			err "Failed to redeploy $name"
 			return 1
