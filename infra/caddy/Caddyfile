@@ -85,12 +85,6 @@
 				action drop matched role
 			}
 
-			# Deny logins not present in admin/user allowlists.
-			transform user {
-				no regex match any role "^authp/(admin|user)$"
-				action deny
-			}
-
 			ui {
 				theme basic
 				links {
