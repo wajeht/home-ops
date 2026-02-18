@@ -84,6 +84,30 @@
         description: Indexers
         siteMonitor: https://prowlarr.jaw.dev
 
+    - Autobrr:
+        icon: autobrr
+        href: https://autobrr.jaw.dev
+        description: Download Automation
+        siteMonitor: https://autobrr.jaw.dev
+
+    - Bitmagnet:
+        icon: bitmagnet
+        href: https://bitmagnet.jaw.dev
+        description: DHT Indexer
+        siteMonitor: https://bitmagnet.jaw.dev
+
+    - Huntarr:
+        icon: huntarr
+        href: https://huntarr.jaw.dev
+        description: Missing Media Hunter
+        siteMonitor: https://huntarr.jaw.dev
+
+    - Seerr:
+        icon: overseerr
+        href: https://seerr.jaw.dev
+        description: Media Requests
+        siteMonitor: https://seerr.jaw.dev
+
 - Infrastructure:
     - Caddy:
         icon: caddy
@@ -149,6 +173,12 @@
         href: https://logs.jaw.dev
         description: Docker Logs
         siteMonitor: https://logs.jaw.dev
+
+    - Plausible:
+        icon: plausible
+        href: https://plausible.jaw.dev
+        description: Web Analytics
+        siteMonitor: https://plausible.jaw.dev
 
 - Apps:
     - UFC:
