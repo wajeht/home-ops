@@ -1,51 +1,22 @@
 services:
-  google-auth-user:
+  google-auth:
     image: thomseddon/traefik-forward-auth:2
     environment:
       - TZ=America/Chicago
       - DEFAULT_PROVIDER=google
       - AUTH_HOST=auth.jaw.dev
-      - URL_PATH=/_oauth_user
+      - URL_PATH=/_oauth
       - COOKIE_DOMAIN=jaw.dev
-      - COOKIE_NAME=_forward_auth_user
-      - CSRF_COOKIE_NAME=_forward_auth_user_csrf
-      - SECRET=${SECRET}
-      - PROVIDERS_GOOGLE_CLIENT_ID=${PROVIDERS_GOOGLE_CLIENT_ID}
-      - PROVIDERS_GOOGLE_CLIENT_SECRET=${PROVIDERS_GOOGLE_CLIENT_SECRET}
-      - WHITELIST=${WHITELIST}
-      - INSECURE_COOKIE=false
-      - LOG_LEVEL=info
-    networks:
-      - traefik
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 128M
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.google-auth-user.rule=Host(`auth.jaw.dev`) && PathPrefix(`/_oauth_user`)"
-      - "traefik.http.routers.google-auth-user.entrypoints=websecure"
-      - "traefik.http.routers.google-auth-user.priority=200"
-      - "traefik.http.services.google-auth-user.loadbalancer.server.port=4181"
-
-  google-auth-admin:
-    image: thomseddon/traefik-forward-auth:2
-    environment:
-      - TZ=America/Chicago
-      - DEFAULT_PROVIDER=google
-      - AUTH_HOST=auth.jaw.dev
-      - URL_PATH=/_oauth_admin
-      - COOKIE_DOMAIN=jaw.dev
-      - COOKIE_NAME=_forward_auth_admin
-      - CSRF_COOKIE_NAME=_forward_auth_admin_csrf
       - SECRET=${SECRET}
       - PROVIDERS_GOOGLE_CLIENT_ID=${PROVIDERS_GOOGLE_CLIENT_ID}
       - PROVIDERS_GOOGLE_CLIENT_SECRET=${PROVIDERS_GOOGLE_CLIENT_SECRET}
       - WHITELIST=${WHITELIST_ADMINS:-no-one@example.invalid}
       - INSECURE_COOKIE=false
       - LOG_LEVEL=info
+      # User-level services get the broader whitelist
+      - RULE_USER_ACTION=auth
+      - RULE_USER_RULE=Host(`seerr.jaw.dev`) || Host(`plex.jaw.dev`)
+      - RULE_USER_WHITELIST=${WHITELIST}
     networks:
       - traefik
     restart: unless-stopped
@@ -56,10 +27,10 @@ services:
           memory: 128M
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.google-auth-admin.rule=Host(`auth.jaw.dev`) && PathPrefix(`/_oauth_admin`)"
-      - "traefik.http.routers.google-auth-admin.entrypoints=websecure"
-      - "traefik.http.routers.google-auth-admin.priority=200"
-      - "traefik.http.services.google-auth-admin.loadbalancer.server.port=4181"
+      - "traefik.http.routers.google-auth.rule=Host(`auth.jaw.dev`) && PathPrefix(`/_oauth`)"
+      - "traefik.http.routers.google-auth.entrypoints=websecure"
+      - "traefik.http.routers.google-auth.priority=200"
+      - "traefik.http.services.google-auth.loadbalancer.server.port=4181"
 
 networks:
   traefik:

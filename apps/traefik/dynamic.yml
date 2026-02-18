@@ -50,16 +50,9 @@ http:
           ipStrategy:
             ipv6Subnet: 64
 
-    google-auth-user:
+    google-auth:
       forwardAuth:
-        address: http://google-auth-user:4181
-        trustForwardHeader: true
-        authResponseHeaders:
-          - X-Forwarded-User
-
-    google-auth-admin:
-      forwardAuth:
-        address: http://google-auth-admin:4181
+        address: http://google-auth:4181
         trustForwardHeader: true
         authResponseHeaders:
           - X-Forwarded-User
@@ -68,13 +61,13 @@ http:
       chain:
         middlewares:
           - rate-limit-auth
-          - google-auth-user
+          - google-auth
 
     auth-admin:
       chain:
         middlewares:
           - rate-limit-auth
-          - google-auth-admin
+          - google-auth
 
   routers:
     # Catch-all for unknown subdomains (low priority)
