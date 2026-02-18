@@ -15,10 +15,16 @@ GitOps-driven homelab running on Docker Compose
 
 ```mermaid
 flowchart LR
-    git([Git Push]) --> github((GitHub))
-    actions([GitHub Actions]) -->|build image| ghcr[(GHCR)]
-    actions -->|update tag| github
-    renovate([Renovate]) -->|auto-merge| github
+    subgraph triggers[Triggers]
+        app_push([App: git push])
+        ops_push([home-ops: git push])
+        renovate([Renovate])
+    end
+
+    app_push --> ci([GitHub Actions]) -->|build + push| ghcr[(GHCR)]
+    ci -->|update tag| github((GitHub))
+    ops_push --> github
+    renovate -->|auto-merge| github
     github -->|poll + webhook| docker_cd
 
     subgraph dell[Dell OptiPlex 7050 Micro]
@@ -30,18 +36,17 @@ flowchart LR
         nfs[(NFS)]
     end
 
-    subgraph pi[Raspberry Pi 5]
-        adguard[AdGuard Home]
-    end
-
     subgraph ucg[UniFi Cloud Gateway Ultra]
         unifi{{Firewall}}
     end
 
+    subgraph pi[Raspberry Pi 5]
+        adguard[AdGuard Home]
+    end
+
     nfs --> apps
-    user([User]) -->|HTTPS| cf((Cloudflare))
+    user([User]) -->|HTTPS| cf((Cloudflare)) --> unifi
     adguard -->|DNS| unifi
-    cf --> unifi
     unifi -->|:80/:443| caddy
     caddy -.->|DNS01| cf
 ```
