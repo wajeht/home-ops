@@ -42,7 +42,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.glitchtip.rule=Host(`glitchtip.jaw.dev`)"
       - "traefik.http.routers.glitchtip.entrypoints=websecure"
-      - "traefik.http.routers.glitchtip.middlewares=auth-admin@file"
+      - "traefik.http.routers.glitchtip.middlewares=google-auth@file"
       - "traefik.http.services.glitchtip.loadbalancer.server.port=8000"
   glitchtip-db:
     image: postgres:18-alpine

@@ -23,7 +23,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.stirling-pdf.rule=Host(`pdf.jaw.dev`)"
       - "traefik.http.routers.stirling-pdf.entrypoints=websecure"
-      - "traefik.http.routers.stirling-pdf.middlewares=auth-admin@file"
+      - "traefik.http.routers.stirling-pdf.middlewares=google-auth@file"
       - "traefik.http.services.stirling-pdf.loadbalancer.server.port=8080"
 networks:
   traefik:

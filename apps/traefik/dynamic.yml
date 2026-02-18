@@ -41,33 +41,12 @@ http:
           ipStrategy:
             ipv6Subnet: 64
 
-    rate-limit-auth:
-      rateLimit:
-        period: 1s
-        average: 60
-        burst: 120
-        sourceCriterion:
-          ipStrategy:
-            ipv6Subnet: 64
-
     google-auth:
       forwardAuth:
         address: http://google-auth:4181
         trustForwardHeader: true
         authResponseHeaders:
           - X-Forwarded-User
-
-    auth-user:
-      chain:
-        middlewares:
-          - rate-limit-auth
-          - google-auth
-
-    auth-admin:
-      chain:
-        middlewares:
-          - rate-limit-auth
-          - google-auth
 
   routers:
     # Catch-all for unknown subdomains (low priority)
