@@ -10,6 +10,10 @@ services:
       - COOKIE_DOMAIN=jaw.dev
       - INSECURE_COOKIE=true
       - LOG_LEVEL=info
+      - WHITELIST=${WHITELIST_ADMINS}
+      - RULE_USER_ACTION=auth
+      - RULE_USER_RULE=Host(`seerr.jaw.dev`) || Host(`plex.jaw.dev`)
+      - RULE_USER_WHITELIST=${WHITELIST}
     networks:
       - traefik
     restart: unless-stopped
