@@ -30,7 +30,6 @@ flowchart LR
 
     subgraph nas[Synology DS923+]
         nfs[NFS]
-        smb[SMB]
     end
 
     nfs --> apps
@@ -46,7 +45,11 @@ flowchart LR
         adguard[AdGuard Home]
     end
 
-    adguard -->|DNS| unifi[UniFi Gateway]
+    subgraph ucg[UniFi Cloud Gateway Ultra]
+        unifi[Router]
+    end
+
+    adguard -->|DNS| unifi
     cf --> unifi
     unifi -->|:80/:443| caddy
 
