@@ -9,6 +9,7 @@ services:
       - /home/jaw/data/autobrr:/config
     networks:
       - traefik
+      - media
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:7474"]
       interval: 30s
@@ -28,4 +29,6 @@ services:
       - "traefik.http.services.autobrr.loadbalancer.server.port=7474"
 networks:
   traefik:
+    external: true
+  media:
     external: true
