@@ -30,14 +30,16 @@ flowchart LR
     renovate[Renovate] -->|auto-merge deps| github
     actions -->|build and push image| ghcr[GHCR]
     actions -->|update image tag| github
-    github -->|poll/API sync| docker_cd
+    docker_cd -->|poll GitHub| github
+    actions -->|trigger /api/sync| cloudflare
 
     user[User] -->|HTTPS| cloudflare[Cloudflare]
-    cloudflare -->|proxied HTTPS to origin| unifi[UniFi Cloud Gateway Ultra]
+    cloudflare -->|origin traffic from Cloudflare IPs| unifi[UniFi Cloud Gateway Ultra]
     adguard -->|DNS| unifi
 
     docker_cd -->|docker compose up| apps
     caddy -->|reverse proxy traffic| apps
+    caddy -->|/api + /badges| docker_cd
     unifi -->|port forward 80/443| caddy
     caddy -.->|DNS-01 challenge API| cloudflare_dns[Cloudflare DNS API]
     nas[Synology DS923+] -->|NFS mounts| apps
