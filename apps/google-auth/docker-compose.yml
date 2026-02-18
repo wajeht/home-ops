@@ -7,6 +7,7 @@ services:
       - TZ=America/Chicago
       - DEFAULT_PROVIDER=google
       - AUTH_HOST=auth.jaw.dev
+      - URL_PATH=/_oauth
       - COOKIE_DOMAIN=jaw.dev
       - SECRET=${SECRET}
       - PROVIDERS_GOOGLE_CLIENT_ID=${PROVIDERS_GOOGLE_CLIENT_ID}
@@ -28,7 +29,7 @@ services:
           memory: 128M
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.google-auth.rule=Host(`auth.jaw.dev`)"
+      - "traefik.http.routers.google-auth.rule=Host(`auth.jaw.dev`) && PathPrefix(`/_oauth`)"
       - "traefik.http.routers.google-auth.entrypoints=websecure"
       - "traefik.http.routers.google-auth.priority=200"
       - "traefik.http.services.google-auth.loadbalancer.server.port=4181"
