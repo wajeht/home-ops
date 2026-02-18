@@ -1,6 +1,6 @@
 (() => {
   if (document?.title) {
-    document.title = "Jaw Authentication";
+    document.title = "Jaw's Home Ops";
   }
 
   const title = document.querySelector("h1, h2, .title, .auth-title");
