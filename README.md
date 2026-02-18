@@ -18,7 +18,6 @@ flowchart LR
     subgraph dell[Dell OptiPlex 7050 Micro]
         docker_cd[docker-cd]
         caddy[caddy + docker-proxy]
-        home_ops_dir[home-ops repo directory]
         apps_dir[apps directory]
         stacks[compose stacks]
     end
@@ -36,21 +35,20 @@ flowchart LR
         unifi[Gateway]
     end
 
-    local_git[Local Git] -->|push| github[GitHub]
+    local_git[Local Git] -->|push| home_ops_repo[home-ops repo in GitHub]
     app_repo[App Repos] -->|push tag| actions[GitHub Actions]
-    renovate[Renovate] -->|auto-merge deps| github
+    renovate[Renovate] -->|auto-merge deps| home_ops_repo
     actions -->|build and push image| ghcr[GHCR]
-    actions -->|update image tag| github
+    actions -->|update image tag| home_ops_repo
     ghcr -->|docker pull image| docker_cd
-    docker_cd -.->|poll GitHub| github
-    github -->|api sync trigger| cloudflare[Cloudflare]
+    docker_cd -.->|poll GitHub| home_ops_repo
+    home_ops_repo -->|api sync trigger| cloudflare[Cloudflare]
 
     user[User] -->|HTTPS| cloudflare
     cloudflare -->|origin HTTPS from Cloudflare IPs only| unifi
     adguard -->|DNS| unifi
 
-    docker_cd -->|sync local checkout| home_ops_dir
-    home_ops_dir -->|contains| apps_dir
+    docker_cd -->|sync local checkout| apps_dir
     docker_cd -->|discover stacks| apps_dir
     apps_dir -->|compose projects| stacks
     docker_cd -->|docker compose up| stacks
