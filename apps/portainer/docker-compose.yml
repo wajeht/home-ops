@@ -30,7 +30,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.portainer.rule=Host(`portainer.jaw.dev`)"
       - "traefik.http.routers.portainer.entrypoints=websecure"
-      - "traefik.http.routers.portainer.middlewares=rate-limit-auth@file,google-auth-admin@file"
+      - "traefik.http.routers.portainer.middlewares=auth-admin@file"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 networks:
   traefik:

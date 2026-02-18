@@ -25,7 +25,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.jaw.dev`)"
       - "traefik.http.routers.prowlarr.entrypoints=websecure"
-      - "traefik.http.routers.prowlarr.middlewares=rate-limit-auth@file,google-auth-user@file"
+      - "traefik.http.routers.prowlarr.middlewares=auth-admin@file"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
 networks:
   traefik:

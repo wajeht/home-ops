@@ -47,7 +47,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.paperless-ngx.rule=Host(`paperless.jaw.dev`)"
       - "traefik.http.routers.paperless-ngx.entrypoints=websecure"
-      - "traefik.http.routers.paperless-ngx.middlewares=rate-limit-auth@file,google-auth-user@file"
+      - "traefik.http.routers.paperless-ngx.middlewares=auth-admin@file"
       - "traefik.http.services.paperless-ngx.loadbalancer.server.port=8000"
   paperless-db:
     image: postgres:17-alpine

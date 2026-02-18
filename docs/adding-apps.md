@@ -20,7 +20,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
       - "traefik.http.routers.myapp.entrypoints=websecure"
-      - "traefik.http.routers.myapp.middlewares=rate-limit-auth@file,google-auth-user@file"
+      - "traefik.http.routers.myapp.middlewares=auth-user@file"
       - "traefik.http.services.myapp.loadbalancer.server.port=80"
     restart: unless-stopped
 
@@ -29,8 +29,8 @@ networks:
     external: true
 ```
 
-Use `rate-limit-auth@file,google-auth-user@file` for protected user apps.
-Use `rate-limit-auth@file,google-auth-admin@file` for admin-only apps.
+Use `auth-user@file` for protected user apps.
+Use `auth-admin@file` for admin-only apps.
 Omit auth middleware for public apps.
 
 ## Deploy
@@ -83,7 +83,7 @@ labels:
   - "traefik.enable=true"
   - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
   - "traefik.http.routers.myapp.entrypoints=websecure"
-  - "traefik.http.routers.myapp.middlewares=rate-limit-auth@file,google-auth-user@file"
+  - "traefik.http.routers.myapp.middlewares=auth-user@file"
   - "traefik.http.services.myapp.loadbalancer.server.port=8080"
 ```
 
@@ -104,7 +104,7 @@ labels:
   - "traefik.enable=true"
   - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
   - "traefik.http.routers.myapp.entrypoints=websecure"
-  - "traefik.http.routers.myapp.middlewares=rate-limit-auth@file,google-auth-user@file"
+  - "traefik.http.routers.myapp.middlewares=auth-user@file"
   - "traefik.http.routers.myapp-webhook.rule=Host(`myapp.jaw.dev`) && Path(`/webhook`)"
   - "traefik.http.routers.myapp-webhook.entrypoints=websecure"
   - "traefik.http.routers.myapp-webhook.priority=100"
