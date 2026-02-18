@@ -19,11 +19,6 @@ services:
       - RULE_USER_WHITELIST=${WHITELIST}
     networks:
       - traefik
-    healthcheck:
-      test: ["CMD-SHELL", "pidof traefik-forward-auth"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
     restart: unless-stopped
     deploy:
       resources:
