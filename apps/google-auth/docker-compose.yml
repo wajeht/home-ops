@@ -7,18 +7,9 @@ services:
       - TZ=America/Chicago
       - DEFAULT_PROVIDER=google
       - AUTH_HOST=auth.jaw.dev
-      - URL_PATH=/_oauth
       - COOKIE_DOMAIN=jaw.dev
-      - SECRET=${SECRET}
-      - PROVIDERS_GOOGLE_CLIENT_ID=${PROVIDERS_GOOGLE_CLIENT_ID}
-      - PROVIDERS_GOOGLE_CLIENT_SECRET=${PROVIDERS_GOOGLE_CLIENT_SECRET}
-      - WHITELIST=${WHITELIST_ADMINS:-no-one@example.invalid}
-      - INSECURE_COOKIE=false
-      - LOG_LEVEL=debug
-      # User-level services get the broader whitelist
-      - RULE_USER_ACTION=auth
-      - RULE_USER_RULE=Host(`seerr.jaw.dev`) || Host(`plex.jaw.dev`)
-      - RULE_USER_WHITELIST=${WHITELIST}
+      - INSECURE_COOKIE=true
+      - LOG_LEVEL=info
     networks:
       - traefik
     restart: unless-stopped
@@ -31,6 +22,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.google-auth.rule=Host(`auth.jaw.dev`)"
       - "traefik.http.routers.google-auth.entrypoints=websecure"
+      - "traefik.http.routers.google-auth.middlewares=google-auth@file"
       - "traefik.http.services.google-auth.loadbalancer.server.port=4181"
 
 networks:
