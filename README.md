@@ -54,6 +54,7 @@ flowchart LR
 
     style triggers fill:#e8f4fd,stroke:#4a90d9
     style infra fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
+    style cf fill:#f6821f,stroke:#f6821f,color:#fff
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Polls every 5 min or instantly via `/api/sync` webhook. Auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates. [Caddy](https://github.com/wajeht/docker-cd-caddy) routes via Docker labels with auto SSL via Cloudflare DNS challenge. [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~15min: Renovate scan + docker-cd poll). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
