@@ -132,12 +132,6 @@
         description: Docker Management
         siteMonitor: https://portainer.jaw.dev
 
-    - Grafana:
-        icon: grafana
-        href: https://grafana.jaw.dev
-        description: Monitoring Dashboards
-        siteMonitor: https://grafana.jaw.dev
-
     - Renovate:
         icon: renovate
         href: https://renovate.jaw.dev
