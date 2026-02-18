@@ -15,7 +15,7 @@ services:
       RENOVATE_SECRETS: ${RENOVATE_SECRETS}
       NODE_OPTIONS: "--max-old-space-size=2048" # OOM on large repos (e.g. docker-cd) at 1536
       LOG_LEVEL: info
-      MEND_RNV_CRON_JOB_SCHEDULER_ALL: "0 6,8,10 * * *" # midnight, 2am, 4am CST (UTC+6)
+      MEND_RNV_CRON_JOB_SCHEDULER_ALL: "0 4-14 * * *" # every hour 10pm-8am CST (UTC-6)
       RENOVATE_REPOSITORY_CACHE: enabled
       RENOVATE_OPTIMIZE_FOR_DISABLED: "true"
       RENOVATE_EXECUTION_TIMEOUT: "30"
