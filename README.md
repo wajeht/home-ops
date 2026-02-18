@@ -18,7 +18,9 @@ flowchart LR
     subgraph dell[Dell OptiPlex 7050 Micro]
         docker_cd[docker-cd]
         caddy[caddy + docker-proxy]
-        apps[apps/* stacks]
+        home_ops_dir[home-ops repo directory]
+        apps_dir[apps directory]
+        stacks[compose stacks]
     end
 
     subgraph pi[Raspberry Pi 5]
@@ -47,13 +49,17 @@ flowchart LR
     cloudflare -->|origin HTTPS from Cloudflare IPs only| unifi
     adguard -->|DNS| unifi
 
-    docker_cd -->|docker compose up| apps
-    caddy -->|reverse proxy traffic| apps
+    docker_cd -->|sync local checkout| home_ops_dir
+    home_ops_dir -->|contains| apps_dir
+    docker_cd -->|discover stacks| apps_dir
+    apps_dir -->|compose projects| stacks
+    docker_cd -->|docker compose up| stacks
+    caddy -->|reverse proxy traffic| stacks
     caddy -->|api and badges| docker_cd
     unifi -->|port forward 80/443| caddy
     caddy -.->|DNS01 challenge API| cloudflare_dns[Cloudflare DNS API]
     nas_dsm -->|exports| nas_nfs
-    nas_nfs -->|NFS mounts| apps
+    nas_nfs -->|NFS mounts| stacks
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Caddy](https://github.com/wajeht/docker-cd-caddy) routes via Docker labels with auto SSL via Cloudflare DNS challenge. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
