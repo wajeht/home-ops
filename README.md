@@ -31,10 +31,10 @@ flowchart LR
     actions -->|build and push image| ghcr[GHCR]
     actions -->|update image tag| github
     github -->|polled by docker-cd| docker_cd
-    actions -->|trigger /api/sync via Cloudflare| caddy
+    actions -->|POST /api/sync| cloudflare
 
     user[User] -->|HTTPS| cloudflare[Cloudflare]
-    cloudflare -->|origin traffic from Cloudflare IPs| unifi[UniFi Cloud Gateway Ultra]
+    cloudflare -->|origin HTTPS (Cloudflare IPs only)| unifi[UniFi Cloud Gateway Ultra]
     adguard -->|DNS| unifi
 
     docker_cd -->|docker compose up| apps
