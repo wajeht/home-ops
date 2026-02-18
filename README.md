@@ -35,7 +35,6 @@ flowchart LR
 
     subgraph nas[Synology DS923+]
         nfs[(NFS)]
-        smb[(SMB)]
     end
 
     subgraph ucg[UniFi Cloud Gateway Ultra]
