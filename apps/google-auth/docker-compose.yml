@@ -20,7 +20,7 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD-SHELL", "true | nc -w 1 localhost 4181"]
+      test: ["CMD-SHELL", "pidof traefik-forward-auth"]
       interval: 30s
       timeout: 5s
       retries: 3
