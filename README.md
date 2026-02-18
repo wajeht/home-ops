@@ -22,7 +22,7 @@ flowchart LR
     end
 
     app_push --> ci([GitHub Actions]) -->|build + push| ghcr[(GHCR)]
-    ghcr --> github((GitHub))
+    ghcr -->|push image| github((GitHub))
     ci -->|update tag| github
     ops_push --> ci
     renovate -->|auto-merge| ci
@@ -45,7 +45,7 @@ flowchart LR
         adguard[AdGuard Home]
     end
 
-    nfs --> apps
+    nfs -->|NFS| apps
     adguard -->|DNS| unifi
     caddy -.->|DNS01| cf
 
