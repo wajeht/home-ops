@@ -1,5 +1,5 @@
 services:
-  google-auth:
+  google-auth-user:
     image: thomseddon/traefik-forward-auth:2
     env_file:
       - .env
@@ -8,6 +8,7 @@ services:
       - DEFAULT_PROVIDER=google
       - AUTH_HOST=auth.jaw.dev
       - COOKIE_DOMAIN=jaw.dev
+      - COOKIE_NAME=_forward_auth_user
       - INSECURE_COOKIE=true
       - LOG_LEVEL=info
     networks:
@@ -22,8 +23,29 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.google-auth.rule=Host(`auth.jaw.dev`)"
       - "traefik.http.routers.google-auth.entrypoints=websecure"
-      - "traefik.http.routers.google-auth.middlewares=google-auth@file"
       - "traefik.http.services.google-auth.loadbalancer.server.port=4181"
+
+  google-auth-admin:
+    image: thomseddon/traefik-forward-auth:2
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Chicago
+      - DEFAULT_PROVIDER=google
+      - AUTH_HOST=auth.jaw.dev
+      - COOKIE_DOMAIN=jaw.dev
+      - COOKIE_NAME=_forward_auth_admin
+      - WHITELIST=${WHITELIST_ADMINS:-no-one@example.invalid}
+      - INSECURE_COOKIE=true
+      - LOG_LEVEL=info
+    networks:
+      - traefik
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
 
 networks:
   traefik:

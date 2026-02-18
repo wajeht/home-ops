@@ -32,7 +32,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.bitmagnet.rule=Host(`bitmagnet.jaw.dev`)"
       - "traefik.http.routers.bitmagnet.entrypoints=websecure"
-      - "traefik.http.routers.bitmagnet.middlewares=google-auth@file"
+      - "traefik.http.routers.bitmagnet.middlewares=rate-limit-auth@file,google-auth-user@file"
       - "traefik.http.services.bitmagnet.loadbalancer.server.port=3333"
   bitmagnet-db:
     image: postgres:16.12-alpine
