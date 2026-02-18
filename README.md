@@ -24,8 +24,8 @@ flowchart LR
     app_push --> ci([GitHub Actions]) -->|build + push| ghcr[(GHCR)]
     ghcr --> github((GitHub))
     ci -->|update tag| github
-    ops_push --> github
-    renovate -->|auto-merge| github
+    ops_push --> ci
+    renovate -->|auto-merge| ci
     github -->|poll + webhook| cf((Cloudflare)) --> unifi -->|:80/:443| caddy --> docker_cd
 
     subgraph dell[Dell OptiPlex 7050 Micro]
