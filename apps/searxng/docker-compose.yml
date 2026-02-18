@@ -24,7 +24,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.searxng.rule=Host(`search.jaw.dev`)"
       - "traefik.http.routers.searxng.entrypoints=websecure"
-      - "traefik.http.routers.searxng.middlewares=rate-limit-auth@file,google-auth-user@file"
+      - "traefik.http.routers.searxng.middlewares=auth-admin@file"
       - "traefik.http.services.searxng.loadbalancer.server.port=8080"
 networks:
   traefik:

@@ -31,7 +31,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.zipline.rule=Host(`img.jaw.dev`)"
       - "traefik.http.routers.zipline.entrypoints=websecure"
-      - "traefik.http.routers.zipline.middlewares=rate-limit-auth@file,google-auth-user@file"
+      - "traefik.http.routers.zipline.middlewares=auth-admin@file"
       - "traefik.http.services.zipline.loadbalancer.server.port=3000"
   zipline-db:
     image: postgres:17-alpine

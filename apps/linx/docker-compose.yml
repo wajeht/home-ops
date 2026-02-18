@@ -23,7 +23,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.linx.rule=Host(`linx.jaw.dev`)"
       - "traefik.http.routers.linx.entrypoints=websecure"
-      - "traefik.http.routers.linx.middlewares=rate-limit-auth@file,google-auth-user@file"
+      - "traefik.http.routers.linx.middlewares=auth-admin@file"
       - "traefik.http.services.linx.loadbalancer.server.port=8080"
 networks:
   traefik:

@@ -46,7 +46,7 @@ services:
       - "traefik.http.routers.renovate.rule=Host(`renovate.jaw.dev`)"
       - "traefik.http.routers.renovate.entrypoints=websecure"
       - "traefik.http.services.renovate.loadbalancer.server.port=8080"
-      - "traefik.http.routers.renovate.middlewares=rate-limit-auth@file,google-auth-user@file"
+      - "traefik.http.routers.renovate.middlewares=auth-admin@file"
 networks:
   traefik:
     external: true

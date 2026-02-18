@@ -34,13 +34,21 @@ http:
 
     rate-limit-global:
       rateLimit:
+        period: 1s
         average: 200
         burst: 400
+        sourceCriterion:
+          ipStrategy:
+            ipv6Subnet: 64
 
     rate-limit-auth:
       rateLimit:
+        period: 1s
         average: 60
         burst: 120
+        sourceCriterion:
+          ipStrategy:
+            ipv6Subnet: 64
 
     google-auth-user:
       forwardAuth:
@@ -55,6 +63,18 @@ http:
         trustForwardHeader: true
         authResponseHeaders:
           - X-Forwarded-User
+
+    auth-user:
+      chain:
+        middlewares:
+          - rate-limit-auth
+          - google-auth-user
+
+    auth-admin:
+      chain:
+        middlewares:
+          - rate-limit-auth
+          - google-auth-admin
 
   routers:
     # Catch-all for unknown subdomains (low priority)

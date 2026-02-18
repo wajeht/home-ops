@@ -60,7 +60,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.gitea.rule=Host(`gitea.jaw.dev`)"
       - "traefik.http.routers.gitea.entrypoints=websecure"
-      - "traefik.http.routers.gitea.middlewares=rate-limit-auth@file,google-auth-user@file"
+      - "traefik.http.routers.gitea.middlewares=auth-admin@file"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 networks:
   traefik:
