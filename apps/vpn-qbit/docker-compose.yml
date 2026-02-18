@@ -16,12 +16,14 @@ services:
     volumes:
       - /home/jaw/data/gluetun:/gluetun
     networks:
-      - proxy
+      - traefik
       - media
     labels:
-      caddy: qbit.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 8085}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.vpn-qbit.rule=Host(`qbit.jaw.dev`)"
+      - "traefik.http.routers.vpn-qbit.entrypoints=websecure"
+      - "traefik.http.routers.vpn-qbit.middlewares=google-auth@file"
+      - "traefik.http.services.vpn-qbit.loadbalancer.server.port=8085"
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:9999 || exit 1"]
       interval: 30s
@@ -64,7 +66,7 @@ services:
           memory: 2G
 
 networks:
-  proxy:
+  traefik:
     external: true
   media:
     external: true

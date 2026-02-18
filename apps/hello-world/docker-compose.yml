@@ -4,15 +4,16 @@ services:
     env_file:
       - .env
     networks:
-      - proxy
+      - traefik
       - internal
     depends_on:
       hello-world-db:
         condition: service_healthy
     labels:
-      caddy: hello-world.jaw.dev
-      caddy.import: public
-      caddy.reverse_proxy: "{{upstreams 3000}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.hello-world.rule=Host(`hello-world.jaw.dev`)"
+      - "traefik.http.routers.hello-world.entrypoints=websecure"
+      - "traefik.http.services.hello-world.loadbalancer.server.port=3000"
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/healthz"]
       interval: 30s
@@ -51,6 +52,6 @@ services:
           memory: 256M
 
 networks:
-  proxy:
+  traefik:
     external: true
   internal:

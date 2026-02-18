@@ -11,7 +11,7 @@ Mend Renovate Community Edition — auto-updates dependencies across all repos.
 
 ## URLs
 
-- **Dashboard:** https://renovate.jaw.dev (behind Caddy auth)
+- **Dashboard:** https://renovate.jaw.dev (behind Google auth)
 - **Webhook:** https://renovate.jaw.dev/webhook
 - **Health:** https://renovate.jaw.dev/health
 

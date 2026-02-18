@@ -99,11 +99,14 @@
         siteMonitor: https://seerr.jaw.dev
 
 - Infrastructure:
-    - Caddy:
-        icon: caddy
-        href: https://caddy.jaw.dev
+    - Traefik:
+        icon: traefik
+        href: https://traefik.jaw.dev
         description: Reverse Proxy
-        siteMonitor: https://caddy.jaw.dev
+        siteMonitor: https://traefik.jaw.dev
+        widget:
+          type: traefik
+          url: http://traefik:8080
 
     - Uptime Kuma:
         icon: uptime-kuma
@@ -122,10 +125,10 @@
         description: GitOps Deployer
         siteMonitor: http://docker-cd:80
 
-    - Auth Portal:
-        icon: mdi-shield-lock-outline
+    - Google Auth:
+        icon: google
         href: https://auth.jaw.dev
-        description: Caddy Security Login
+        description: OAuth Proxy
         siteMonitor: https://auth.jaw.dev
 
     - Changedetection:

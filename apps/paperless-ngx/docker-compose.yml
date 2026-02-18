@@ -29,7 +29,7 @@ services:
       - /home/jaw/data/paperless/consume:/usr/src/paperless/consume
       - ./notify-ntfy.sh:/usr/src/paperless/scripts/notify-ntfy.sh:ro
     networks:
-      - proxy
+      - traefik
       - paperless-internal
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000"]
@@ -44,10 +44,11 @@ services:
           cpus: "2.0"
           memory: 2G
     labels:
-      caddy: paperless.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 8000}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.paperless-ngx.rule=Host(`paperless.jaw.dev`)"
+      - "traefik.http.routers.paperless-ngx.entrypoints=websecure"
+      - "traefik.http.routers.paperless-ngx.middlewares=google-auth@file"
+      - "traefik.http.services.paperless-ngx.loadbalancer.server.port=8000"
   paperless-db:
     image: postgres:17-alpine
     env_file:
@@ -91,6 +92,6 @@ services:
           memory: 256M
 
 networks:
-  proxy:
+  traefik:
     external: true
   paperless-internal:

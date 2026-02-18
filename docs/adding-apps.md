@@ -15,19 +15,21 @@ services:
   myapp:
     image: nginx:1.25
     networks:
-      - proxy
+      - traefik
     labels:
-      caddy: myapp.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 80}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
+      - "traefik.http.routers.myapp.entrypoints=websecure"
+      - "traefik.http.routers.myapp.middlewares=google-auth@file"
+      - "traefik.http.services.myapp.loadbalancer.server.port=80"
     restart: unless-stopped
 
 networks:
-  proxy:
+  traefik:
     external: true
 ```
 
-Use `caddy.import: auth` for protected apps. Use `caddy.import: public` for public apps.
+Use `google-auth@file` middleware for protected apps. Omit middleware for public apps.
 
 ## Deploy
 
@@ -76,41 +78,46 @@ Private app:
 
 ```yaml
 labels:
-  caddy: myapp.jaw.dev
-  caddy.import: auth
-  caddy.reverse_proxy: "{{upstreams 8080}}"
+  - "traefik.enable=true"
+  - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
+  - "traefik.http.routers.myapp.entrypoints=websecure"
+  - "traefik.http.routers.myapp.middlewares=google-auth@file"
+  - "traefik.http.services.myapp.loadbalancer.server.port=8080"
 ```
 
 Public app:
 
 ```yaml
 labels:
-  caddy: myapp.jaw.dev
-  caddy.import: public
-  caddy.reverse_proxy: "{{upstreams 8080}}"
+  - "traefik.enable=true"
+  - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
+  - "traefik.http.routers.myapp.entrypoints=websecure"
+  - "traefik.http.services.myapp.loadbalancer.server.port=8080"
 ```
 
 Path-based auth bypass:
 
 ```yaml
 labels:
-  caddy: myapp.jaw.dev
-  caddy.handle_0: /webhook
-  caddy.handle_0.reverse_proxy: "{{upstreams 8080}}"
-  caddy.handle_1: "*"
-  caddy.handle_1.import: auth
-  caddy.handle_1.reverse_proxy: "{{upstreams 8080}}"
+  - "traefik.enable=true"
+  - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
+  - "traefik.http.routers.myapp.entrypoints=websecure"
+  - "traefik.http.routers.myapp.middlewares=google-auth@file"
+  - "traefik.http.routers.myapp-webhook.rule=Host(`myapp.jaw.dev`) && Path(`/webhook`)"
+  - "traefik.http.routers.myapp-webhook.entrypoints=websecure"
+  - "traefik.http.routers.myapp-webhook.priority=100"
+  - "traefik.http.services.myapp.loadbalancer.server.port=8080"
 ```
 
 ## Network
 
 ```yaml
 networks:
-  proxy:
+  traefik:
     external: true
 ```
 
-All internet-facing apps must join the `proxy` network.
+All internet-facing apps must join the `traefik` network.
 
 ## Private ghcr.io Images
 

@@ -6,7 +6,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/jaw/data/portainer:/data
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test:
         [
@@ -27,10 +27,11 @@ services:
           cpus: "1.0"
           memory: 256M
     labels:
-      caddy: portainer.jaw.dev
-      caddy.import: auth-admin
-      caddy.reverse_proxy: "{{upstreams 9000}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.jaw.dev`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.middlewares=google-auth@file"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 networks:
-  proxy:
+  traefik:
     external: true

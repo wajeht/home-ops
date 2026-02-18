@@ -1,0 +1,59 @@
+http:
+  middlewares:
+    redirect-to-main:
+      redirectRegex:
+        regex: ".*"
+        replacement: "https://jaw.dev"
+        permanent: true
+
+    gzip:
+      compress:
+        excludedContentTypes:
+          - image/png
+          - image/jpeg
+          - image/gif
+          - image/webp
+
+    security-headers:
+      headers:
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+        contentTypeNosniff: true
+        frameDeny: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+
+    custom-errors:
+      errors:
+        status:
+          - "500-599"
+        service: dummy
+        query: "/"
+
+    google-auth:
+      forwardAuth:
+        address: http://google-auth:4181
+        trustForwardHeader: true
+        authResponseHeaders:
+          - X-Forwarded-User
+
+  routers:
+    # Catch-all for unknown subdomains (low priority)
+    catchall:
+      rule: "HostRegexp(`[a-z0-9-]+\\.jaw\\.dev`)"
+      entrypoints:
+        - websecure
+      middlewares:
+        - redirect-to-main
+      service: dummy
+      priority: 1
+      tls: {}
+
+  services:
+    # Dummy service for redirects (never actually used)
+    dummy:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1"

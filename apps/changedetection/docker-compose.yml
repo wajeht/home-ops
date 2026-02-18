@@ -8,7 +8,7 @@ services:
     volumes:
       - /home/jaw/data/changedetection:/datastore
     networks:
-      - proxy
+      - traefik
       - changedetection-internal
     healthcheck:
       test:
@@ -27,10 +27,11 @@ services:
           cpus: "1.0"
           memory: 512M
     labels:
-      caddy: changes.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 5000}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.changedetection.rule=Host(`changes.jaw.dev`)"
+      - "traefik.http.routers.changedetection.entrypoints=websecure"
+      - "traefik.http.routers.changedetection.middlewares=google-auth@file"
+      - "traefik.http.services.changedetection.loadbalancer.server.port=5000"
   # Browser for JS-rendered pages
   playwright-chrome:
     image: browserless/chrome:1.61.1-puppeteer-21.4.1@sha256:b6acad3ef2e1e0e3c2eb018add533570db2b34f5304682bad58c803b23ef7bd2
@@ -53,6 +54,6 @@ services:
           memory: 1G
 
 networks:
-  proxy:
+  traefik:
     external: true
   changedetection-internal:

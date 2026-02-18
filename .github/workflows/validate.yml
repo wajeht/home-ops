@@ -42,15 +42,3 @@ jobs:
             fi
           done
           exit $fail
-
-  caddy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validate Caddyfile with production image
-        run: |
-          docker run --rm \
-            -v "$PWD/infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro" \
-            -v "$PWD/infra/caddy/ui:/etc/caddy/ui:ro" \
-            ghcr.io/wajeht/docker-cd-caddy:sha-1e84728 \
-            caddy adapt --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null

@@ -5,7 +5,7 @@ services:
       - TZ=America/Chicago
       - HTTP_PORT=80
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s
@@ -18,10 +18,10 @@ services:
           cpus: "0.5"
           memory: 256M
     labels:
-      caddy: "jaw.dev www.jaw.dev"
-      caddy.import: cf-tls
-      caddy.reverse_proxy: "{{upstreams 80}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.jaw-dev.rule=Host(`jaw.dev`) || Host(`www.jaw.dev`)"
+      - "traefik.http.routers.jaw-dev.entrypoints=websecure"
+      - "traefik.http.services.jaw-dev.loadbalancer.server.port=80"
 networks:
-  proxy:
+  traefik:
     external: true

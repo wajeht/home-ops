@@ -24,20 +24,23 @@ services:
       API_SECRET: ${API_SECRET}
       NOTIFICATION_URL: http://ntfy:80/docker-cd?template=docker-cd&markdown=yes
     labels:
-      caddy: cd.jaw.dev
-      caddy.handle_0: /api/*
-      caddy.handle_0.import: api-public
-      caddy.handle_0.reverse_proxy: "{{upstreams 80}}"
-      caddy.handle_1: /badges/*
-      caddy.handle_1.import: public
-      caddy.handle_1.reverse_proxy: "{{upstreams 80}}"
-      caddy.handle_2: "*"
-      caddy.handle_2.import: auth
-      caddy.handle_2.reverse_proxy: "{{upstreams 80}}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.docker-cd-api.rule=Host(`cd.jaw.dev`) && PathPrefix(`/api/`)"
+      - "traefik.http.routers.docker-cd-api.entrypoints=websecure"
+      - "traefik.http.services.docker-cd.loadbalancer.server.port=80"
+      - "traefik.http.routers.docker-cd-api.priority=100"
+      - "traefik.http.routers.docker-cd-badges.rule=Host(`cd.jaw.dev`) && PathPrefix(`/badges/`)"
+      - "traefik.http.routers.docker-cd-badges.entrypoints=websecure"
+      - "traefik.http.services.docker-cd.loadbalancer.server.port=80"
+      - "traefik.http.routers.docker-cd-badges.priority=100"
+      - "traefik.http.routers.docker-cd.rule=Host(`cd.jaw.dev`)"
+      - "traefik.http.routers.docker-cd.entrypoints=websecure"
+      - "traefik.http.services.docker-cd.loadbalancer.server.port=80"
+      - "traefik.http.routers.docker-cd.middlewares=google-auth@file"
     networks:
-      - proxy
+      - traefik
     restart: unless-stopped
 
 networks:
-  proxy:
+  traefik:
     external: true

@@ -2,7 +2,7 @@ services:
   it-tools:
     image: corentinth/it-tools:2024.5.13-a0bc346@sha256:c191615f23eb6a18b8faca4dba15fc11caefea250ce3a8e29d249757544092eb
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s
@@ -15,10 +15,11 @@ services:
           cpus: "0.5"
           memory: 128M
     labels:
-      caddy: tools.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 80}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.it-tools.rule=Host(`tools.jaw.dev`)"
+      - "traefik.http.routers.it-tools.entrypoints=websecure"
+      - "traefik.http.routers.it-tools.middlewares=google-auth@file"
+      - "traefik.http.services.it-tools.loadbalancer.server.port=80"
 networks:
-  proxy:
+  traefik:
     external: true

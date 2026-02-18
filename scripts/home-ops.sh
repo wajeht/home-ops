@@ -171,8 +171,7 @@ DATA_DIRS=(
 	"$USER_HOME/data/calendar"
 	"$USER_HOME/data/changedetection"
 	"$USER_HOME/data/close-powerlifting"
-	"$USER_HOME/data/caddy/data"
-	"$USER_HOME/data/caddy/config"
+	"$USER_HOME/data/traefik/certs"
 	"$USER_HOME/data/docker-cd"
 	"$USER_HOME/data/hello-world/db"
 	"$USER_HOME/data/huntarr"
@@ -339,8 +338,9 @@ cmd_install() {
 	cmd_setup
 
 	# Create external networks
-	$SUDO docker network create proxy 2>/dev/null || true
+	$SUDO docker network create traefik 2>/dev/null || true
 	$SUDO docker network create media 2>/dev/null || true
+	$SUDO docker volume create traefik-logs 2>/dev/null || true
 
 	# Registry auth
 	cd "$REPO_DIR"
@@ -374,7 +374,8 @@ cmd_install() {
 		fi
 	}
 
-	deploy_compose "$REPO_DIR/infra/caddy" caddy
+	deploy_compose "$REPO_DIR/apps/traefik" traefik
+	deploy_compose "$REPO_DIR/apps/google-auth" google-auth
 	deploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
 
 	header "Done"
@@ -420,7 +421,8 @@ cmd_uninstall() {
 	# Stop core infra first to prevent re-deployments.
 	step "1/4" "Stopping core infra..."
 	cd "$REPO_DIR/infra/docker-cd" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
-	cd "$REPO_DIR/infra/caddy" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
+	cd "$REPO_DIR/apps/google-auth" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
+	cd "$REPO_DIR/apps/traefik" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
 
 	# Best-effort submodule sync so uninstall also sees submodule apps.
 	if [ -f "$REPO_DIR/.gitmodules" ] && command -v git &>/dev/null; then
@@ -443,7 +445,7 @@ cmd_uninstall() {
 	step "3/4" "Removing networks..."
 	for i in 1 2 3; do
 		$SUDO docker network prune -f 2>/dev/null || true
-		$SUDO docker network rm proxy 2>/dev/null || true
+		$SUDO docker network rm traefik 2>/dev/null || true
 		$SUDO docker network rm media 2>/dev/null || true
 		sleep 2
 	done
@@ -483,7 +485,7 @@ cmd_relogin() {
 }
 
 #=============================================================================
-# UPDATE-INFRA - Redeploy caddy + docker-cd
+# UPDATE-INFRA - Redeploy traefik + google-auth + docker-cd
 #=============================================================================
 cmd_update_infra() {
 	header "Updating infra"
@@ -496,17 +498,20 @@ cmd_update_infra() {
 
 	docker_relogin
 
-	step "1/2" "Redeploying caddy..."
-	redeploy_compose "$REPO_DIR/infra/caddy" caddy
+	step "1/3" "Redeploying traefik..."
+	redeploy_compose "$REPO_DIR/apps/traefik" traefik
 
-	step "2/2" "Redeploying docker-cd..."
+	step "2/3" "Redeploying google-auth..."
+	redeploy_compose "$REPO_DIR/apps/google-auth" google-auth
+
+	step "3/3" "Redeploying docker-cd..."
 	redeploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
 
 	header "Done"
 }
 
 #=============================================================================
-# UPDATE-INFRA-FORCE - Force recreate caddy + docker-cd
+# UPDATE-INFRA-FORCE - Force recreate traefik + google-auth + docker-cd
 #=============================================================================
 cmd_update_infra_force() {
 	header "Updating infra (force recreate)"
@@ -519,10 +524,13 @@ cmd_update_infra_force() {
 
 	docker_relogin
 
-	step "1/2" "Force-redeploying caddy..."
-	redeploy_compose "$REPO_DIR/infra/caddy" caddy 1
+	step "1/3" "Force-redeploying traefik..."
+	redeploy_compose "$REPO_DIR/apps/traefik" traefik 1
 
-	step "2/2" "Force-redeploying docker-cd..."
+	step "2/3" "Force-redeploying google-auth..."
+	redeploy_compose "$REPO_DIR/apps/google-auth" google-auth 1
+
+	step "3/3" "Force-redeploying docker-cd..."
 	redeploy_compose "$REPO_DIR/infra/docker-cd" docker-cd 1
 
 	header "Done"
@@ -574,8 +582,8 @@ update-infra-force)
 	echo -e "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
 	echo -e "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
 	echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
-	echo -e "  ${GREEN}update-infra${NC}             Redeploy caddy and docker-cd"
-	echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate caddy and docker-cd"
+	echo -e "  ${GREEN}update-infra${NC}             Redeploy traefik, google-auth, and docker-cd"
+	echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate traefik, google-auth, and docker-cd"
 	echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
 	echo ""
 	echo -e "${BOLD}Examples:${NC}"

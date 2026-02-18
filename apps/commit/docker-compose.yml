@@ -2,7 +2,7 @@ services:
   commit:
     image: ghcr.io/wajeht/commit:4b04e94
     networks:
-      - proxy
+      - traefik
     env_file:
       - .env
     healthcheck:
@@ -17,10 +17,10 @@ services:
           cpus: "0.5"
           memory: 256M
     labels:
-      caddy: commit.jaw.dev
-      caddy.import: public
-      caddy.reverse_proxy: "{{upstreams 80}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.commit.rule=Host(`commit.jaw.dev`)"
+      - "traefik.http.routers.commit.entrypoints=websecure"
+      - "traefik.http.services.commit.loadbalancer.server.port=80"
 networks:
-  proxy:
+  traefik:
     external: true
