@@ -27,7 +27,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.sonarr.rule=Host(`sonarr.jaw.dev`)"
       - "traefik.http.routers.sonarr.entrypoints=websecure"
-      - "traefik.http.routers.sonarr.middlewares=auth-admin@file"
+      - "traefik.http.routers.sonarr.middlewares=google-auth@file"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
 networks:
   traefik:

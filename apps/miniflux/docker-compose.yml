@@ -28,7 +28,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.miniflux.rule=Host(`rss.jaw.dev`)"
       - "traefik.http.routers.miniflux.entrypoints=websecure"
-      - "traefik.http.routers.miniflux.middlewares=auth-admin@file"
+      - "traefik.http.routers.miniflux.middlewares=google-auth@file"
       - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
   miniflux-db:
     image: postgres:18-alpine@sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29

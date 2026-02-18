@@ -24,7 +24,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.tautulli.rule=Host(`tautulli.jaw.dev`)"
       - "traefik.http.routers.tautulli.entrypoints=websecure"
-      - "traefik.http.routers.tautulli.middlewares=auth-admin@file"
+      - "traefik.http.routers.tautulli.middlewares=google-auth@file"
       - "traefik.http.services.tautulli.loadbalancer.server.port=8181"
 networks:
   traefik:
