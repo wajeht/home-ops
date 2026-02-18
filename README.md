@@ -26,7 +26,7 @@ flowchart LR
     ci -->|update tag| github
     ops_push --> ci
     renovate -->|auto-merge| ci
-    github -->|poll + webhook| cf((Cloudflare)) -->|Cloudflare IPv4/v6 only| unifi -->|:80/:443| caddy --> docker_cd
+    github -->|poll + webhook| cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| caddy --> docker_cd
 
     subgraph dell[Dell OptiPlex 7050 Micro]
         docker_cd[docker-cd] -->|compose up| apps{{apps/*}}
