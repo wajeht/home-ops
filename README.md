@@ -14,7 +14,7 @@ GitOps-driven homelab running on Docker Compose
 ## Overview
 
 ```mermaid
-flowchart TB
+flowchart LR
     subgraph control[GitOps Control Plane]
         local_git[Local Git] -->|push| github[GitHub]
         app_repo[App Repos] -->|push tag| actions[GitHub Actions]
