@@ -30,7 +30,7 @@ flowchart LR
     renovate[Renovate] -->|auto-merge deps| github
     actions -->|build and push image| ghcr[GHCR]
     actions -->|update image tag| github
-    github -->|polled by docker-cd| docker_cd
+    github -->|polled by docker-cd| cloudflare[Cloudflare]
     actions -->|api sync trigger| cloudflare
 
     user[User] -->|HTTPS| cloudflare[Cloudflare]
