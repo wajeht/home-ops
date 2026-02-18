@@ -6,7 +6,8 @@ FROM caddy:2-builder AS builder
 RUN xcaddy build \
     --with github.com/lucaslorentz/caddy-docker-proxy/v2 \
     --with github.com/caddy-dns/cloudflare \
-    --with github.com/greenpau/caddy-security
+    --with github.com/greenpau/caddy-security \
+    --with github.com/mholt/caddy-ratelimit
 
 FROM caddy:2
 

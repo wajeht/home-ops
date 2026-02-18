@@ -28,7 +28,7 @@ services:
           memory: 256M
     labels:
       caddy: portainer.jaw.dev
-      caddy.import: auth
+      caddy.import: auth-admin
       caddy.reverse_proxy: "{{upstreams 9000}}"
 
 networks:

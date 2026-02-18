@@ -61,11 +61,15 @@ validate: lint
 		fi; \
 	done; \
 	cat "$$PWD/infra/caddy/Caddyfile" > "$$tmp_caddy"; \
-	printf '\nvalidate.local {\n\timport public\n\treverse_proxy 127.0.0.1:8080\n}\n\nvalidate-handle.local {\n\thandle /webhook {\n\t\timport public\n\t\treverse_proxy 127.0.0.1:8080\n\t}\n\thandle * {\n\t\timport auth\n\t\treverse_proxy 127.0.0.1:8080\n\t}\n}\n' >> "$$tmp_caddy"; \
-	if ! docker run --rm \
+	printf '\nvalidate.local {\n\timport public\n\treverse_proxy 127.0.0.1:8080\n}\n\nvalidate-handle.local {\n\thandle /webhook {\n\t\timport public-webhook\n\t\treverse_proxy 127.0.0.1:8080\n\t}\n\thandle /api/* {\n\t\timport api-public\n\t\treverse_proxy 127.0.0.1:8080\n\t}\n\thandle * {\n\t\timport auth\n\t\treverse_proxy 127.0.0.1:8080\n\t}\n}\n' >> "$$tmp_caddy"; \
+	caddy_validate_image="home-ops-caddy-validate:local"; \
+	if ! docker build -q -t "$$caddy_validate_image" "$$PWD/infra/caddy" >/dev/null 2>&1; then \
+		echo "ERROR: failed to build local Caddy validation image"; \
+		fail=1; \
+	elif ! docker run --rm \
 		-v "$$tmp_caddy:/etc/caddy/Caddyfile:ro" \
 		-v "$$PWD/infra/caddy/ui:/etc/caddy/ui:ro" \
-		ghcr.io/wajeht/docker-cd-caddy:sha-1e84728 \
+		"$$caddy_validate_image" \
 		caddy adapt --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then \
 		echo "ERROR: infra/caddy/Caddyfile failed caddy adapt validation"; \
 		fail=1; \

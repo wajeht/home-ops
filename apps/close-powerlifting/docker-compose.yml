@@ -23,7 +23,7 @@ services:
     labels:
       # main site
       caddy_0: "closepowerlifting.com www.closepowerlifting.com"
-      caddy_0.import: "cf-tls public"
+      caddy_0.import: cf-tls
       caddy_0.reverse_proxy: "{{upstreams 80}}"
       # jaw.dev → closepowerlifting.com 301 redirect
       caddy_1: close-powerlifting.jaw.dev
