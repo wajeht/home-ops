@@ -30,8 +30,8 @@ flowchart LR
     renovate[Renovate] -->|auto-merge deps| github
     actions -->|build and push image| ghcr[GHCR]
     actions -->|update image tag| github
-    docker_cd -->|poll GitHub| github
-    actions -->|trigger /api/sync| cloudflare
+    github -->|polled by docker-cd| docker_cd
+    actions -->|trigger /api/sync via Cloudflare| caddy
 
     user[User] -->|HTTPS| cloudflare[Cloudflare]
     cloudflare -->|origin traffic from Cloudflare IPs| unifi[UniFi Cloud Gateway Ultra]
