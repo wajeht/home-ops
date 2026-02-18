@@ -14,7 +14,7 @@ services:
       - PROVIDERS_GOOGLE_CLIENT_SECRET=${PROVIDERS_GOOGLE_CLIENT_SECRET}
       - WHITELIST=${WHITELIST_ADMINS:-no-one@example.invalid}
       - INSECURE_COOKIE=false
-      - LOG_LEVEL=info
+      - LOG_LEVEL=debug
       # User-level services get the broader whitelist
       - RULE_USER_ACTION=auth
       - RULE_USER_RULE=Host(`seerr.jaw.dev`) || Host(`plex.jaw.dev`)
