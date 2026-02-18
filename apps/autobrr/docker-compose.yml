@@ -24,7 +24,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.autobrr.rule=Host(`autobrr.jaw.dev`)"
       - "traefik.http.routers.autobrr.entrypoints=websecure"
-      - "traefik.http.routers.autobrr.middlewares=google-auth@file"
+      - "traefik.http.routers.autobrr.middlewares=rate-limit-auth@file,google-auth-user@file"
       - "traefik.http.services.autobrr.loadbalancer.server.port=7474"
 networks:
   traefik:

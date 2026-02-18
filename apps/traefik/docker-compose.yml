@@ -16,7 +16,7 @@ services:
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websecure.http.middlewares=gzip@file,security-headers@file,custom-errors@file"
+      - "--entrypoints.websecure.http.middlewares=gzip@file,security-headers@file,custom-errors@file,rate-limit-global@file"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       # Trust X-Forwarded-* headers from Cloudflare
@@ -62,7 +62,7 @@ services:
       - "traefik.http.routers.dashboard.rule=Host(`traefik.jaw.dev`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.middlewares=google-auth@file"
+      - "traefik.http.routers.dashboard.middlewares=rate-limit-auth@file,google-auth-admin@file"
       - "traefik.http.services.dummy.loadbalancer.server.port=9999"
 
 networks:

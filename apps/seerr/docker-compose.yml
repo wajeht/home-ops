@@ -22,7 +22,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.seerr.rule=Host(`seerr.jaw.dev`)"
       - "traefik.http.routers.seerr.entrypoints=websecure"
-      - "traefik.http.routers.seerr.middlewares=google-auth@file"
+      - "traefik.http.routers.seerr.middlewares=rate-limit-auth@file,google-auth-user@file"
       - "traefik.http.services.seerr.loadbalancer.server.port=5055"
 networks:
   traefik:
