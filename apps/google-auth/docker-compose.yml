@@ -19,6 +19,11 @@ services:
       - RULE_USER_WHITELIST=${WHITELIST}
     networks:
       - traefik
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 4181"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
     deploy:
       resources:
