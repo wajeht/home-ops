@@ -28,7 +28,7 @@ flowchart LR
     renovate -->|auto-merge| ci
     github -->|poll + webhook| cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| caddy -->|proxy| docker_cd
 
-    subgraph homeops[home-ops]
+    subgraph infra[Infra]
         subgraph dell[Dell OptiPlex 7050 Micro]
             docker_cd[docker-cd] -->|compose up| apps{{apps/*}}
             caddy[Caddy] -->|proxy| apps
@@ -53,7 +53,7 @@ flowchart LR
     caddy -.->|DNS01| cf
 
     style triggers fill:#e8f4fd,stroke:#4a90d9
-    style homeops fill:none,stroke:#f97316,stroke-width:2px
+    style infra fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Polls every 5 min or instantly via `/api/sync` webhook. Auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates. [Caddy](https://github.com/wajeht/docker-cd-caddy) routes via Docker labels with auto SSL via Cloudflare DNS challenge. [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~15min: Renovate scan + docker-cd poll). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
