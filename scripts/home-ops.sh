@@ -512,7 +512,7 @@ cmd_relogin() {
 }
 
 #=============================================================================
-# UPDATE-INFRA - Redeploy traefik + google-auth + docker-cd
+# UPDATE-INFRA - Redeploy docker-cd (which manages all other services)
 #=============================================================================
 cmd_update_infra() {
 	header "Updating infra"
@@ -525,20 +525,14 @@ cmd_update_infra() {
 
 	docker_relogin
 
-	step "1/3" "Redeploying traefik..."
-	redeploy_compose "$REPO_DIR/apps/traefik" traefik
-
-	step "2/3" "Redeploying google-auth..."
-	redeploy_compose "$REPO_DIR/apps/google-auth" google-auth
-
-	step "3/3" "Redeploying docker-cd..."
+	step "1/1" "Redeploying docker-cd..."
 	redeploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
 
 	header "Done"
 }
 
 #=============================================================================
-# UPDATE-INFRA-FORCE - Force recreate traefik + google-auth + docker-cd
+# UPDATE-INFRA-FORCE - Force recreate docker-cd (which manages all other services)
 #=============================================================================
 cmd_update_infra_force() {
 	header "Updating infra (force recreate)"
@@ -551,13 +545,7 @@ cmd_update_infra_force() {
 
 	docker_relogin
 
-	step "1/3" "Force-redeploying traefik..."
-	redeploy_compose "$REPO_DIR/apps/traefik" traefik 1
-
-	step "2/3" "Force-redeploying google-auth..."
-	redeploy_compose "$REPO_DIR/apps/google-auth" google-auth 1
-
-	step "3/3" "Force-redeploying docker-cd..."
+	step "1/1" "Force-redeploying docker-cd..."
 	redeploy_compose "$REPO_DIR/infra/docker-cd" docker-cd 1
 
 	header "Done"
@@ -609,8 +597,8 @@ update-infra-force)
 	echo -e "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
 	echo -e "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
 	echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
-	echo -e "  ${GREEN}update-infra${NC}             Redeploy traefik, google-auth, and docker-cd"
-	echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate traefik, google-auth, and docker-cd"
+	echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
+	echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
 	echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
 	echo ""
 	echo -e "${BOLD}Examples:${NC}"
