@@ -15,22 +15,27 @@ GitOps-driven homelab running on Docker Compose
 
 ```mermaid
 flowchart LR
-    subgraph Dell[Dell OptiPlex 7050 Micro]
-        docker-cd -->|docker compose up| Apps[apps/*]
-        Caddy -->|route| Apps
+    local_git[Local Git] -->|push| github[GitHub]
+    app_repo[App Repos] -->|push tag| actions[GitHub Actions]
+    actions -->|build image| ghcr[GHCR]
+    actions -->|update image tag| github
+    renovate[Renovate] -->|auto-merge deps| github
+    github -->|poll/API sync| docker_cd[docker-cd]
+
+    subgraph dell[Dell OptiPlex 7050 Micro]
+        docker_cd -->|docker compose up| apps[apps/* stacks]
+        caddy[caddy + docker-proxy] -->|route traffic| apps
     end
 
-    Git -->|push| GitHub -->|poll| docker-cd
-    AppRepo[app repo] -->|push tag| Actions[GitHub Actions]
-    Actions -->|build image| GHCR[ghcr.io] -->|push|GitHub
-    Actions -->|update tag| GitHub
-    Renovate -->|auto-merge| GitHub
-    User -->|https| Cloudflare -->|ssl| UniFi[UniFi Cloud Gateway Ultra] -->|forward| Caddy
-    NAS[Synology DS923+] -->|NFS| Apps
-    subgraph Pi[Raspberry Pi 5]
-        AdGuard
+    user[User] -->|HTTPS| cloudflare[Cloudflare]
+    cloudflare -->|SSL| unifi[UniFi Cloud Gateway Ultra]
+    unifi -->|port forward 80/443| caddy
+
+    nas[Synology DS923+] -->|NFS mounts| apps
+    subgraph pi[Raspberry Pi 5]
+        adguard[AdGuard Home]
     end
-    AdGuard -->|DNS| UniFi
+    adguard -->|DNS| unifi
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Caddy](https://github.com/wajeht/docker-cd-caddy) routes via Docker labels with auto SSL via Cloudflare DNS challenge. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
