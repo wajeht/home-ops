@@ -18,46 +18,31 @@ flowchart LR
     subgraph dell[Dell OptiPlex 7050 Micro]
         docker_cd[docker-cd]
         caddy[caddy + docker-proxy]
-        apps_dir[apps directory]
-        stacks[compose stacks]
+        apps[apps/* stacks]
     end
 
     subgraph pi[Raspberry Pi 5]
         adguard[AdGuard Home]
     end
 
-    subgraph synology[Synology DS923+]
-        nas_dsm[DSM]
-        nas_nfs[NFS shares]
-    end
-
-    subgraph unifi_hw[UniFi Cloud Gateway Ultra]
-        unifi[Gateway]
-    end
-
-    local_git[Local Git] -->|push| home_ops_repo[home-ops repo in GitHub]
+    local_git[Local Git] -->|push| github[GitHub]
     app_repo[App Repos] -->|push tag| actions[GitHub Actions]
-    renovate[Renovate] -->|auto-merge deps| home_ops_repo
+    renovate[Renovate] -->|auto-merge deps| github
     actions -->|build and push image| ghcr[GHCR]
-    actions -->|update image tag| home_ops_repo
-    ghcr -->|docker pull image| docker_cd
-    docker_cd -.->|poll GitHub| home_ops_repo
-    home_ops_repo -->|api sync trigger| cloudflare[Cloudflare]
+    actions -->|update image tag| github
+    github -->|polled by docker-cd| cloudflare[Cloudflare]
+    actions -->|api sync trigger| cloudflare
 
-    user[User] -->|HTTPS| cloudflare
-    cloudflare -->|origin HTTPS from Cloudflare IPs only| unifi
+    user[User] -->|HTTPS| cloudflare[Cloudflare]
+    cloudflare -->|origin HTTPS from Cloudflare IPs only| unifi[UniFi Cloud Gateway Ultra]
     adguard -->|DNS| unifi
 
-    docker_cd -->|sync local checkout| apps_dir
-    docker_cd -->|discover stacks| apps_dir
-    apps_dir -->|compose projects| stacks
-    docker_cd -->|docker compose up| stacks
-    caddy -->|reverse proxy traffic| stacks
+    docker_cd -->|docker compose up| apps
+    caddy -->|reverse proxy traffic| apps
     caddy -->|api and badges| docker_cd
     unifi -->|port forward 80/443| caddy
     caddy -.->|DNS01 challenge API| cloudflare_dns[Cloudflare DNS API]
-    nas_dsm -->|exports| nas_nfs
-    nas_nfs -->|NFS mounts| stacks
+    nas[Synology DS923+] -->|NFS mounts| apps
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Caddy](https://github.com/wajeht/docker-cd-caddy) routes via Docker labels with auto SSL via Cloudflare DNS challenge. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
