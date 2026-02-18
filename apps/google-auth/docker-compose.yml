@@ -9,6 +9,9 @@ services:
       - AUTH_HOST=auth.jaw.dev
       - COOKIE_DOMAIN=jaw.dev
       - SECRET=${SECRET}
+      - PROVIDERS_GOOGLE_CLIENT_ID=${PROVIDERS_GOOGLE_CLIENT_ID}
+      - PROVIDERS_GOOGLE_CLIENT_SECRET=${PROVIDERS_GOOGLE_CLIENT_SECRET}
+      - WHITELIST=${WHITELIST_ADMINS:-no-one@example.invalid}
       - INSECURE_COOKIE=false
       - LOG_LEVEL=info
       # User-level services get the broader whitelist
