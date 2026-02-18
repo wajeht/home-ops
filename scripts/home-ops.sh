@@ -109,6 +109,7 @@ EOF
 redeploy_compose() {
 	local dir=$1 name=$2 force=${3:-0}
 	local tmp="" env_backup="" had_env=0
+	local compose_file="$dir/docker-compose.yml"
 	local -a up_args=(-d)
 
 	if [ "$force" = "1" ]; then
@@ -116,36 +117,35 @@ redeploy_compose() {
 	fi
 
 	info "Redeploying $name..."
-	cd "$dir"
 
-	if [ -f .env.sops ]; then
+	if [ -f "$dir/.env.sops" ]; then
 		tmp=$(mktemp)
-		decrypt_dotenv_sops .env.sops >"$tmp"
+		decrypt_dotenv_sops "$dir/.env.sops" >"$tmp"
 
 		# Some stacks use env_file: .env, so materialize decrypted env during deploy.
-		if [ -f .env ]; then
+		if [ -f "$dir/.env" ]; then
 			had_env=1
 			env_backup=$(mktemp)
-			cp .env "$env_backup"
+			cp "$dir/.env" "$env_backup"
 		fi
-		cp "$tmp" .env
+		cp "$tmp" "$dir/.env"
 
-		if ! $SUDO docker compose --env-file "$tmp" pull; then
+		if ! $SUDO docker compose -f "$compose_file" --project-directory "$dir" --env-file "$tmp" pull; then
 			if [ "$had_env" = "1" ]; then
-				cp "$env_backup" .env
+				cp "$env_backup" "$dir/.env"
 			else
-				rm -f .env
+				rm -f "$dir/.env"
 			fi
 			rm -f "$env_backup"
 			rm -f "$tmp"
 			err "Failed to pull images for $name"
 			return 1
 		fi
-		if ! $SUDO docker compose --env-file "$tmp" up "${up_args[@]}"; then
+		if ! $SUDO docker compose -f "$compose_file" --project-directory "$dir" --env-file "$tmp" up "${up_args[@]}"; then
 			if [ "$had_env" = "1" ]; then
-				cp "$env_backup" .env
+				cp "$env_backup" "$dir/.env"
 			else
-				rm -f .env
+				rm -f "$dir/.env"
 			fi
 			rm -f "$env_backup"
 			rm -f "$tmp"
@@ -153,18 +153,18 @@ redeploy_compose() {
 			return 1
 		fi
 		if [ "$had_env" = "1" ]; then
-			cp "$env_backup" .env
+			cp "$env_backup" "$dir/.env"
 		else
-			rm -f .env
+			rm -f "$dir/.env"
 		fi
 		rm -f "$env_backup"
 		rm -f "$tmp"
 	else
-		if ! $SUDO docker compose pull; then
+		if ! $SUDO docker compose -f "$compose_file" --project-directory "$dir" pull; then
 			err "Failed to pull images for $name"
 			return 1
 		fi
-		if ! $SUDO docker compose up "${up_args[@]}"; then
+		if ! $SUDO docker compose -f "$compose_file" --project-directory "$dir" up "${up_args[@]}"; then
 			err "Failed to redeploy $name"
 			return 1
 		fi

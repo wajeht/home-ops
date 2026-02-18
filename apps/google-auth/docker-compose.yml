@@ -1,14 +1,16 @@
 services:
   google-auth-user:
     image: thomseddon/traefik-forward-auth:2
-    env_file:
-      - .env
     environment:
       - TZ=America/Chicago
       - DEFAULT_PROVIDER=google
       - AUTH_HOST=auth.jaw.dev
       - COOKIE_DOMAIN=jaw.dev
       - COOKIE_NAME=_forward_auth_user
+      - SECRET=${SECRET}
+      - PROVIDERS_GOOGLE_CLIENT_ID=${PROVIDERS_GOOGLE_CLIENT_ID}
+      - PROVIDERS_GOOGLE_CLIENT_SECRET=${PROVIDERS_GOOGLE_CLIENT_SECRET}
+      - WHITELIST=${WHITELIST}
       - INSECURE_COOKIE=true
       - LOG_LEVEL=info
     networks:
@@ -27,14 +29,15 @@ services:
 
   google-auth-admin:
     image: thomseddon/traefik-forward-auth:2
-    env_file:
-      - .env
     environment:
       - TZ=America/Chicago
       - DEFAULT_PROVIDER=google
       - AUTH_HOST=auth.jaw.dev
       - COOKIE_DOMAIN=jaw.dev
       - COOKIE_NAME=_forward_auth_admin
+      - SECRET=${SECRET}
+      - PROVIDERS_GOOGLE_CLIENT_ID=${PROVIDERS_GOOGLE_CLIENT_ID}
+      - PROVIDERS_GOOGLE_CLIENT_SECRET=${PROVIDERS_GOOGLE_CLIENT_SECRET}
       - WHITELIST=${WHITELIST_ADMINS:-no-one@example.invalid}
       - INSECURE_COOKIE=true
       - LOG_LEVEL=info
