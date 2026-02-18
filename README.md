@@ -13,8 +13,6 @@ GitOps-driven homelab running on Docker Compose
 
 ## Overview
 
-**Deploy**
-
 ```mermaid
 flowchart LR
     git([Git Push]) --> github((GitHub))
@@ -25,21 +23,12 @@ flowchart LR
 
     subgraph dell[Dell OptiPlex 7050 Micro]
         docker_cd[docker-cd] -->|compose up| apps{{apps/*}}
-        caddy[Caddy] -->|reverse proxy| apps
+        caddy[Caddy] -->|proxy| apps
     end
 
     subgraph nas[Synology DS923+]
         nfs[(NFS)]
     end
-
-    nfs --> apps
-```
-
-**Traffic**
-
-```mermaid
-flowchart LR
-    user([User]) -->|HTTPS| cf((Cloudflare))
 
     subgraph pi[Raspberry Pi 5]
         adguard[AdGuard Home]
@@ -49,14 +38,11 @@ flowchart LR
         unifi{{Firewall}}
     end
 
+    nfs --> apps
+    user([User]) -->|HTTPS| cf((Cloudflare))
     adguard -->|DNS| unifi
     cf --> unifi
     unifi -->|:80/:443| caddy
-
-    subgraph dell[Dell OptiPlex 7050 Micro]
-        caddy[Caddy] -->|proxy| apps{{apps/*}}
-    end
-
     caddy -.->|DNS01| cf
 ```
 
