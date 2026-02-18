@@ -17,7 +17,7 @@ GitOps-driven homelab running on Docker Compose
 flowchart LR
     subgraph dell[Dell OptiPlex 7050 Micro]
         docker_cd[docker-cd]
-        caddy[caddy + docker-proxy]
+        caddy[Caddy]
         apps[apps/* stacks]
     end
 
@@ -30,18 +30,18 @@ flowchart LR
     renovate[Renovate] -->|auto-merge deps| github
     actions -->|build and push image| ghcr[GHCR]
     actions -->|update image tag| github
-    github -->|polled by docker-cd| cloudflare[Cloudflare]
-    actions -->|api sync trigger| cloudflare
+    docker_cd -->|poll repo| github
+    actions -->|sync webhook| docker_cd
 
     user[User] -->|HTTPS| cloudflare[Cloudflare]
-    cloudflare -->|origin HTTPS from Cloudflare IPs only| unifi[UniFi Cloud Gateway Ultra]
+    cloudflare -->|origin HTTPS| unifi[UniFi Cloud Gateway Ultra]
     adguard -->|DNS| unifi
 
     docker_cd -->|docker compose up| apps
-    caddy -->|reverse proxy traffic| apps
+    caddy -->|reverse proxy| apps
     caddy -->|api and badges| docker_cd
     unifi -->|port forward 80/443| caddy
-    caddy -.->|DNS01 challenge API| cloudflare_dns[Cloudflare DNS API]
+    caddy -.->|DNS01 challenge| cloudflare
     nas[Synology DS923+] -->|NFS mounts| apps
 ```
 
