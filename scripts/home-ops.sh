@@ -108,7 +108,7 @@ EOF
 
 redeploy_compose() {
 	local dir=$1 name=$2 force=${3:-0}
-	local tmp=""
+	local tmp="" env_backup="" had_env=0
 	local -a up_args=(-d)
 
 	if [ "$force" = "1" ]; then
@@ -121,16 +121,43 @@ redeploy_compose() {
 	if [ -f .env.sops ]; then
 		tmp=$(mktemp)
 		decrypt_dotenv_sops .env.sops >"$tmp"
+
+		# Some stacks use env_file: .env, so materialize decrypted env during deploy.
+		if [ -f .env ]; then
+			had_env=1
+			env_backup=$(mktemp)
+			cp .env "$env_backup"
+		fi
+		cp "$tmp" .env
+
 		if ! $SUDO docker compose --env-file "$tmp" pull; then
+			if [ "$had_env" = "1" ]; then
+				cp "$env_backup" .env
+			else
+				rm -f .env
+			fi
+			rm -f "$env_backup"
 			rm -f "$tmp"
 			err "Failed to pull images for $name"
 			return 1
 		fi
 		if ! $SUDO docker compose --env-file "$tmp" up "${up_args[@]}"; then
+			if [ "$had_env" = "1" ]; then
+				cp "$env_backup" .env
+			else
+				rm -f .env
+			fi
+			rm -f "$env_backup"
 			rm -f "$tmp"
 			err "Failed to redeploy $name"
 			return 1
 		fi
+		if [ "$had_env" = "1" ]; then
+			cp "$env_backup" .env
+		else
+			rm -f .env
+		fi
+		rm -f "$env_backup"
 		rm -f "$tmp"
 	else
 		if ! $SUDO docker compose pull; then
