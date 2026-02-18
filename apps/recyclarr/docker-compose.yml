@@ -9,6 +9,7 @@ services:
       - CRON_SCHEDULE=@daily
     volumes:
       - /home/jaw/data/recyclarr:/config
+      - ./recyclarr.yml:/config/recyclarr.yml:ro
     networks:
       - media
     healthcheck:
