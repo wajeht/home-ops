@@ -46,7 +46,7 @@ flowchart LR
     end
 
     subgraph ucg[UniFi Cloud Gateway Ultra]
-        unifi[Router]
+        unifi[Firewall]
     end
 
     adguard -->|DNS| unifi
