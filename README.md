@@ -23,7 +23,7 @@ flowchart TB
         renovate[Renovate] -->|auto-merge| github
         github -->|poll + webhook| docker_cd[docker-cd]
         docker_cd -->|compose up| apps[apps/*]
-        nas[Synology NAS] -->|NFS| apps
+        nas[Synology DS923+] -->|NFS| apps
     end
 
     subgraph traffic[Traffic]
@@ -37,6 +37,12 @@ flowchart TB
     end
 
     deploy ~~~ traffic
+
+    style deploy fill:none,stroke:#ccc
+    style traffic fill:none,stroke:#ccc
+
+    classDef hw fill:#fff3cd,stroke:#d4a017
+    class docker_cd,apps,caddy,apps2,unifi,adguard,nas hw
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Caddy](https://github.com/wajeht/docker-cd-caddy) routes via Docker labels with auto SSL via Cloudflare DNS challenge. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
