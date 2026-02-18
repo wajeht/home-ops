@@ -22,7 +22,8 @@ flowchart LR
     end
 
     app_push --> ci([GitHub Actions]) -->|build + push| ghcr[(GHCR)]
-    ci -->|update tag| github((GitHub))
+    ghcr --> github((GitHub))
+    ci -->|update tag| github
     ops_push --> github
     renovate -->|auto-merge| github
     github -->|poll + webhook| cf((Cloudflare)) --> unifi -->|:80/:443| caddy --> docker_cd
