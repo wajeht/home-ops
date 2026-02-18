@@ -13,29 +13,26 @@ GitOps-driven homelab running on Docker Compose
 
 ## Overview
 
-**Deploy**
-
 ```mermaid
 flowchart LR
-    git[Git Push] --> github[GitHub]
-    actions[GitHub Actions] -->|build image| ghcr[GHCR]
-    actions -->|update tag| github
-    renovate[Renovate] -->|auto-merge| github
-    github -->|poll + webhook| docker_cd[docker-cd]
-    docker_cd -->|compose up| apps[apps/*]
-    nas[Synology NAS] -->|NFS| apps
-```
+    subgraph deploy[Deploy]
+        git[Git Push] --> github[GitHub]
+        actions[GitHub Actions] -->|build image| ghcr[GHCR]
+        actions -->|update tag| github
+        renovate[Renovate] -->|auto-merge| github
+        github -->|poll + webhook| docker_cd[docker-cd]
+        docker_cd -->|compose up| apps[apps/*]
+        nas[Synology NAS] -->|NFS| apps
+    end
 
-**Traffic**
-
-```mermaid
-flowchart LR
-    user[User] -->|HTTPS| cf[Cloudflare]
-    cf --> unifi[UniFi Gateway]
-    adguard[AdGuard Home] -->|DNS| unifi
-    unifi -->|:80/:443| caddy[Caddy]
-    caddy -->|proxy| apps[apps/*]
-    caddy -.->|DNS01| cf
+    subgraph traffic[Traffic]
+        user[User] -->|HTTPS| cf[Cloudflare]
+        cf --> unifi[UniFi Gateway]
+        adguard[AdGuard Home] -->|DNS| unifi
+        unifi -->|:80/:443| caddy[Caddy]
+        caddy -->|proxy| apps2[apps/*]
+        caddy -.->|DNS01| cf
+    end
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Caddy](https://github.com/wajeht/docker-cd-caddy) routes via Docker labels with auto SSL via Cloudflare DNS challenge. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
