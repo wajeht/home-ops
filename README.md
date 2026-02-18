@@ -14,29 +14,33 @@ GitOps-driven homelab running on Docker Compose
 ## Overview
 
 ```mermaid
-flowchart LR
-    local_git[Local Git] -->|push| github[GitHub]
-    app_repo[App Repos] -->|push tag| actions[GitHub Actions]
-    actions -->|build image| ghcr[GHCR]
-    actions -->|update image tag| github
-    renovate[Renovate] -->|auto-merge deps| github
-    github -->|poll/API sync| docker_cd[docker-cd]
+flowchart TB
+    subgraph control[GitOps Control Plane]
+        local_git[Local Git] -->|push| github[GitHub]
+        app_repo[App Repos] -->|push tag| actions[GitHub Actions]
+        renovate[Renovate] -->|auto-merge deps| github
+        actions -->|build and push image| ghcr[GHCR]
+        actions -->|update image tag| github
+        github -->|poll/API sync| docker_cd[docker-cd]
+    end
+
+    subgraph network[Traffic and Network Plane]
+        user[User] -->|HTTPS| cloudflare[Cloudflare]
+        cloudflare -->|proxied HTTPS to origin| unifi[UniFi Cloud Gateway Ultra]
+        subgraph pi[Raspberry Pi 5]
+            adguard[AdGuard Home]
+        end
+        adguard -->|DNS| unifi
+    end
 
     subgraph dell[Dell OptiPlex 7050 Micro]
         docker_cd -->|docker compose up| apps[apps/* stacks]
-        caddy[caddy + docker-proxy] -->|route traffic| apps
+        caddy[caddy + docker-proxy] -->|reverse proxy traffic| apps
     end
 
-    user[User] -->|HTTPS| cloudflare[Cloudflare]
-    cloudflare -->|proxied HTTPS to origin| unifi[UniFi Cloud Gateway Ultra]
     unifi -->|port forward 80/443| caddy
     caddy -.->|DNS-01 challenge API| cloudflare_dns[Cloudflare DNS API]
-
     nas[Synology DS923+] -->|NFS mounts| apps
-    subgraph pi[Raspberry Pi 5]
-        adguard[AdGuard Home]
-    end
-    adguard -->|DNS| unifi
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Caddy](https://github.com/wajeht/docker-cd-caddy) routes via Docker labels with auto SSL via Cloudflare DNS challenge. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
