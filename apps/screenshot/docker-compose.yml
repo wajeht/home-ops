@@ -10,7 +10,7 @@ services:
     volumes:
       - /home/jaw/data/screenshot:/app/data
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/healthz"]
       interval: 30s
@@ -23,10 +23,10 @@ services:
           cpus: "1.0"
           memory: 1G
     labels:
-      caddy: screenshot.jaw.dev
-      caddy.import: public
-      caddy.reverse_proxy: "{{upstreams 80}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.screenshot.rule=Host(`screenshot.jaw.dev`)"
+      - "traefik.http.routers.screenshot.entrypoints=websecure"
+      - "traefik.http.services.screenshot.loadbalancer.server.port=80"
 networks:
-  proxy:
+  traefik:
     external: true

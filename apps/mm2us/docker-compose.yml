@@ -8,7 +8,7 @@ services:
     volumes:
       - /home/jaw/data/mm2us:/usr/src/app/dist/src/db/sqlite
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
       interval: 30s
@@ -21,10 +21,10 @@ services:
           cpus: "0.5"
           memory: 256M
     labels:
-      caddy: "mm2us.com www.mm2us.com"
-      caddy.import: cf-tls
-      caddy.reverse_proxy: "{{upstreams 80}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.mm2us.rule=Host(`mm2us.com`) || Host(`www.mm2us.com`)"
+      - "traefik.http.routers.mm2us.entrypoints=websecure"
+      - "traefik.http.services.mm2us.loadbalancer.server.port=80"
 networks:
-  proxy:
+  traefik:
     external: true

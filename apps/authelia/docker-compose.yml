@@ -11,7 +11,7 @@ services:
       - ./configuration.yml:/config/configuration.yml:ro
       - ./users.yml:/config/users.yml:ro
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:9091/api/health"]
       interval: 30s
@@ -24,10 +24,10 @@ services:
           cpus: "1.0"
           memory: 256M
     labels:
-      caddy: authelia.jaw.dev
-      caddy.import: public
-      caddy.reverse_proxy: "{{upstreams 9091}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.authelia.rule=Host(`authelia.jaw.dev`)"
+      - "traefik.http.routers.authelia.entrypoints=websecure"
+      - "traefik.http.services.authelia.loadbalancer.server.port=9091"
 networks:
-  proxy:
+  traefik:
     external: true

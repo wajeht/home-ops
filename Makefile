@@ -18,11 +18,11 @@ install-fresh:
 uninstall:
 	@./scripts/home-ops.sh uninstall
 
-## update: Redeploy infra (caddy + docker-cd)
+## update: Redeploy infra (traefik + google-auth + docker-cd)
 update:
 	@./scripts/home-ops.sh update-infra
 
-## update-force: Force-recreate infra containers (caddy + docker-cd)
+## update-force: Force-recreate infra containers (traefik + google-auth + docker-cd)
 update-force:
 	@./scripts/home-ops.sh update-infra-force
 
@@ -46,8 +46,7 @@ lint:
 validate: lint
 	@fail=0; \
 	tmp_env=$$(mktemp); \
-	tmp_caddy=$$(mktemp); \
-	trap 'rm -f "$$tmp_env" "$$tmp_caddy"' EXIT; \
+	trap 'rm -f "$$tmp_env"' EXIT; \
 	for f in $$(find . -name '.env.sops' -not -path './.git/*' -not -path './apps/adguard/*'); do \
 		if ! grep -q 'sops_mac=' "$$f"; then \
 			echo "ERROR: $$f is not SOPS-encrypted"; \
@@ -60,20 +59,6 @@ validate: lint
 			fail=1; \
 		fi; \
 	done; \
-	cat "$$PWD/infra/caddy/Caddyfile" > "$$tmp_caddy"; \
-	printf '\nvalidate.local {\n\timport public\n\treverse_proxy 127.0.0.1:8080\n}\n\nvalidate-handle.local {\n\thandle /webhook {\n\t\timport public-webhook\n\t\treverse_proxy 127.0.0.1:8080\n\t}\n\thandle /api/* {\n\t\timport api-public\n\t\treverse_proxy 127.0.0.1:8080\n\t}\n\thandle * {\n\t\timport auth\n\t\treverse_proxy 127.0.0.1:8080\n\t}\n}\n' >> "$$tmp_caddy"; \
-	caddy_validate_image="home-ops-caddy-validate:local"; \
-	if ! docker build -q -t "$$caddy_validate_image" "$$PWD/infra/caddy" >/dev/null 2>&1; then \
-		echo "ERROR: failed to build local Caddy validation image"; \
-		fail=1; \
-	elif ! docker run --rm \
-		-v "$$tmp_caddy:/etc/caddy/Caddyfile:ro" \
-		-v "$$PWD/infra/caddy/ui:/etc/caddy/ui:ro" \
-		"$$caddy_validate_image" \
-		caddy adapt --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then \
-		echo "ERROR: infra/caddy/Caddyfile failed caddy adapt validation"; \
-		fail=1; \
-	fi; \
 	exit $$fail
 
 ## push: Format, validate, commit, and push changes

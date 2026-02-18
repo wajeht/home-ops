@@ -6,7 +6,7 @@ services:
     volumes:
       - /home/jaw/data/seerr:/app/config
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:5055/api/v1/status"]
       interval: 30s
@@ -19,10 +19,11 @@ services:
           cpus: "1.0"
           memory: 512M
     labels:
-      caddy: seerr.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 5055}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.seerr.rule=Host(`seerr.jaw.dev`)"
+      - "traefik.http.routers.seerr.entrypoints=websecure"
+      - "traefik.http.routers.seerr.middlewares=google-auth@file"
+      - "traefik.http.services.seerr.loadbalancer.server.port=5055"
 networks:
-  proxy:
+  traefik:
     external: true

@@ -8,7 +8,7 @@ services:
     volumes:
       - /home/jaw/data/autobrr:/config
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:7474"]
       interval: 30s
@@ -21,10 +21,11 @@ services:
           cpus: "0.5"
           memory: 128M
     labels:
-      caddy: autobrr.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 7474}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.autobrr.rule=Host(`autobrr.jaw.dev`)"
+      - "traefik.http.routers.autobrr.entrypoints=websecure"
+      - "traefik.http.routers.autobrr.middlewares=google-auth@file"
+      - "traefik.http.services.autobrr.loadbalancer.server.port=7474"
 networks:
-  proxy:
+  traefik:
     external: true

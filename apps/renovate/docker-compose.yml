@@ -25,7 +25,7 @@ services:
     volumes:
       - /home/jaw/data/renovate:/data
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
       interval: 30s
@@ -38,14 +38,15 @@ services:
           cpus: "3.0"
           memory: 3G
     labels:
-      caddy: renovate.jaw.dev
-      caddy.handle_0: /webhook
-      caddy.handle_0.import: public-webhook
-      caddy.handle_0.reverse_proxy: "{{upstreams 8080}}"
-      caddy.handle_1: "*"
-      caddy.handle_1.import: auth
-      caddy.handle_1.reverse_proxy: "{{upstreams 8080}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.renovate-webhook.rule=Host(`renovate.jaw.dev`) && Path(`/webhook`)"
+      - "traefik.http.routers.renovate-webhook.entrypoints=websecure"
+      - "traefik.http.services.renovate.loadbalancer.server.port=8080"
+      - "traefik.http.routers.renovate-webhook.priority=100"
+      - "traefik.http.routers.renovate.rule=Host(`renovate.jaw.dev`)"
+      - "traefik.http.routers.renovate.entrypoints=websecure"
+      - "traefik.http.services.renovate.loadbalancer.server.port=8080"
+      - "traefik.http.routers.renovate.middlewares=google-auth@file"
 networks:
-  proxy:
+  traefik:
     external: true

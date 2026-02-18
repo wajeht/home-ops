@@ -7,7 +7,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "/dozzle", "healthcheck"]
       interval: 30s
@@ -20,10 +20,11 @@ services:
           cpus: "0.5"
           memory: 256M
     labels:
-      caddy: logs.jaw.dev
-      caddy.import: auth-admin
-      caddy.reverse_proxy: "{{upstreams 8080}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.dozzle.rule=Host(`logs.jaw.dev`)"
+      - "traefik.http.routers.dozzle.entrypoints=websecure"
+      - "traefik.http.routers.dozzle.middlewares=google-auth@file"
+      - "traefik.http.services.dozzle.loadbalancer.server.port=8080"
 networks:
-  proxy:
+  traefik:
     external: true

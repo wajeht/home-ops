@@ -10,7 +10,7 @@ services:
       - /home/jaw/data/code-server:/home/coder/.config
       - /home/jaw:/home/coder/home
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
       interval: 30s
@@ -23,10 +23,11 @@ services:
           cpus: "2.0"
           memory: 2G
     labels:
-      caddy: code.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 8080}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.code-server.rule=Host(`code.jaw.dev`)"
+      - "traefik.http.routers.code-server.entrypoints=websecure"
+      - "traefik.http.routers.code-server.middlewares=google-auth@file"
+      - "traefik.http.services.code-server.loadbalancer.server.port=8080"
 networks:
-  proxy:
+  traefik:
     external: true

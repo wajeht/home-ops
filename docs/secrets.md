@@ -17,7 +17,7 @@ Each stack has its own `.env.sops` file. When docker-cd deploys (via polling), i
 ```
 apps/
 ├── bang/.env.sops
-├── caddy/.env.sops
+├── traefik/.env.sops
 ├── calendar/.env.sops
 ├── close-powerlifting/.env.sops
 ├── commit/.env.sops

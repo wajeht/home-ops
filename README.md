@@ -26,12 +26,13 @@ flowchart LR
     ci -->|update tag| github
     ops_push --> ci
     renovate -->|auto-merge| ci
-    github -->|poll + api/sync | cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| caddy -->|proxy| docker_cd
+    github -->|poll + api/sync | cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| traefik -->|proxy| docker_cd
 
     subgraph infra[Infra]
         subgraph dell[Dell OptiPlex 7050 Micro]
             docker_cd[docker-cd] -->|compose up| apps[apps/*]
-            caddy[Caddy] -->|proxy| apps
+            traefik[Traefik] -->|proxy| apps
+            google_auth[Google Auth] -->|forward-auth| traefik
         end
 
         subgraph nas[Synology DS923+]
@@ -50,7 +51,7 @@ flowchart LR
         adguard -->|DNS| unifi
     end
 
-    caddy -.->|DNS01| cf
+    traefik -.->|DNS01| cf
 
     style triggers fill:#e8f4fd,stroke:#4a90d9
     style infra fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
@@ -63,7 +64,7 @@ flowchart LR
     style unifi fill:#cce0f5,stroke:#0559c9,color:#333
 ```
 
-Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Polls every 5 min or instantly via `/api/sync` webhook. Auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates. [Caddy](https://github.com/wajeht/docker-cd-caddy) routes via Docker labels with auto SSL via Cloudflare DNS challenge. [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~15min: Renovate scan + docker-cd poll). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
+Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Polls every 5 min or instantly via `/api/sync` webhook. Auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates. [Traefik](https://traefik.io/traefik/) routes via Docker labels with auto SSL via Cloudflare DNS challenge, and [traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth) provides Google OAuth protection. [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~15min: Renovate scan + docker-cd poll). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
 
 ## Hardware
 

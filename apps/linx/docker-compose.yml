@@ -7,7 +7,7 @@ services:
       - /home/jaw/data/linx/files:/files
       - /home/jaw/data/linx/meta:/meta
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080"]
       interval: 30s
@@ -20,10 +20,11 @@ services:
           cpus: "0.5"
           memory: 256M
     labels:
-      caddy: linx.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 8080}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.linx.rule=Host(`linx.jaw.dev`)"
+      - "traefik.http.routers.linx.entrypoints=websecure"
+      - "traefik.http.routers.linx.middlewares=google-auth@file"
+      - "traefik.http.services.linx.loadbalancer.server.port=8080"
 networks:
-  proxy:
+  traefik:
     external: true

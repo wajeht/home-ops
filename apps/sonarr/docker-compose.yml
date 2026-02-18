@@ -10,7 +10,7 @@ services:
       - /home/jaw/plex/downloads:/downloads
       - /home/jaw/plex/tv:/tv
     networks:
-      - proxy
+      - traefik
       - media
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8989/ping"]
@@ -24,12 +24,13 @@ services:
           cpus: "1.0"
           memory: 1G
     labels:
-      caddy: sonarr.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 8989}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.jaw.dev`)"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.routers.sonarr.middlewares=google-auth@file"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
 networks:
-  proxy:
+  traefik:
     external: true
   media:
     external: true

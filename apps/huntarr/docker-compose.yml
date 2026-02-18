@@ -6,7 +6,7 @@ services:
     volumes:
       - /home/jaw/data/huntarr:/config
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:9705/api/health"]
       interval: 30s
@@ -19,10 +19,11 @@ services:
           cpus: "0.5"
           memory: 256M
     labels:
-      caddy: huntarr.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 9705}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.huntarr.rule=Host(`huntarr.jaw.dev`)"
+      - "traefik.http.routers.huntarr.entrypoints=websecure"
+      - "traefik.http.routers.huntarr.middlewares=google-auth@file"
+      - "traefik.http.services.huntarr.loadbalancer.server.port=9705"
 networks:
-  proxy:
+  traefik:
     external: true

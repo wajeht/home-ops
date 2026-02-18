@@ -11,7 +11,7 @@ cd ~/home-ops && ./scripts/home-ops.sh install
 ```bash
 ./scripts/home-ops.sh install        # Deploy everything
 ./scripts/home-ops.sh uninstall      # Remove all stacks and cleanup
-./scripts/home-ops.sh update-infra   # Redeploy caddy + docker-cd
+./scripts/home-ops.sh update-infra   # Redeploy traefik + google-auth + docker-cd
 ./scripts/home-ops.sh status         # Show services, mounts, disk usage
 ./scripts/home-ops.sh nfs mount      # Mount NFS shares
 ./scripts/home-ops.sh setup          # Create data directories

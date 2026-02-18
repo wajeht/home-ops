@@ -20,7 +20,7 @@ services:
     ports:
       - "32400:32400"
     networks:
-      - proxy
+      - traefik
     restart: unless-stopped
     deploy:
       resources:
@@ -33,10 +33,11 @@ services:
       timeout: 10s
       retries: 3
     labels:
-      caddy: plex.jaw.dev
-      caddy.import: auth
-      caddy.reverse_proxy: "{{upstreams 32400}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.plex.rule=Host(`plex.jaw.dev`)"
+      - "traefik.http.routers.plex.entrypoints=websecure"
+      - "traefik.http.routers.plex.middlewares=google-auth@file"
+      - "traefik.http.services.plex.loadbalancer.server.port=32400"
 networks:
-  proxy:
+  traefik:
     external: true

@@ -6,7 +6,7 @@ services:
       - PORT=80
       - NODE_ENV=production
     networks:
-      - proxy
+      - traefik
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
       interval: 30s
@@ -19,10 +19,10 @@ services:
           cpus: "0.5"
           memory: 256M
     labels:
-      caddy: ip.jaw.dev
-      caddy.import: public
-      caddy.reverse_proxy: "{{upstreams 80}}"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.ip.rule=Host(`ip.jaw.dev`)"
+      - "traefik.http.routers.ip.entrypoints=websecure"
+      - "traefik.http.services.ip.loadbalancer.server.port=80"
 networks:
-  proxy:
+  traefik:
     external: true
