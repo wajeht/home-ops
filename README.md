@@ -14,8 +14,9 @@ GitOps-driven homelab running on Docker Compose
 ## Overview
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph deploy[Deploy]
+        direction LR
         git[Git Push] --> github[GitHub]
         actions[GitHub Actions] -->|build image| ghcr[GHCR]
         actions -->|update tag| github
@@ -26,6 +27,7 @@ flowchart LR
     end
 
     subgraph traffic[Traffic]
+        direction LR
         user[User] -->|HTTPS| cf[Cloudflare]
         cf --> unifi[UniFi Gateway]
         adguard[AdGuard Home] -->|DNS| unifi
