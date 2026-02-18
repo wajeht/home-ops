@@ -30,6 +30,10 @@ flowchart LR
         nas_nfs[NFS shares]
     end
 
+    subgraph unifi_hw[UniFi Cloud Gateway Ultra]
+        unifi[Gateway]
+    end
+
     local_git[Local Git] -->|push| github[GitHub]
     app_repo[App Repos] -->|push tag| actions[GitHub Actions]
     renovate[Renovate] -->|auto-merge deps| github
@@ -40,7 +44,7 @@ flowchart LR
     github -->|api sync trigger| cloudflare[Cloudflare]
 
     user[User] -->|HTTPS| cloudflare
-    cloudflare -->|origin HTTPS from Cloudflare IPs only| unifi[UniFi Cloud Gateway Ultra]
+    cloudflare -->|origin HTTPS from Cloudflare IPs only| unifi
     adguard -->|DNS| unifi
 
     docker_cd -->|docker compose up| apps
