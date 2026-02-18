@@ -2,7 +2,7 @@ services:
   caddy:
     # Built/published by https://github.com/wajeht/docker-cd-caddy
     # Pinned to an immutable image tag for repeatable deploys.
-    image: ghcr.io/wajeht/docker-cd-caddy:sha-1e84728
+    image: ghcr.io/wajeht/docker-cd-caddy:sha-e6df018
     command: ["caddy", "docker-proxy"]
     ports:
       - "80:80"

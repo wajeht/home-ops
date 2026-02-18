@@ -27,7 +27,7 @@ networks:
     external: true
 ```
 
-Use `caddy.import: auth` for protected apps. Omit it for public apps.
+Use `caddy.import: auth` for protected apps. Use `caddy.import: public` for public apps.
 
 ## Deploy
 
@@ -86,6 +86,7 @@ Public app:
 ```yaml
 labels:
   caddy: myapp.jaw.dev
+  caddy.import: public
   caddy.reverse_proxy: "{{upstreams 8080}}"
 ```
 

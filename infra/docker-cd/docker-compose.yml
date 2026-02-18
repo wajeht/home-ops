@@ -26,8 +26,10 @@ services:
     labels:
       caddy: cd.jaw.dev
       caddy.handle_0: /api/*
+      caddy.handle_0.import: api-public
       caddy.handle_0.reverse_proxy: "{{upstreams 80}}"
       caddy.handle_1: /badges/*
+      caddy.handle_1.import: public
       caddy.handle_1.reverse_proxy: "{{upstreams 80}}"
       caddy.handle_2: "*"
       caddy.handle_2.import: auth

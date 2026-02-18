@@ -40,7 +40,7 @@ services:
     labels:
       caddy: renovate.jaw.dev
       caddy.handle_0: /webhook
-      caddy.handle_0.import: public
+      caddy.handle_0.import: public-webhook
       caddy.handle_0.reverse_proxy: "{{upstreams 8080}}"
       caddy.handle_1: "*"
       caddy.handle_1.import: auth
