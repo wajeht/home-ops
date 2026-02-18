@@ -15,19 +15,29 @@ GitOps-driven homelab running on Docker Compose
 
 ```mermaid
 flowchart LR
+    subgraph dell[Dell OptiPlex 7050 Micro]
+        docker_cd[docker-cd]
+        caddy[caddy + docker-proxy]
+        apps[apps/* stacks]
+    end
+
+    subgraph pi[Raspberry Pi 5]
+        adguard[AdGuard Home]
+    end
+
     local_git[Local Git] -->|push| github[GitHub]
     app_repo[App Repos] -->|push tag| actions[GitHub Actions]
     renovate[Renovate] -->|auto-merge deps| github
     actions -->|build and push image| ghcr[GHCR]
     actions -->|update image tag| github
-    github -->|poll/API sync| docker_cd[docker-cd on Dell OptiPlex 7050 Micro]
+    github -->|poll/API sync| docker_cd
 
     user[User] -->|HTTPS| cloudflare[Cloudflare]
     cloudflare -->|proxied HTTPS to origin| unifi[UniFi Cloud Gateway Ultra]
-    adguard[AdGuard Home on Raspberry Pi 5] -->|DNS| unifi
+    adguard -->|DNS| unifi
 
-    docker_cd -->|docker compose up| apps[apps/* stacks]
-    caddy[caddy + docker-proxy on Dell OptiPlex 7050 Micro] -->|reverse proxy traffic| apps
+    docker_cd -->|docker compose up| apps
+    caddy -->|reverse proxy traffic| apps
     unifi -->|port forward 80/443| caddy
     caddy -.->|DNS-01 challenge API| cloudflare_dns[Cloudflare DNS API]
     nas[Synology DS923+] -->|NFS mounts| apps
