@@ -21,7 +21,7 @@ flowchart LR
         renovate([Renovate])
     end
 
-    app_push --> ci[[GitHub Actions]] -->|build + push| ghcr[(GHCR)]
+    app_push --> ci[GitHub Actions] -->|build + push| ghcr[(GHCR)]
     ghcr -->|push image| github((GitHub))
     ci -->|update tag| github
     ops_push --> ci
@@ -30,8 +30,8 @@ flowchart LR
 
     subgraph infra[Infra]
         subgraph dell[Dell OptiPlex 7050 Micro]
-            docker_cd[docker-cd] -->|compose up| apps>apps/*]
-            caddy[\Caddy/] -->|proxy| apps
+            docker_cd[docker-cd] -->|compose up| apps[apps/*]
+            caddy[Caddy] -->|proxy| apps
         end
 
         subgraph nas[Synology DS923+]
