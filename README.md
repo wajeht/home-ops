@@ -13,36 +13,29 @@ GitOps-driven homelab running on Docker Compose
 
 ## Overview
 
+**Deploy**
+
 ```mermaid
 flowchart LR
-    subgraph dell[Dell OptiPlex 7050 Micro]
-        docker_cd[docker-cd]
-        caddy[Caddy]
-        apps[apps/* stacks]
-    end
+    git[Git Push] --> github[GitHub]
+    actions[GitHub Actions] -->|build image| ghcr[GHCR]
+    actions -->|update tag| github
+    renovate[Renovate] -->|auto-merge| github
+    github -->|poll + webhook| docker_cd[docker-cd]
+    docker_cd -->|compose up| apps[apps/*]
+    nas[Synology NAS] -->|NFS| apps
+```
 
-    subgraph pi[Raspberry Pi 5]
-        adguard[AdGuard Home]
-    end
+**Traffic**
 
-    local_git[Local Git] -->|push| github[GitHub]
-    app_repo[App Repos] -->|push tag| actions[GitHub Actions]
-    renovate[Renovate] -->|auto-merge deps| github
-    actions -->|build and push image| ghcr[GHCR]
-    actions -->|update image tag| github
-    docker_cd -->|poll repo| github
-    actions -->|sync webhook| docker_cd
-
-    user[User] -->|HTTPS| cloudflare[Cloudflare]
-    cloudflare -->|origin HTTPS| unifi[UniFi Cloud Gateway Ultra]
-    adguard -->|DNS| unifi
-
-    docker_cd -->|docker compose up| apps
-    caddy -->|reverse proxy| apps
-    caddy -->|api and badges| docker_cd
-    unifi -->|port forward 80/443| caddy
-    caddy -.->|DNS01 challenge| cloudflare
-    nas[Synology DS923+] -->|NFS mounts| apps
+```mermaid
+flowchart LR
+    user[User] -->|HTTPS| cf[Cloudflare]
+    cf --> unifi[UniFi Gateway]
+    adguard[AdGuard Home] -->|DNS| unifi
+    unifi -->|:80/:443| caddy[Caddy]
+    caddy -->|proxy| apps[apps/*]
+    caddy -.->|DNS01| cf
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Caddy](https://github.com/wajeht/docker-cd-caddy) routes via Docker labels with auto SSL via Cloudflare DNS challenge. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
