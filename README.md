@@ -31,17 +31,17 @@ flowchart LR
     actions -->|build and push image| ghcr[GHCR]
     actions -->|update image tag| github
     github -->|polled by docker-cd| docker_cd
-    actions -->|POST /api/sync| cloudflare
+    actions -->|api sync trigger| cloudflare
 
     user[User] -->|HTTPS| cloudflare[Cloudflare]
-    cloudflare -->|origin HTTPS (Cloudflare IPs only)| unifi[UniFi Cloud Gateway Ultra]
+    cloudflare -->|origin HTTPS from Cloudflare IPs only| unifi[UniFi Cloud Gateway Ultra]
     adguard -->|DNS| unifi
 
     docker_cd -->|docker compose up| apps
     caddy -->|reverse proxy traffic| apps
-    caddy -->|/api + /badges| docker_cd
+    caddy -->|api and badges| docker_cd
     unifi -->|port forward 80/443| caddy
-    caddy -.->|DNS-01 challenge API| cloudflare_dns[Cloudflare DNS API]
+    caddy -.->|DNS01 challenge API| cloudflare_dns[Cloudflare DNS API]
     nas[Synology DS923+] -->|NFS mounts| apps
 ```
 
