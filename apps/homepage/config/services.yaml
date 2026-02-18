@@ -1,14 +1,4 @@
 - Media:
-    - Overseerr:
-        icon: overseerr
-        href: https://overseerr.jaw.dev
-        description: Requests
-        siteMonitor: https://overseerr.jaw.dev
-        widget:
-          type: overseerr
-          url: http://overseerr:5055
-          key: { { HOMEPAGE_VAR_OVERSEERR_KEY } }
-
     - Radarr:
         icon: radarr
         href: https://radarr.jaw.dev
