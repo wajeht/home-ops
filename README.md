@@ -13,36 +13,43 @@ GitOps-driven homelab running on Docker Compose
 
 ## Overview
 
+**Deploy**
+
 ```mermaid
-flowchart TB
-    subgraph deploy[Deploy]
-        direction LR
-        git[Git Push] --> github[GitHub]
-        actions[GitHub Actions] -->|build image| ghcr[GHCR]
-        actions -->|update tag| github
-        renovate[Renovate] -->|auto-merge| github
-        github -->|poll + webhook| docker_cd[docker-cd]
-        docker_cd -->|compose up| apps[apps/*]
-        nas[Synology DS923+] -->|NFS| apps
+flowchart LR
+    git[Git Push] --> github[GitHub]
+    actions[GitHub Actions] -->|build image| ghcr[GHCR]
+    actions -->|update tag| github
+    renovate[Renovate] -->|auto-merge| github
+    github -->|poll + webhook| docker_cd
+
+    subgraph dell[Dell OptiPlex 7050 Micro]
+        docker_cd[docker-cd] -->|compose up| apps[apps/*]
+        caddy[Caddy] -->|reverse proxy| apps
     end
 
-    subgraph traffic[Traffic]
-        direction LR
-        user[User] -->|HTTPS| cf[Cloudflare]
-        cf --> unifi[UniFi Gateway]
-        adguard[AdGuard Home] -->|DNS| unifi
-        unifi -->|:80/:443| caddy[Caddy]
-        caddy -->|proxy| apps2[apps/*]
-        caddy -.->|DNS01| cf
+    nas[Synology DS923+] -->|NFS| apps
+```
+
+**Traffic**
+
+```mermaid
+flowchart LR
+    user[User] -->|HTTPS| cf[Cloudflare]
+
+    subgraph pi[Raspberry Pi 5]
+        adguard[AdGuard Home]
     end
 
-    deploy ~~~ traffic
+    adguard -->|DNS| unifi[UniFi Gateway]
+    cf --> unifi
+    unifi -->|:80/:443| caddy
 
-    style deploy fill:none,stroke:#ccc
-    style traffic fill:none,stroke:#ccc
+    subgraph dell[Dell OptiPlex 7050 Micro]
+        caddy[Caddy] -->|proxy| apps[apps/*]
+    end
 
-    classDef hw fill:#fff3cd,stroke:#d4a017
-    class docker_cd,apps,caddy,apps2,unifi,adguard,nas hw
+    caddy -.->|DNS01| cf
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Auto-discovers all stacks in `apps/`, decrypts SOPS secrets, and deploys with rolling updates. [Caddy](https://github.com/wajeht/docker-cd-caddy) routes via Docker labels with auto SSL via Cloudflare DNS challenge. Secrets encrypted with [SOPS](https://github.com/getsops/sops). [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated. Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) for instant deploy (~1min vs Renovate's ~15min).
