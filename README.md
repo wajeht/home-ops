@@ -28,7 +28,12 @@ flowchart LR
         caddy[Caddy] -->|reverse proxy| apps
     end
 
-    nas[Synology DS923+] -->|NFS| apps
+    subgraph nas[Synology DS923+]
+        nfs[NFS]
+        smb[SMB]
+    end
+
+    nfs --> apps
 ```
 
 **Traffic**
