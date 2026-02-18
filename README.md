@@ -25,7 +25,7 @@ flowchart LR
     ci -->|update tag| github((GitHub))
     ops_push --> github
     renovate -->|auto-merge| github
-    github -->|poll + webhook| docker_cd
+    github -->|poll + webhook| cf((Cloudflare)) --> unifi -->|:80/:443| caddy --> docker_cd
 
     subgraph dell[Dell OptiPlex 7050 Micro]
         docker_cd[docker-cd] -->|compose up| apps{{apps/*}}
@@ -45,7 +45,7 @@ flowchart LR
     end
 
     nfs --> apps
-    user([User]) -->|HTTPS| cf((Cloudflare)) --> unifi
+    cf((Cloudflare)) --> unifi
     adguard -->|DNS| unifi
     unifi -->|:80/:443| caddy
     caddy -.->|DNS01| cf
