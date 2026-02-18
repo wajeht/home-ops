@@ -28,8 +28,9 @@ flowchart LR
     end
 
     user[User] -->|HTTPS| cloudflare[Cloudflare]
-    cloudflare -->|SSL| unifi[UniFi Cloud Gateway Ultra]
+    cloudflare -->|proxied HTTPS to origin| unifi[UniFi Cloud Gateway Ultra]
     unifi -->|port forward 80/443| caddy
+    caddy -.->|DNS-01 challenge API| cloudflare_dns[Cloudflare DNS API]
 
     nas[Synology DS923+] -->|NFS mounts| apps
     subgraph pi[Raspberry Pi 5]
