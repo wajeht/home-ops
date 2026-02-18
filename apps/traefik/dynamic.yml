@@ -53,14 +53,14 @@ http:
     google-auth-user:
       forwardAuth:
         address: http://google-auth-user:4181
-        trustForwardHeader: false
+        trustForwardHeader: true
         authResponseHeaders:
           - X-Forwarded-User
 
     google-auth-admin:
       forwardAuth:
         address: http://google-auth-admin:4181
-        trustForwardHeader: false
+        trustForwardHeader: true
         authResponseHeaders:
           - X-Forwarded-User
 
