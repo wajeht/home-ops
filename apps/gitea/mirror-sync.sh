@@ -38,28 +38,6 @@ $repos"
   page=$((page + 1))
 done
 
-# Update existing mirrors to 1h interval if needed
-echo "Checking mirror intervals..."
-updated=0
-page=1
-while true; do
-  mirrors=$(curl -s -H "Authorization: token $GITEA_TOKEN" \
-    "$GITEA_URL/api/v1/user/repos?limit=100&page=$page" | jq -c '.[] | select(.mirror == true) | {name, mirror_interval}')
-  [ -z "$mirrors" ] && break
-  echo "$mirrors" | while read -r mirror; do
-    name=$(echo "$mirror" | jq -r '.name')
-    interval=$(echo "$mirror" | jq -r '.mirror_interval')
-    if [ "$interval" != "1h0m0s" ]; then
-      curl -s -X PATCH "$GITEA_URL/api/v1/repos/$(echo "$mirror" | jq -r '.name')" \
-        -H "Authorization: token $GITEA_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d '{"mirror_interval":"1h"}' > /dev/null
-      echo "  ~ Updated $name interval: $interval -> 1h"
-    fi
-  done
-  page=$((page + 1))
-done
-
 # Create mirrors for missing repos
 created=0
 skipped=0
