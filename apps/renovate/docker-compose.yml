@@ -36,7 +36,7 @@ services:
       resources:
         limits:
           cpus: "3.0"
-          memory: 3G
+          memory: 2G
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.renovate-webhook.rule=Host(`renovate.jaw.dev`) && Path(`/webhook`)"

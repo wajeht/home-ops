@@ -62,12 +62,6 @@
         description: Movies & TV
         siteMonitor: https://plex.jaw.dev
 
-    - Jellyfin:
-        icon: jellyfin
-        href: https://jellyfin.jaw.dev
-        description: Media Server
-        siteMonitor: https://jellyfin.jaw.dev
-
     - Prowlarr:
         icon: prowlarr
         href: https://prowlarr.jaw.dev
