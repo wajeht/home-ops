@@ -13,12 +13,14 @@ services:
           sleep 3600
         done
     environment:
-      - GITEA_URL=https://gitea.jaw.dev
+      - GITEA_URL=http://gitea:3000
       - GITHUB_USER=wajeht
     env_file:
       - .env
     volumes:
       - ./mirror-sync.sh:/scripts/mirror-sync.sh:ro
+    networks:
+      - traefik
     restart: unless-stopped
     deploy:
       resources:
