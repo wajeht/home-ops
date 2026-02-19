@@ -9,8 +9,8 @@ services:
         while true; do
           echo "=== Mirror sync started at $$(date) ==="
           /scripts/mirror-sync.sh || echo "Sync failed"
-          echo "=== Sleeping 6h ==="
-          sleep 21600
+          echo "=== Sleeping 1h ==="
+          sleep 3600
         done
     environment:
       - GITEA_URL=https://gitea.jaw.dev
@@ -35,7 +35,7 @@ services:
       - GITEA__server__ROOT_URL=https://gitea.jaw.dev/
       - GITEA__server__DOMAIN=gitea.jaw.dev
       - GITEA__mirror__ENABLED=true
-      - GITEA__mirror__DEFAULT_INTERVAL=8h
+      - GITEA__mirror__DEFAULT_INTERVAL=1h
       - GITEA__service__DISABLE_REGISTRATION=true
     env_file:
       - .env

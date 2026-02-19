@@ -55,7 +55,7 @@ for repo in $GITHUB_REPOS; do
         \"mirror\": true,
         \"private\": true,
         \"auth_token\": \"$GH_TOKEN\",
-        \"mirror_interval\": \"8h\"
+        \"mirror_interval\": \"1h\"
       }" 2>&1)
 
     name=$(echo "$result" | jq -r '.name // empty')
