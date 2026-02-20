@@ -24,6 +24,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.calendar.rule=Host(`calendar.jaw.dev`)"
       - "traefik.http.routers.calendar.entrypoints=websecure"
+      - "traefik.http.routers.calendar.middlewares=rate-limit-global@file"
       - "traefik.http.services.calendar.loadbalancer.server.port=80"
 networks:
   traefik:

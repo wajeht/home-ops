@@ -20,6 +20,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.ufc.rule=Host(`ufc.jaw.dev`)"
       - "traefik.http.routers.ufc.entrypoints=websecure"
+      - "traefik.http.routers.ufc.middlewares=rate-limit-global@file"
       - "traefik.http.services.ufc.loadbalancer.server.port=80"
 networks:
   traefik:

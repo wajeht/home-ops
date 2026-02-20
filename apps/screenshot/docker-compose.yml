@@ -26,6 +26,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.screenshot.rule=Host(`screenshot.jaw.dev`)"
       - "traefik.http.routers.screenshot.entrypoints=websecure"
+      - "traefik.http.routers.screenshot.middlewares=rate-limit-global@file"
       - "traefik.http.services.screenshot.loadbalancer.server.port=80"
 networks:
   traefik:

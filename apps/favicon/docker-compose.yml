@@ -22,6 +22,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.favicon.rule=Host(`favicon.jaw.dev`)"
       - "traefik.http.routers.favicon.entrypoints=websecure"
+      - "traefik.http.routers.favicon.middlewares=rate-limit-global@file"
       - "traefik.http.services.favicon.loadbalancer.server.port=80"
 networks:
   traefik:

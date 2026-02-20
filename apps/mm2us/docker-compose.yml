@@ -24,6 +24,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.mm2us.rule=Host(`mm2us.com`) || Host(`www.mm2us.com`)"
       - "traefik.http.routers.mm2us.entrypoints=websecure"
+      - "traefik.http.routers.mm2us.middlewares=rate-limit-global@file"
       - "traefik.http.services.mm2us.loadbalancer.server.port=80"
 networks:
   traefik:
