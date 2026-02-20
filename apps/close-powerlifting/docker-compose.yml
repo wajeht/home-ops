@@ -24,6 +24,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.close-powerlifting.rule=Host(`closepowerlifting.com`) || Host(`www.closepowerlifting.com`)"
       - "traefik.http.routers.close-powerlifting.entrypoints=websecure"
+      - "traefik.http.routers.close-powerlifting.middlewares=rate-limit-global@file"
       - "traefik.http.services.close-powerlifting.loadbalancer.server.port=80"
       - "traefik.http.routers.close-powerlifting-redirect.rule=Host(`close-powerlifting.jaw.dev`)"
       - "traefik.http.routers.close-powerlifting-redirect.entrypoints=websecure"

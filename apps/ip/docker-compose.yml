@@ -22,6 +22,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.ip.rule=Host(`ip.jaw.dev`)"
       - "traefik.http.routers.ip.entrypoints=websecure"
+      - "traefik.http.routers.ip.middlewares=rate-limit-global@file"
       - "traefik.http.services.ip.loadbalancer.server.port=80"
 networks:
   traefik:

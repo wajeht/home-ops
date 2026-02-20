@@ -27,6 +27,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.authelia.rule=Host(`authelia.jaw.dev`)"
       - "traefik.http.routers.authelia.entrypoints=websecure"
+      - "traefik.http.routers.authelia.middlewares=rate-limit-global@file"
       - "traefik.http.services.authelia.loadbalancer.server.port=9091"
 networks:
   traefik:

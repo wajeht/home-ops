@@ -20,6 +20,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.commit.rule=Host(`commit.jaw.dev`)"
       - "traefik.http.routers.commit.entrypoints=websecure"
+      - "traefik.http.routers.commit.middlewares=rate-limit-global@file"
       - "traefik.http.services.commit.loadbalancer.server.port=80"
 networks:
   traefik:

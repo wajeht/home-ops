@@ -24,6 +24,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.notify.rule=Host(`notify.jaw.dev`)"
       - "traefik.http.routers.notify.entrypoints=websecure"
+      - "traefik.http.routers.notify.middlewares=rate-limit-global@file"
       - "traefik.http.services.notify.loadbalancer.server.port=80"
 networks:
   traefik:
