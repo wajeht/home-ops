@@ -11,7 +11,7 @@ services:
       - traefik
       - media
     healthcheck:
-      test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:11011"]
+      test: ["CMD", "curl", "-f", "http://localhost:11011"]
       interval: 30s
       timeout: 5s
       retries: 3
