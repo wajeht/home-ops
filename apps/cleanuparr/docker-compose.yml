@@ -1,0 +1,34 @@
+services:
+  cleanuparr:
+    image: ghcr.io/cleanuparr/cleanuparr:v2.6.3
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/cleanuparr:/config
+    networks:
+      - traefik
+      - media
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:11011"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cleanuparr.rule=Host(`cleanuparr.jaw.dev`)"
+      - "traefik.http.routers.cleanuparr.entrypoints=websecure"
+      - "traefik.http.routers.cleanuparr.middlewares=google-auth@file"
+      - "traefik.http.services.cleanuparr.loadbalancer.server.port=11011"
+networks:
+  traefik:
+    external: true
+  media:
+    external: true
