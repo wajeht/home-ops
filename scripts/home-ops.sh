@@ -192,6 +192,7 @@ DATA_DIRS=(
 	"$USER_HOME/data/audiobookshelf/metadata"
 	"$USER_HOME/data/autobrr"
 	"$USER_HOME/data/authelia"
+	"$USER_HOME/data/bazarr"
 	"$USER_HOME/data/bitmagnet/db"
 	"$USER_HOME/data/borgmatic"
 	"$USER_HOME/data/bang"
