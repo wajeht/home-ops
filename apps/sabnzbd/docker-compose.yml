@@ -1,0 +1,36 @@
+services:
+  sabnzbd:
+    image: linuxserver/sabnzbd:4.5.5-ls244
+    container_name: sabnzbd
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/sabnzbd:/config
+      - /home/jaw/plex:/data
+    networks:
+      - traefik
+      - media
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.jaw.dev`)"
+      - "traefik.http.routers.sabnzbd.entrypoints=websecure"
+      - "traefik.http.routers.sabnzbd.middlewares=google-auth@file"
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+networks:
+  traefik:
+    external: true
+  media:
+    external: true

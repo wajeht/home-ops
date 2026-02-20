@@ -19,6 +19,16 @@
           url: http://sonarr:8989
           key: { { HOMEPAGE_VAR_SONARR_KEY } }
 
+    - SABnzbd:
+        icon: sabnzbd
+        href: https://sabnzbd.jaw.dev
+        description: Usenet
+        siteMonitor: https://sabnzbd.jaw.dev
+        widget:
+          type: sabnzbd
+          url: http://sabnzbd:8080
+          key: "{{HOMEPAGE_VAR_SABNZBD_KEY}}"
+
     - qBittorrent:
         icon: qbittorrent
         href: https://qbit.jaw.dev
