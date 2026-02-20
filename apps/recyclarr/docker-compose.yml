@@ -1,5 +1,6 @@
 services:
   recyclarr:
+    container_name: recyclarr
     image: ghcr.io/recyclarr/recyclarr:7.5.2
     user: 1000:1000
     env_file:

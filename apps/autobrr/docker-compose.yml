@@ -1,5 +1,6 @@
 services:
   autobrr:
+    container_name: autobrr
     image: ghcr.io/autobrr/autobrr:v1.73.0
     environment:
       - TZ=America/Chicago

@@ -1,5 +1,6 @@
 services:
   mm2us:
+    container_name: mm2us
     image: ghcr.io/wajeht/mm2us.com:bf074f8
     env_file:
       - .env

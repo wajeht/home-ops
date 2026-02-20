@@ -1,5 +1,6 @@
 services:
   huntarr:
+    container_name: huntarr
     image: huntarr/huntarr:9.2.4.1
     environment:
       - TZ=America/Chicago

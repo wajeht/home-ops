@@ -1,5 +1,6 @@
 services:
   borgmatic:
+    container_name: borgmatic
     image: ghcr.io/borgmatic-collective/borgmatic:2.1.2
     env_file:
       - .env

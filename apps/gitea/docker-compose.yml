@@ -1,5 +1,6 @@
 services:
   mirror-sync:
+    container_name: mirror-sync
     image: alpine:3.23
     entrypoint: /bin/sh
     command:
@@ -29,6 +30,7 @@ services:
           memory: 128M
 
   gitea:
+    container_name: gitea
     image: gitea/gitea:1.25@sha256:17d18218be2dad1f8ed402a4f906989505c90ab8b66ee9befcecfb5d470133e7
     environment:
       - USER_UID=1000

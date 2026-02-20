@@ -1,5 +1,6 @@
 services:
   google-auth:
+    container_name: google-auth
     image: thomseddon/traefik-forward-auth:2
     env_file:
       - .env
