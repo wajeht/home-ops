@@ -197,6 +197,7 @@ DATA_DIRS=(
 	"$USER_HOME/data/bang"
 	"$USER_HOME/data/calendar"
 	"$USER_HOME/data/changedetection"
+	"$USER_HOME/data/cleanuparr"
 	"$USER_HOME/data/close-powerlifting"
 	"$USER_HOME/data/traefik/certs"
 	"$USER_HOME/data/docker-cd"
