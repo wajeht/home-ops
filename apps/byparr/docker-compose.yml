@@ -1,6 +1,6 @@
 services:
   byparr:
-    image: ghcr.io/thephaseless/byparr:latest
+    image: ghcr.io/thephaseless/byparr:2.1.0
     container_name: byparr
     environment:
       - TZ=America/Chicago
