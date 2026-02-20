@@ -215,6 +215,7 @@ DATA_DIRS=(
 
 	"$USER_HOME/data/prowlarr"
 	"$USER_HOME/data/radarr"
+	"$USER_HOME/data/sabnzbd"
 	"$USER_HOME/data/sonarr"
 	"$USER_HOME/data/tautulli"
 	"$USER_HOME/data/overseerr"
