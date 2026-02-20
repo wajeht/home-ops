@@ -96,6 +96,12 @@
         description: Missing Media Hunter
         siteMonitor: https://huntarr.jaw.dev
 
+    - Cleanuparr:
+        icon: cleanuparr
+        href: https://cleanuparr.jaw.dev
+        description: Download Cleanup
+        siteMonitor: https://cleanuparr.jaw.dev
+
     - Seerr:
         icon: overseerr
         href: https://seerr.jaw.dev
