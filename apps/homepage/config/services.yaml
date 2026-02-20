@@ -96,6 +96,12 @@
         description: Missing Media Hunter
         siteMonitor: https://huntarr.jaw.dev
 
+    - Bazarr:
+        icon: bazarr
+        href: https://bazarr.jaw.dev
+        description: Subtitles
+        siteMonitor: https://bazarr.jaw.dev
+
     - Cleanuparr:
         icon: cleanuparr
         href: https://cleanuparr.jaw.dev
