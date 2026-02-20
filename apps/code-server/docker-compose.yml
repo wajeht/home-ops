@@ -1,5 +1,6 @@
 services:
   code-server:
+    container_name: code-server
     image: codercom/code-server:4.109.2
     command: ["--auth", "password"]
     env_file:

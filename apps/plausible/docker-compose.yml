@@ -1,5 +1,6 @@
 services:
   plausible:
+    container_name: plausible
     image: ghcr.io/plausible/community-edition:v2.1.4
     command: sh -c "/entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
     env_file:
@@ -35,6 +36,7 @@ services:
       - "traefik.http.routers.plausible.entrypoints=websecure"
       - "traefik.http.services.plausible.loadbalancer.server.port=8000"
   plausible-db:
+    container_name: plausible-db
     image: postgres:18-alpine
     env_file:
       - .env
@@ -59,6 +61,7 @@ services:
           memory: 256M
 
   plausible-events-db:
+    container_name: plausible-events-db
     image: clickhouse/clickhouse-server:24.12-alpine
     volumes:
       - /home/jaw/data/plausible/events:/var/lib/clickhouse

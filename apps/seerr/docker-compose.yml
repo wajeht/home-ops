@@ -1,5 +1,6 @@
 services:
   seerr:
+    container_name: seerr
     image: seerr/seerr:v3.0.1
     environment:
       - TZ=America/Chicago

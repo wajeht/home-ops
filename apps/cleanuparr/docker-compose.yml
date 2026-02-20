@@ -1,5 +1,6 @@
 services:
   cleanuparr:
+    container_name: cleanuparr
     image: ghcr.io/cleanuparr/cleanuparr:2.6.3
     environment:
       - PUID=1000

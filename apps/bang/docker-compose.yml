@@ -1,5 +1,6 @@
 services:
   bang:
+    container_name: bang
     image: ghcr.io/wajeht/bang:831347e
     env_file:
       - .env

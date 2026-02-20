@@ -1,5 +1,6 @@
 services:
   glitchtip:
+    container_name: glitchtip
     image: glitchtip/glitchtip:6
     env_file:
       - .env
@@ -45,6 +46,7 @@ services:
       - "traefik.http.routers.glitchtip.middlewares=google-auth@file"
       - "traefik.http.services.glitchtip.loadbalancer.server.port=8000"
   glitchtip-db:
+    container_name: glitchtip-db
     image: postgres:18-alpine
     env_file:
       - .env

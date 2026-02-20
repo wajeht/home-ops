@@ -1,5 +1,6 @@
 services:
   calendar:
+    container_name: calendar
     image: ghcr.io/wajeht/calendar:fdd618f
     env_file:
       - .env
