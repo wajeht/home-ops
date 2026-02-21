@@ -12,7 +12,7 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "/updater/healthcheck"]
+      test: ["CMD", "/updater/ddns-updater", "healthcheck"]
       interval: 30s
       timeout: 5s
       retries: 3
