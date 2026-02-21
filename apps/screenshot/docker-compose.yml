@@ -1,7 +1,7 @@
 services:
   screenshot:
     container_name: screenshot
-    image: ghcr.io/wajeht/screenshot:5eb685d
+    image: ghcr.io/wajeht/screenshot:5d3eb3d
     environment:
       TZ: America/Chicago
       APP_ENV: production
