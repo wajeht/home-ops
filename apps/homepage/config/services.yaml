@@ -4,16 +4,12 @@
         href: https://plex.jaw.dev
         description: Movies & TV
         siteMonitor: http://plex:32400
-        server: my-docker
-        container: plex
 
     - Radarr:
         icon: radarr
         href: https://radarr.jaw.dev
         description: Movies
         siteMonitor: http://radarr:7878
-        server: my-docker
-        container: radarr
         widget:
           type: radarr
           url: http://radarr:7878
@@ -24,8 +20,6 @@
         href: https://sonarr.jaw.dev
         description: TV Shows
         siteMonitor: http://sonarr:8989
-        server: my-docker
-        container: sonarr
         widget:
           type: sonarr
           url: http://sonarr:8989
@@ -36,8 +30,6 @@
         href: https://tautulli.jaw.dev
         description: Plex Stats
         siteMonitor: http://tautulli:8181
-        server: my-docker
-        container: tautulli
         widget:
           type: tautulli
           url: http://tautulli:8181
@@ -48,32 +40,24 @@
         href: https://bazarr.jaw.dev
         description: Subtitles
         siteMonitor: http://bazarr:6767
-        server: my-docker
-        container: bazarr
 
     - Seerr:
         icon: overseerr
         href: https://seerr.jaw.dev
         description: Media Requests
         siteMonitor: http://seerr:5055
-        server: my-docker
-        container: seerr
 
     - Audiobookshelf:
         icon: audiobookshelf
         href: https://audiobooks.jaw.dev
         description: Audiobooks
         siteMonitor: http://audiobookshelf:80
-        server: my-docker
-        container: audiobookshelf
 
     - Miniflux:
         icon: miniflux
         href: https://rss.jaw.dev
         description: RSS Reader
         siteMonitor: http://miniflux:8080
-        server: my-docker
-        container: miniflux
         widget:
           type: miniflux
           url: http://miniflux:8080
@@ -85,8 +69,6 @@
         href: https://sabnzbd.jaw.dev
         description: Usenet
         siteMonitor: http://sabnzbd:8080
-        server: my-docker
-        container: sabnzbd
         widget:
           type: sabnzbd
           url: http://sabnzbd:8080
@@ -97,8 +79,6 @@
         href: https://qbit.jaw.dev
         description: Torrents
         siteMonitor: http://gluetun:8085
-        server: my-docker
-        container: gluetun
         widget:
           type: qbittorrent
           url: http://gluetun:8085
@@ -110,40 +90,30 @@
         href: https://prowlarr.jaw.dev
         description: Indexers
         siteMonitor: http://prowlarr:9696
-        server: my-docker
-        container: prowlarr
 
     - Autobrr:
         icon: autobrr
         href: https://autobrr.jaw.dev
         description: Download Automation
         siteMonitor: http://autobrr:7474
-        server: my-docker
-        container: autobrr
 
     - Bitmagnet:
         icon: bitmagnet
         href: https://bitmagnet.jaw.dev
         description: DHT Indexer
         siteMonitor: http://bitmagnet:3333
-        server: my-docker
-        container: bitmagnet
 
     - Huntarr:
         icon: huntarr
         href: https://huntarr.jaw.dev
         description: Missing Media Hunter
         siteMonitor: http://huntarr:9705
-        server: my-docker
-        container: huntarr
 
     - Cleanuparr:
         icon: cleanuparr
         href: https://cleanuparr.jaw.dev
         description: Download Cleanup
         siteMonitor: http://cleanuparr:11011
-        server: my-docker
-        container: cleanuparr
 
 - Infrastructure:
     - Traefik:
@@ -151,8 +121,6 @@
         href: https://traefik.jaw.dev
         description: Reverse Proxy
         siteMonitor: http://traefik:8080
-        server: my-docker
-        container: traefik
         widget:
           type: traefik
           url: http://traefik:8080
@@ -162,8 +130,6 @@
         href: https://status.jaw.dev
         description: Status Monitor
         siteMonitor: http://uptime-kuma:3001
-        server: my-docker
-        container: uptime-kuma
         widget:
           type: uptimekuma
           url: http://uptime-kuma:3001
@@ -175,72 +141,54 @@
         href: https://cd.jaw.dev
         description: GitOps Deployer
         siteMonitor: http://docker-cd:80
-        server: my-docker
-        container: docker-cd
 
     - Google Auth:
         icon: google
         href: https://auth.jaw.dev
         description: OAuth Proxy
         siteMonitor: http://google-auth:4181
-        server: my-docker
-        container: google-auth
 
     - Changedetection:
         icon: changedetection-io
         href: https://changes.jaw.dev
         description: Web Monitor
         siteMonitor: http://changedetection:5000
-        server: my-docker
-        container: changedetection
 
     - Ntfy:
         icon: ntfy
         href: https://ntfy.jaw.dev
         description: Notifications
         siteMonitor: http://ntfy:80
-        server: my-docker
-        container: ntfy
 
     - Portainer:
         icon: portainer
         href: https://portainer.jaw.dev
         description: Docker Management
         siteMonitor: http://portainer:9000
-        server: my-docker
-        container: portainer
 
     - Renovate:
         icon: renovate
         href: https://renovate.jaw.dev
         description: Dependency Updates
         siteMonitor: http://renovate:8080
-        server: my-docker
-        container: renovate
 
     - GlitchTip:
         icon: glitchtip
         href: https://glitchtip.jaw.dev
         description: Error Tracking
         siteMonitor: http://glitchtip:8000
-        server: my-docker
-        container: glitchtip
 
     - Dozzle:
         icon: dozzle
         href: https://logs.jaw.dev
         description: Docker Logs
         siteMonitor: http://dozzle:8080
-        server: my-docker
-        container: dozzle
 
     - Plausible:
         icon: plausible
         href: https://plausible.jaw.dev
         description: Web Analytics
         siteMonitor: http://plausible:8000
-        server: my-docker
-        container: plausible
 
 - Apps:
     - UFC:
@@ -248,72 +196,54 @@
         href: https://ufc.jaw.dev
         description: MMA Calendar
         siteMonitor: http://ufc:80
-        server: my-docker
-        container: ufc
 
     - Calendar:
         icon: mdi-calendar
         href: https://calendar.jaw.dev
         description: Personal Calendar
         siteMonitor: http://calendar:80
-        server: my-docker
-        container: calendar
 
     - Favicon:
         icon: mdi-image-search
         href: https://favicon.jaw.dev
         description: Favicon Grabber
         siteMonitor: http://favicon:80
-        server: my-docker
-        container: favicon
 
     - Screenshot:
         icon: mdi-monitor-screenshot
         href: https://screenshot.jaw.dev
         description: Screenshot API
         siteMonitor: http://screenshot:80
-        server: my-docker
-        container: screenshot
 
     - Bang:
         icon: duckduckgo
         href: https://bang.jaw.dev
         description: Search Redirector
         siteMonitor: http://bang:80
-        server: my-docker
-        container: bang
 
     - Gains:
         icon: mdi-weight-lifter
         href: https://gains.jaw.dev
         description: Workout Tracker
         siteMonitor: http://gains:80
-        server: my-docker
-        container: gains
 
     - Notify:
         icon: mdi-bell
         href: https://notify.jaw.dev
         description: Notifications
         siteMonitor: http://notify:80
-        server: my-docker
-        container: notify
 
     - IP:
         icon: mdi-ip-network
         href: https://ip.jaw.dev
         description: IP Lookup
         siteMonitor: http://ip:80
-        server: my-docker
-        container: ip
 
     - Close Powerlifting:
         icon: mdi-weight-lifter
         href: https://close-powerlifting.jaw.dev
         description: Powerlifting Stats
         siteMonitor: http://close-powerlifting:80
-        server: my-docker
-        container: close-powerlifting
 
     - MM2US:
         icon: mdi-swap-horizontal
@@ -327,56 +257,42 @@
         href: https://vault.jaw.dev
         description: Passwords
         siteMonitor: http://vaultwarden:80
-        server: my-docker
-        container: vaultwarden
 
     - Stirling PDF:
         icon: stirling-pdf
         href: https://pdf.jaw.dev
         description: PDF Tools
         siteMonitor: http://stirling-pdf:8080
-        server: my-docker
-        container: stirling-pdf
 
     - IT-Tools:
         icon: it-tools
         href: https://tools.jaw.dev
         description: Dev Utilities
         siteMonitor: http://it-tools:80
-        server: my-docker
-        container: it-tools
 
     - Paperless:
         icon: paperless-ngx
         href: https://paperless.jaw.dev
         description: Documents
         siteMonitor: http://paperless:8000
-        server: my-docker
-        container: paperless
 
     - Zipline:
         icon: zipline
         href: https://img.jaw.dev
         description: Image Sharing
         siteMonitor: http://0.0.0.0:3000
-        server: my-docker
-        container: zipline
 
     - SearXNG:
         icon: searxng
         href: https://search.jaw.dev
         description: Search Engine
         siteMonitor: http://searxng:8080
-        server: my-docker
-        container: searxng
 
     - Linx:
         icon: filerun
         href: https://linx.jaw.dev
         description: File Sharing
         siteMonitor: http://linx:8080
-        server: my-docker
-        container: linx
 
 - Dev:
     - Code Server:
@@ -384,8 +300,6 @@
         href: https://code.jaw.dev
         description: Web IDE
         siteMonitor: http://code-server:8080
-        server: my-docker
-        container: code-server
 
     - WWW:
         icon: mdi-web
@@ -398,16 +312,12 @@
         href: https://commit.jaw.dev
         description: AI Commits
         siteMonitor: http://commit:80
-        server: my-docker
-        container: commit
 
     - Gitea:
         icon: gitea
         href: https://gitea.jaw.dev
         description: Git Mirror
         siteMonitor: http://gitea:3000
-        server: my-docker
-        container: gitea
 
     - GitHub:
         icon: github
@@ -424,5 +334,3 @@
         href: https://git.jaw.dev
         description: Git URL Shortener
         siteMonitor: http://git:80
-        server: my-docker
-        container: git

@@ -3,7 +3,7 @@ favicon: https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/do
 color: slate
 headerStyle: boxedWidgets
 hideVersion: true
-showStats: true
+showStats: false
 cardBlur: sm
 statusStyle: dot
 quicklaunch:
