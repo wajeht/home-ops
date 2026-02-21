@@ -1,24 +1,30 @@
 title: Home Ops
 favicon: https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/docker.png
 color: slate
-headerStyle: clean
+headerStyle: boxedWidgets
 hideVersion: true
-showStats: false
+showStats: true
 cardBlur: sm
 fiveColumns: true
+statusStyle: dot
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: false
+  showSearchSuggestions: true
+  provider: google
 layout:
   Media:
     style: column
-    column: 1
+    tab: Services
   Infrastructure:
     style: column
-    column: 2
+    tab: Services
   Apps:
     style: column
-    column: 3
+    tab: Apps
   Tools:
     style: column
-    column: 4
+    tab: Apps
   Dev:
     style: column
-    column: 5
+    tab: Dev
