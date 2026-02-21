@@ -7,7 +7,7 @@
         widget:
           type: radarr
           url: http://radarr:7878
-          key: { { HOMEPAGE_VAR_RADARR_KEY } }
+          key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
 
     - Sonarr:
         icon: sonarr
@@ -17,7 +17,7 @@
         widget:
           type: sonarr
           url: http://sonarr:8989
-          key: { { HOMEPAGE_VAR_SONARR_KEY } }
+          key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
 
     - SABnzbd:
         icon: sabnzbd
@@ -48,7 +48,7 @@
         widget:
           type: tautulli
           url: http://tautulli:8181
-          key: { { HOMEPAGE_VAR_TAUTULLI_KEY } }
+          key: "{{HOMEPAGE_VAR_TAUTULLI_KEY}}"
 
     - Miniflux:
         icon: miniflux
@@ -58,7 +58,7 @@
         widget:
           type: miniflux
           url: http://miniflux:8080
-          key: { { HOMEPAGE_VAR_MINIFLUX_KEY } }
+          key: "{{HOMEPAGE_VAR_MINIFLUX_KEY}}"
 
     - Audiobookshelf:
         icon: audiobookshelf
@@ -133,7 +133,7 @@
           type: uptimekuma
           url: http://uptime-kuma:3001
           slug: status
-          key: { { HOMEPAGE_VAR_UPTIME_KUMA_KEY } }
+          key: "{{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}"
 
     - Docker-CD:
         icon: docker
