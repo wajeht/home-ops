@@ -1,2 +1,4 @@
-my-docker:
-  socket: /var/run/docker.sock
+# Docker integration (optional)
+# Uncomment to auto-discover containers
+# my-docker:
+#   socket: /var/run/docker.sock
