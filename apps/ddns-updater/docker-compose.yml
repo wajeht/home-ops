@@ -1,0 +1,33 @@
+services:
+  ddns-updater:
+    container_name: ddns-updater
+    image: ghcr.io/qdm12/ddns-updater:v2.9.0
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Chicago
+      - PERIOD=5m
+    volumes:
+      - /home/jaw/data/ddns-updater:/updater/data
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ddns-updater.rule=Host(`ddns.jaw.dev`)"
+      - "traefik.http.routers.ddns-updater.entrypoints=websecure"
+      - "traefik.http.routers.ddns-updater.middlewares=google-auth@file"
+      - "traefik.http.services.ddns-updater.loadbalancer.server.port=8000"
+networks:
+  traefik:
+    external: true
