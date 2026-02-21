@@ -21,7 +21,7 @@ http:
         stsPreload: true
         forceSTSHeader: true
         contentTypeNosniff: true
-        frameDeny: true
+        customFrameOptionsValue: "SAMEORIGIN"
         referrerPolicy: "strict-origin-when-cross-origin"
         permissionsPolicy: "camera=(), microphone=(), geolocation=()"
 
