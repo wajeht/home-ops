@@ -8,6 +8,10 @@
     units: imperial
     uptime: true
 
+- unifi_console:
+    url: https://192.168.4.1
+    key: "{{HOMEPAGE_VAR_UNIFI_KEY}}"
+
 - datetime:
     text_size: l
     format:
