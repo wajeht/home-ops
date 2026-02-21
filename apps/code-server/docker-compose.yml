@@ -7,6 +7,7 @@ services:
       - .env
     environment:
       - TZ=America/Chicago
+      - DEFAULT_WORKSPACE=/home/coder/home/dev
     volumes:
       - /home/jaw/data/code-server:/home/coder/.config
       - /home/jaw:/home/coder/home
@@ -21,8 +22,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2.0"
-          memory: 2G
+          cpus: "4.0"
+          memory: 4G
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.code-server.rule=Host(`code.jaw.dev`)"
