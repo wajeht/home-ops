@@ -1,7 +1,7 @@
 services:
   favicon:
     container_name: favicon
-    image: ghcr.io/wajeht/favicon:b13f743
+    image: ghcr.io/wajeht/favicon:a5d58ae
     environment:
       TZ: America/Chicago
     volumes:
