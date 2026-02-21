@@ -1,7 +1,7 @@
 services:
   authelia:
     container_name: authelia
-    image: authelia/authelia:4
+    image: authelia/authelia:4@sha256:d23ee3c721d465b4749cc58541cda4aebe5aa6f19d7b5ce0afebb44ebee69591
     environment:
       TZ: America/Chicago
       AUTHELIA_JWT_SECRET: ${AUTHELIA_JWT_SECRET}

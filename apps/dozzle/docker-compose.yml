@@ -1,7 +1,7 @@
 services:
   dozzle:
     container_name: dozzle
-    image: amir20/dozzle:v9.0.3
+    image: amir20/dozzle:v9.0.3@sha256:2d59d09503f2c947133a4f231fdeb1f4c99e23aa0d4137f81bb1a6318e0e06cf
     environment:
       - DOZZLE_NO_ANALYTICS=true
       - DOZZLE_LEVEL=info
