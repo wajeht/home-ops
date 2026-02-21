@@ -63,6 +63,11 @@ http:
           - rate-limit-auth
           - google-auth-forward
 
+    google-auth-no-ratelimit:
+      chain:
+        middlewares:
+          - google-auth-forward
+
   routers:
     # Catch-all for unknown subdomains (low priority)
     catchall:
