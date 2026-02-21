@@ -17,6 +17,13 @@
     {
       "matchPackageNames": ["ghcr.io/diced/zipline"],
       "enabled": false
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "matchCurrentVersion": "/^0/",
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeSchedule": ["after 12am and before 8am"]
     }
   ]
 }
