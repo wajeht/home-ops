@@ -7,6 +7,14 @@ services:
     environment:
       - TZ=America/Chicago
       - PERIOD=5m
+      - UPDATE_COOLDOWN_PERIOD=5m
+      - HTTP_TIMEOUT=10s
+      - PUBLICIP_FETCHERS=all
+      - PUBLICIP_DNS_PROVIDERS=all
+      - PUBLICIP_HTTP_PROVIDERS=all
+      - BACKUP_PERIOD=24h
+      - LOG_LEVEL=info
+      - SHOUTRRR_ADDRESSES=ntfy://ntfy:80/ddns-updater
     volumes:
       - /home/jaw/data/ddns-updater:/updater/data
     networks:
