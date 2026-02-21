@@ -1,7 +1,7 @@
 services:
   ddns-updater:
     container_name: ddns-updater
-    image: ghcr.io/qdm12/ddns-updater:v2.9.0
+    image: ghcr.io/qdm12/ddns-updater:v2.9.0@sha256:ed73f1fb7ab54a8a8fa26001eecc77cc8be56cdf3fb0ca91fee831124bcbb696
     env_file:
       - .env
     environment:

@@ -1,7 +1,7 @@
 services:
   huntarr:
     container_name: huntarr
-    image: huntarr/huntarr:9.3.7
+    image: huntarr/huntarr:9.3.7@sha256:95e88b2595f71b1ec2e158a3b9461c573e192928c51ac2b0d9675f33d4cdba15
     environment:
       - TZ=America/Chicago
     volumes:
