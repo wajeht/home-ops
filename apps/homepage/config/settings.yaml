@@ -5,7 +5,6 @@ headerStyle: boxedWidgets
 hideVersion: true
 showStats: true
 cardBlur: sm
-fiveColumns: true
 statusStyle: dot
 quicklaunch:
   searchDescriptions: true
@@ -15,7 +14,10 @@ quicklaunch:
 layout:
   Media:
     style: column
-    tab: Services
+    tab: Media
+  Downloaders:
+    style: column
+    tab: Media
   Infrastructure:
     style: column
     tab: Services
