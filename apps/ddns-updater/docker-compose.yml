@@ -12,7 +12,7 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000"]
+      test: ["CMD", "/updater/healthcheck"]
       interval: 30s
       timeout: 5s
       retries: 3
