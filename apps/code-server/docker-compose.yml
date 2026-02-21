@@ -2,12 +2,11 @@ services:
   code-server:
     container_name: code-server
     image: codercom/code-server:4.109.2
-    command: ["--auth", "password"]
+    command: ["--auth", "password", "/home/coder/home/dev"]
     env_file:
       - .env
     environment:
       - TZ=America/Chicago
-      - DEFAULT_WORKSPACE=/home/coder/home/dev
     volumes:
       - /home/jaw/data/code-server:/home/coder/.config
       - /home/jaw:/home/coder/home
