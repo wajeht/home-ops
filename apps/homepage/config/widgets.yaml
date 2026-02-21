@@ -1,7 +1,9 @@
 - resources:
     cpu: true
     memory: true
-    disk: /
+    disk:
+      - /
+      - /host/nas
     cputemp: true
     units: imperial
     uptime: true
