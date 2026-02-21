@@ -1,6 +1,6 @@
 services:
   sabnzbd:
-    image: linuxserver/sabnzbd:unstable-version-4.5.4@sha256:19eb7606332bef2c49b63d5004067488939e8216581a36e8b79c0a6e0cbee39d
+    image: linuxserver/sabnzbd:unstable-version-4.5.5@sha256:05f5d6e23623495e6a424612eeaa9344e2d96338a3e0770fe82520705a61e221
     container_name: sabnzbd
     environment:
       - PUID=1000
