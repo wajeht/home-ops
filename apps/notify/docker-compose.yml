@@ -1,7 +1,7 @@
 services:
   notify:
     container_name: notify
-    image: ghcr.io/wajeht/notify:bb32588
+    image: ghcr.io/wajeht/notify:7c321fb
     env_file:
       - .env
     environment:
