@@ -1,2 +1,1 @@
-rolling_update:
-  - changedetection
+rolling_update: false
