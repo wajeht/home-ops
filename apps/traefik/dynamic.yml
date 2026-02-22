@@ -68,6 +68,19 @@ http:
         middlewares:
           - google-auth-forward
 
+    google-auth-user-forward:
+      forwardAuth:
+        address: http://google-auth-user:4181
+        trustForwardHeader: true
+        authResponseHeaders:
+          - X-Forwarded-User
+
+    google-auth-user:
+      chain:
+        middlewares:
+          - rate-limit-auth
+          - google-auth-user-forward
+
   routers:
     # Catch-all for unknown subdomains (low priority)
     catchall:
