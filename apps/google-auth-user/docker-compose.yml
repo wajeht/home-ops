@@ -1,6 +1,6 @@
 services:
-  google-auth:
-    container_name: google-auth
+  google-auth-user:
+    container_name: google-auth-user
     image: thomseddon/traefik-forward-auth:2@sha256:69a2c985d2c518b6f0e77161a98628a148a5d964e4e84fc52cc62e19bb4da634
     command:
       - --rule.bypass.action=allow
@@ -10,11 +10,13 @@ services:
     environment:
       - TZ=America/Chicago
       - DEFAULT_PROVIDER=google
-      - AUTH_HOST=auth.jaw.dev
+      - AUTH_HOST=auth-user.jaw.dev
       - COOKIE_DOMAIN=jaw.dev
+      - COOKIE_NAME=_forward_auth_user
+      - CSRF_COOKIE_NAME=_forward_auth_user_csrf
       - INSECURE_COOKIE=true
       - LOG_LEVEL=info
-      - WHITELIST=${WHITELIST_ADMINS}
+      - WHITELIST=${WHITELIST}
     networks:
       - traefik
     restart: unless-stopped
@@ -25,10 +27,10 @@ services:
           memory: 128M
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.google-auth.rule=Host(`auth.jaw.dev`)"
-      - "traefik.http.routers.google-auth.entrypoints=websecure"
-      - "traefik.http.routers.google-auth.middlewares=google-auth@file"
-      - "traefik.http.services.google-auth.loadbalancer.server.port=4181"
+      - "traefik.http.routers.google-auth-user.rule=Host(`auth-user.jaw.dev`)"
+      - "traefik.http.routers.google-auth-user.entrypoints=websecure"
+      - "traefik.http.routers.google-auth-user.middlewares=google-auth-user@file"
+      - "traefik.http.services.google-auth-user.loadbalancer.server.port=4181"
 
 networks:
   traefik:
