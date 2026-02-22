@@ -1,2 +1,1 @@
-rolling_update:
-  - zipline
+rolling_update: false
