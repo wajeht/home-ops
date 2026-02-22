@@ -62,7 +62,7 @@ services:
 
   plausible-events-db:
     container_name: plausible-events-db
-    image: clickhouse/clickhouse-server:24.12-alpine@sha256:cd450891db46cc6ffe313ca2b0fb7dbfb897a6873ca74a724cbe050a2cf62621
+    image: clickhouse/clickhouse-server:25.12-alpine@sha256:f76e254dc33c2497e3ce6dc923681dd8643ca36dfa6d7bec0258ecbbe499b03e
     volumes:
       - /home/jaw/data/plausible/events:/var/lib/clickhouse
       - ./clickhouse/clickhouse-config.xml:/etc/clickhouse-server/config.d/logging.xml:ro
