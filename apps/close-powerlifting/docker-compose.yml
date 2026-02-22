@@ -1,6 +1,5 @@
 services:
   close-powerlifting:
-    container_name: close-powerlifting
     image: ghcr.io/wajeht/close-powerlifting:b6782fa
     env_file:
       - .env
