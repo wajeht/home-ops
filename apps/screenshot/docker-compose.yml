@@ -1,6 +1,5 @@
 services:
   screenshot:
-    container_name: screenshot
     image: ghcr.io/wajeht/screenshot:c439111
     environment:
       TZ: America/Chicago

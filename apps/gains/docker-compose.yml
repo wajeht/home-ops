@@ -1,6 +1,5 @@
 services:
   gains:
-    container_name: gains
     image: ghcr.io/wajeht/gains:f5f7c0f
     env_file:
       - .env
