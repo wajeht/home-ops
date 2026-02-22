@@ -1,5 +1,6 @@
 services:
   zipline:
+    container_name: zipline
     image: ghcr.io/diced/zipline:v4
     env_file:
       - .env
@@ -33,6 +34,7 @@ services:
       - "traefik.http.routers.zipline.entrypoints=websecure"
       - "traefik.http.routers.zipline.middlewares=google-auth@file"
       - "traefik.http.services.zipline.loadbalancer.server.port=3000"
+
   zipline-db:
     container_name: zipline-db
     image: postgres:17-alpine@sha256:3430fe182f5065a6ea505c3d432d2c7fff18fbab954df8f277c1dbf4c70124af

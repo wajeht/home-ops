@@ -1,5 +1,6 @@
 services:
   changedetection:
+    container_name: changedetection
     image: ghcr.io/dgtlmoon/changedetection.io:0.53.6@sha256:928ec9ddf0be01dfe7ce390d3ece5c5d03d774407c8af37e41f2b780503e972a
     environment:
       - TZ=America/Chicago
@@ -34,6 +35,7 @@ services:
       - "traefik.http.services.changedetection.loadbalancer.server.port=5000"
   # Browser for JS-rendered pages
   playwright-chrome:
+    container_name: changedetection-playwright-chrome
     image: browserless/chrome:1.61.1-puppeteer-21.4.1@sha256:b6acad3ef2e1e0e3c2eb018add533570db2b34f5304682bad58c803b23ef7bd2
     environment:
       - SCREEN_WIDTH=1920
