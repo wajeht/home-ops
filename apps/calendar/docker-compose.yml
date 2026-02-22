@@ -1,6 +1,6 @@
 services:
   calendar:
-    image: ghcr.io/wajeht/calendar:aa926a4
+    image: ghcr.io/wajeht/calendar:25a0437
     env_file:
       - .env
     environment:
