@@ -1,5 +1,6 @@
 services:
   paperless:
+    container_name: paperless-ngx
     image: ghcr.io/paperless-ngx/paperless-ngx:2.20.6@sha256:a28330462994b937938e02aaa5632a1effcc7f9acfba96c1bef9c50e1167a027
     env_file:
       - .env
@@ -49,7 +50,9 @@ services:
       - "traefik.http.routers.paperless-ngx.entrypoints=websecure"
       - "traefik.http.routers.paperless-ngx.middlewares=google-auth@file"
       - "traefik.http.services.paperless-ngx.loadbalancer.server.port=8000"
+
   paperless-db:
+    container_name: paperless-db
     image: postgres:17-alpine@sha256:3430fe182f5065a6ea505c3d432d2c7fff18fbab954df8f277c1dbf4c70124af
     env_file:
       - .env
@@ -75,6 +78,7 @@ services:
 
   paperless-redis:
     image: redis:8-alpine@sha256:fd83658b0e40e2164617d262f13c02ca9ee9e1e6b276fd2fa06617e09bd5c780
+    container_name: paperless-redis
     volumes:
       - /home/jaw/data/paperless/redis:/data
     networks:
