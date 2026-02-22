@@ -2,6 +2,11 @@ services:
   google-auth:
     container_name: google-auth
     image: thomseddon/traefik-forward-auth:2@sha256:69a2c985d2c518b6f0e77161a98628a148a5d964e4e84fc52cc62e19bb4da634
+    command:
+      - --rule.user.action=auth
+      - --rule.user.rule=Host(`seerr.jaw.dev`) || Host(`plex.jaw.dev`)
+      - --rule.bypass.action=allow
+      - --rule.bypass.rule=HeadersRegexp(`X-Bypass-Key`, `^${X_BYPASS_KEY}$$`)
     env_file:
       - .env
     environment:
@@ -12,11 +17,6 @@ services:
       - INSECURE_COOKIE=true
       - LOG_LEVEL=info
       - WHITELIST=${WHITELIST_ADMINS}
-      - RULE_USER_ACTION=auth
-      - RULE_USER_RULE=Host(`seerr.jaw.dev`) || Host(`plex.jaw.dev`)
-      - RULE_USER_WHITELIST=${WHITELIST}
-      - RULE_BYPASS_ACTION=allow
-      - RULE_BYPASS_RULE=HeadersRegexp(`X-Bypass-Key`, `${X_BYPASS_KEY}`)
     networks:
       - traefik
     restart: unless-stopped
