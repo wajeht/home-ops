@@ -6,7 +6,7 @@ services:
       - .env
     environment:
       TZ: America/Chicago
-      NOTIFICATION_URL: http://ntfy:80/walker
+      NOTIFICATION_URL: http://ntfy:80/walker?template=walker&markdown=yes
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/jaw/data/walker:/data
