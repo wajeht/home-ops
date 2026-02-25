@@ -1,5 +1,5 @@
 repos:
-  - wajeht/home-ops: 2
+  - wajeht/home-ops: 3
   - wajeht/walker:
       runners: 1
       cpus: 4
