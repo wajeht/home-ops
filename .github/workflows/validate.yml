@@ -6,13 +6,13 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.WALKER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - run: make lint
 
   sops:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.WALKER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - name: Check .env.sops files are encrypted
@@ -27,7 +27,7 @@ jobs:
           exit $fail
 
   compose:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.WALKER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - name: Validate compose files
