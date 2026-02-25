@@ -1,0 +1,30 @@
+title: '{{- if eq .severity "error" }}❌{{ else if eq .severity "warn" }}⚠️{{ else }}✅{{ end }} {{ .title }}{{- if .repo }}: {{ .repo }}{{ end }}'
+
+message: |
+  {{- if .repo }}
+  **repo:** [{{ .repo }}](https://github.com/{{ .repo }})
+  {{- end }}
+  {{- if .created }}
+  **runners:** {{ .created }} created
+  {{- end }}
+  {{- if .filesChanged }}
+  **files changed:** {{ .filesChanged }}
+  {{- end }}
+  {{- if .command }}
+  **command:** `{{ .command }}`
+  {{- end }}
+  {{- if .cleanedRepos }}
+  **cleaned:** {{ join ", " .cleanedRepos }}
+  {{- end }}
+  {{- if .reason }}
+  **reason:** {{ .reason }}
+  {{- end }}
+  {{- if .error }}
+  **error:** {{ .error }}
+  {{- end }}
+
+priority: |
+  {{- if eq .severity "error" }}5
+  {{- else if eq .severity "warn" }}4
+  {{- else }}3
+  {{- end }}
