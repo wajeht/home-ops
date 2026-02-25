@@ -1,6 +1,9 @@
 repos:
-  - wajeht/home-ops
-  - wajeht/walker
+  - wajeht/home-ops: 2
+  - wajeht/walker:
+      runners: 1
+      cpus: 4
+      memory_mb: 8192
   - wajeht/docker-cd:
       runners: 1
       cpus: 4
