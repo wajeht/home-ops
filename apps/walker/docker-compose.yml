@@ -1,0 +1,31 @@
+services:
+  walker:
+    image: ghcr.io/wajeht/walker:v0.0.3
+    container_name: walker
+    env_file:
+      - .env
+    environment:
+      TZ: America/Chicago
+      NOTIFICATION_URL: http://ntfy:80/walker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/jaw/data/walker:/data
+      - ./walker.yml:/config/walker.yml:ro
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.walker.rule=Host(`walker.jaw.dev`)"
+      - "traefik.http.routers.walker.entrypoints=websecure"
+      - "traefik.http.routers.walker.middlewares=google-auth@file"
+      - "traefik.http.services.walker.loadbalancer.server.port=80"
+
+networks:
+  traefik:
+    external: true
