@@ -1,4 +1,5 @@
 repos:
+  - wajeht/walker
   - wajeht/docker-cd:
       runners: 1
       cpus: 4
