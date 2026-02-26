@@ -1,5 +1,5 @@
 repos:
-  - wajeht/bang: 6
+  - wajeht/bang: 5
   - wajeht/home-ops: 3
   - wajeht/walker:
       runners: 1
