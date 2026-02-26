@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update update-force status relogin format lint validate push fix-git clean help
+.PHONY: setup install install-fresh uninstall update update-force status relogin format lint validate push fix-git clean update-submodules help
 
 ## setup: Create all data directories
 setup:
@@ -68,6 +68,13 @@ push:
 	@git add -A
 	@curl -s https://commit.jaw.dev/ | sh -s -- --no-verify
 	@git push --no-verify
+
+## update-submodules: Pull latest for all submodules
+update-submodules:
+	@git submodule update --remote
+	@git add -A
+	@git commit -m "chore: update submodules"
+	@git push
 
 ## fix-git: Rebuild index while respecting .gitignore
 fix-git:
