@@ -1,2 +1,5 @@
 repos:
-  - wajeht/home-ops: 0
+  - repo: wajeht/home-ops
+    pools:
+      - name: default
+        runners: 5
