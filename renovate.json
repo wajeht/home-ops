@@ -7,6 +7,12 @@
       "hostType": "docker",
       "username": "wajeht",
       "password": "{{ secrets.GH_TOKEN }}"
+    },
+    {
+      "matchHost": "docker.io",
+      "hostType": "docker",
+      "username": "typicalwavefix",
+      "password": "{{ secrets.DOCKER_HUB_TOKEN }}"
     }
   ],
   "packageRules": [
