@@ -6,7 +6,7 @@ on:
 
 jobs:
   sync:
-    runs-on: ${{ vars.WALKER || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - name: Trigger sync
         run: |
