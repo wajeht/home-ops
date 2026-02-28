@@ -1,6 +1,6 @@
 services:
   walker:
-    image: ghcr.io/wajeht/walker:v0.0.9
+    image: ghcr.io/wajeht/walker:v0.0.10
     container_name: walker
     env_file:
       - .env
