@@ -10,6 +10,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/jaw/data/walker:/data
+      - /home/jaw/data/walker-cache:/cache
       - ./walker.yml:/config/walker.yml:ro
     networks:
       - traefik

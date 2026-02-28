@@ -248,6 +248,7 @@ DATA_DIRS=(
 	"$USER_HOME/data/code-server"
 	"$USER_HOME/data/ddns-updater"
 	"$USER_HOME/data/walker"
+	"$USER_HOME/data/walker-cache"
 	"$USER_HOME/data/searxng"
 	"$USER_HOME/plex/downloads"
 	"$USER_HOME/plex/movies"
