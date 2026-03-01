@@ -27,15 +27,9 @@ layout:
   Personal:
     style: column
     tab: Apps
-  Utilities:
-    style: column
-    tab: Apps
   Tools:
     style: column
     tab: Apps
-  Dev Tools:
+  Dev:
     style: column
-    tab: Dev
-  Git:
-    style: column
-    tab: Dev
+    tab: Apps
