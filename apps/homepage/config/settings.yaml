@@ -8,7 +8,6 @@ showStats: false
 cardBlur: sm
 statusStyle: dot
 iconStyle: theme
-fullWidth: true
 useEqualHeights: true
 quicklaunch:
   searchDescriptions: true

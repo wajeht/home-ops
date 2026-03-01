@@ -44,24 +44,40 @@
         href: https://plex.jaw.dev
         description: Movies & TV
         siteMonitor: http://plex:32400
+        widget:
+          type: plex
+          url: http://plex:32400
+          key: "{{HOMEPAGE_VAR_PLEX_KEY}}"
 
     - Bazarr:
         icon: bazarr
         href: https://bazarr.jaw.dev
         description: Subtitles
         siteMonitor: http://bazarr:6767
+        widget:
+          type: bazarr
+          url: http://bazarr:6767
+          key: "{{HOMEPAGE_VAR_BAZARR_KEY}}"
 
     - Seerr:
         icon: overseerr
         href: https://seerr.jaw.dev
         description: Media Requests
         siteMonitor: http://seerr:5055
+        widget:
+          type: overseerr
+          url: http://seerr:5055
+          key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
 
     - Audiobookshelf:
         icon: audiobookshelf
         href: https://audiobooks.jaw.dev
         description: Audiobooks
         siteMonitor: http://audiobookshelf:80
+        widget:
+          type: audiobookshelf
+          url: http://audiobookshelf:80
+          key: "{{HOMEPAGE_VAR_AUDIOBOOKSHELF_KEY}}"
 
 - Downloaders:
     - SABnzbd:
@@ -90,6 +106,10 @@
         href: https://prowlarr.jaw.dev
         description: Indexers
         siteMonitor: http://prowlarr:9696
+        widget:
+          type: prowlarr
+          url: http://prowlarr:9696
+          key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
 
     - Autobrr:
         icon: autobrr
