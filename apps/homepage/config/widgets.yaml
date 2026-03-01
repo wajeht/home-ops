@@ -13,7 +13,9 @@
       - /host/nas
 
 - openmeteo:
-    label: Weather
+    label: Amarillo
+    latitude: 35.222
+    longitude: -101.8313
     units: imperial
     cache: 5
 
