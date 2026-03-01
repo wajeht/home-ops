@@ -115,7 +115,7 @@
         description: Download Cleanup
         siteMonitor: http://cleanuparr:11011
 
-- Infrastructure:
+- Systems:
     - Traefik:
         icon: traefik
         href: https://traefik.jaw.dev
@@ -124,17 +124,6 @@
         widget:
           type: traefik
           url: http://traefik:8080
-
-    - Uptime Kuma:
-        icon: uptime-kuma
-        href: https://status.jaw.dev
-        description: Status Monitor
-        siteMonitor: http://uptime-kuma:3001
-        widget:
-          type: uptimekuma
-          url: http://uptime-kuma:3001
-          slug: status
-          key: "{{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}"
 
     - Docker-CD:
         icon: docker
@@ -147,12 +136,6 @@
         href: https://auth.jaw.dev
         description: OAuth Proxy
         siteMonitor: http://google-auth:4181
-
-    - Changedetection:
-        icon: changedetection-io
-        href: https://changes.jaw.dev
-        description: Web Monitor
-        siteMonitor: http://changedetection:5000
 
     - Ntfy:
         icon: ntfy
@@ -171,6 +154,24 @@
         href: https://renovate.jaw.dev
         description: Dependency Updates
         siteMonitor: http://renovate:8080
+
+- Logs:
+    - Uptime Kuma:
+        icon: uptime-kuma
+        href: https://status.jaw.dev
+        description: Status Monitor
+        siteMonitor: http://uptime-kuma:3001
+        widget:
+          type: uptimekuma
+          url: http://uptime-kuma:3001
+          slug: status
+          key: "{{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}"
+
+    - Changedetection:
+        icon: changedetection-io
+        href: https://changes.jaw.dev
+        description: Web Monitor
+        siteMonitor: http://changedetection:5000
 
     - GlitchTip:
         icon: glitchtip
