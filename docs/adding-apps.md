@@ -20,7 +20,12 @@ services:
     cap_drop:
       - ALL
     cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
       - NET_BIND_SERVICE # only if app listens on port < 1024
+      - SETGID
+      - SETUID
     security_opt:
       - no-new-privileges:true
     labels:
@@ -49,17 +54,15 @@ security_opt:
   - no-new-privileges:true
 ```
 
-Add back only what's needed via `cap_add`:
+Most apps need `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` because they do user switching or chown on volumes at startup. Start with these and only remove them for truly stateless single-binary apps (Go/Node apps like authelia, miniflux, dozzle).
 
-| Capability                                    | When needed                                      |
-| --------------------------------------------- | ------------------------------------------------ |
-| `NET_BIND_SERVICE`                            | App binds to port < 1024 (e.g., port 80)         |
-| `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` | LinuxServer images (s6-overlay), Postgres, Gitea |
-| `SETGID, SETUID`                              | Redis                                            |
-| `DAC_READ_SEARCH, FOWNER`                     | Borgmatic (needs to read all files for backup)   |
-| `NET_ADMIN`                                   | VPN containers (gluetun)                         |
-
-If unsure, start with no `cap_add` — the container will fail with a clear permission error if it needs something.
+| Capability                                    | When needed                                                |
+| --------------------------------------------- | ---------------------------------------------------------- |
+| `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` | Most apps (user switching, writable volumes, init systems) |
+| `NET_BIND_SERVICE`                            | App binds to port < 1024 (e.g., port 80)                   |
+| `SETGID, SETUID`                              | Redis (only needs user switching, no file ownership)       |
+| `DAC_READ_SEARCH, FOWNER`                     | Borgmatic (needs to read all files for backup)             |
+| `NET_ADMIN`                                   | VPN containers (gluetun)                                   |
 
 ## Deploy
 
