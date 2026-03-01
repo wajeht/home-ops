@@ -8,6 +8,7 @@ services:
       - ./docker-cd.yml:/config/docker-cd.yml:ro
       - /home/jaw/.sops/age-key.txt:/sops/age-key.txt:ro
       - /home/jaw/.docker/config.json:/root/.docker/config.json:ro
+      - ./.gitconfig:/root/.gitconfig:ro
       - /sys/class/thermal:/sys/class/thermal:ro
       - /proc/meminfo:/proc/meminfo:ro
     environment:
