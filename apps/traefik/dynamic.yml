@@ -25,13 +25,6 @@ http:
         referrerPolicy: "strict-origin-when-cross-origin"
         permissionsPolicy: "camera=(), microphone=(), geolocation=()"
 
-    custom-errors:
-      errors:
-        status:
-          - "500-599"
-        service: dummy
-        query: "/"
-
     rate-limit-global:
       rateLimit:
         period: 1s
