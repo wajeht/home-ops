@@ -1,3 +1,2 @@
-# force deploy all apps 1
 repo: https://github.com/wajeht/home-ops.git
 base_dir: apps
