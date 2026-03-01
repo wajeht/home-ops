@@ -13,7 +13,7 @@ services:
       - /home/jaw/backup/borg:/repository
       - /home/jaw/data/borgmatic:/borgmatic/state
       - ./config.yml:/etc/borgmatic/config.yaml:ro
-      - ./crontab.txt:/etc/borgmatic.d/crontab.txt:ro
+      - ./crontab.txt:/etc/borgmatic.d/crontab.txt:ro # force
     networks:
       - traefik
       - backup
