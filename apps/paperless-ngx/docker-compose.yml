@@ -64,6 +64,7 @@ services:
       - /home/jaw/data/paperless/db:/var/lib/postgresql/data
     networks:
       - paperless-internal
+      - backup
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U paperless"]
       interval: 30s
@@ -97,5 +98,7 @@ services:
 
 networks:
   traefik:
+    external: true
+  backup:
     external: true
   paperless-internal:

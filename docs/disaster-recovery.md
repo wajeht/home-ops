@@ -28,8 +28,10 @@ Automated daily backups via borgmatic (borg wrapper). Encrypted, deduplicated, c
 - **Schedule**: Daily at 3am CT
 - **Source**: `~/data/` + `~/.sops/`
 - **Destination**: `~/backup/borg/` (NFS from NAS)
-- **Retention**: 7 daily, 4 weekly, 6 monthly
-- **Notifications**: Webhook on failure
+- **Retention**: 30 daily, 12 weekly, 12 monthly
+- **Database dumps**: pg_dump for all 7 Postgres DBs + sqlite3 dump for 9 SQLite DBs (via `backup` network)
+- **Integrity checks**: Weekly repo + archive verification (last 3 archives)
+- **Notifications**: ntfy on success/failure + uptime-kuma dead man's switch
 
 ### List Archives
 

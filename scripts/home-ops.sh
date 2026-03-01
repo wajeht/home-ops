@@ -204,7 +204,6 @@ DATA_DIRS=(
 	"$USER_HOME/data/docker-cd"
 	"$USER_HOME/data/hello-world/db"
 	"$USER_HOME/data/huntarr"
-	"$USER_HOME/data/dozzle"
 	"$USER_HOME/data/favicon"
 	"$USER_HOME/data/gains"
 	"$USER_HOME/data/gitea"
@@ -220,7 +219,6 @@ DATA_DIRS=(
 	"$USER_HOME/data/sabnzbd"
 	"$USER_HOME/data/sonarr"
 	"$USER_HOME/data/tautulli"
-	"$USER_HOME/data/overseerr"
 	"$USER_HOME/data/seerr"
 	"$USER_HOME/data/paperless/data"
 	"$USER_HOME/data/paperless/media"
@@ -372,6 +370,7 @@ cmd_install() {
 
 	# Create external networks
 	$SUDO docker network create traefik 2>/dev/null || true
+	$SUDO docker network create backup 2>/dev/null || true
 	$SUDO docker network create media 2>/dev/null || true
 	$SUDO docker volume create traefik-logs 2>/dev/null || true
 
@@ -479,6 +478,7 @@ cmd_uninstall() {
 	for i in 1 2 3; do
 		$SUDO docker network prune -f 2>/dev/null || true
 		$SUDO docker network rm traefik 2>/dev/null || true
+		$SUDO docker network rm backup 2>/dev/null || true
 		$SUDO docker network rm media 2>/dev/null || true
 		sleep 2
 	done

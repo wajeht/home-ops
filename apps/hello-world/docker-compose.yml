@@ -40,6 +40,7 @@ services:
       - /home/jaw/data/hello-world/db:/var/lib/postgresql/data
     networks:
       - internal
+      - backup
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U hello -d hello"]
       interval: 30s
@@ -55,5 +56,7 @@ services:
 
 networks:
   traefik:
+    external: true
+  backup:
     external: true
   internal:
