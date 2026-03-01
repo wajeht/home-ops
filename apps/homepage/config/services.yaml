@@ -191,7 +191,7 @@
         description: Web Analytics
         siteMonitor: http://plausible:8000
 
-- Apps:
+- Personal:
     - UFC:
         icon: mdi-mixed-martial-arts
         href: https://ufc.jaw.dev
@@ -204,6 +204,31 @@
         description: Personal Calendar
         siteMonitor: http://calendar:80
 
+    - Gains:
+        icon: mdi-weight-lifter
+        href: https://gains.jaw.dev
+        description: Workout Tracker
+        siteMonitor: http://gains:80
+
+    - Close Powerlifting:
+        icon: mdi-weight-lifter
+        href: https://close-powerlifting.jaw.dev
+        description: Powerlifting Stats
+        siteMonitor: http://close-powerlifting:80
+
+    - MM2US:
+        icon: mdi-swap-horizontal
+        href: https://mm2us.com
+        description: Unit Converter
+        siteMonitor: https://mm2us.com
+
+    - WWW:
+        icon: mdi-web
+        href: https://jaw.dev
+        description: Personal Site
+        siteMonitor: https://jaw.dev
+
+- Utilities:
     - Favicon:
         icon: mdi-image-search
         href: https://favicon.jaw.dev
@@ -222,12 +247,6 @@
         description: Search Redirector
         siteMonitor: http://bang:80
 
-    - Gains:
-        icon: mdi-weight-lifter
-        href: https://gains.jaw.dev
-        description: Workout Tracker
-        siteMonitor: http://gains:80
-
     - Notify:
         icon: mdi-bell
         href: https://notify.jaw.dev
@@ -239,18 +258,6 @@
         href: https://ip.jaw.dev
         description: IP Lookup
         siteMonitor: http://ip:80
-
-    - Close Powerlifting:
-        icon: mdi-weight-lifter
-        href: https://close-powerlifting.jaw.dev
-        description: Powerlifting Stats
-        siteMonitor: http://close-powerlifting:80
-
-    - MM2US:
-        icon: mdi-swap-horizontal
-        href: https://mm2us.com
-        description: Unit Converter
-        siteMonitor: https://mm2us.com
 
 - Tools:
     - Vaultwarden:
@@ -295,18 +302,12 @@
         description: File Sharing
         siteMonitor: http://linx:8080
 
-- Dev:
+- Dev Tools:
     - Code Server:
         icon: vscode
         href: https://code.jaw.dev
         description: Web IDE
         siteMonitor: http://code-server:8080
-
-    - WWW:
-        icon: mdi-web
-        href: https://jaw.dev
-        description: Personal Site
-        siteMonitor: https://jaw.dev
 
     - Commit:
         icon: git
@@ -314,6 +315,13 @@
         description: AI Commits
         siteMonitor: http://commit:80
 
+    - Git Redirect:
+        icon: git
+        href: https://git.jaw.dev
+        description: Git URL Shortener
+        siteMonitor: http://git:80
+
+- Git:
     - Gitea:
         icon: gitea
         href: https://gitea.jaw.dev
@@ -329,9 +337,3 @@
         icon: github
         href: https://github.com/wajeht/home-ops
         description: This Repo
-
-    - Git Redirect:
-        icon: git
-        href: https://git.jaw.dev
-        description: Git URL Shortener
-        siteMonitor: http://git:80

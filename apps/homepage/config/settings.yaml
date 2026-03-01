@@ -24,12 +24,18 @@ layout:
   Logs:
     style: column
     tab: Infra
-  Apps:
+  Personal:
+    style: column
+    tab: Apps
+  Utilities:
     style: column
     tab: Apps
   Tools:
     style: column
     tab: Apps
-  Dev:
+  Dev Tools:
+    style: column
+    tab: Dev
+  Git:
     style: column
     tab: Dev
