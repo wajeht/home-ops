@@ -10,7 +10,6 @@ services:
     volumes:
       - /home/jaw/data/authelia:/config
       - ./configuration.yml:/config/configuration.yml:ro
-      - ./users.yml:/config/users.yml:ro
     networks:
       - traefik
     healthcheck:
