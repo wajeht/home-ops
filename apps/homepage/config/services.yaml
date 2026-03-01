@@ -116,6 +116,10 @@
         href: https://autobrr.jaw.dev
         description: Download Automation
         siteMonitor: http://autobrr:7474
+        widget:
+          type: autobrr
+          url: http://autobrr:7474
+          key: "{{HOMEPAGE_VAR_AUTOBRR_KEY}}"
 
     - Bitmagnet:
         icon: bitmagnet
@@ -168,6 +172,11 @@
         href: https://portainer.jaw.dev
         description: Docker Management
         siteMonitor: http://portainer:9000
+        widget:
+          type: portainer
+          url: http://portainer:9000
+          env: 1
+          key: "{{HOMEPAGE_VAR_PORTAINER_KEY}}"
 
     - Renovate:
         icon: renovate
@@ -192,6 +201,10 @@
         href: https://changes.jaw.dev
         description: Web Monitor
         siteMonitor: http://changedetection:5000
+        widget:
+          type: changedetectionio
+          url: http://changedetection:5000
+          key: "{{HOMEPAGE_VAR_CHANGEDETECTION_KEY}}"
 
     - GlitchTip:
         icon: glitchtip
@@ -302,6 +315,10 @@
         href: https://paperless.jaw.dev
         description: Documents
         siteMonitor: http://paperless:8000
+        widget:
+          type: paperlessngx
+          url: http://paperless:8000
+          key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}"
 
     - Zipline:
         icon: zipline
@@ -345,6 +362,10 @@
         href: https://gitea.jaw.dev
         description: Git Mirror
         siteMonitor: http://gitea:3000
+        widget:
+          type: gitea
+          url: http://gitea:3000
+          key: "{{HOMEPAGE_VAR_GITEA_KEY}}"
 
     - GitHub:
         icon: github
