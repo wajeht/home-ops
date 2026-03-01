@@ -80,8 +80,9 @@ sqlite_databases:
     path: /source/data/screenshot/db.sqlite
 
 commands:
-  after_everything:
-    - wget -qO /dev/null "${UPTIME_KUMA_PUSH_URL}"
+  - after: everything
+    run:
+      - wget -qO /dev/null "${UPTIME_KUMA_PUSH_URL}"
 
 ntfy:
   topic: borgmatic
