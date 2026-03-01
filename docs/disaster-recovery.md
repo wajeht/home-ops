@@ -36,7 +36,7 @@ Automated daily backups via borgmatic (borg wrapper). Encrypted, deduplicated, c
 
 ### Per-App Borgmatic (DB Backups)
 
-Each Postgres app has its own borgmatic instance backing up its pg_dump output to a dedicated borg repo. Staggered schedules prevent resource contention.
+Each database app (Postgres and SQLite) has its own borgmatic instance backing up to a dedicated borg repo. Staggered schedules prevent resource contention.
 
 | App                | Schedule | Borg Repo                           |
 | ------------------ | -------- | ----------------------------------- |
