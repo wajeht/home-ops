@@ -12,6 +12,11 @@
       - /
       - /host/nas
 
+- openmeteo:
+    label: Weather
+    units: imperial
+    cache: 5
+
 - unifi_console:
     url: https://192.168.4.1
     key: "{{HOMEPAGE_VAR_UNIFI_KEY}}"
