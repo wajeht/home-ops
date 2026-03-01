@@ -1,5 +1,4 @@
 - resources:
-    label: System
     expanded: true
     cpu: true
     memory: true
@@ -8,7 +7,6 @@
     uptime: true
 
 - resources:
-    label: Storage
     expanded: true
     disk:
       - /
