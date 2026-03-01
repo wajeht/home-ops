@@ -64,7 +64,7 @@ flowchart LR
     style unifi fill:#cce0f5,stroke:#0559c9,color:#333
 ```
 
-Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Polls every 5 min or instantly via `/api/sync` webhook. Auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates. [Traefik](https://traefik.io/traefik/) routes via Docker labels with auto SSL via Cloudflare DNS challenge, and [traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth) provides Google OAuth protection. [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~15min: Renovate scan + docker-cd poll). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
+Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. Polls every 60 min or instantly via `/api/sync` webhook. Auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates. [Traefik](https://traefik.io/traefik/) routes via Docker labels with auto SSL via Cloudflare DNS challenge, and [traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth) provides Google OAuth protection. [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~60min via polling). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
 
 ## Hardware
 
