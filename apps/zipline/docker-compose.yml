@@ -112,7 +112,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/zipline/dumps:/source/dumps:ro
-      - /home/jaw/backup/borg/zipline:/repository
+      - /home/jaw/data/zipline/borg:/repository
       - /home/jaw/data/zipline/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

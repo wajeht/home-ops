@@ -39,7 +39,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/favicon:/source/data
-      - /home/jaw/backup/borg/favicon:/repository
+      - /home/jaw/data/favicon/borg:/repository
       - /home/jaw/data/favicon/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

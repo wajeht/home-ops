@@ -112,7 +112,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/bitmagnet/dumps:/source/dumps:ro
-      - /home/jaw/backup/borg/bitmagnet:/repository
+      - /home/jaw/data/bitmagnet/borg:/repository
       - /home/jaw/data/bitmagnet/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

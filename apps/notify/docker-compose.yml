@@ -41,7 +41,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/notify:/source/data
-      - /home/jaw/backup/borg/notify:/repository
+      - /home/jaw/data/notify/borg:/repository
       - /home/jaw/data/notify/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

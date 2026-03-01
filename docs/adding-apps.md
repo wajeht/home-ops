@@ -275,7 +275,7 @@ myapp-borgmatic:
     - TZ=America/Chicago
   volumes:
     - /home/jaw/data/myapp/dumps:/source/dumps:ro
-    - /home/jaw/backup/borg/myapp:/repository
+    - /home/jaw/data/myapp/borg:/repository
     - /home/jaw/data/myapp/borgmatic:/borgmatic/state
     - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
     - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
@@ -357,7 +357,7 @@ myapp-borgmatic:
     - TZ=America/Chicago
   volumes:
     - /home/jaw/data/myapp:/source/data
-    - /home/jaw/backup/borg/myapp:/repository
+    - /home/jaw/data/myapp/borg:/repository
     - /home/jaw/data/myapp/borgmatic:/borgmatic/state
     - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
     - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

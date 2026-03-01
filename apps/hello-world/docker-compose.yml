@@ -105,7 +105,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/hello-world/dumps:/source/dumps:ro
-      - /home/jaw/backup/borg/hello-world:/repository
+      - /home/jaw/data/hello-world/borg:/repository
       - /home/jaw/data/hello-world/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
