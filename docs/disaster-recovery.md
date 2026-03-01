@@ -25,13 +25,42 @@ How to recreate the homelab from scratch.
 
 Automated daily backups via borgmatic (borg wrapper). Encrypted, deduplicated, compressed (zstd).
 
-- **Schedule**: Daily at 3am CT
+### Global Borgmatic
+
+- **Schedule**: Daily at 4am CT
 - **Source**: `~/data/` + `~/.sops/`
 - **Destination**: `~/backup/borg/` (NFS from NAS)
 - **Retention**: 30 daily, 12 weekly, 12 monthly
-- **Database dumps**: pg_dump for all 7 Postgres DBs + sqlite3 dump for 9 SQLite DBs (via `backup` network)
 - **Integrity checks**: Weekly repo + archive verification (last 3 archives)
 - **Notifications**: ntfy on success/failure + uptime-kuma dead man's switch
+
+### Per-App Borgmatic (DB Backups)
+
+Each Postgres app has its own borgmatic instance backing up its pg_dump output to a dedicated borg repo. Staggered schedules prevent resource contention.
+
+| App                | Schedule | Borg Repo                           |
+| ------------------ | -------- | ----------------------------------- |
+| miniflux           | 1:00 AM  | `~/backup/borg/miniflux/`           |
+| plausible          | 1:15 AM  | `~/backup/borg/plausible/`          |
+| zipline            | 1:30 AM  | `~/backup/borg/zipline/`            |
+| glitchtip          | 1:45 AM  | `~/backup/borg/glitchtip/`          |
+| bitmagnet          | 2:00 AM  | `~/backup/borg/bitmagnet/`          |
+| hello-world        | 2:15 AM  | `~/backup/borg/hello-world/`        |
+| paperless          | 2:30 AM  | `~/backup/borg/paperless/`          |
+| gitea              | 2:45 AM  | `~/backup/borg/gitea/`              |
+| close-powerlifting | 2:50 AM  | `~/backup/borg/close-powerlifting/` |
+| bang               | 2:55 AM  | `~/backup/borg/bang/`               |
+| gains              | 3:00 AM  | `~/backup/borg/gains/`              |
+| mm2us              | 3:05 AM  | `~/backup/borg/mm2us/`              |
+| notify             | 3:10 AM  | `~/backup/borg/notify/`             |
+| calendar           | 3:15 AM  | `~/backup/borg/calendar/`           |
+| favicon            | 3:20 AM  | `~/backup/borg/favicon/`            |
+| screenshot         | 3:25 AM  | `~/backup/borg/screenshot/`         |
+| **global**         | 4:00 AM  | `~/backup/borg/`                    |
+
+Postgres apps: per-app borgmatic reads dumps from `~/data/<app>/dumps/` (written by the pg_dump sidecar).
+SQLite apps: per-app borgmatic uses `sqlite_databases` hook to do proper `sqlite3 .backup` before archiving.
+All per-app repos store encrypted, deduplicated archives in `~/backup/borg/<app>/` (NFS). Global borgmatic backs up all of `~/data/` (which includes dumps) as belt-and-suspenders.
 
 ### List Archives
 
