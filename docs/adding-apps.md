@@ -16,13 +16,19 @@ services:
     image: nginx:1.25
     networks:
       - traefik
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE # only if app listens on port < 1024
+    security_opt:
+      - no-new-privileges:true
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
       - "traefik.http.routers.myapp.entrypoints=websecure"
       - "traefik.http.routers.myapp.middlewares=google-auth@file"
       - "traefik.http.services.myapp.loadbalancer.server.port=80"
-    restart: unless-stopped
 
 networks:
   traefik:
@@ -31,6 +37,29 @@ networks:
 
 Use `google-auth@file` for protected apps.
 Omit auth middleware for public apps.
+
+## Security Hardening
+
+All containers must drop all Linux capabilities and disable privilege escalation:
+
+```yaml
+cap_drop:
+  - ALL
+security_opt:
+  - no-new-privileges:true
+```
+
+Add back only what's needed via `cap_add`:
+
+| Capability                                    | When needed                                      |
+| --------------------------------------------- | ------------------------------------------------ |
+| `NET_BIND_SERVICE`                            | App binds to port < 1024 (e.g., port 80)         |
+| `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` | LinuxServer images (s6-overlay), Postgres, Gitea |
+| `SETGID, SETUID`                              | Redis                                            |
+| `DAC_READ_SEARCH, FOWNER`                     | Borgmatic (needs to read all files for backup)   |
+| `NET_ADMIN`                                   | VPN containers (gluetun)                         |
+
+If unsure, start with no `cap_add` — the container will fail with a clear permission error if it needs something.
 
 ## Deploy
 

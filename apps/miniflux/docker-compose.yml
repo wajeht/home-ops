@@ -20,6 +20,10 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:
@@ -51,6 +55,16 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:

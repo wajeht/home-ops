@@ -213,7 +213,7 @@ DATA_DIRS=(
 	"$USER_HOME/data/linx/files"
 	"$USER_HOME/data/linx/meta"
 	"$USER_HOME/data/plex"
-
+	"$USER_HOME/data/dozzle"
 	"$USER_HOME/data/prowlarr"
 	"$USER_HOME/data/radarr"
 	"$USER_HOME/data/sabnzbd"
