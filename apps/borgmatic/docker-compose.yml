@@ -6,6 +6,7 @@ services:
       - .env
     environment:
       - TZ=America/Chicago
+      - EXTRA_PKGS=postgresql18-client
     volumes:
       - /home/jaw/data:/source/data:ro
       - /home/jaw/.sops:/source/sops:ro
