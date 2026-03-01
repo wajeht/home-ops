@@ -228,7 +228,6 @@
         description: Personal Site
         siteMonitor: https://jaw.dev
 
-- Utilities:
     - Favicon:
         icon: mdi-image-search
         href: https://favicon.jaw.dev
@@ -302,7 +301,7 @@
         description: File Sharing
         siteMonitor: http://linx:8080
 
-- Dev Tools:
+- Dev:
     - Code Server:
         icon: vscode
         href: https://code.jaw.dev
@@ -321,7 +320,6 @@
         description: Git URL Shortener
         siteMonitor: http://git:80
 
-- Git:
     - Gitea:
         icon: gitea
         href: https://gitea.jaw.dev
