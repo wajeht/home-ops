@@ -79,8 +79,9 @@ sqlite_databases:
   - name: screenshot
     path: /source/data/screenshot/db.sqlite
 
-after_everything:
-  - wget -qO /dev/null "${UPTIME_KUMA_PUSH_URL}"
+commands:
+  after_everything:
+    - wget -qO /dev/null "${UPTIME_KUMA_PUSH_URL}"
 
 ntfy:
   topic: borgmatic
