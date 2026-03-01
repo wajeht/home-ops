@@ -17,6 +17,13 @@ services:
       - traefik
       - backup
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_READ_SEARCH
+      - FOWNER
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:

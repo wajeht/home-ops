@@ -20,6 +20,10 @@ services:
     networks:
       - traefik
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:
