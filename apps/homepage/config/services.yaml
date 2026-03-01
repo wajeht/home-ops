@@ -1,10 +1,4 @@
 - Media:
-    - Plex:
-        icon: plex
-        href: https://plex.jaw.dev
-        description: Movies & TV
-        siteMonitor: http://plex:32400
-
     - Radarr:
         icon: radarr
         href: https://radarr.jaw.dev
@@ -25,6 +19,16 @@
           url: http://sonarr:8989
           key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
 
+    - Miniflux:
+        icon: miniflux
+        href: https://rss.jaw.dev
+        description: RSS Reader
+        siteMonitor: http://miniflux:8080
+        widget:
+          type: miniflux
+          url: http://miniflux:8080
+          key: "{{HOMEPAGE_VAR_MINIFLUX_KEY}}"
+
     - Tautulli:
         icon: tautulli
         href: https://tautulli.jaw.dev
@@ -34,6 +38,12 @@
           type: tautulli
           url: http://tautulli:8181
           key: "{{HOMEPAGE_VAR_TAUTULLI_KEY}}"
+
+    - Plex:
+        icon: plex
+        href: https://plex.jaw.dev
+        description: Movies & TV
+        siteMonitor: http://plex:32400
 
     - Bazarr:
         icon: bazarr
@@ -52,16 +62,6 @@
         href: https://audiobooks.jaw.dev
         description: Audiobooks
         siteMonitor: http://audiobookshelf:80
-
-    - Miniflux:
-        icon: miniflux
-        href: https://rss.jaw.dev
-        description: RSS Reader
-        siteMonitor: http://miniflux:8080
-        widget:
-          type: miniflux
-          url: http://miniflux:8080
-          key: "{{HOMEPAGE_VAR_MINIFLUX_KEY}}"
 
 - Downloaders:
     - SABnzbd:
