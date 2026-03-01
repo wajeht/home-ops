@@ -48,7 +48,6 @@ services:
       - /home/jaw/data/miniflux/db:/var/lib/postgresql/data
     networks:
       - miniflux-internal
-      - backup
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U miniflux"]
       interval: 30s
@@ -71,9 +70,65 @@ services:
           cpus: "1.0"
           memory: 512M
 
+  miniflux-db-dump:
+    image: postgres:18-alpine@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911
+    environment:
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "pg_dump sidecar for miniflux"
+        while true; do
+          pg_dump -h miniflux-db -U miniflux -Fc miniflux > /dumps/miniflux.dump.tmp && mv /dumps/miniflux.dump.tmp /dumps/miniflux.dump && echo "dump ok $$(date)"
+          sleep 86400
+        done
+    volumes:
+      - /home/jaw/data/miniflux/dumps:/dumps
+    networks:
+      - miniflux-internal
+    depends_on:
+      miniflux-db:
+        condition: service_healthy
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+
+  miniflux-borgmatic:
+    image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/miniflux/dumps:/source/dumps:ro
+      - /home/jaw/backup/borg/miniflux:/repository
+      - /home/jaw/data/miniflux/borgmatic:/borgmatic/state
+      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
+      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
+    networks:
+      - traefik
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_READ_SEARCH
+      - FOWNER
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
 networks:
   traefik:
-    external: true
-  backup:
     external: true
   miniflux-internal:

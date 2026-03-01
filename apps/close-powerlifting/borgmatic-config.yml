@@ -1,0 +1,39 @@
+sqlite_databases:
+  - name: close-powerlifting
+    path: /source/data/db.sqlite
+
+repositories:
+  - path: /repository
+    label: close-powerlifting
+
+archive_name_format: "close-powerlifting-{now:%Y-%m-%d-%H%M%S}"
+compression: zstd,3
+
+keep_daily: 30
+keep_weekly: 12
+keep_monthly: 12
+
+checks:
+  - name: repository
+    frequency: 1 week
+  - name: archives
+    frequency: 1 week
+
+check_last: 3
+
+ntfy:
+  topic: borgmatic
+  server: http://ntfy:80
+  finish:
+    title: "close-powerlifting db backup complete"
+    message: "close-powerlifting database backup finished"
+    priority: min
+    tags: white_check_mark
+  fail:
+    title: "close-powerlifting db backup FAILED"
+    message: "close-powerlifting database backup failed"
+    priority: max
+    tags: skull
+  states:
+    - finish
+    - fail

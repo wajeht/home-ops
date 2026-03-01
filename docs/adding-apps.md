@@ -162,6 +162,224 @@ services:
 
 The server has docker login configured for ghcr.io.
 
+## With Postgres (DB Dump Sidecar)
+
+Apps with Postgres get a dump sidecar that uses the same postgres image (pg_dump version always matches). Dumps go to `~/data/<app>/dumps/` and borgmatic backs up `~/data/` daily.
+
+```yaml
+myapp-db:
+  image: postgres:18-alpine@sha256:abc123
+  env_file:
+    - .env
+  environment:
+    - POSTGRES_USER=myapp
+    - POSTGRES_DB=myapp
+    - PGDATA=/var/lib/postgresql/data
+  volumes:
+    - /home/jaw/data/myapp/db:/var/lib/postgresql/data
+  networks:
+    - myapp-internal
+
+myapp-db-dump:
+  image: postgres:18-alpine@sha256:abc123 # same image as db
+  environment:
+    - PGPASSWORD=${POSTGRES_PASSWORD}
+  entrypoint: ["/bin/sh", "-c"]
+  command:
+    - |
+      echo "pg_dump sidecar for myapp"
+      while true; do
+        pg_dump -h myapp-db -U myapp -Fc myapp > /dumps/myapp.dump.tmp && mv /dumps/myapp.dump.tmp /dumps/myapp.dump && echo "dump ok $$(date)"
+        sleep 86400
+      done
+  volumes:
+    - /home/jaw/data/myapp/dumps:/dumps
+  networks:
+    - myapp-internal
+  depends_on:
+    myapp-db:
+      condition: service_healthy
+  restart: unless-stopped
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  deploy:
+    resources:
+      limits:
+        cpus: "0.25"
+        memory: 256M
+```
+
+### Per-App Borgmatic (DB Backup)
+
+Each Postgres app also gets a borgmatic sidecar that backs up the dump to its own borg repo with independent retention and notifications.
+
+Create `apps/myapp/borgmatic-config.yml`:
+
+```yaml
+source_directories:
+  - /source/dumps
+
+repositories:
+  - path: /repository
+    label: myapp
+
+archive_name_format: "myapp-{now:%Y-%m-%d-%H%M%S}"
+compression: zstd,3
+
+keep_daily: 30
+keep_weekly: 12
+keep_monthly: 12
+
+checks:
+  - name: repository
+    frequency: 1 week
+  - name: archives
+    frequency: 1 week
+
+check_last: 3
+
+ntfy:
+  topic: borgmatic
+  server: http://ntfy:80
+  finish:
+    title: "myapp db backup complete"
+    message: "myapp database backup finished"
+    priority: min
+    tags: white_check_mark
+  fail:
+    title: "myapp db backup FAILED"
+    message: "myapp database backup failed"
+    priority: max
+    tags: skull
+  states:
+    - finish
+    - fail
+```
+
+Create `apps/myapp/borgmatic-crontab.txt` (pick a unique time slot):
+
+```
+0 1 * * * PATH=$PATH:/usr/local/bin /usr/local/bin/borgmatic --verbosity -2 --syslog-verbosity 1
+```
+
+Add borgmatic service to `docker-compose.yml`:
+
+```yaml
+myapp-borgmatic:
+  image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
+  env_file:
+    - .env
+  environment:
+    - TZ=America/Chicago
+  volumes:
+    - /home/jaw/data/myapp/dumps:/source/dumps:ro
+    - /home/jaw/backup/borg/myapp:/repository
+    - /home/jaw/data/myapp/borgmatic:/borgmatic/state
+    - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
+    - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
+  networks:
+    - traefik
+  restart: unless-stopped
+  cap_drop:
+    - ALL
+  cap_add:
+    - DAC_READ_SEARCH
+    - FOWNER
+  security_opt:
+    - no-new-privileges:true
+  deploy:
+    resources:
+      limits:
+        cpus: "0.5"
+        memory: 512M
+```
+
+Add `BORG_PASSPHRASE` to the app's `.env.sops`.
+
+### Per-App Borgmatic (SQLite)
+
+SQLite apps use borgmatic's `sqlite_databases` hook for proper `.backup` dumps. Same pattern but different config and volume mounts.
+
+Create `apps/myapp/borgmatic-config.yml`:
+
+```yaml
+sqlite_databases:
+  - name: myapp
+    path: /source/data/db.sqlite
+
+repositories:
+  - path: /repository
+    label: myapp
+
+archive_name_format: "myapp-{now:%Y-%m-%d-%H%M%S}"
+compression: zstd,3
+
+keep_daily: 30
+keep_weekly: 12
+keep_monthly: 12
+
+checks:
+  - name: repository
+    frequency: 1 week
+  - name: archives
+    frequency: 1 week
+
+check_last: 3
+
+ntfy:
+  topic: borgmatic
+  server: http://ntfy:80
+  finish:
+    title: "myapp db backup complete"
+    message: "myapp database backup finished"
+    priority: min
+    tags: white_check_mark
+  fail:
+    title: "myapp db backup FAILED"
+    message: "myapp database backup failed"
+    priority: max
+    tags: skull
+  states:
+    - finish
+    - fail
+```
+
+Add borgmatic service to `docker-compose.yml` (note: mounts data dir, not dumps):
+
+```yaml
+myapp-borgmatic:
+  image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
+  env_file:
+    - .env
+  environment:
+    - TZ=America/Chicago
+  volumes:
+    - /home/jaw/data/myapp:/source/data
+    - /home/jaw/backup/borg/myapp:/repository
+    - /home/jaw/data/myapp/borgmatic:/borgmatic/state
+    - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
+    - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
+  networks:
+    - traefik
+  restart: unless-stopped
+  cap_drop:
+    - ALL
+  cap_add:
+    - DAC_READ_SEARCH
+    - FOWNER
+  security_opt:
+    - no-new-privileges:true
+  deploy:
+    resources:
+      limits:
+        cpus: "0.5"
+        memory: 512M
+```
+
+Add `BORG_PASSPHRASE` to the app's `.env.sops`.
+
 ## Disable Rolling Deploy
 
 For apps that cannot run multiple instances:
