@@ -6,7 +6,7 @@ on:
 
 jobs:
   sync:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, default]
     steps:
       - name: Trigger sync
         run: |
