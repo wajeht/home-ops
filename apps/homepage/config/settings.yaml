@@ -18,9 +18,12 @@ layout:
   Downloaders:
     style: column
     tab: Media
-  Infrastructure:
+  Systems:
     style: column
-    tab: Services
+    tab: Infra
+  Logs:
+    style: column
+    tab: Infra
   Apps:
     style: column
     tab: Apps
