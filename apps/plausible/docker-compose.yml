@@ -144,7 +144,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/plausible/dumps:/source/dumps:ro
-      - /home/jaw/backup/borg/plausible:/repository
+      - /home/jaw/data/plausible/borg:/repository
       - /home/jaw/data/plausible/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
