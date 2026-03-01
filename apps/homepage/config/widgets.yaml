@@ -1,4 +1,6 @@
 - resources:
+    label: System
+    expanded: true
     cpu: true
     memory: true
     cputemp: true
@@ -6,6 +8,8 @@
     uptime: true
 
 - resources:
+    label: Storage
+    expanded: true
     disk:
       - /
       - /host/nas
