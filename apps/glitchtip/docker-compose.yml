@@ -58,6 +58,7 @@ services:
       - /home/jaw/data/glitchtip/db:/var/lib/postgresql/data
     networks:
       - glitchtip-internal
+      - backup
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U glitchtip"]
       interval: 30s
@@ -72,5 +73,7 @@ services:
 
 networks:
   traefik:
+    external: true
+  backup:
     external: true
   glitchtip-internal:

@@ -48,6 +48,7 @@ services:
       - /home/jaw/data/bitmagnet/db:/var/lib/postgresql/data
     networks:
       - bitmagnet-internal
+      - backup
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 30s
@@ -62,5 +63,7 @@ services:
 
 networks:
   traefik:
+    external: true
+  backup:
     external: true
   bitmagnet-internal:

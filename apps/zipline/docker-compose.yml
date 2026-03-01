@@ -48,6 +48,7 @@ services:
       - /home/jaw/data/zipline/db:/var/lib/postgresql/data
     networks:
       - zipline-internal
+      - backup
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U zipline"]
       interval: 30s
@@ -62,5 +63,7 @@ services:
 
 networks:
   traefik:
+    external: true
+  backup:
     external: true
   zipline-internal:
