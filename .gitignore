@@ -8,6 +8,9 @@
 *.pem
 *.crt
 
+# Authelia user database (contains PII)
+apps/authelia/users.yml
+
 # SOPS age keys (private key - NEVER commit)
 .sops/
 

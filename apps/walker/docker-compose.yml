@@ -8,7 +8,7 @@ services:
       TZ: America/Chicago
       NOTIFICATION_URL: http://ntfy:80/walker?template=walker&markdown=yes
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/jaw/data/walker:/data
       - /home/jaw/data/walker-cache:/cache
       - ./walker.yml:/config/walker.yml:ro
