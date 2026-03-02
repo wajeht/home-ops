@@ -1,6 +1,6 @@
 services:
   gains:
-    image: ghcr.io/wajeht/gains:f5f7c0f
+    image: ghcr.io/wajeht/gains:e830d5f
     env_file:
       - .env
     environment:
