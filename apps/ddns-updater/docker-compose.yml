@@ -14,7 +14,7 @@ services:
       - PUBLICIP_HTTP_PROVIDERS=all
       - BACKUP_PERIOD=24h
       - LOG_LEVEL=info
-      - SHOUTRRR_ADDRESSES=ntfy://ntfy:80/ddns-updater?disabletls=yes
+      - SHOUTRRR_ADDRESSES=ntfy://ntfy:80/ddns-updater?scheme=http
     volumes:
       - /home/jaw/data/ddns-updater:/updater/data
     networks:
