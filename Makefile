@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update update-force status relogin format lint validate push fix-git clean update-submodules help
+.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint validate push fix-git clean update-submodules help
 
 ## setup: Create all data directories
 setup:
@@ -33,6 +33,14 @@ status:
 ## relogin: Refresh docker registry credentials
 relogin:
 	@./scripts/home-ops.sh relogin
+
+## borgmatic-init: Initialize borg repos for all borgmatic containers
+borgmatic-init:
+	@./scripts/home-ops.sh borgmatic-init
+
+## borgmatic-backup: Run backup on all borgmatic containers
+borgmatic-backup:
+	@./scripts/home-ops.sh borgmatic-backup
 
 ## format: Format YAML/Markdown/JSON files
 format:

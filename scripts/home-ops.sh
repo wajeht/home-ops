@@ -520,6 +520,68 @@ cmd_update_infra_force() {
 }
 
 #=============================================================================
+# BORGMATIC-INIT - Initialize borg repos for all borgmatic containers
+#=============================================================================
+cmd_borgmatic_init() {
+	header "Borgmatic Init"
+
+	local containers
+	containers=$($SUDO docker ps --format '{{.Names}}' | grep borgmatic | sort)
+
+	if [ -z "$containers" ]; then
+		warn "No borgmatic containers running"
+		return 1
+	fi
+
+	local initialized=0 skipped=0 failed=0
+	for c in $containers; do
+		if $SUDO docker exec "$c" borg info /repository &>/dev/null; then
+			dim "$c: already initialized"
+			skipped=$((skipped + 1))
+		elif $SUDO docker exec "$c" borgmatic init --encryption repokey-blake2 &>/dev/null; then
+			ok "$c: initialized"
+			initialized=$((initialized + 1))
+		else
+			err "$c: failed"
+			failed=$((failed + 1))
+		fi
+	done
+
+	echo ""
+	ok "Done ($initialized new, $skipped existing, $failed failed)"
+}
+
+#=============================================================================
+# BORGMATIC-BACKUP - Run backup on all borgmatic containers
+#=============================================================================
+cmd_borgmatic_backup() {
+	header "Borgmatic Backup"
+
+	local containers
+	containers=$($SUDO docker ps --format '{{.Names}}' | grep borgmatic | sort)
+
+	if [ -z "$containers" ]; then
+		warn "No borgmatic containers running"
+		return 1
+	fi
+
+	local success=0 failed=0
+	for c in $containers; do
+		info "$c..."
+		if $SUDO docker exec "$c" borgmatic create --verbosity -1 2>&1; then
+			ok "$c"
+			success=$((success + 1))
+		else
+			err "$c"
+			failed=$((failed + 1))
+		fi
+	done
+
+	echo ""
+	ok "Done ($success success, $failed failed)"
+}
+
+#=============================================================================
 # MAIN
 #=============================================================================
 case "${1:-}" in
@@ -551,6 +613,12 @@ update-infra)
 update-infra-force)
 	cmd_update_infra_force
 	;;
+borgmatic-init)
+	cmd_borgmatic_init
+	;;
+borgmatic-backup)
+	cmd_borgmatic_backup
+	;;
 *)
 	echo -e "${BOLD}home-ops${NC} management script"
 	echo ""
@@ -567,6 +635,8 @@ update-infra-force)
 	echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
 	echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
 	echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
+	echo -e "  ${GREEN}borgmatic-init${NC}           Initialize borg repos for all borgmatic containers"
+	echo -e "  ${GREEN}borgmatic-backup${NC}         Run backup on all borgmatic containers"
 	echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
 	echo ""
 	echo -e "${BOLD}Examples:${NC}"
