@@ -90,7 +90,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/gitea:/source/data
-      - /home/jaw/data/gitea/borg:/repository
+      - /home/jaw/backup/gitea:/repository
       - /home/jaw/data/gitea/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

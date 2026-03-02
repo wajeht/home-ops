@@ -84,7 +84,7 @@ services:
       - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - /home/jaw/data/zipline:/source/data:ro
-      - /home/jaw/data/zipline/borg:/repository
+      - /home/jaw/backup/zipline:/repository
       - /home/jaw/data/zipline/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

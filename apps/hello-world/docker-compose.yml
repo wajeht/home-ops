@@ -76,7 +76,7 @@ services:
       - TZ=America/Chicago
       - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - /home/jaw/data/hello-world/borg:/repository
+      - /home/jaw/backup/hello-world:/repository
       - /home/jaw/data/hello-world/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

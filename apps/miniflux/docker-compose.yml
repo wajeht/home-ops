@@ -80,7 +80,7 @@ services:
       - TZ=America/Chicago
       - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - /home/jaw/data/miniflux/borg:/repository
+      - /home/jaw/backup/miniflux:/repository
       - /home/jaw/data/miniflux/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

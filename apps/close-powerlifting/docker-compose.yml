@@ -49,7 +49,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/close-powerlifting:/source/data
-      - /home/jaw/data/close-powerlifting/borg:/repository
+      - /home/jaw/backup/close-powerlifting:/repository
       - /home/jaw/data/close-powerlifting/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

@@ -46,7 +46,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/tautulli:/source/data
-      - /home/jaw/data/tautulli/borg:/repository
+      - /home/jaw/backup/tautulli:/repository
       - /home/jaw/data/tautulli/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

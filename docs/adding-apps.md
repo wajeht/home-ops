@@ -190,7 +190,6 @@ source_directories:
   - /source/data
 
 exclude_patterns:
-  - "*/borg"
   - "*/borgmatic"
   - "*/db" # raw PG data dir (already backed up via pg_dump)
 
@@ -256,7 +255,7 @@ myapp-borgmatic:
     - PGPASSWORD=${POSTGRES_PASSWORD}
   volumes:
     - /home/jaw/data/myapp:/source/data:ro
-    - /home/jaw/data/myapp/borg:/repository
+    - /home/jaw/backup/myapp:/repository
     - /home/jaw/data/myapp/borgmatic:/borgmatic/state
     - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
     - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
@@ -294,7 +293,6 @@ source_directories:
   - /source/data
 
 exclude_patterns:
-  - "*/borg"
   - "*/borgmatic"
   - "*/db.sqlite*" # exclude raw DB files (backed up via sqlite hook)
 
@@ -350,7 +348,7 @@ myapp-borgmatic:
     - TZ=America/Chicago
   volumes:
     - /home/jaw/data/myapp:/source/data
-    - /home/jaw/data/myapp/borg:/repository
+    - /home/jaw/backup/myapp:/repository
     - /home/jaw/data/myapp/borgmatic:/borgmatic/state
     - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
     - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

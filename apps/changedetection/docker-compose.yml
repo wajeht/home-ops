@@ -78,7 +78,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/changedetection:/source/data
-      - /home/jaw/data/changedetection/borg:/repository
+      - /home/jaw/backup/changedetection:/repository
       - /home/jaw/data/changedetection/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

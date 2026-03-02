@@ -42,7 +42,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/authelia:/source/data
-      - /home/jaw/data/authelia/borg:/repository
+      - /home/jaw/backup/authelia:/repository
       - /home/jaw/data/authelia/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

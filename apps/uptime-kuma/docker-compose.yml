@@ -42,7 +42,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/uptime-kuma:/source/data
-      - /home/jaw/data/uptime-kuma/borg:/repository
+      - /home/jaw/backup/uptime-kuma:/repository
       - /home/jaw/data/uptime-kuma/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
