@@ -1,3 +1,11 @@
+source_directories:
+  - /source/data
+
+exclude_patterns:
+  - "*/borg"
+  - "*/borgmatic"
+  - "*/db.sqlite*"
+
 sqlite_databases:
   - name: screenshot
     path: /source/data/db.sqlite
@@ -25,13 +33,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "screenshot db backup complete"
-    message: "screenshot database backup finished"
+    title: "screenshot backup complete"
+    message: "screenshot backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "screenshot db backup FAILED"
-    message: "screenshot database backup failed"
+    title: "screenshot backup FAILED"
+    message: "screenshot backup failed"
     priority: max
     tags: skull
   states:

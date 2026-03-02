@@ -4,19 +4,18 @@ source_directories:
 exclude_patterns:
   - "*/borg"
   - "*/borgmatic"
-  - "*/db"
+  - "*/radarr.db*"
+  - "*/logs.db*"
 
-postgresql_databases:
-  - name: glitchtip
-    hostname: glitchtip-db
-    username: glitchtip
-    format: custom
+sqlite_databases:
+  - name: radarr
+    path: /source/data/radarr.db
 
 repositories:
   - path: /repository
-    label: glitchtip
+    label: radarr
 
-archive_name_format: "glitchtip-{now:%Y-%m-%d-%H%M%S}"
+archive_name_format: "radarr-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3
 
 keep_daily: 7
@@ -35,13 +34,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "glitchtip backup complete"
-    message: "glitchtip backup finished"
+    title: "radarr backup complete"
+    message: "radarr backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "glitchtip backup FAILED"
-    message: "glitchtip backup failed"
+    title: "radarr backup FAILED"
+    message: "radarr backup failed"
     priority: max
     tags: skull
   states:

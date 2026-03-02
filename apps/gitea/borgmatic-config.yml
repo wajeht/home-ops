@@ -1,3 +1,11 @@
+source_directories:
+  - /source/data
+
+exclude_patterns:
+  - "*/borg"
+  - "*/borgmatic"
+  - "*/gitea/gitea.db*"
+
 sqlite_databases:
   - name: gitea
     path: /source/data/gitea/gitea.db
@@ -25,13 +33,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "gitea db backup complete"
-    message: "gitea database backup finished"
+    title: "gitea backup complete"
+    message: "gitea backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "gitea db backup FAILED"
-    message: "gitea database backup failed"
+    title: "gitea backup FAILED"
+    message: "gitea backup failed"
     priority: max
     tags: skull
   states:

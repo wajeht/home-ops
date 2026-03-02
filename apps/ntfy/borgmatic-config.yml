@@ -4,19 +4,20 @@ source_directories:
 exclude_patterns:
   - "*/borg"
   - "*/borgmatic"
-  - "*/db"
+  - "*/user.db*"
+  - "*/cache.db*"
 
-postgresql_databases:
-  - name: glitchtip
-    hostname: glitchtip-db
-    username: glitchtip
-    format: custom
+sqlite_databases:
+  - name: ntfy-user
+    path: /source/data/user.db
+  - name: ntfy-cache
+    path: /source/data/cache.db
 
 repositories:
   - path: /repository
-    label: glitchtip
+    label: ntfy
 
-archive_name_format: "glitchtip-{now:%Y-%m-%d-%H%M%S}"
+archive_name_format: "ntfy-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3
 
 keep_daily: 7
@@ -35,13 +36,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "glitchtip backup complete"
-    message: "glitchtip backup finished"
+    title: "ntfy backup complete"
+    message: "ntfy backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "glitchtip backup FAILED"
-    message: "glitchtip backup failed"
+    title: "ntfy backup FAILED"
+    message: "ntfy backup failed"
     priority: max
     tags: skull
   states:

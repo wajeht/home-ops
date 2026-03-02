@@ -37,6 +37,34 @@ services:
       - "traefik.http.routers.tautulli.entrypoints=websecure"
       - "traefik.http.routers.tautulli.middlewares=google-auth@file"
       - "traefik.http.services.tautulli.loadbalancer.server.port=8181"
+  tautulli-borgmatic:
+    image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/tautulli:/source/data
+      - /home/jaw/data/tautulli/borg:/repository
+      - /home/jaw/data/tautulli/borgmatic:/borgmatic/state
+      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
+      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
+    networks:
+      - traefik
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_READ_SEARCH
+      - FOWNER
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
 networks:
   traefik:
     external: true

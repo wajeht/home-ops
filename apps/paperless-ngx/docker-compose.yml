@@ -130,6 +130,7 @@ services:
       - TZ=America/Chicago
       - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
+      - /home/jaw/data/paperless:/source/data:ro
       - /home/jaw/data/paperless/borg:/repository
       - /home/jaw/data/paperless/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro

@@ -1,3 +1,11 @@
+source_directories:
+  - /source/data
+
+exclude_patterns:
+  - "*/borg"
+  - "*/borgmatic"
+  - "*/db"
+
 postgresql_databases:
   - name: plausible
     hostname: plausible-db
@@ -27,13 +35,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "plausible db backup complete"
-    message: "plausible database backup finished"
+    title: "plausible backup complete"
+    message: "plausible backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "plausible db backup FAILED"
-    message: "plausible database backup failed"
+    title: "plausible backup FAILED"
+    message: "plausible backup failed"
     priority: max
     tags: skull
   states:
