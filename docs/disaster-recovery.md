@@ -11,6 +11,7 @@ How to recreate the homelab from scratch.
 | Docker auth           | `~/.docker/config.json` | Recreatable via `docker login`    |
 | Secrets               | .env.sops files         | Encrypted in git                  |
 | Media files           | `~/plex/` (NFS)         | NAS handles redundancy            |
+| Immich photos         | `~/immich/` (NFS)       | NAS handles redundancy            |
 | Compose files         | Git repo                | Already backed up                 |
 
 ## Critical Files
@@ -51,6 +52,7 @@ All per-app borg repos are stored on NFS (`~/backup/<app>/`) so backups survive 
 | bitmagnet          | 2:00 AM  | Postgres (DB) | `~/backup/bitmagnet/`          |
 | hello-world        | 2:15 AM  | Postgres (DB) | `~/backup/hello-world/`        |
 | paperless          | 2:30 AM  | PG + files    | `~/backup/paperless/`          |
+| immich             | 2:45 AM  | Postgres (DB) | `~/backup/immich/`             |
 | gitea              | Hourly   | SQLite+files  | `~/backup/gitea/`              |
 | close-powerlifting | Hourly   | SQLite (DB)   | `~/backup/close-powerlifting/` |
 | bang               | Hourly   | SQLite (DB)   | `~/backup/bang/`               |
