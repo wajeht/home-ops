@@ -206,10 +206,12 @@ STATIC_DIRS=(
 #=============================================================================
 cmd_setup() {
 	header "Creating directories"
-	local created=0
+	local created=0 total=0
 
 	# Create static dirs (not in compose files)
+	info "Static directories..."
 	for dir in "${STATIC_DIRS[@]}"; do
+		total=$((total + 1))
 		if [ ! -d "$dir" ]; then
 			mkdir -p "$dir"
 			dim "Created: $dir"
@@ -218,19 +220,23 @@ cmd_setup() {
 	done
 
 	# Auto-create ~/data/ and ~/backup/ dirs from compose volume mounts
+	info "Scanning compose files for volume mounts..."
 	local dirs
 	dirs=$(sed -n "s|.*- \($USER_HOME/[^:]*\):.*|\1|p" "$REPO_DIR"/apps/*/docker-compose.yml "$REPO_DIR"/infra/*/docker-compose.yml 2>/dev/null | sort -u)
+	local discovered=0
 	for dir in $dirs; do
+		discovered=$((discovered + 1))
 		if [ ! -e "$dir" ]; then
 			mkdir -p "$dir"
 			dim "Created: $dir"
 			created=$((created + 1))
 		fi
 	done
+	dim "Found $discovered volume mounts across compose files"
 
 	chmod 700 "$USER_HOME/.sops" 2>/dev/null || true
 	chown -R 1000:1000 "$USER_HOME/plex" "$USER_HOME/data" 2>/dev/null || true
-	ok "Done ($created created)"
+	ok "Done ($created new, $((total + discovered)) total)"
 }
 
 #=============================================================================
