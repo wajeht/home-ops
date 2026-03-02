@@ -35,6 +35,7 @@ services:
       - "traefik.http.routers.miniflux.entrypoints=websecure"
       - "traefik.http.routers.miniflux.middlewares=google-auth@file"
       - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
+
   miniflux-db:
     container_name: miniflux-db
     image: postgres:18-alpine@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911
