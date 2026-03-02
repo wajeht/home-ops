@@ -72,7 +72,7 @@ All per-app borg repos are stored on NFS (`~/backup/<app>/`) so backups survive 
 | ntfy               | 4:15 AM  | SQLite+files  | `~/backup/ntfy/`               |
 | **global**         | 4:30 AM  | All ~/data/   | `~/backup/borg/`               |
 
-### Per-App Borgmatic Commands
+### Borgmatic Commands
 
 ```bash
 # Manual backup
@@ -84,20 +84,70 @@ docker exec <app>-borgmatic borgmatic list
 # List archive contents
 docker exec <app>-borgmatic borg list /repository::<archive-name>
 
-# Restore database (Postgres or SQLite) from latest archive
-docker exec <app>-borgmatic borgmatic restore --archive latest
-
-# Restore database from specific archive
-docker exec <app>-borgmatic borgmatic restore --archive <archive-name>
-
-# Extract files from archive
-docker exec <app>-borgmatic borgmatic extract --archive latest --destination /restore
-
-# Extract specific path
-docker exec <app>-borgmatic borgmatic extract --archive latest --destination /restore --path source/data/<subdir>
+# Init new borg repo (first time only)
+docker exec <app>-borgmatic borgmatic init --encryption repokey-blake2
 ```
 
-### Global Borgmatic Commands
+### How Restore Works
+
+`borgmatic restore` restores **databases only** (via pg_restore/sqlite3). `borgmatic extract` extracts **files only**. For apps with both DB + files, you need both commands.
+
+### Restore: DB-Only App (e.g. miniflux, gains)
+
+```bash
+# 1. Restore DB from latest archive
+docker exec <app>-borgmatic borgmatic restore --archive latest
+
+# Or from a specific archive
+docker exec <app>-borgmatic borgmatic restore --archive <archive-name>
+```
+
+That's it — no files to extract.
+
+### Restore: DB + Files App (e.g. zipline, vaultwarden)
+
+```bash
+# 1. Stop the app (not borgmatic)
+docker stop <app>
+
+# 2. Extract files to data dir
+docker exec <app>-borgmatic borgmatic extract --archive latest --destination /
+
+# 3. Restore DB
+docker exec <app>-borgmatic borgmatic restore --archive latest
+
+# 4. Start the app
+docker start <app>
+```
+
+Files extract to `/source/data/` inside the container which maps to `~/data/<app>/`. The `--destination /` makes paths resolve correctly since archives store files as `source/data/...`.
+
+### Restore: Files-Only App (e.g. changedetection)
+
+```bash
+# 1. Stop the app
+docker stop <app>
+
+# 2. Extract files
+docker exec <app>-borgmatic borgmatic extract --archive latest --destination /
+
+# 3. Start the app
+docker start <app>
+```
+
+### Restore: Specific Files
+
+```bash
+# Extract a specific subdirectory
+docker exec <app>-borgmatic borgmatic extract --archive latest --destination / --path source/data/uploads
+
+# List archive contents first to find paths
+docker exec <app>-borgmatic borg list /repository::<archive-name>
+```
+
+### Global Borgmatic
+
+Belt-and-suspenders backup of all `~/data/` + `~/.sops/`. Use per-app borgmatic for restores when possible (includes proper DB dumps). Fall back to global for file-level recovery.
 
 ```bash
 # Manual backup
@@ -106,20 +156,14 @@ docker exec borgmatic borgmatic create --verbosity 1
 # List archives
 docker exec borgmatic borgmatic list
 
-# Extract full archive
-docker exec borgmatic borgmatic extract --archive latest --destination /restore
-
 # Extract specific app's files
 docker exec borgmatic borgmatic extract --archive latest --destination /restore --path source/data/gitea
+
+# Extract everything
+docker exec borgmatic borgmatic extract --archive latest --destination /restore
 ```
 
-### Initialize New Borg Repo
-
-Required when adding borgmatic to an app for the first time:
-
-```bash
-docker exec <app>-borgmatic borgmatic init --encryption repokey-blake2
-```
+**Note:** Global borgmatic does NOT have DB hooks — it backs up raw DB files. For consistent DB restores, always prefer per-app borgmatic.
 
 ## Recovery Steps
 
