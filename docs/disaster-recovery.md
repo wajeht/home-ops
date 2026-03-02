@@ -55,12 +55,12 @@ All per-app borg repos are stored on NFS (`~/backup/<app>/`) so backups survive 
 | close-powerlifting | Hourly   | SQLite (DB)   | `~/backup/close-powerlifting/` |
 | bang               | Hourly   | SQLite (DB)   | `~/backup/bang/`               |
 | vaultwarden        | Hourly   | SQLite+files  | `~/backup/vaultwarden/`        |
-| calendar           | Hourly   | SQLite (DB)   | `~/backup/calendar/`           |
-| favicon            | Hourly   | SQLite+files  | `~/backup/favicon/`            |
-| screenshot         | Hourly   | SQLite+files  | `~/backup/screenshot/`         |
-| gains              | Hourly   | SQLite (DB)   | `~/backup/gains/`              |
-| mm2us              | 3:05 AM  | SQLite (DB)   | `~/backup/mm2us/`              |
-| notify             | 3:10 AM  | SQLite (DB)   | `~/backup/notify/`             |
+| calendar           | Every 6h | SQLite (DB)   | `~/backup/calendar/`           |
+| favicon            | Every 6h | SQLite+files  | `~/backup/favicon/`            |
+| screenshot         | Every 6h | SQLite+files  | `~/backup/screenshot/`         |
+| gains              | Every 6h | SQLite (DB)   | `~/backup/gains/`              |
+| mm2us              | Every 6h | SQLite (DB)   | `~/backup/mm2us/`              |
+| notify             | Every 6h | SQLite (DB)   | `~/backup/notify/`             |
 | uptime-kuma        | 3:35 AM  | SQLite+files  | `~/backup/uptime-kuma/`        |
 | authelia           | 3:40 AM  | SQLite+files  | `~/backup/authelia/`           |
 | sonarr             | 3:45 AM  | SQLite+files  | `~/backup/sonarr/`             |
