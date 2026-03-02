@@ -11,9 +11,9 @@ repositories:
 archive_name_format: "zipline-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3
 
-keep_daily: 30
-keep_weekly: 12
-keep_monthly: 12
+keep_daily: 7
+keep_weekly: 4
+keep_monthly: 6
 
 checks:
   - name: repository
