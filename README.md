@@ -70,7 +70,7 @@ Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It p
 
 [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~60min via polling). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
 
-All containers are hardened: capabilities dropped (`cap_drop: ALL`), privilege escalation disabled (`no-new-privileges`), with only required capabilities added back per-service. [Borgmatic](https://torsion.org/borgmatic/) handles automated backups — 8 critical apps hourly, 19 others daily — with database dumps (7 Postgres + 19 SQLite), weekly integrity checks, and ntfy notifications.
+All containers are hardened: capabilities dropped (`cap_drop: ALL`), privilege escalation disabled (`no-new-privileges`), with only required capabilities added back per-service. [Borgmatic](https://torsion.org/borgmatic/) handles automated backups — 4 critical apps hourly, 6 apps every 6h, rest daily — with database dumps (7 Postgres + 19 SQLite), weekly integrity checks, and ntfy notifications.
 
 ## Hardware
 
