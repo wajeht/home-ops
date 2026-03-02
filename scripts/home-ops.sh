@@ -184,6 +184,7 @@ NAS_IP="192.168.4.219"
 NFS_MOUNTS=(
 	"plex|/volume1/plex|$USER_HOME/plex"
 	"backup|/volume1/backup|$USER_HOME/backup"
+	"immich|/volume1/immich|$USER_HOME/immich"
 )
 
 # Static directories (not in compose files)
