@@ -162,9 +162,9 @@ services:
 
 The server has docker login configured for ghcr.io.
 
-## With Postgres (DB Dump Sidecar)
+## With Postgres
 
-Apps with Postgres get a dump sidecar that uses the same postgres image (pg_dump version always matches). Dumps go to `~/data/<app>/dumps/` and borgmatic backs up `~/data/` daily.
+Apps with Postgres get a per-app borgmatic sidecar that uses the `postgresql_databases` hook to run pg_dump and archive the dump to its own borg repo. Use `EXTRA_PKGS` to install the matching pg_dump version (e.g., `postgresql18-client` for Postgres 18).
 
 ```yaml
 myapp-db:
@@ -179,47 +179,18 @@ myapp-db:
     - /home/jaw/data/myapp/db:/var/lib/postgresql/data
   networks:
     - myapp-internal
-
-myapp-db-dump:
-  image: postgres:18-alpine@sha256:abc123 # same image as db
-  environment:
-    - PGPASSWORD=${POSTGRES_PASSWORD}
-  entrypoint: ["/bin/sh", "-c"]
-  command:
-    - |
-      echo "pg_dump sidecar for myapp"
-      while true; do
-        pg_dump -h myapp-db -U myapp -Fc myapp > /dumps/myapp.dump.tmp && mv /dumps/myapp.dump.tmp /dumps/myapp.dump && echo "dump ok $$(date)"
-        sleep 86400
-      done
-  volumes:
-    - /home/jaw/data/myapp/dumps:/dumps
-  networks:
-    - myapp-internal
-  depends_on:
-    myapp-db:
-      condition: service_healthy
-  restart: unless-stopped
-  cap_drop:
-    - ALL
-  security_opt:
-    - no-new-privileges:true
-  deploy:
-    resources:
-      limits:
-        cpus: "0.25"
-        memory: 256M
 ```
 
-### Per-App Borgmatic (DB Backup)
-
-Each Postgres app also gets a borgmatic sidecar that backs up the dump to its own borg repo with independent retention and notifications.
+### Per-App Borgmatic (Postgres)
 
 Create `apps/myapp/borgmatic-config.yml`:
 
 ```yaml
-source_directories:
-  - /source/dumps
+postgresql_databases:
+  - name: myapp
+    hostname: myapp-db
+    username: myapp
+    format: custom
 
 repositories:
   - path: /repository
@@ -264,7 +235,7 @@ Create `apps/myapp/borgmatic-crontab.txt` (pick a unique time slot):
 0 1 * * * PATH=$PATH:/usr/local/bin /usr/local/bin/borgmatic --verbosity -2 --syslog-verbosity 1
 ```
 
-Add borgmatic service to `docker-compose.yml`:
+Add borgmatic service to `docker-compose.yml` (must join app's internal network for DB access):
 
 ```yaml
 myapp-borgmatic:
@@ -273,14 +244,19 @@ myapp-borgmatic:
     - .env
   environment:
     - TZ=America/Chicago
+    - EXTRA_PKGS=postgresql18-client # match DB version
+    - PGPASSWORD=${POSTGRES_PASSWORD}
   volumes:
-    - /home/jaw/data/myapp/dumps:/source/dumps:ro
     - /home/jaw/data/myapp/borg:/repository
     - /home/jaw/data/myapp/borgmatic:/borgmatic/state
     - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
     - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
   networks:
     - traefik
+    - myapp-internal
+  depends_on:
+    myapp-db:
+      condition: service_healthy
   restart: unless-stopped
   cap_drop:
     - ALL

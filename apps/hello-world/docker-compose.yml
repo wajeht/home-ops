@@ -67,50 +67,24 @@ services:
           cpus: "0.5"
           memory: 256M
 
-  hello-world-db-dump:
-    image: postgres:17-alpine@sha256:6f30057d31f5861b66f3545d4821f987aacf1dd920765f0acadea0c58ff975b1
-    environment:
-      - PGPASSWORD=${POSTGRES_PASSWORD}
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        echo "pg_dump sidecar for hello"
-        while true; do
-          pg_dump -h hello-world-db -U hello -Fc hello > /dumps/hello.dump.tmp && mv /dumps/hello.dump.tmp /dumps/hello.dump && echo "dump ok $$(date)"
-          sleep 86400
-        done
-    volumes:
-      - /home/jaw/data/hello-world/dumps:/dumps
-    networks:
-      - internal
-    depends_on:
-      hello-world-db:
-        condition: service_healthy
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 256M
-
   hello-world-borgmatic:
     image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
     env_file:
       - .env
     environment:
       - TZ=America/Chicago
+      - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - /home/jaw/data/hello-world/dumps:/source/dumps:ro
       - /home/jaw/data/hello-world/borg:/repository
       - /home/jaw/data/hello-world/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
       - traefik
+      - internal
+    depends_on:
+      hello-world-db:
+        condition: service_healthy
     restart: unless-stopped
     cap_drop:
       - ALL

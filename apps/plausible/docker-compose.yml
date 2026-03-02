@@ -106,50 +106,25 @@ services:
         soft: 262144
         hard: 262144
 
-  plausible-db-dump:
-    image: postgres:18-alpine@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911
-    environment:
-      - PGPASSWORD=${POSTGRES_PASSWORD}
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        echo "pg_dump sidecar for plausible"
-        while true; do
-          pg_dump -h plausible-db -U plausible -Fc plausible > /dumps/plausible.dump.tmp && mv /dumps/plausible.dump.tmp /dumps/plausible.dump && echo "dump ok $$(date)"
-          sleep 86400
-        done
-    volumes:
-      - /home/jaw/data/plausible/dumps:/dumps
-    networks:
-      - plausible-internal
-    depends_on:
-      plausible-db:
-        condition: service_healthy
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 256M
-
   plausible-borgmatic:
     image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
     env_file:
       - .env
     environment:
       - TZ=America/Chicago
+      - EXTRA_PKGS=postgresql18-client
+      - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - /home/jaw/data/plausible/dumps:/source/dumps:ro
       - /home/jaw/data/plausible/borg:/repository
       - /home/jaw/data/plausible/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
       - traefik
+      - plausible-internal
+    depends_on:
+      plausible-db:
+        condition: service_healthy
     restart: unless-stopped
     cap_drop:
       - ALL

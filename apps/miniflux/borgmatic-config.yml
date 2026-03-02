@@ -1,5 +1,8 @@
-source_directories:
-  - /source/dumps
+postgresql_databases:
+  - name: miniflux
+    hostname: miniflux-db
+    username: miniflux
+    format: custom
 
 repositories:
   - path: /repository

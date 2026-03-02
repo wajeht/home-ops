@@ -1,5 +1,8 @@
-source_directories:
-  - /source/dumps
+postgresql_databases:
+  - name: plausible
+    hostname: plausible-db
+    username: plausible
+    format: custom
 
 repositories:
   - path: /repository

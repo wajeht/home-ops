@@ -74,50 +74,24 @@ services:
           cpus: "1.0"
           memory: 512M
 
-  zipline-db-dump:
-    image: postgres:17-alpine@sha256:6f30057d31f5861b66f3545d4821f987aacf1dd920765f0acadea0c58ff975b1
-    environment:
-      - PGPASSWORD=${POSTGRES_PASSWORD}
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        echo "pg_dump sidecar for zipline"
-        while true; do
-          pg_dump -h zipline-db -U zipline -Fc zipline > /dumps/zipline.dump.tmp && mv /dumps/zipline.dump.tmp /dumps/zipline.dump && echo "dump ok $$(date)"
-          sleep 86400
-        done
-    volumes:
-      - /home/jaw/data/zipline/dumps:/dumps
-    networks:
-      - zipline-internal
-    depends_on:
-      zipline-db:
-        condition: service_healthy
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 256M
-
   zipline-borgmatic:
     image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
     env_file:
       - .env
     environment:
       - TZ=America/Chicago
+      - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - /home/jaw/data/zipline/dumps:/source/dumps:ro
       - /home/jaw/data/zipline/borg:/repository
       - /home/jaw/data/zipline/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
       - traefik
+      - zipline-internal
+    depends_on:
+      zipline-db:
+        condition: service_healthy
     restart: unless-stopped
     cap_drop:
       - ALL
