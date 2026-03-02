@@ -38,7 +38,7 @@ services:
 
   miniflux-db:
     container_name: miniflux-db
-    image: postgres:18-alpine@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911
+    image: postgres:17-alpine@sha256:6f30057d31f5861b66f3545d4821f987aacf1dd920765f0acadea0c58ff975b1
     env_file:
       - .env
     environment:
@@ -78,7 +78,6 @@ services:
       - .env
     environment:
       - TZ=America/Chicago
-      - EXTRA_PKGS=postgresql18-client
       - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - /home/jaw/data/miniflux/borg:/repository
