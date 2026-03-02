@@ -95,7 +95,7 @@ services:
       - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - /home/jaw/data/glitchtip:/source/data:ro
-      - /home/jaw/data/glitchtip/borg:/repository
+      - /home/jaw/backup/glitchtip:/repository
       - /home/jaw/data/glitchtip/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

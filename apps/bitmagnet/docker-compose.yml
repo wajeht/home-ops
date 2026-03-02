@@ -84,7 +84,7 @@ services:
       - EXTRA_PKGS=postgresql18-client
       - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - /home/jaw/data/bitmagnet/borg:/repository
+      - /home/jaw/backup/bitmagnet:/repository
       - /home/jaw/data/bitmagnet/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

@@ -2,10 +2,13 @@ source_directories:
   - /source/data
 
 exclude_patterns:
-  - "*/borg"
   - "*/borgmatic"
   - "*/radarr.db*"
   - "*/logs.db*"
+  - "*/asp"
+  - "*/logs"
+  - "*/Sentry"
+  - "*.pid"
 
 sqlite_databases:
   - name: radarr

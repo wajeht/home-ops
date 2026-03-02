@@ -2,9 +2,11 @@ source_directories:
   - /source/data
 
 exclude_patterns:
-  - "*/borg"
   - "*/borgmatic"
   - "*/tautulli.db*"
+  - "*/cache"
+  - "*/logs"
+  - "*.lock"
 
 sqlite_databases:
   - name: tautulli

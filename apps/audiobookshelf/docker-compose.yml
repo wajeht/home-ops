@@ -48,7 +48,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/audiobookshelf:/source/data
-      - /home/jaw/data/audiobookshelf/borg:/repository
+      - /home/jaw/backup/audiobookshelf:/repository
       - /home/jaw/data/audiobookshelf/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

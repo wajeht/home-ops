@@ -55,7 +55,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/ntfy:/source/data
-      - /home/jaw/data/ntfy/borg:/repository
+      - /home/jaw/backup/ntfy:/repository
       - /home/jaw/data/ntfy/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

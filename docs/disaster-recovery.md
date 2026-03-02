@@ -38,39 +38,39 @@ Automated daily backups via borgmatic (borg wrapper). Encrypted, deduplicated, c
 
 Each app with important data has its own borgmatic instance backing up DB + files to a dedicated borg repo. Staggered schedules prevent resource contention.
 
-Apps with databases use `postgresql_databases` or `sqlite_databases` hooks for consistent DB snapshots. All apps also back up their full `~/data/<app>/` directory (excluding borg/borgmatic state and raw DB files already handled by hooks).
+Apps with databases use `postgresql_databases` or `sqlite_databases` hooks for consistent DB snapshots. All apps also back up their full `~/data/<app>/` directory (excluding borgmatic state and raw DB files already handled by hooks).
 
-| App                | Schedule | Type          | Borg Repo                         |
-| ------------------ | -------- | ------------- | --------------------------------- |
-| miniflux           | 1:00 AM  | Postgres (DB) | `~/data/miniflux/borg/`           |
-| plausible          | 1:15 AM  | PG + files    | `~/data/plausible/borg/`          |
-| zipline            | 1:30 AM  | PG + files    | `~/data/zipline/borg/`            |
-| glitchtip          | 1:45 AM  | PG + files    | `~/data/glitchtip/borg/`          |
-| bitmagnet          | 2:00 AM  | Postgres (DB) | `~/data/bitmagnet/borg/`          |
-| hello-world        | 2:15 AM  | Postgres (DB) | `~/data/hello-world/borg/`        |
-| paperless          | 2:30 AM  | PG + files    | `~/data/paperless/borg/`          |
-| gitea              | 2:45 AM  | SQLite+files  | `~/data/gitea/borg/`              |
-| close-powerlifting | 2:50 AM  | SQLite (DB)   | `~/data/close-powerlifting/borg/` |
-| bang               | 2:55 AM  | SQLite (DB)   | `~/data/bang/borg/`               |
-| gains              | 3:00 AM  | SQLite (DB)   | `~/data/gains/borg/`              |
-| mm2us              | 3:05 AM  | SQLite (DB)   | `~/data/mm2us/borg/`              |
-| notify             | 3:10 AM  | SQLite (DB)   | `~/data/notify/borg/`             |
-| calendar           | 3:15 AM  | SQLite (DB)   | `~/data/calendar/borg/`           |
-| favicon            | 3:20 AM  | SQLite+files  | `~/data/favicon/borg/`            |
-| screenshot         | 3:25 AM  | SQLite+files  | `~/data/screenshot/borg/`         |
-| vaultwarden        | 3:30 AM  | SQLite+files  | `~/data/vaultwarden/borg/`        |
-| uptime-kuma        | 3:35 AM  | SQLite+files  | `~/data/uptime-kuma/borg/`        |
-| authelia           | 3:40 AM  | SQLite+files  | `~/data/authelia/borg/`           |
-| sonarr             | 3:45 AM  | SQLite+files  | `~/data/sonarr/borg/`             |
-| radarr             | 3:50 AM  | SQLite+files  | `~/data/radarr/borg/`             |
-| prowlarr           | 3:55 AM  | SQLite+files  | `~/data/prowlarr/borg/`           |
-| tautulli           | 4:00 AM  | SQLite+files  | `~/data/tautulli/borg/`           |
-| audiobookshelf     | 4:05 AM  | SQLite+files  | `~/data/audiobookshelf/borg/`     |
-| changedetection    | 4:10 AM  | Files only    | `~/data/changedetection/borg/`    |
-| ntfy               | 4:15 AM  | SQLite+files  | `~/data/ntfy/borg/`               |
-| **global**         | 4:30 AM  | All ~/data/   | `~/backup/borg/`                  |
+All per-app borg repos are stored on NFS (`~/backup/<app>/`) so backups survive local disk failure. Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 
-All per-app repos store encrypted, deduplicated archives in `~/data/<app>/borg/` (local disk). Global borgmatic backs up all of `~/data/` (which includes per-app borg repos) to NFS as belt-and-suspenders.
+| App                | Schedule | Type          | Borg Repo                      |
+| ------------------ | -------- | ------------- | ------------------------------ |
+| miniflux           | 1:00 AM  | Postgres (DB) | `~/backup/miniflux/`           |
+| plausible          | 1:15 AM  | PG + files    | `~/backup/plausible/`          |
+| zipline            | 1:30 AM  | PG + files    | `~/backup/zipline/`            |
+| glitchtip          | 1:45 AM  | PG + files    | `~/backup/glitchtip/`          |
+| bitmagnet          | 2:00 AM  | Postgres (DB) | `~/backup/bitmagnet/`          |
+| hello-world        | 2:15 AM  | Postgres (DB) | `~/backup/hello-world/`        |
+| paperless          | 2:30 AM  | PG + files    | `~/backup/paperless/`          |
+| gitea              | 2:45 AM  | SQLite+files  | `~/backup/gitea/`              |
+| close-powerlifting | Hourly   | SQLite (DB)   | `~/backup/close-powerlifting/` |
+| bang               | Hourly   | SQLite (DB)   | `~/backup/bang/`               |
+| gains              | 3:00 AM  | SQLite (DB)   | `~/backup/gains/`              |
+| mm2us              | 3:05 AM  | SQLite (DB)   | `~/backup/mm2us/`              |
+| notify             | 3:10 AM  | SQLite (DB)   | `~/backup/notify/`             |
+| calendar           | 3:15 AM  | SQLite (DB)   | `~/backup/calendar/`           |
+| favicon            | 3:20 AM  | SQLite+files  | `~/backup/favicon/`            |
+| screenshot         | 3:25 AM  | SQLite+files  | `~/backup/screenshot/`         |
+| vaultwarden        | 3:30 AM  | SQLite+files  | `~/backup/vaultwarden/`        |
+| uptime-kuma        | 3:35 AM  | SQLite+files  | `~/backup/uptime-kuma/`        |
+| authelia           | 3:40 AM  | SQLite+files  | `~/backup/authelia/`           |
+| sonarr             | 3:45 AM  | SQLite+files  | `~/backup/sonarr/`             |
+| radarr             | 3:50 AM  | SQLite+files  | `~/backup/radarr/`             |
+| prowlarr           | 3:55 AM  | SQLite+files  | `~/backup/prowlarr/`           |
+| tautulli           | 4:00 AM  | SQLite+files  | `~/backup/tautulli/`           |
+| audiobookshelf     | 4:05 AM  | SQLite+files  | `~/backup/audiobookshelf/`     |
+| changedetection    | 4:10 AM  | Files only    | `~/backup/changedetection/`    |
+| ntfy               | 4:15 AM  | SQLite+files  | `~/backup/ntfy/`               |
+| **global**         | 4:30 AM  | All ~/data/   | `~/backup/borg/`               |
 
 ### Per-App Borgmatic Commands
 
