@@ -218,15 +218,14 @@ cmd_setup() {
 	done
 
 	# Auto-create ~/data/ and ~/backup/ dirs from compose volume mounts
-	for compose in "$REPO_DIR"/apps/*/docker-compose.yml "$REPO_DIR"/infra/*/docker-compose.yml; do
-		[ -f "$compose" ] || continue
-		{ grep -E "^\s*-\s+$USER_HOME/" "$compose" 2>/dev/null || true; } | grep -o "$USER_HOME/[^:]*" | sort -u | while read -r dir; do
-			if [ ! -d "$dir" ]; then
-				mkdir -p "$dir"
-				dim "Created: $dir"
-				created=$((created + 1))
-			fi
-		done
+	local dirs
+	dirs=$(sed -n "s|.*- \($USER_HOME/[^:]*\):.*|\1|p" "$REPO_DIR"/apps/*/docker-compose.yml "$REPO_DIR"/infra/*/docker-compose.yml 2>/dev/null | sort -u)
+	for dir in $dirs; do
+		if [ ! -d "$dir" ]; then
+			mkdir -p "$dir"
+			dim "Created: $dir"
+			created=$((created + 1))
+		fi
 	done
 
 	chmod 700 "$USER_HOME/.sops" 2>/dev/null || true
