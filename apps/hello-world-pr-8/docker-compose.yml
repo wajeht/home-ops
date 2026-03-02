@@ -1,6 +1,6 @@
 services:
   hello-world:
-    image: ghcr.io/wajeht/hello-world:2179d56
+    image: ghcr.io/wajeht/hello-world:3a3d9b0
     env_file:
       - .env
     networks:
@@ -37,7 +37,6 @@ services:
           cpus: "0.5"
           memory: 256M
   hello-world-db:
-    container_name: hello-world-db
     image: postgres:17-alpine@sha256:6f30057d31f5861b66f3545d4821f987aacf1dd920765f0acadea0c58ff975b1
     env_file:
       - .env
