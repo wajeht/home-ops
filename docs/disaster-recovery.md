@@ -51,16 +51,16 @@ All per-app borg repos are stored on NFS (`~/backup/<app>/`) so backups survive 
 | bitmagnet          | 2:00 AM  | Postgres (DB) | `~/backup/bitmagnet/`          |
 | hello-world        | 2:15 AM  | Postgres (DB) | `~/backup/hello-world/`        |
 | paperless          | 2:30 AM  | PG + files    | `~/backup/paperless/`          |
-| gitea              | 2:45 AM  | SQLite+files  | `~/backup/gitea/`              |
+| gitea              | Hourly   | SQLite+files  | `~/backup/gitea/`              |
 | close-powerlifting | Hourly   | SQLite (DB)   | `~/backup/close-powerlifting/` |
 | bang               | Hourly   | SQLite (DB)   | `~/backup/bang/`               |
-| gains              | 3:00 AM  | SQLite (DB)   | `~/backup/gains/`              |
+| vaultwarden        | Hourly   | SQLite+files  | `~/backup/vaultwarden/`        |
+| calendar           | Hourly   | SQLite (DB)   | `~/backup/calendar/`           |
+| favicon            | Hourly   | SQLite+files  | `~/backup/favicon/`            |
+| screenshot         | Hourly   | SQLite+files  | `~/backup/screenshot/`         |
+| gains              | Hourly   | SQLite (DB)   | `~/backup/gains/`              |
 | mm2us              | 3:05 AM  | SQLite (DB)   | `~/backup/mm2us/`              |
 | notify             | 3:10 AM  | SQLite (DB)   | `~/backup/notify/`             |
-| calendar           | 3:15 AM  | SQLite (DB)   | `~/backup/calendar/`           |
-| favicon            | 3:20 AM  | SQLite+files  | `~/backup/favicon/`            |
-| screenshot         | 3:25 AM  | SQLite+files  | `~/backup/screenshot/`         |
-| vaultwarden        | 3:30 AM  | SQLite+files  | `~/backup/vaultwarden/`        |
 | uptime-kuma        | 3:35 AM  | SQLite+files  | `~/backup/uptime-kuma/`        |
 | authelia           | 3:40 AM  | SQLite+files  | `~/backup/authelia/`           |
 | sonarr             | 3:45 AM  | SQLite+files  | `~/backup/sonarr/`             |
