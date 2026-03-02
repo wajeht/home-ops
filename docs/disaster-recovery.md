@@ -58,9 +58,9 @@ Each database app (Postgres and SQLite) has its own borgmatic instance backing u
 | screenshot         | 3:25 AM  | `~/data/screenshot/borg/`         |
 | **global**         | 4:00 AM  | `~/backup/borg/`                  |
 
-Postgres apps: per-app borgmatic reads dumps from `~/data/<app>/dumps/` (written by the pg_dump sidecar).
+Postgres apps: per-app borgmatic uses `postgresql_databases` hook to run pg_dump and archive the dump directly.
 SQLite apps: per-app borgmatic uses `sqlite_databases` hook to do proper `sqlite3 .backup` before archiving.
-All per-app repos store encrypted, deduplicated archives in `~/data/<app>/borg/` (local disk). Global borgmatic backs up all of `~/data/` (which includes per-app borg repos and dumps) to NFS as belt-and-suspenders.
+All per-app repos store encrypted, deduplicated archives in `~/data/<app>/borg/` (local disk). Global borgmatic backs up all of `~/data/` (which includes per-app borg repos) to NFS as belt-and-suspenders.
 
 ### List Archives
 

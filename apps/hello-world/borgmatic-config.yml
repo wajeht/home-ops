@@ -1,5 +1,8 @@
-source_directories:
-  - /source/dumps
+postgresql_databases:
+  - name: hello
+    hostname: hello-world-db
+    username: hello
+    format: custom
 
 repositories:
   - path: /repository

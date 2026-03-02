@@ -84,50 +84,25 @@ services:
           cpus: "1.0"
           memory: 512M
 
-  glitchtip-db-dump:
-    image: postgres:18-alpine@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911
-    environment:
-      - PGPASSWORD=${POSTGRES_PASSWORD}
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        echo "pg_dump sidecar for glitchtip"
-        while true; do
-          pg_dump -h glitchtip-db -U glitchtip -Fc glitchtip > /dumps/glitchtip.dump.tmp && mv /dumps/glitchtip.dump.tmp /dumps/glitchtip.dump && echo "dump ok $$(date)"
-          sleep 86400
-        done
-    volumes:
-      - /home/jaw/data/glitchtip/dumps:/dumps
-    networks:
-      - glitchtip-internal
-    depends_on:
-      glitchtip-db:
-        condition: service_healthy
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 256M
-
   glitchtip-borgmatic:
     image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
     env_file:
       - .env
     environment:
       - TZ=America/Chicago
+      - EXTRA_PKGS=postgresql18-client
+      - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - /home/jaw/data/glitchtip/dumps:/source/dumps:ro
       - /home/jaw/data/glitchtip/borg:/repository
       - /home/jaw/data/glitchtip/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
       - traefik
+      - glitchtip-internal
+    depends_on:
+      glitchtip-db:
+        condition: service_healthy
     restart: unless-stopped
     cap_drop:
       - ALL

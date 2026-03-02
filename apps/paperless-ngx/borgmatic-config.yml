@@ -1,5 +1,8 @@
-source_directories:
-  - /source/dumps
+postgresql_databases:
+  - name: paperless
+    hostname: paperless-db
+    username: paperless
+    format: custom
 
 repositories:
   - path: /repository

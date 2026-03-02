@@ -1,5 +1,8 @@
-source_directories:
-  - /source/dumps
+postgresql_databases:
+  - name: zipline
+    hostname: zipline-db
+    username: zipline
+    format: custom
 
 repositories:
   - path: /repository

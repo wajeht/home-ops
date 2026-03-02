@@ -1,5 +1,8 @@
-source_directories:
-  - /source/dumps
+postgresql_databases:
+  - name: glitchtip
+    hostname: glitchtip-db
+    username: glitchtip
+    format: custom
 
 repositories:
   - path: /repository

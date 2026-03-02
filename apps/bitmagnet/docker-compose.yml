@@ -74,50 +74,25 @@ services:
           cpus: "0.5"
           memory: 256M
 
-  bitmagnet-db-dump:
-    image: postgres:18.1-alpine@sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29
-    environment:
-      - PGPASSWORD=${POSTGRES_PASSWORD}
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        echo "pg_dump sidecar for bitmagnet"
-        while true; do
-          pg_dump -h bitmagnet-db -U postgres -Fc bitmagnet > /dumps/bitmagnet.dump.tmp && mv /dumps/bitmagnet.dump.tmp /dumps/bitmagnet.dump && echo "dump ok $$(date)"
-          sleep 86400
-        done
-    volumes:
-      - /home/jaw/data/bitmagnet/dumps:/dumps
-    networks:
-      - bitmagnet-internal
-    depends_on:
-      bitmagnet-db:
-        condition: service_healthy
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 256M
-
   bitmagnet-borgmatic:
     image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
     env_file:
       - .env
     environment:
       - TZ=America/Chicago
+      - EXTRA_PKGS=postgresql18-client
+      - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - /home/jaw/data/bitmagnet/dumps:/source/dumps:ro
       - /home/jaw/data/bitmagnet/borg:/repository
       - /home/jaw/data/bitmagnet/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
       - traefik
+      - bitmagnet-internal
+    depends_on:
+      bitmagnet-db:
+        condition: service_healthy
     restart: unless-stopped
     cap_drop:
       - ALL
