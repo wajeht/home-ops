@@ -221,7 +221,7 @@ cmd_setup() {
 	local dirs
 	dirs=$(sed -n "s|.*- \($USER_HOME/[^:]*\):.*|\1|p" "$REPO_DIR"/apps/*/docker-compose.yml "$REPO_DIR"/infra/*/docker-compose.yml 2>/dev/null | sort -u)
 	for dir in $dirs; do
-		if [ ! -d "$dir" ]; then
+		if [ ! -e "$dir" ]; then
 			mkdir -p "$dir"
 			dim "Created: $dir"
 			created=$((created + 1))
