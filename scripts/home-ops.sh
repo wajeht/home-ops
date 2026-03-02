@@ -186,101 +186,17 @@ NFS_MOUNTS=(
 	"backup|/volume1/backup|$USER_HOME/backup"
 )
 
-# Data directories
-DATA_DIRS=(
-	"$USER_HOME/data/audiobookshelf/config"
-	"$USER_HOME/data/audiobookshelf/metadata"
-	"$USER_HOME/data/autobrr"
-	"$USER_HOME/data/authelia"
-	"$USER_HOME/data/bang"
-	"$USER_HOME/data/bazarr"
-	"$USER_HOME/data/bitmagnet/db"
-	"$USER_HOME/data/borgmatic"
-	"$USER_HOME/data/calendar"
-	"$USER_HOME/data/changedetection"
-	"$USER_HOME/data/cleanuparr"
-	"$USER_HOME/data/close-powerlifting"
-	"$USER_HOME/data/code-server"
-	"$USER_HOME/data/ddns-updater"
+# Static directories (not in compose files)
+STATIC_DIRS=(
 	"$USER_HOME/data/docker-cd"
 	"$USER_HOME/data/dozzle"
-	"$USER_HOME/data/favicon"
-	"$USER_HOME/data/gains"
-	"$USER_HOME/data/gitea"
-	"$USER_HOME/data/glitchtip/uploads"
-	"$USER_HOME/data/glitchtip/db"
-	"$USER_HOME/data/gluetun"
-	"$USER_HOME/data/hello-world/db"
-	"$USER_HOME/data/huntarr"
-	"$USER_HOME/data/linx/files"
-	"$USER_HOME/data/linx/meta"
-	"$USER_HOME/data/miniflux/db"
-	"$USER_HOME/data/mm2us"
-	"$USER_HOME/data/notify"
-	"$USER_HOME/data/ntfy"
-	"$USER_HOME/data/paperless/data"
-	"$USER_HOME/data/paperless/media"
-	"$USER_HOME/data/paperless/consume"
-	"$USER_HOME/data/paperless/db"
-	"$USER_HOME/data/paperless/redis"
-	"$USER_HOME/data/plausible/db"
-	"$USER_HOME/data/plausible/events"
-	"$USER_HOME/data/plex"
-	"$USER_HOME/data/portainer"
-	"$USER_HOME/data/prowlarr"
-	"$USER_HOME/data/qbittorrent"
-	"$USER_HOME/data/radarr"
-	"$USER_HOME/data/recyclarr"
-	"$USER_HOME/data/renovate"
-	"$USER_HOME/data/sabnzbd"
-	"$USER_HOME/data/screenshot"
-	"$USER_HOME/data/searxng"
-	"$USER_HOME/data/seerr"
-	"$USER_HOME/data/sonarr"
-	"$USER_HOME/data/stirling-pdf"
-	"$USER_HOME/data/tautulli"
-	"$USER_HOME/data/traefik/certs"
-	"$USER_HOME/data/uptime-kuma"
-	"$USER_HOME/data/vaultwarden"
-	"$USER_HOME/data/walker"
-	"$USER_HOME/data/walker-cache"
-	"$USER_HOME/data/zipline/uploads"
-	"$USER_HOME/data/zipline/public"
-	"$USER_HOME/data/zipline/themes"
-	"$USER_HOME/data/zipline/db"
 	"$USER_HOME/plex/downloads"
 	"$USER_HOME/plex/movies"
 	"$USER_HOME/plex/tv"
 	"$USER_HOME/plex/music"
 	"$USER_HOME/plex/audiobooks"
 	"$USER_HOME/plex/podcasts"
-	"$USER_HOME/backup/audiobookshelf"
-	"$USER_HOME/backup/authelia"
-	"$USER_HOME/backup/bang"
-	"$USER_HOME/backup/bitmagnet"
 	"$USER_HOME/backup/borg"
-	"$USER_HOME/backup/calendar"
-	"$USER_HOME/backup/changedetection"
-	"$USER_HOME/backup/close-powerlifting"
-	"$USER_HOME/backup/favicon"
-	"$USER_HOME/backup/gains"
-	"$USER_HOME/backup/gitea"
-	"$USER_HOME/backup/glitchtip"
-	"$USER_HOME/backup/hello-world"
-	"$USER_HOME/backup/miniflux"
-	"$USER_HOME/backup/mm2us"
-	"$USER_HOME/backup/notify"
-	"$USER_HOME/backup/ntfy"
-	"$USER_HOME/backup/paperless"
-	"$USER_HOME/backup/plausible"
-	"$USER_HOME/backup/prowlarr"
-	"$USER_HOME/backup/radarr"
-	"$USER_HOME/backup/screenshot"
-	"$USER_HOME/backup/sonarr"
-	"$USER_HOME/backup/tautulli"
-	"$USER_HOME/backup/uptime-kuma"
-	"$USER_HOME/backup/vaultwarden"
-	"$USER_HOME/backup/zipline"
 	"$USER_HOME/.sops"
 	"$USER_HOME/.docker"
 )
@@ -291,13 +207,28 @@ DATA_DIRS=(
 cmd_setup() {
 	header "Creating directories"
 	local created=0
-	for dir in "${DATA_DIRS[@]}"; do
+
+	# Create static dirs (not in compose files)
+	for dir in "${STATIC_DIRS[@]}"; do
 		if [ ! -d "$dir" ]; then
 			mkdir -p "$dir"
 			dim "Created: $dir"
 			created=$((created + 1))
 		fi
 	done
+
+	# Auto-create ~/data/ and ~/backup/ dirs from compose volume mounts
+	for compose in "$REPO_DIR"/apps/*/docker-compose.yml "$REPO_DIR"/infra/*/docker-compose.yml; do
+		[ -f "$compose" ] || continue
+		grep -o "$USER_HOME/[^:\"']*" "$compose" 2>/dev/null | while read -r dir; do
+			if [ ! -d "$dir" ]; then
+				mkdir -p "$dir"
+				dim "Created: $dir"
+				created=$((created + 1))
+			fi
+		done
+	done
+
 	chmod 700 "$USER_HOME/.sops" 2>/dev/null || true
 	chown -R 1000:1000 "$USER_HOME/plex" "$USER_HOME/data" 2>/dev/null || true
 	ok "Done ($created created)"
