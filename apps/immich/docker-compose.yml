@@ -25,7 +25,7 @@ services:
       - traefik
       - immich-internal
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:2283/api/server/ping || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:2283/api/server/ping || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
