@@ -76,25 +76,25 @@ All per-app repos store encrypted, deduplicated archives in `~/data/<app>/borg/`
 
 ```bash
 # Manual backup
-docker exec <app>-<app>-borgmatic-1 borgmatic create --verbosity 1
+docker exec <app>-borgmatic borgmatic create --verbosity 1
 
 # List archives
-docker exec <app>-<app>-borgmatic-1 borgmatic list
+docker exec <app>-borgmatic borgmatic list
 
 # List archive contents
-docker exec <app>-<app>-borgmatic-1 borg list /repository::<archive-name>
+docker exec <app>-borgmatic borg list /repository::<archive-name>
 
 # Restore database (Postgres or SQLite) from latest archive
-docker exec <app>-<app>-borgmatic-1 borgmatic restore --archive latest
+docker exec <app>-borgmatic borgmatic restore --archive latest
 
 # Restore database from specific archive
-docker exec <app>-<app>-borgmatic-1 borgmatic restore --archive <archive-name>
+docker exec <app>-borgmatic borgmatic restore --archive <archive-name>
 
 # Extract files from archive
-docker exec <app>-<app>-borgmatic-1 borgmatic extract --archive latest --destination /restore
+docker exec <app>-borgmatic borgmatic extract --archive latest --destination /restore
 
 # Extract specific path
-docker exec <app>-<app>-borgmatic-1 borgmatic extract --archive latest --destination /restore --path source/data/<subdir>
+docker exec <app>-borgmatic borgmatic extract --archive latest --destination /restore --path source/data/<subdir>
 ```
 
 ### Global Borgmatic Commands
@@ -118,7 +118,7 @@ docker exec borgmatic borgmatic extract --archive latest --destination /restore 
 Required when adding borgmatic to an app for the first time:
 
 ```bash
-docker exec <app>-<app>-borgmatic-1 borgmatic init --encryption repokey-blake2
+docker exec <app>-borgmatic borgmatic init --encryption repokey-blake2
 ```
 
 ## Recovery Steps
