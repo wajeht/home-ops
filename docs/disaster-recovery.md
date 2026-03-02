@@ -75,7 +75,13 @@ All per-app borg repos are stored on NFS (`~/backup/<app>/`) so backups survive 
 ### Borgmatic Commands
 
 ```bash
-# Manual backup
+# Init all borg repos (first time setup, skips existing)
+make borgmatic-init
+
+# Run backup on all borgmatic containers
+make borgmatic-backup
+
+# Manual backup (single app)
 docker exec <app>-borgmatic borgmatic create --verbosity 1
 
 # List archives
@@ -84,7 +90,7 @@ docker exec <app>-borgmatic borgmatic list
 # List archive contents
 docker exec <app>-borgmatic borg list /repository::<archive-name>
 
-# Init new borg repo (first time only)
+# Init single borg repo
 docker exec <app>-borgmatic borgmatic init --encryption repokey-blake2
 ```
 
@@ -201,7 +207,16 @@ The install script handles everything: Docker, SOPS, networks, and docker-cd dep
 ./scripts/home-ops.sh nfs mount
 ```
 
-### 4. Verify
+### 4. Initialize Borgmatic
+
+After docker-cd deploys all apps, init borg repos and run first backup:
+
+```bash
+make borgmatic-init
+make borgmatic-backup
+```
+
+### 5. Verify
 
 ```bash
 ./scripts/home-ops.sh status

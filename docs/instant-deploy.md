@@ -11,7 +11,7 @@ GitHub Actions builds image to ghcr.io
     ↓
 docker-cd-deploy-workflow updates home-ops
     ↓
-docker-cd detects change and deploys (poll interval configured in `infra/docker-cd/docker-cd.yml`)
+docker-cd detects change and deploys (~5min poll or instant via /api/sync)
 ```
 
 ## Setup for New Apps
@@ -65,10 +65,11 @@ jobs:
 
   deploy:
     needs: build-and-push
-    uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@main
+    uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.18
     with:
       app-path: apps/your-app-name
       tag: ${{ needs.build-and-push.outputs.version }}
+      url: https://your-app.jaw.dev # optional, defaults to https://<repo-name>.jaw.dev
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
 ```
@@ -115,17 +116,36 @@ Reusable workflow at `wajeht/docker-cd-deploy-workflow` that:
 
 ### Inputs
 
-| Input           | Required | Default           | Description                    |
-| --------------- | -------- | ----------------- | ------------------------------ |
-| `home-ops-repo` | No       | `wajeht/home-ops` | Target repo                    |
-| `app-path`      | Yes      | -                 | Path to app (e.g., `apps/ufc`) |
-| `tag`           | Yes      | -                 | Image tag (e.g., `v1.0.0`)     |
+| Input           | Required | Default                       | Description                           |
+| --------------- | -------- | ----------------------------- | ------------------------------------- |
+| `home-ops-repo` | No       | `wajeht/home-ops`             | Target repo                           |
+| `app-path`      | Yes      | -                             | Path to app (e.g., `apps/ufc`)        |
+| `tag`           | Yes      | -                             | Image tag (e.g., `v1.0.0`)            |
+| `url`           | No       | `https://<repo-name>.jaw.dev` | Production URL for GitHub Deployments |
 
 ### Secrets
 
 | Secret     | Description          |
 | ---------- | -------------------- |
 | `GH_TOKEN` | PAT with repo access |
+
+### Deploy Tracking
+
+The workflow uses native GitHub Actions `environment:` which provides:
+
+- "production" entry in the repo's Deployments sidebar
+- Clickable URL link to the deployed app
+- Deploy queue (serialized via `concurrency: deploy-home-ops`)
+
+For custom domains (not `*.jaw.dev`), pass the `url` input:
+
+```yaml
+uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.18
+with:
+  app-path: apps/close-powerlifting
+  tag: ${{ needs.build.outputs.tag }}
+  url: https://closepowerlifting.com
+```
 
 ## Apps Using Instant Deploy
 
@@ -136,6 +156,7 @@ Reusable workflow at `wajeht/docker-cd-deploy-workflow` that:
 - `favicon`
 - `gains`
 - `git`
+- `hello-world`
 - `ip`
 - `jaw.dev` (www)
 - `mm2us.com`

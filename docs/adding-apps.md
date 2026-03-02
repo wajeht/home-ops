@@ -61,7 +61,7 @@ Most apps need `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` because they do use
 | `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` | Most apps (user switching, writable volumes, init systems) |
 | `NET_BIND_SERVICE`                            | App binds to port < 1024 (e.g., port 80)                   |
 | `SETGID, SETUID`                              | Redis (only needs user switching, no file ownership)       |
-| `DAC_READ_SEARCH, FOWNER`                     | Borgmatic (needs to read all files for backup)             |
+| `DAC_READ_SEARCH, FOWNER, SETGID, SETUID`     | Borgmatic (file reads + crond user switching)              |
 | `NET_ADMIN`                                   | VPN containers (gluetun)                                   |
 
 ## Deploy
@@ -236,9 +236,10 @@ ntfy:
     - fail
 ```
 
-Create `apps/myapp/borgmatic-crontab.txt` (pick a unique time slot):
+Create `apps/myapp/borgmatic-crontab.txt` (pick a unique time slot, add human-readable comment):
 
 ```
+# daily at 1:00 AM
 0 1 * * * PATH=$PATH:/usr/local/bin /usr/local/bin/borgmatic --verbosity -2 --syslog-verbosity 1
 ```
 
@@ -271,6 +272,8 @@ myapp-borgmatic:
   cap_add:
     - DAC_READ_SEARCH
     - FOWNER
+    - SETGID
+    - SETUID
   security_opt:
     - no-new-privileges:true
   deploy:
@@ -281,6 +284,13 @@ myapp-borgmatic:
 ```
 
 Add `BORG_PASSPHRASE` to the app's `.env.sops`.
+
+After deploying, initialize the borg repo and run the first backup:
+
+```bash
+make borgmatic-init
+make borgmatic-backup
+```
 
 ### Per-App Borgmatic (SQLite)
 
@@ -360,6 +370,8 @@ myapp-borgmatic:
   cap_add:
     - DAC_READ_SEARCH
     - FOWNER
+    - SETGID
+    - SETUID
   security_opt:
     - no-new-privileges:true
   deploy:
@@ -370,6 +382,13 @@ myapp-borgmatic:
 ```
 
 Add `BORG_PASSPHRASE` to the app's `.env.sops`.
+
+After deploying, initialize the borg repo and run the first backup:
+
+```bash
+make borgmatic-init
+make borgmatic-backup
+```
 
 ## Disable Rolling Deploy
 

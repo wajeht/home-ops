@@ -64,13 +64,13 @@ flowchart LR
     style unifi fill:#cce0f5,stroke:#0559c9,color:#333
 ```
 
-Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It polls every 60 min or instantly via `/api/sync` webhook, auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates.
+Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It polls every 5 min or instantly via `/api/sync` webhook, auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates.
 
 [Traefik](https://traefik.io/traefik/) handles routing via Docker labels with auto SSL via Cloudflare DNS challenge. [traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth) provides Google OAuth protection.
 
 [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~60min via polling). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
 
-All containers are hardened: capabilities dropped (`cap_drop: ALL`), privilege escalation disabled (`no-new-privileges`), with only required capabilities added back per-service. [Borgmatic](https://torsion.org/borgmatic/) handles automated daily backups with database dumps (7 Postgres + 9 SQLite), weekly integrity checks, and ntfy notifications.
+All containers are hardened: capabilities dropped (`cap_drop: ALL`), privilege escalation disabled (`no-new-privileges`), with only required capabilities added back per-service. [Borgmatic](https://torsion.org/borgmatic/) handles automated backups — 8 critical apps hourly, 19 others daily — with database dumps (7 Postgres + 19 SQLite), weekly integrity checks, and ntfy notifications.
 
 ## Hardware
 
