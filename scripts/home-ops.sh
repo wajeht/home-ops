@@ -237,6 +237,9 @@ cmd_setup() {
 
 	chmod 700 "$USER_HOME/.sops" 2>/dev/null || true
 	chown -R 1000:1000 "$USER_HOME/plex" "$USER_HOME/data" 2>/dev/null || true
+	# Traefik runs as root in container (cap_drop: ALL removes DAC_OVERRIDE)
+	# acme.json must be owned by root or Traefik can't read/write it
+	$SUDO chown root:root "$USER_HOME/data/traefik/certs/acme.json" 2>/dev/null || true
 	ok "Done ($created new, $((total + discovered)) total)"
 }
 
