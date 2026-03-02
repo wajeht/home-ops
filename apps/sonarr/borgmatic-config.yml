@@ -4,19 +4,18 @@ source_directories:
 exclude_patterns:
   - "*/borg"
   - "*/borgmatic"
-  - "*/db"
+  - "*/sonarr.db*"
+  - "*/logs.db*"
 
-postgresql_databases:
-  - name: glitchtip
-    hostname: glitchtip-db
-    username: glitchtip
-    format: custom
+sqlite_databases:
+  - name: sonarr
+    path: /source/data/sonarr.db
 
 repositories:
   - path: /repository
-    label: glitchtip
+    label: sonarr
 
-archive_name_format: "glitchtip-{now:%Y-%m-%d-%H%M%S}"
+archive_name_format: "sonarr-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3
 
 keep_daily: 7
@@ -35,13 +34,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "glitchtip backup complete"
-    message: "glitchtip backup finished"
+    title: "sonarr backup complete"
+    message: "sonarr backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "glitchtip backup FAILED"
-    message: "glitchtip backup failed"
+    title: "sonarr backup FAILED"
+    message: "sonarr backup failed"
     priority: max
     tags: skull
   states:

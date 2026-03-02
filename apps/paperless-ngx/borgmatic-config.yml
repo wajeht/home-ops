@@ -1,3 +1,12 @@
+source_directories:
+  - /source/data
+
+exclude_patterns:
+  - "*/borg"
+  - "*/borgmatic"
+  - "*/db"
+  - "*/redis"
+
 postgresql_databases:
   - name: paperless
     hostname: paperless-db
@@ -27,13 +36,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "paperless db backup complete"
-    message: "paperless database backup finished"
+    title: "paperless backup complete"
+    message: "paperless backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "paperless db backup FAILED"
-    message: "paperless database backup failed"
+    title: "paperless backup FAILED"
+    message: "paperless backup failed"
     priority: max
     tags: skull
   states:

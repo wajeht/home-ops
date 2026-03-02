@@ -27,39 +27,49 @@ Automated daily backups via borgmatic (borg wrapper). Encrypted, deduplicated, c
 
 ### Global Borgmatic
 
-- **Schedule**: Daily at 4am CT
+- **Schedule**: Daily at 4:30am CT
 - **Source**: `~/data/` + `~/.sops/`
 - **Destination**: `~/backup/borg/` (NFS from NAS)
 - **Retention**: 7 daily, 4 weekly, 6 monthly
 - **Integrity checks**: Weekly repo + archive verification (last 3 archives)
 - **Notifications**: ntfy on success/failure + uptime-kuma dead man's switch
 
-### Per-App Borgmatic (DB Backups)
+### Per-App Borgmatic
 
-Each database app (Postgres and SQLite) has its own borgmatic instance backing up to a dedicated borg repo. Staggered schedules prevent resource contention.
+Each app with important data has its own borgmatic instance backing up DB + files to a dedicated borg repo. Staggered schedules prevent resource contention.
 
-| App                | Schedule | Borg Repo                         |
-| ------------------ | -------- | --------------------------------- |
-| miniflux           | 1:00 AM  | `~/data/miniflux/borg/`           |
-| plausible          | 1:15 AM  | `~/data/plausible/borg/`          |
-| zipline            | 1:30 AM  | `~/data/zipline/borg/`            |
-| glitchtip          | 1:45 AM  | `~/data/glitchtip/borg/`          |
-| bitmagnet          | 2:00 AM  | `~/data/bitmagnet/borg/`          |
-| hello-world        | 2:15 AM  | `~/data/hello-world/borg/`        |
-| paperless          | 2:30 AM  | `~/data/paperless/borg/`          |
-| gitea              | 2:45 AM  | `~/data/gitea/borg/`              |
-| close-powerlifting | 2:50 AM  | `~/data/close-powerlifting/borg/` |
-| bang               | 2:55 AM  | `~/data/bang/borg/`               |
-| gains              | 3:00 AM  | `~/data/gains/borg/`              |
-| mm2us              | 3:05 AM  | `~/data/mm2us/borg/`              |
-| notify             | 3:10 AM  | `~/data/notify/borg/`             |
-| calendar           | 3:15 AM  | `~/data/calendar/borg/`           |
-| favicon            | 3:20 AM  | `~/data/favicon/borg/`            |
-| screenshot         | 3:25 AM  | `~/data/screenshot/borg/`         |
-| **global**         | 4:00 AM  | `~/backup/borg/`                  |
+Apps with databases use `postgresql_databases` or `sqlite_databases` hooks for consistent DB snapshots. All apps also back up their full `~/data/<app>/` directory (excluding borg/borgmatic state and raw DB files already handled by hooks).
 
-Postgres apps: per-app borgmatic uses `postgresql_databases` hook to run pg_dump and archive the dump directly.
-SQLite apps: per-app borgmatic uses `sqlite_databases` hook to do proper `sqlite3 .backup` before archiving.
+| App                | Schedule | Type          | Borg Repo                         |
+| ------------------ | -------- | ------------- | --------------------------------- |
+| miniflux           | 1:00 AM  | Postgres (DB) | `~/data/miniflux/borg/`           |
+| plausible          | 1:15 AM  | PG + files    | `~/data/plausible/borg/`          |
+| zipline            | 1:30 AM  | PG + files    | `~/data/zipline/borg/`            |
+| glitchtip          | 1:45 AM  | PG + files    | `~/data/glitchtip/borg/`          |
+| bitmagnet          | 2:00 AM  | Postgres (DB) | `~/data/bitmagnet/borg/`          |
+| hello-world        | 2:15 AM  | Postgres (DB) | `~/data/hello-world/borg/`        |
+| paperless          | 2:30 AM  | PG + files    | `~/data/paperless/borg/`          |
+| gitea              | 2:45 AM  | SQLite+files  | `~/data/gitea/borg/`              |
+| close-powerlifting | 2:50 AM  | SQLite (DB)   | `~/data/close-powerlifting/borg/` |
+| bang               | 2:55 AM  | SQLite (DB)   | `~/data/bang/borg/`               |
+| gains              | 3:00 AM  | SQLite (DB)   | `~/data/gains/borg/`              |
+| mm2us              | 3:05 AM  | SQLite (DB)   | `~/data/mm2us/borg/`              |
+| notify             | 3:10 AM  | SQLite (DB)   | `~/data/notify/borg/`             |
+| calendar           | 3:15 AM  | SQLite (DB)   | `~/data/calendar/borg/`           |
+| favicon            | 3:20 AM  | SQLite+files  | `~/data/favicon/borg/`            |
+| screenshot         | 3:25 AM  | SQLite+files  | `~/data/screenshot/borg/`         |
+| vaultwarden        | 3:30 AM  | SQLite+files  | `~/data/vaultwarden/borg/`        |
+| uptime-kuma        | 3:35 AM  | SQLite+files  | `~/data/uptime-kuma/borg/`        |
+| authelia           | 3:40 AM  | SQLite+files  | `~/data/authelia/borg/`           |
+| sonarr             | 3:45 AM  | SQLite+files  | `~/data/sonarr/borg/`             |
+| radarr             | 3:50 AM  | SQLite+files  | `~/data/radarr/borg/`             |
+| prowlarr           | 3:55 AM  | SQLite+files  | `~/data/prowlarr/borg/`           |
+| tautulli           | 4:00 AM  | SQLite+files  | `~/data/tautulli/borg/`           |
+| audiobookshelf     | 4:05 AM  | SQLite+files  | `~/data/audiobookshelf/borg/`     |
+| changedetection    | 4:10 AM  | Files only    | `~/data/changedetection/borg/`    |
+| ntfy               | 4:15 AM  | SQLite+files  | `~/data/ntfy/borg/`               |
+| **global**         | 4:30 AM  | All ~/data/   | `~/backup/borg/`                  |
+
 All per-app repos store encrypted, deduplicated archives in `~/data/<app>/borg/` (local disk). Global borgmatic backs up all of `~/data/` (which includes per-app borg repos) to NFS as belt-and-suspenders.
 
 ### List Archives

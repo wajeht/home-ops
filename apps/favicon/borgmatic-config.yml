@@ -1,3 +1,11 @@
+source_directories:
+  - /source/data
+
+exclude_patterns:
+  - "*/borg"
+  - "*/borgmatic"
+  - "*/db.sqlite*"
+
 sqlite_databases:
   - name: favicon
     path: /source/data/db.sqlite
@@ -25,13 +33,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "favicon db backup complete"
-    message: "favicon database backup finished"
+    title: "favicon backup complete"
+    message: "favicon backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "favicon db backup FAILED"
-    message: "favicon database backup failed"
+    title: "favicon backup FAILED"
+    message: "favicon backup failed"
     priority: max
     tags: skull
   states:

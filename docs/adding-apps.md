@@ -164,7 +164,7 @@ The server has docker login configured for ghcr.io.
 
 ## With Postgres
 
-Apps with Postgres get a per-app borgmatic sidecar that uses the `postgresql_databases` hook to run pg_dump and archive the dump to its own borg repo. Use `EXTRA_PKGS` to install the matching pg_dump version (e.g., `postgresql18-client` for Postgres 18).
+Apps with Postgres get a per-app borgmatic sidecar that backs up both the database (via `postgresql_databases` hook) and app files (via `source_directories`) to its own borg repo. Use `EXTRA_PKGS` to install the matching pg_dump version (e.g., `postgresql18-client` for Postgres 18).
 
 ```yaml
 myapp-db:
@@ -186,6 +186,14 @@ myapp-db:
 Create `apps/myapp/borgmatic-config.yml`:
 
 ```yaml
+source_directories:
+  - /source/data
+
+exclude_patterns:
+  - "*/borg"
+  - "*/borgmatic"
+  - "*/db" # raw PG data dir (already backed up via pg_dump)
+
 postgresql_databases:
   - name: myapp
     hostname: myapp-db
@@ -215,13 +223,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "myapp db backup complete"
-    message: "myapp database backup finished"
+    title: "myapp backup complete"
+    message: "myapp backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "myapp db backup FAILED"
-    message: "myapp database backup failed"
+    title: "myapp backup FAILED"
+    message: "myapp backup failed"
     priority: max
     tags: skull
   states:
@@ -247,6 +255,7 @@ myapp-borgmatic:
     - EXTRA_PKGS=postgresql18-client # match DB version
     - PGPASSWORD=${POSTGRES_PASSWORD}
   volumes:
+    - /home/jaw/data/myapp:/source/data:ro
     - /home/jaw/data/myapp/borg:/repository
     - /home/jaw/data/myapp/borgmatic:/borgmatic/state
     - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
@@ -276,11 +285,19 @@ Add `BORG_PASSPHRASE` to the app's `.env.sops`.
 
 ### Per-App Borgmatic (SQLite)
 
-SQLite apps use borgmatic's `sqlite_databases` hook for proper `.backup` dumps. Same pattern but different config and volume mounts.
+SQLite apps use borgmatic's `sqlite_databases` hook for proper `.backup` dumps plus `source_directories` for all app files.
 
 Create `apps/myapp/borgmatic-config.yml`:
 
 ```yaml
+source_directories:
+  - /source/data
+
+exclude_patterns:
+  - "*/borg"
+  - "*/borgmatic"
+  - "*/db.sqlite*" # exclude raw DB files (backed up via sqlite hook)
+
 sqlite_databases:
   - name: myapp
     path: /source/data/db.sqlite
@@ -308,13 +325,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "myapp db backup complete"
-    message: "myapp database backup finished"
+    title: "myapp backup complete"
+    message: "myapp backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "myapp db backup FAILED"
-    message: "myapp database backup failed"
+    title: "myapp backup FAILED"
+    message: "myapp backup failed"
     priority: max
     tags: skull
   states:
@@ -322,7 +339,7 @@ ntfy:
     - fail
 ```
 
-Add borgmatic service to `docker-compose.yml` (note: mounts data dir, not dumps):
+Add borgmatic service to `docker-compose.yml`:
 
 ```yaml
 myapp-borgmatic:

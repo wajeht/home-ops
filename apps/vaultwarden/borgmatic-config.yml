@@ -4,19 +4,17 @@ source_directories:
 exclude_patterns:
   - "*/borg"
   - "*/borgmatic"
-  - "*/db"
+  - "*/db.sqlite3*"
 
-postgresql_databases:
-  - name: glitchtip
-    hostname: glitchtip-db
-    username: glitchtip
-    format: custom
+sqlite_databases:
+  - name: vaultwarden
+    path: /source/data/db.sqlite3
 
 repositories:
   - path: /repository
-    label: glitchtip
+    label: vaultwarden
 
-archive_name_format: "glitchtip-{now:%Y-%m-%d-%H%M%S}"
+archive_name_format: "vaultwarden-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3
 
 keep_daily: 7
@@ -35,13 +33,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "glitchtip backup complete"
-    message: "glitchtip backup finished"
+    title: "vaultwarden backup complete"
+    message: "vaultwarden backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "glitchtip backup FAILED"
-    message: "glitchtip backup failed"
+    title: "vaultwarden backup FAILED"
+    message: "vaultwarden backup failed"
     priority: max
     tags: skull
   states:

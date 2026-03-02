@@ -4,19 +4,17 @@ source_directories:
 exclude_patterns:
   - "*/borg"
   - "*/borgmatic"
-  - "*/db"
+  - "*/kuma.db*"
 
-postgresql_databases:
-  - name: glitchtip
-    hostname: glitchtip-db
-    username: glitchtip
-    format: custom
+sqlite_databases:
+  - name: uptime-kuma
+    path: /source/data/kuma.db
 
 repositories:
   - path: /repository
-    label: glitchtip
+    label: uptime-kuma
 
-archive_name_format: "glitchtip-{now:%Y-%m-%d-%H%M%S}"
+archive_name_format: "uptime-kuma-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3
 
 keep_daily: 7
@@ -35,13 +33,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "glitchtip backup complete"
-    message: "glitchtip backup finished"
+    title: "uptime-kuma backup complete"
+    message: "uptime-kuma backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "glitchtip backup FAILED"
-    message: "glitchtip backup failed"
+    title: "uptime-kuma backup FAILED"
+    message: "uptime-kuma backup failed"
     priority: max
     tags: skull
   states:

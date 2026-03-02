@@ -1,3 +1,11 @@
+source_directories:
+  - /source/data
+
+exclude_patterns:
+  - "*/borg"
+  - "*/borgmatic"
+  - "*/db"
+
 postgresql_databases:
   - name: zipline
     hostname: zipline-db
@@ -27,13 +35,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "zipline db backup complete"
-    message: "zipline database backup finished"
+    title: "zipline backup complete"
+    message: "zipline backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "zipline db backup FAILED"
-    message: "zipline database backup failed"
+    title: "zipline backup FAILED"
+    message: "zipline backup failed"
     priority: max
     tags: skull
   states:

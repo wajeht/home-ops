@@ -4,19 +4,12 @@ source_directories:
 exclude_patterns:
   - "*/borg"
   - "*/borgmatic"
-  - "*/db"
-
-postgresql_databases:
-  - name: glitchtip
-    hostname: glitchtip-db
-    username: glitchtip
-    format: custom
 
 repositories:
   - path: /repository
-    label: glitchtip
+    label: changedetection
 
-archive_name_format: "glitchtip-{now:%Y-%m-%d-%H%M%S}"
+archive_name_format: "changedetection-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3
 
 keep_daily: 7
@@ -35,13 +28,13 @@ ntfy:
   topic: borgmatic
   server: http://ntfy:80
   finish:
-    title: "glitchtip backup complete"
-    message: "glitchtip backup finished"
+    title: "changedetection backup complete"
+    message: "changedetection backup finished"
     priority: min
     tags: white_check_mark
   fail:
-    title: "glitchtip backup FAILED"
-    message: "glitchtip backup failed"
+    title: "changedetection backup FAILED"
+    message: "changedetection backup failed"
     priority: max
     tags: skull
   states:

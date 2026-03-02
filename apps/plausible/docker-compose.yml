@@ -115,6 +115,7 @@ services:
       - EXTRA_PKGS=postgresql18-client
       - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
+      - /home/jaw/data/plausible:/source/data:ro
       - /home/jaw/data/plausible/borg:/repository
       - /home/jaw/data/plausible/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
