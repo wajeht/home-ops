@@ -72,33 +72,53 @@ Apps with databases use `postgresql_databases` or `sqlite_databases` hooks for c
 
 All per-app repos store encrypted, deduplicated archives in `~/data/<app>/borg/` (local disk). Global borgmatic backs up all of `~/data/` (which includes per-app borg repos) to NFS as belt-and-suspenders.
 
-### List Archives
+### Per-App Borgmatic Commands
 
 ```bash
-docker compose -f ~/home-ops/apps/borgmatic/docker-compose.yml exec borgmatic borgmatic list
+# Manual backup
+docker exec <app>-<app>-borgmatic-1 borgmatic create --verbosity 1
+
+# List archives
+docker exec <app>-<app>-borgmatic-1 borgmatic list
+
+# List archive contents
+docker exec <app>-<app>-borgmatic-1 borg list /repository::<archive-name>
+
+# Restore database (Postgres or SQLite) from latest archive
+docker exec <app>-<app>-borgmatic-1 borgmatic restore --archive latest
+
+# Restore database from specific archive
+docker exec <app>-<app>-borgmatic-1 borgmatic restore --archive <archive-name>
+
+# Extract files from archive
+docker exec <app>-<app>-borgmatic-1 borgmatic extract --archive latest --destination /restore
+
+# Extract specific path
+docker exec <app>-<app>-borgmatic-1 borgmatic extract --archive latest --destination /restore --path source/data/<subdir>
 ```
 
-### Extract Full Archive
+### Global Borgmatic Commands
 
 ```bash
-# List archives first
-docker compose -f ~/home-ops/apps/borgmatic/docker-compose.yml exec borgmatic borgmatic list
+# Manual backup
+docker exec borgmatic borgmatic create --verbosity 1
 
-# Extract latest archive to /restore
-docker compose -f ~/home-ops/apps/borgmatic/docker-compose.yml exec borgmatic borgmatic extract --archive latest --destination /restore
+# List archives
+docker exec borgmatic borgmatic list
+
+# Extract full archive
+docker exec borgmatic borgmatic extract --archive latest --destination /restore
+
+# Extract specific app's files
+docker exec borgmatic borgmatic extract --archive latest --destination /restore --path source/data/gitea
 ```
 
-### Extract Specific Files
+### Initialize New Borg Repo
+
+Required when adding borgmatic to an app for the first time:
 
 ```bash
-docker compose -f ~/home-ops/apps/borgmatic/docker-compose.yml exec borgmatic borgmatic extract \
-  --archive latest --destination /restore --path source/data/gitea
-```
-
-### Manual Backup
-
-```bash
-docker compose -f ~/home-ops/apps/borgmatic/docker-compose.yml exec borgmatic borgmatic create --verbosity 1
+docker exec <app>-<app>-borgmatic-1 borgmatic init --encryption repokey-blake2
 ```
 
 ## Recovery Steps
