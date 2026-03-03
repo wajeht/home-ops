@@ -16,6 +16,11 @@ services:
       - IMMICH_MACHINE_LEARNING_URL=http://immich-machine-learning:3003
       - IMMICH_LOG_LEVEL=warn
       - TZ=America/Chicago
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - "993"
+      - "44"
     volumes:
       - /home/jaw/immich/upload:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
