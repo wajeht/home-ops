@@ -1,2 +1,2 @@
-# daily at 4:30 AM
-30 4 * * * PATH=$PATH:/usr/local/bin /usr/local/bin/borgmatic --verbosity -2 --syslog-verbosity 1
+# daily at 2:30 AM (after all per-app backups finish)
+30 2 * * * PATH=$PATH:/usr/local/bin /usr/local/bin/borgmatic --verbosity -2 --syslog-verbosity 1

@@ -28,7 +28,7 @@ Automated daily backups via borgmatic (borg wrapper). Encrypted, deduplicated, c
 
 ### Global Borgmatic
 
-- **Schedule**: Daily at 4:30am CT
+- **Schedule**: Daily at 2:30am CT (after all per-app backups)
 - **Source**: `~/data/` + `~/.sops/`
 - **Destination**: `~/backup/borg/` (NFS from NAS)
 - **Retention**: 7 daily, 4 weekly, 6 monthly
@@ -45,34 +45,34 @@ All per-app borg repos are stored on NFS (`~/backup/<app>/`) so backups survive 
 
 | App                | Schedule | Type          | Borg Repo                      |
 | ------------------ | -------- | ------------- | ------------------------------ |
-| miniflux           | 1:00 AM  | Postgres (DB) | `~/backup/miniflux/`           |
-| plausible          | 1:15 AM  | PG + files    | `~/backup/plausible/`          |
-| zipline            | 1:30 AM  | PG + files    | `~/backup/zipline/`            |
-| glitchtip          | 1:45 AM  | PG + files    | `~/backup/glitchtip/`          |
-| bitmagnet          | 2:00 AM  | Postgres (DB) | `~/backup/bitmagnet/`          |
-| hello-world        | 2:15 AM  | Postgres (DB) | `~/backup/hello-world/`        |
-| paperless          | 2:30 AM  | PG + files    | `~/backup/paperless/`          |
-| immich             | 2:45 AM  | Postgres (DB) | `~/backup/immich/`             |
 | gitea              | Hourly   | SQLite+files  | `~/backup/gitea/`              |
 | vaultwarden        | Hourly   | SQLite+files  | `~/backup/vaultwarden/`        |
-| calendar           | Every 6h | SQLite (DB)   | `~/backup/calendar/`           |
-| screenshot         | Every 6h | SQLite+files  | `~/backup/screenshot/`         |
-| gains              | Every 6h | SQLite (DB)   | `~/backup/gains/`              |
-| uptime-kuma        | 3:35 AM  | SQLite+files  | `~/backup/uptime-kuma/`        |
-| authelia           | 3:40 AM  | SQLite+files  | `~/backup/authelia/`           |
-| sonarr             | 3:45 AM  | SQLite+files  | `~/backup/sonarr/`             |
-| radarr             | 3:50 AM  | SQLite+files  | `~/backup/radarr/`             |
-| prowlarr           | 3:55 AM  | SQLite+files  | `~/backup/prowlarr/`           |
-| tautulli           | 4:00 AM  | SQLite+files  | `~/backup/tautulli/`           |
-| audiobookshelf     | 4:05 AM  | SQLite+files  | `~/backup/audiobookshelf/`     |
-| changedetection    | 4:10 AM  | Files only    | `~/backup/changedetection/`    |
-| ntfy               | 4:15 AM  | SQLite+files  | `~/backup/ntfy/`               |
-| close-powerlifting | 4:20 AM  | SQLite (DB)   | `~/backup/close-powerlifting/` |
-| bang               | 4:25 AM  | SQLite (DB)   | `~/backup/bang/`               |
-| favicon            | 4:30 AM  | SQLite+files  | `~/backup/favicon/`            |
-| mm2us              | 4:35 AM  | SQLite (DB)   | `~/backup/mm2us/`              |
-| notify             | 4:40 AM  | SQLite (DB)   | `~/backup/notify/`             |
-| **global**         | 4:30 AM  | All ~/data/   | `~/backup/borg/`               |
+| miniflux           | 12:00 AM | Postgres (DB) | `~/backup/miniflux/`           |
+| plausible          | 12:05 AM | PG + files    | `~/backup/plausible/`          |
+| zipline            | 12:10 AM | PG + files    | `~/backup/zipline/`            |
+| glitchtip          | 12:15 AM | PG + files    | `~/backup/glitchtip/`          |
+| bitmagnet          | 12:20 AM | Postgres (DB) | `~/backup/bitmagnet/`          |
+| hello-world        | 12:25 AM | Postgres (DB) | `~/backup/hello-world/`        |
+| paperless          | 12:30 AM | PG + files    | `~/backup/paperless/`          |
+| immich             | 12:35 AM | Postgres (DB) | `~/backup/immich/`             |
+| uptime-kuma        | 12:40 AM | SQLite+files  | `~/backup/uptime-kuma/`        |
+| authelia           | 12:45 AM | SQLite+files  | `~/backup/authelia/`           |
+| sonarr             | 12:50 AM | SQLite+files  | `~/backup/sonarr/`             |
+| radarr             | 12:55 AM | SQLite+files  | `~/backup/radarr/`             |
+| prowlarr           | 1:00 AM  | SQLite+files  | `~/backup/prowlarr/`           |
+| tautulli           | 1:05 AM  | SQLite+files  | `~/backup/tautulli/`           |
+| audiobookshelf     | 1:10 AM  | SQLite+files  | `~/backup/audiobookshelf/`     |
+| changedetection    | 1:15 AM  | Files only    | `~/backup/changedetection/`    |
+| ntfy               | 1:20 AM  | SQLite+files  | `~/backup/ntfy/`               |
+| close-powerlifting | 1:25 AM  | SQLite (DB)   | `~/backup/close-powerlifting/` |
+| bang               | 1:30 AM  | SQLite (DB)   | `~/backup/bang/`               |
+| favicon            | 1:35 AM  | SQLite+files  | `~/backup/favicon/`            |
+| mm2us              | 1:40 AM  | SQLite (DB)   | `~/backup/mm2us/`              |
+| notify             | 1:45 AM  | SQLite (DB)   | `~/backup/notify/`             |
+| calendar           | 1:50 AM  | SQLite (DB)   | `~/backup/calendar/`           |
+| screenshot         | 1:55 AM  | SQLite+files  | `~/backup/screenshot/`         |
+| gains              | 2:00 AM  | SQLite (DB)   | `~/backup/gains/`              |
+| **global**         | 2:30 AM  | All ~/data/   | `~/backup/borg/`               |
 
 ### Borgmatic Commands
 
