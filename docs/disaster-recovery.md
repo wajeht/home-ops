@@ -54,15 +54,10 @@ All per-app borg repos are stored on NFS (`~/backup/<app>/`) so backups survive 
 | paperless          | 2:30 AM  | PG + files    | `~/backup/paperless/`          |
 | immich             | 2:45 AM  | Postgres (DB) | `~/backup/immich/`             |
 | gitea              | Hourly   | SQLite+files  | `~/backup/gitea/`              |
-| close-powerlifting | Hourly   | SQLite (DB)   | `~/backup/close-powerlifting/` |
-| bang               | Hourly   | SQLite (DB)   | `~/backup/bang/`               |
 | vaultwarden        | Hourly   | SQLite+files  | `~/backup/vaultwarden/`        |
 | calendar           | Every 6h | SQLite (DB)   | `~/backup/calendar/`           |
-| favicon            | Every 6h | SQLite+files  | `~/backup/favicon/`            |
 | screenshot         | Every 6h | SQLite+files  | `~/backup/screenshot/`         |
 | gains              | Every 6h | SQLite (DB)   | `~/backup/gains/`              |
-| mm2us              | Every 6h | SQLite (DB)   | `~/backup/mm2us/`              |
-| notify             | Every 6h | SQLite (DB)   | `~/backup/notify/`             |
 | uptime-kuma        | 3:35 AM  | SQLite+files  | `~/backup/uptime-kuma/`        |
 | authelia           | 3:40 AM  | SQLite+files  | `~/backup/authelia/`           |
 | sonarr             | 3:45 AM  | SQLite+files  | `~/backup/sonarr/`             |
@@ -72,6 +67,11 @@ All per-app borg repos are stored on NFS (`~/backup/<app>/`) so backups survive 
 | audiobookshelf     | 4:05 AM  | SQLite+files  | `~/backup/audiobookshelf/`     |
 | changedetection    | 4:10 AM  | Files only    | `~/backup/changedetection/`    |
 | ntfy               | 4:15 AM  | SQLite+files  | `~/backup/ntfy/`               |
+| close-powerlifting | 4:20 AM  | SQLite (DB)   | `~/backup/close-powerlifting/` |
+| bang               | 4:25 AM  | SQLite (DB)   | `~/backup/bang/`               |
+| favicon            | 4:30 AM  | SQLite+files  | `~/backup/favicon/`            |
+| mm2us              | 4:35 AM  | SQLite (DB)   | `~/backup/mm2us/`              |
+| notify             | 4:40 AM  | SQLite (DB)   | `~/backup/notify/`             |
 | **global**         | 4:30 AM  | All ~/data/   | `~/backup/borg/`               |
 
 ### Borgmatic Commands
