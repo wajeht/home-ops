@@ -1,7 +1,7 @@
 services:
   immich:
     container_name: immich
-    image: ghcr.io/immich-app/immich-server:v2.5.6
+    image: ghcr.io/immich-app/immich-server:v2.5.6@sha256:aa163d2e1cc2b16a9515dd1fef901e6f5231befad7024f093d7be1f2da14341a
     # Exposed for direct local network access (bypasses Cloudflare 100MB upload limit)
     ports:
       - "2283:2283"
@@ -58,7 +58,7 @@ services:
 
   immich-machine-learning:
     container_name: immich-machine-learning
-    image: ghcr.io/immich-app/immich-machine-learning:v2.5.6
+    image: ghcr.io/immich-app/immich-machine-learning:v2.5.6@sha256:b213fa3c82d27a21a299c46ffbb38a091f18384db1ad67d409a3b34fe0fce556
     env_file:
       - .env
     environment:
@@ -97,7 +97,7 @@ services:
 
   immich-db:
     container_name: immich-db
-    image: ghcr.io/immich-app/postgres:14-vectorchord0.3.0-pgvectors0.2.0
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.3.0-pgvectors0.2.0@sha256:c570d9e1c2494f65d2a0a379a7f6df66e8441964254a30aa62cc58e8ebf1dee0
     env_file:
       - .env
     environment:
@@ -132,7 +132,7 @@ services:
 
   immich-redis:
     container_name: immich-redis
-    image: redis:7-alpine
+    image: redis:7-alpine@sha256:8b81dd37ff027bec4e516d41acfbe9fe2460070dc6d4a4570a2ac5b9d59df065
     networks:
       - immich-internal
     healthcheck:
