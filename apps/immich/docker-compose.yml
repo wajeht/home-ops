@@ -48,7 +48,7 @@ services:
       resources:
         limits:
           cpus: "2.0"
-          memory: 2G
+          memory: 4G
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.immich.rule=Host(`immich.jaw.dev`)"
