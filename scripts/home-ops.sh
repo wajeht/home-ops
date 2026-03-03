@@ -330,8 +330,9 @@ cmd_install() {
 		$SUDO chmod +x /usr/local/bin/sops
 	fi
 
-	# Setup directories
-	step "3/4" "Directories..."
+	# Mount NFS shares before creating dirs (so NFS paths aren't created as local dirs)
+	step "3/4" "NFS + Directories..."
+	cmd_nfs mount all
 	cmd_setup
 
 	# Create external networks
