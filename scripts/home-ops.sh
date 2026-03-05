@@ -560,10 +560,20 @@ cmd_borgmatic_init() {
 # BORGMATIC-BACKUP - Run backup on all borgmatic containers
 #=============================================================================
 cmd_borgmatic_backup() {
+	local target=${1:-}
 	header "Borgmatic Backup"
 
 	local containers
-	containers=$($SUDO docker ps --format '{{.Names}}' | grep borgmatic | sort)
+	if [ -n "$target" ]; then
+		local name="${target}-borgmatic"
+		if ! $SUDO docker ps --format '{{.Names}}' | grep -q "^${name}$"; then
+			err "$name not running"
+			return 1
+		fi
+		containers="$name"
+	else
+		containers=$($SUDO docker ps --format '{{.Names}}' | grep borgmatic | sort)
+	fi
 
 	if [ -z "$containers" ]; then
 		warn "No borgmatic containers running"
@@ -572,7 +582,12 @@ cmd_borgmatic_backup() {
 
 	local success=0 failed=0
 	for c in $containers; do
-		info "$c..."
+		# Auto-init if repo doesn't exist
+		if ! $SUDO docker exec "$c" borg info /repository &>/dev/null; then
+			info "$c: initializing..."
+			$SUDO docker exec "$c" borgmatic init --encryption repokey-blake2 &>/dev/null || true
+		fi
+		info "$c: backing up..."
 		if $SUDO docker exec "$c" borgmatic create --verbosity -1 2>&1; then
 			ok "$c"
 			success=$((success + 1))
@@ -653,7 +668,8 @@ borgmatic-init)
 	cmd_borgmatic_init
 	;;
 borgmatic-backup)
-	cmd_borgmatic_backup
+	shift
+	cmd_borgmatic_backup "$@"
 	;;
 update-submodules)
 	cmd_update_submodules
@@ -675,7 +691,7 @@ update-submodules)
 	echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
 	echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
 	echo -e "  ${GREEN}borgmatic-init${NC}           Initialize borg repos for all borgmatic containers"
-	echo -e "  ${GREEN}borgmatic-backup${NC}         Run backup on all borgmatic containers"
+	echo -e "  ${GREEN}borgmatic-backup${NC} [app]    Run backup (all or single app)"
 	echo -e "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
 	echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
 	echo ""
