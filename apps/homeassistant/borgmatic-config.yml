@@ -1,0 +1,46 @@
+source_directories:
+  - /source/data
+
+exclude_patterns:
+  - "*/borgmatic"
+  - "*/home-assistant_v2.db*"
+
+sqlite_databases:
+  - name: homeassistant
+    path: /source/data/home-assistant_v2.db
+
+repositories:
+  - path: /repository
+    label: homeassistant
+
+archive_name_format: "homeassistant-{now:%Y-%m-%d-%H%M%S}"
+compression: zstd,3
+
+keep_daily: 7
+keep_weekly: 4
+keep_monthly: 6
+
+checks:
+  - name: repository
+    frequency: 1 week
+  - name: archives
+    frequency: 1 week
+
+check_last: 3
+
+ntfy:
+  topic: borgmatic
+  server: http://ntfy:80
+  finish:
+    title: "homeassistant backup complete"
+    message: "homeassistant backup finished"
+    priority: min
+    tags: white_check_mark
+  fail:
+    title: "homeassistant backup FAILED"
+    message: "homeassistant backup failed"
+    priority: max
+    tags: skull
+  states:
+    - finish
+    - fail

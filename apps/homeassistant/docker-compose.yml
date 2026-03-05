@@ -1,0 +1,72 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:2026.3.0@sha256:4fb4ad85fad2250ccff6ec0670827bdcdc46b8bab2b9cbfb8ecdc28da7210630
+    volumes:
+      - /home/jaw/data/homeassistant:/config
+    environment:
+      - TZ=America/Chicago
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1G
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homeassistant.rule=Host(`ha.jaw.dev`)"
+      - "traefik.http.routers.homeassistant.entrypoints=websecure"
+      - "traefik.http.routers.homeassistant.middlewares=google-auth@file"
+      - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+
+  homeassistant-borgmatic:
+    container_name: homeassistant-borgmatic
+    image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/homeassistant:/source/data
+      - /home/jaw/backup/homeassistant:/repository
+      - /home/jaw/data/homeassistant/borgmatic:/borgmatic/state
+      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
+      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
+    networks:
+      - traefik
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+networks:
+  traefik:
+    external: true
