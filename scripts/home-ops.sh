@@ -587,6 +587,37 @@ cmd_borgmatic_backup() {
 }
 
 #=============================================================================
+# UPDATE-SUBMODULES - Update submodules to latest and commit
+#=============================================================================
+cmd_update_submodules() {
+	header "Updating submodules"
+	cd "$REPO_DIR"
+
+	[ ! -f .gitmodules ] && {
+		warn "No submodules found"
+		return 0
+	}
+
+	local updated=0
+	git submodule foreach --quiet 'echo $sm_path' | while read -r sm_path; do
+		local name
+		name=$(basename "$sm_path")
+		info "Checking $name..."
+		git submodule update --remote "$sm_path"
+		if git diff --quiet "$sm_path"; then
+			dim "$name: already up to date"
+		else
+			git add "$sm_path"
+			git commit -m "chore($name): update submodule"
+			ok "$name: updated"
+			updated=$((updated + 1))
+		fi
+	done
+
+	ok "Done"
+}
+
+#=============================================================================
 # MAIN
 #=============================================================================
 case "${1:-}" in
@@ -624,6 +655,9 @@ borgmatic-init)
 borgmatic-backup)
 	cmd_borgmatic_backup
 	;;
+update-submodules)
+	cmd_update_submodules
+	;;
 *)
 	echo -e "${BOLD}home-ops${NC} management script"
 	echo ""
@@ -642,6 +676,7 @@ borgmatic-backup)
 	echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
 	echo -e "  ${GREEN}borgmatic-init${NC}           Initialize borg repos for all borgmatic containers"
 	echo -e "  ${GREEN}borgmatic-backup${NC}         Run backup on all borgmatic containers"
+	echo -e "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
 	echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
 	echo ""
 	echo -e "${BOLD}Examples:${NC}"
