@@ -214,7 +214,7 @@ cmd_setup() {
 	for dir in "${STATIC_DIRS[@]}"; do
 		total=$((total + 1))
 		if [ ! -d "$dir" ]; then
-			mkdir -p "$dir"
+			$SUDO mkdir -p "$dir"
 			dim "Created: $dir"
 			created=$((created + 1))
 		fi
@@ -228,7 +228,7 @@ cmd_setup() {
 	for dir in $dirs; do
 		discovered=$((discovered + 1))
 		if [ ! -e "$dir" ]; then
-			mkdir -p "$dir"
+			$SUDO mkdir -p "$dir"
 			dim "Created: $dir"
 			created=$((created + 1))
 		fi
