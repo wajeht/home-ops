@@ -89,7 +89,6 @@
           url: http://immich-server:2283
           key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
 
-
 - Downloaders:
     - SABnzbd:
         icon: sabnzbd
@@ -184,12 +183,6 @@
         description: OAuth Proxy
         siteMonitor: http://google-auth:4181
 
-    - Ntfy:
-        icon: ntfy
-        href: https://ntfy.jaw.dev
-        description: Notifications
-        siteMonitor: http://ntfy:80
-
     - Portainer:
         icon: portainer
         href: https://portainer.jaw.dev
@@ -220,6 +213,12 @@
         siteMonitor: http://renovate:8080
 
 - Logs:
+    - Ntfy:
+        icon: ntfy
+        href: https://ntfy.jaw.dev
+        description: Notifications
+        siteMonitor: http://ntfy:80
+
     - Uptime Kuma:
         icon: uptime-kuma
         href: https://status.jaw.dev
