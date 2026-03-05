@@ -139,6 +139,29 @@
         description: Download Cleanup
         siteMonitor: http://cleanuparr:11011
 
+- Home:
+    - Home Assistant:
+        icon: home-assistant
+        href: https://ha.jaw.dev
+        description: Smart Home
+        siteMonitor: http://homeassistant:8123
+
+    - Immich:
+        icon: immich
+        href: https://immich.jaw.dev
+        description: Photos
+        siteMonitor: http://immich-server:2283
+        widget:
+          type: immich
+          url: http://immich-server:2283
+          key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
+
+    - AdGuard:
+        icon: adguard-home
+        href: http://192.168.4.181
+        description: DNS Ad Blocking
+        siteMonitor: http://192.168.4.181:80
+
 - Systems:
     - Traefik:
         icon: traefik
@@ -177,6 +200,18 @@
           url: http://portainer:9000
           env: 1
           key: "{{HOMEPAGE_VAR_PORTAINER_KEY}}"
+
+    - Authelia:
+        icon: authelia
+        href: https://authelia.jaw.dev
+        description: Auth Gateway
+        siteMonitor: http://authelia:9091
+
+    - DDNS Updater:
+        icon: mdi-dns
+        href: https://ddns.jaw.dev
+        description: Dynamic DNS
+        siteMonitor: http://ddns-updater:8000
 
     - Renovate:
         icon: renovate
@@ -272,6 +307,12 @@
         href: https://screenshot.jaw.dev
         description: Screenshot API
         siteMonitor: http://screenshot:80
+
+    - Walker:
+        icon: mdi-web-box
+        href: https://walker.jaw.dev
+        description: Link Shortener
+        siteMonitor: http://walker:80
 
     - Bang:
         icon: duckduckgo
