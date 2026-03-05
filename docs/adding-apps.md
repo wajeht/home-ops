@@ -400,6 +400,20 @@ Create `apps/myapp/docker-cd.yml`:
 rolling_update: false
 ```
 
+## Apps Behind Reverse Proxy (Trusted Proxies)
+
+Some apps (e.g., Home Assistant) reject requests from reverse proxies unless explicitly configured. After first deploy, add the traefik network subnet as a trusted proxy in the app's config:
+
+```yaml
+# Home Assistant: ~/data/homeassistant/configuration.yaml
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.18.0.0/16
+```
+
+Then restart the container. This is a one-time setup since the config persists in `~/data/`.
+
 ## Removing Apps
 
 ```bash
