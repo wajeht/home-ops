@@ -89,11 +89,6 @@
           url: http://immich-server:2283
           key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
 
-    - AdGuard:
-        icon: adguard-home
-        href: http://192.168.4.181
-        description: DNS Ad Blocking
-        siteMonitor: http://192.168.4.181:80
 
 - Downloaders:
     - SABnzbd:
@@ -161,6 +156,12 @@
         href: https://ha.jaw.dev
         description: Smart Home
         siteMonitor: http://homeassistant:8123
+
+    - AdGuard:
+        icon: adguard-home
+        href: http://192.168.4.181
+        description: DNS Ad Blocking
+        siteMonitor: http://192.168.4.181:80
 
     - Traefik:
         icon: traefik
