@@ -39,8 +39,12 @@ borgmatic-init:
 	@./scripts/home-ops.sh borgmatic-init
 
 ## borgmatic-backup: Run backup on all borgmatic containers
+## borgmatic-backup-<app>: Run backup for single app (e.g. make borgmatic-backup-homeassistant)
 borgmatic-backup:
 	@./scripts/home-ops.sh borgmatic-backup
+
+borgmatic-backup-%:
+	@./scripts/home-ops.sh borgmatic-backup $*
 
 ## format: Format YAML/Markdown/JSON files
 format:
