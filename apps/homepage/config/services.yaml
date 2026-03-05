@@ -79,6 +79,22 @@
           url: http://audiobookshelf:80
           key: "{{HOMEPAGE_VAR_AUDIOBOOKSHELF_KEY}}"
 
+    - Immich:
+        icon: immich
+        href: https://immich.jaw.dev
+        description: Photos
+        siteMonitor: http://immich-server:2283
+        widget:
+          type: immich
+          url: http://immich-server:2283
+          key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
+
+    - AdGuard:
+        icon: adguard-home
+        href: http://192.168.4.181
+        description: DNS Ad Blocking
+        siteMonitor: http://192.168.4.181:80
+
 - Downloaders:
     - SABnzbd:
         icon: sabnzbd
@@ -139,30 +155,13 @@
         description: Download Cleanup
         siteMonitor: http://cleanuparr:11011
 
-- Home:
+- Systems:
     - Home Assistant:
         icon: home-assistant
         href: https://ha.jaw.dev
         description: Smart Home
         siteMonitor: http://homeassistant:8123
 
-    - Immich:
-        icon: immich
-        href: https://immich.jaw.dev
-        description: Photos
-        siteMonitor: http://immich-server:2283
-        widget:
-          type: immich
-          url: http://immich-server:2283
-          key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
-
-    - AdGuard:
-        icon: adguard-home
-        href: http://192.168.4.181
-        description: DNS Ad Blocking
-        siteMonitor: http://192.168.4.181:80
-
-- Systems:
     - Traefik:
         icon: traefik
         href: https://traefik.jaw.dev
