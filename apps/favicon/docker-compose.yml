@@ -24,6 +24,11 @@ services:
         limits:
           cpus: "0.5"
           memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.favicon.rule=Host(`favicon.jaw.dev`)"
@@ -46,6 +51,11 @@ services:
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
       - traefik
+    healthcheck:
+      test: ["CMD-SHELL", "borgmatic --version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -61,6 +71,11 @@ services:
         limits:
           cpus: "0.5"
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   traefik:

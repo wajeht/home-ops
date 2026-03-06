@@ -54,6 +54,11 @@ services:
         limits:
           cpus: "2.0"
           memory: 2G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.paperless-ngx.rule=Host(`paperless.jaw.dev`)"
@@ -95,6 +100,11 @@ services:
         limits:
           cpus: "1.0"
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   paperless-redis:
     image: redis:8-alpine@sha256:fd83658b0e40e2164617d262f13c02ca9ee9e1e6b276fd2fa06617e09bd5c780
@@ -121,6 +131,11 @@ services:
         limits:
           cpus: "0.5"
           memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   paperless-borgmatic:
     container_name: paperless-borgmatic
@@ -142,6 +157,11 @@ services:
     depends_on:
       paperless-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "borgmatic --version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -157,6 +177,11 @@ services:
         limits:
           cpus: "0.5"
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   traefik:

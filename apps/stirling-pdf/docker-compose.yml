@@ -30,6 +30,11 @@ services:
         limits:
           cpus: "2.0"
           memory: 1.5G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.stirling-pdf.rule=Host(`pdf.jaw.dev`)"

@@ -38,9 +38,30 @@ services:
       - "traefik.http.routers.docker-cd.entrypoints=websecure"
       - "traefik.http.services.docker-cd.loadbalancer.server.port=80"
       - "traefik.http.routers.docker-cd.middlewares=google-auth@file"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - traefik
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 networks:
   traefik:

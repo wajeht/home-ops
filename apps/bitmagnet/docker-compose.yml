@@ -34,6 +34,11 @@ services:
         limits:
           cpus: "1.0"
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bitmagnet.rule=Host(`bitmagnet.jaw.dev`)"
@@ -58,6 +63,11 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     cap_drop:
       - ALL
     cap_add:
@@ -95,6 +105,16 @@ services:
       bitmagnet-db:
         condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "borgmatic --version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     cap_drop:
       - ALL
     cap_add:

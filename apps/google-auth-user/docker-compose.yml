@@ -17,9 +17,19 @@ services:
       - INSECURE_COOKIE=true
       - LOG_LEVEL=info
       - WHITELIST=${WHITELIST}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - traefik
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4181"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     cap_drop:
       - ALL
     security_opt:
