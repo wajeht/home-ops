@@ -16,7 +16,13 @@ services:
     image: nginx:1.25
     networks:
       - traefik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
+    init: true
     cap_drop:
       - ALL
     cap_add:
@@ -28,6 +34,16 @@ services:
       - SETUID
     security_opt:
       - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
@@ -43,9 +59,11 @@ networks:
 Use `google-auth@file` for protected apps.
 Omit auth middleware for public apps.
 
-## Security Hardening
+## Container Hardening
 
-All containers must drop all Linux capabilities and disable privilege escalation:
+All containers must include these baseline configurations:
+
+### Security
 
 ```yaml
 cap_drop:
@@ -63,6 +81,83 @@ Most apps need `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` because they do use
 | `SETGID, SETUID`                              | Redis (only needs user switching, no file ownership)       |
 | `DAC_READ_SEARCH, FOWNER, SETGID, SETUID`     | Borgmatic (file reads + crond user switching)              |
 | `NET_ADMIN`                                   | VPN containers (gluetun)                                   |
+
+### Logging
+
+All services must have log rotation to prevent disk fill:
+
+```yaml
+logging:
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+```
+
+### Resource Limits
+
+All services must have CPU and memory limits:
+
+```yaml
+deploy:
+  resources:
+    limits:
+      cpus: "0.5"
+      memory: 256M
+```
+
+### Health Checks
+
+All primary services must have a health check. Use `curl` or `wget` depending on what's available in the image:
+
+```yaml
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
+  interval: 30s
+  timeout: 5s
+  retries: 3
+```
+
+Borgmatic sidecars use:
+
+```yaml
+healthcheck:
+  test: ["CMD-SHELL", "borgmatic --version"]
+  interval: 1m
+  timeout: 10s
+  retries: 3
+```
+
+### Init Process
+
+Add `init: true` for proper signal handling and zombie process reaping. **Do NOT** add this to s6-overlay containers (borgmatic, LinuxServer.io images, homeassistant) — they require being PID 1.
+
+```yaml
+restart: unless-stopped
+init: true # skip for s6-overlay containers
+```
+
+### PostgreSQL Services
+
+Postgres containers should include extra settings for reliability:
+
+```yaml
+shm_size: 256m # prevent shared memory crashes (default 64MB is too low)
+stop_grace_period: 30s # allow time for graceful shutdown
+oom_score_adj: -300 # protect from OOM killer
+```
+
+### OOM Protection
+
+Critical infrastructure gets `oom_score_adj: -500`, databases get `-300`. This ensures the OOM killer targets low-priority app containers first:
+
+```yaml
+# Critical infra (traefik, adguard, docker-cd, google-auth)
+oom_score_adj: -500
+
+# Databases (postgres, redis, clickhouse)
+oom_score_adj: -300
+```
 
 ## Deploy
 
@@ -179,6 +274,36 @@ myapp-db:
     - /home/jaw/data/myapp/db:/var/lib/postgresql/data
   networks:
     - myapp-internal
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -U myapp"]
+    interval: 30s
+    timeout: 5s
+    retries: 3
+  restart: unless-stopped
+  init: true
+  shm_size: 256m
+  stop_grace_period: 30s
+  oom_score_adj: -300
+  cap_drop:
+    - ALL
+  cap_add:
+    - CHOWN
+    - DAC_OVERRIDE
+    - FOWNER
+    - SETGID
+    - SETUID
+  security_opt:
+    - no-new-privileges:true
+  deploy:
+    resources:
+      limits:
+        cpus: "0.5"
+        memory: 256M
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
 ```
 
 ### Per-App Borgmatic (Postgres)
@@ -267,6 +392,11 @@ myapp-borgmatic:
     myapp-db:
       condition: service_healthy
   restart: unless-stopped
+  healthcheck:
+    test: ["CMD-SHELL", "borgmatic --version"]
+    interval: 1m
+    timeout: 10s
+    retries: 3
   cap_drop:
     - ALL
   cap_add:
@@ -281,6 +411,11 @@ myapp-borgmatic:
       limits:
         cpus: "0.5"
         memory: 512M
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
 ```
 
 Add `BORG_PASSPHRASE` to the app's `.env.sops`.
@@ -365,6 +500,11 @@ myapp-borgmatic:
   networks:
     - traefik
   restart: unless-stopped
+  healthcheck:
+    test: ["CMD-SHELL", "borgmatic --version"]
+    interval: 1m
+    timeout: 10s
+    retries: 3
   cap_drop:
     - ALL
   cap_add:
@@ -379,6 +519,11 @@ myapp-borgmatic:
       limits:
         cpus: "0.5"
         memory: 512M
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
 ```
 
 Add `BORG_PASSPHRASE` to the app's `.env.sops`.
