@@ -43,6 +43,11 @@ services:
         limits:
           cpus: "1.0"
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.glitchtip.rule=Host(`glitchtip.jaw.dev`)"
@@ -83,6 +88,11 @@ services:
         limits:
           cpus: "1.0"
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   glitchtip-borgmatic:
     container_name: glitchtip-borgmatic
@@ -105,6 +115,11 @@ services:
     depends_on:
       glitchtip-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "borgmatic --version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -120,6 +135,11 @@ services:
         limits:
           cpus: "0.5"
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   traefik:

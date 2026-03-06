@@ -32,6 +32,11 @@ services:
         limits:
           cpus: "1.0"
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.jaw.dev`)"
@@ -54,6 +59,16 @@ services:
     networks:
       - traefik
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "borgmatic --version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     cap_drop:
       - ALL
     cap_add:

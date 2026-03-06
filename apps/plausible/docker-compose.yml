@@ -34,6 +34,11 @@ services:
         limits:
           cpus: "1.0"
           memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.plausible.rule=Host(`plausible.jaw.dev`)"
@@ -73,6 +78,11 @@ services:
         limits:
           cpus: "1.0"
           memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   plausible-events-db:
     container_name: plausible-events-db
@@ -105,6 +115,11 @@ services:
       nofile:
         soft: 262144
         hard: 262144
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   plausible-borgmatic:
     container_name: plausible-borgmatic
@@ -127,6 +142,11 @@ services:
     depends_on:
       plausible-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "borgmatic --version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -142,6 +162,11 @@ services:
         limits:
           cpus: "0.5"
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   traefik:

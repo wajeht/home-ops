@@ -31,6 +31,11 @@ services:
         limits:
           cpus: "0.5"
           memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   hello-world-db:
     container_name: hello-world-db
@@ -66,6 +71,11 @@ services:
         limits:
           cpus: "0.5"
           memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   hello-world-borgmatic:
     container_name: hello-world-borgmatic
@@ -86,6 +96,11 @@ services:
     depends_on:
       hello-world-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "borgmatic --version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -101,6 +116,11 @@ services:
         limits:
           cpus: "0.5"
           memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   traefik:
