@@ -23,6 +23,11 @@ services:
         limits:
           cpus: "2.0"
           memory: 1024M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   media:

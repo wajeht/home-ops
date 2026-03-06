@@ -15,7 +15,17 @@ services:
       - ./crontab.txt:/etc/borgmatic.d/crontab.txt:ro # force
     networks:
       - traefik
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "borgmatic --version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
     cap_drop:
       - ALL
     cap_add:

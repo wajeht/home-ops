@@ -41,6 +41,11 @@ services:
         limits:
           cpus: "3.0"
           memory: 2G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.renovate-webhook.rule=Host(`renovate.jaw.dev`) && Path(`/webhook`)"

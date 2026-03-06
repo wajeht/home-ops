@@ -27,6 +27,11 @@ services:
         limits:
           cpus: "4.0"
           memory: 4G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.code-server.rule=Host(`code.jaw.dev`)"

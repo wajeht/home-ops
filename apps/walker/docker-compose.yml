@@ -26,6 +26,16 @@ services:
       - NET_BIND_SERVICE
     security_opt:
       - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.walker.rule=Host(`walker.jaw.dev`)"
