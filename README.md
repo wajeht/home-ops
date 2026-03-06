@@ -70,7 +70,7 @@ Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It p
 
 [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~60min via polling). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
 
-All containers are hardened: capabilities dropped (`cap_drop: ALL`), privilege escalation disabled (`no-new-privileges`), with only required capabilities added back per-service. Every service has JSON logging with rotation (`10m`/`3` files), health checks, and resource limits (CPU/memory). Non-s6 containers run with `init: true` for proper signal handling. Databases get `shm_size: 256m` and `stop_grace_period: 30s`. Critical infra (traefik, adguard, docker-cd, auth) and databases have `oom_score_adj` to survive memory pressure. [Borgmatic](https://torsion.org/borgmatic/) handles automated backups — 2 critical apps hourly, rest daily — with database dumps (8 Postgres + 19 SQLite), weekly integrity checks, and ntfy notifications.
+All containers are [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, health checks, and log rotation. [Borgmatic](https://torsion.org/borgmatic/) handles automated backups — 2 critical apps hourly, rest daily — with database dumps (8 Postgres + 19 SQLite), weekly integrity checks, and ntfy notifications.
 
 ## Hardware
 
