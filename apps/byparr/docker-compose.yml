@@ -14,6 +14,7 @@ services:
       retries: 3
       start_period: 30s
     restart: unless-stopped
+    init: true
     cap_drop:
       - ALL
     security_opt:

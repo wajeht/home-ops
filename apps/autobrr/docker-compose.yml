@@ -17,6 +17,7 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    init: true
     cap_drop:
       - ALL
     security_opt:
@@ -37,6 +38,7 @@ services:
       - "traefik.http.routers.autobrr.entrypoints=websecure"
       - "traefik.http.routers.autobrr.middlewares=google-auth@file"
       - "traefik.http.services.autobrr.loadbalancer.server.port=7474"
+
 networks:
   traefik:
     external: true

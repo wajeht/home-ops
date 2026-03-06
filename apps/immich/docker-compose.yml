@@ -39,6 +39,8 @@ services:
       retries: 5
       start_period: 60s
     restart: unless-stopped
+    stop_grace_period: 30s
+    init: true
     cap_drop:
       - ALL
     cap_add:
@@ -89,6 +91,8 @@ services:
       retries: 3
       start_period: 120s
     restart: unless-stopped
+    stop_grace_period: 30s
+    init: true
     cap_drop:
       - ALL
     cap_add:
@@ -129,6 +133,8 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    stop_grace_period: 30s
+    init: true
     cap_drop:
       - ALL
     cap_add:
@@ -161,6 +167,8 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    stop_grace_period: 30s
+    init: true
     cap_drop:
       - ALL
     cap_add:

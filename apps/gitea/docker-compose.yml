@@ -23,6 +23,7 @@ services:
     networks:
       - traefik
     restart: unless-stopped
+    init: true
     cap_drop:
       - ALL
     security_opt:
@@ -64,6 +65,7 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    init: true
     cap_drop:
       - ALL
     cap_add:
