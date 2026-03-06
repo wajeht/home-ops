@@ -1,0 +1,41 @@
+source_directories:
+  - /source/data
+
+exclude_patterns:
+  - "*/borgmatic"
+
+repositories:
+  - path: /repository
+    label: garage
+
+archive_name_format: "garage-{now:%Y-%m-%d-%H%M%S}"
+compression: zstd,3
+
+keep_daily: 7
+keep_weekly: 4
+keep_monthly: 6
+
+checks:
+  - name: repository
+    frequency: 1 week
+  - name: archives
+    frequency: 1 week
+
+check_last: 3
+
+ntfy:
+  topic: borgmatic
+  server: http://ntfy:80
+  finish:
+    title: "garage backup complete"
+    message: "garage backup finished"
+    priority: min
+    tags: white_check_mark
+  fail:
+    title: "garage backup FAILED"
+    message: "garage backup failed"
+    priority: max
+    tags: skull
+  states:
+    - finish
+    - fail
