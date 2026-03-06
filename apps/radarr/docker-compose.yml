@@ -44,6 +44,7 @@ services:
       - "traefik.http.routers.radarr.entrypoints=websecure"
       - "traefik.http.routers.radarr.middlewares=google-auth@file"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+
   radarr-borgmatic:
     container_name: radarr-borgmatic
     image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
