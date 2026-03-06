@@ -82,6 +82,8 @@ services:
       - SETUID
     security_opt:
       - no-new-privileges:true
+    shm_size: 256m
+    oom_score_adj: -300
     deploy:
       resources:
         limits:

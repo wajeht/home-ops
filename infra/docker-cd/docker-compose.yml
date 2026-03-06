@@ -54,6 +54,7 @@ services:
       - NET_BIND_SERVICE
     security_opt:
       - no-new-privileges:true
+    oom_score_adj: -500
     deploy:
       resources:
         limits:

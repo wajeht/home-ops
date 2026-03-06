@@ -145,6 +145,8 @@ services:
       - SETUID
     security_opt:
       - no-new-privileges:true
+    shm_size: 256m
+    oom_score_adj: -300
     deploy:
       resources:
         limits:
@@ -169,6 +171,7 @@ services:
     restart: unless-stopped
     stop_grace_period: 30s
     init: true
+    oom_score_adj: -300
     cap_drop:
       - ALL
     cap_add:
