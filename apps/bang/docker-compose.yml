@@ -15,6 +15,7 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    init: true
     cap_drop:
       - ALL
     cap_add:
@@ -59,6 +60,7 @@ services:
       timeout: 10s
       retries: 3
     restart: unless-stopped
+    init: true
     cap_drop:
       - ALL
     cap_add:
