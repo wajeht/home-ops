@@ -1,0 +1,131 @@
+services:
+  garage:
+    container_name: garage
+    image: dxflrs/garage:v2.2.0@sha256:45a61ce3f7c9c24fc23d9ed2b09b27ed560ab87b34605d175d5c588f539c24e4
+    env_file:
+      - .env
+    volumes:
+      - ./garage.toml:/etc/garage.toml:ro
+      - /home/jaw/data/garage/meta:/var/lib/garage/meta
+      - /home/jaw/data/garage/data:/var/lib/garage/data
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "/garage", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.garage.rule=Host(`s3.jaw.dev`)"
+      - "traefik.http.routers.garage.entrypoints=websecure"
+      - "traefik.http.routers.garage.middlewares=google-auth@file"
+      - "traefik.http.services.garage.loadbalancer.server.port=3900"
+
+  garage-webui:
+    container_name: garage-webui
+    image: khairul169/garage-webui:1.1.0@sha256:17c793551873155065bf9a022dabcde874de808a1f26e648d4b82e168806439c
+    environment:
+      - API_BASE_URL=http://garage:3903
+      - S3_ENDPOINT_URL=http://garage:3900
+      - API_ADMIN_KEY=${GARAGE_ADMIN_TOKEN}
+    env_file:
+      - .env
+    depends_on:
+      garage:
+        condition: service_healthy
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3909/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.garage-webui.rule=Host(`garage.jaw.dev`)"
+      - "traefik.http.routers.garage-webui.entrypoints=websecure"
+      - "traefik.http.routers.garage-webui.middlewares=google-auth@file"
+      - "traefik.http.services.garage-webui.loadbalancer.server.port=3909"
+
+  garage-borgmatic:
+    container_name: garage-borgmatic
+    image: ghcr.io/borgmatic-collective/borgmatic:2.1.2@sha256:961533d6135fd67736e9fee0f7cebc4926b57840d4a210be0a0cf2de6b004996
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/garage:/source/data:ro
+      - /home/jaw/backup/garage:/repository
+      - /home/jaw/data/garage/borgmatic:/borgmatic/state
+      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
+      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD-SHELL", "borgmatic --version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  traefik:
+    external: true
