@@ -42,7 +42,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.garage.rule=Host(`s3.jaw.dev`)"
       - "traefik.http.routers.garage.entrypoints=websecure"
-      - "traefik.http.routers.garage.middlewares=google-auth@file"
+      - "traefik.http.routers.garage.middlewares=rate-limit-global@file"
       - "traefik.http.services.garage.loadbalancer.server.port=3900"
 
   garage-webui:
