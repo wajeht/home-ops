@@ -23,11 +23,6 @@ services:
     networks:
       - traefik
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4181"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
     cap_drop:
       - ALL
     security_opt:
