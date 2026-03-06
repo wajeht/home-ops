@@ -46,6 +46,7 @@ services:
     networks:
       - traefik
     restart: unless-stopped
+    init: true
     cap_drop:
       - ALL
     cap_add:

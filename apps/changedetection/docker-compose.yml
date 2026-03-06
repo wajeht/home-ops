@@ -22,6 +22,7 @@ services:
       retries: 3
       start_period: 30s
     restart: unless-stopped
+    init: true
     cap_drop:
       - ALL
     cap_add:
@@ -48,6 +49,7 @@ services:
       - "traefik.http.routers.changedetection.entrypoints=websecure"
       - "traefik.http.routers.changedetection.middlewares=google-auth@file"
       - "traefik.http.services.changedetection.loadbalancer.server.port=5000"
+
   # Browser for JS-rendered pages
   playwright-chrome:
     container_name: changedetection-playwright-chrome
@@ -64,6 +66,7 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    init: true
     cap_drop:
       - ALL
     security_opt:
