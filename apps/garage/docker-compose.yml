@@ -94,6 +94,9 @@ services:
       - .env
     environment:
       - TZ=America/Chicago
+    depends_on:
+      garage:
+        condition: service_healthy
     volumes:
       - /home/jaw/data/garage:/source/data:ro
       - /home/jaw/backup/garage:/repository
