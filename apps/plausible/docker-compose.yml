@@ -180,3 +180,4 @@ networks:
   traefik:
     external: true
   plausible-internal:
+    internal: true

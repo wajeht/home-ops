@@ -43,6 +43,15 @@ http:
           ipStrategy:
             ipv6Subnet: 64
 
+    rate-limit-api:
+      rateLimit:
+        period: 1s
+        average: 50
+        burst: 100
+        sourceCriterion:
+          ipStrategy:
+            ipv6Subnet: 64
+
     google-auth-forward:
       forwardAuth:
         address: http://google-auth:4181
