@@ -202,6 +202,14 @@ STATIC_DIRS=(
 	"$USER_HOME/.docker"
 )
 
+ensure_external_networks() {
+	# External networks/volumes used across stacks.
+	$SUDO docker network create traefik 2>/dev/null || true
+	$SUDO docker network create backup 2>/dev/null || true
+	$SUDO docker network create media 2>/dev/null || true
+	$SUDO docker volume create traefik-logs 2>/dev/null || true
+}
+
 #=============================================================================
 # SETUP - Create directories
 #=============================================================================
@@ -336,10 +344,7 @@ cmd_install() {
 	cmd_setup
 
 	# Create external networks
-	$SUDO docker network create traefik 2>/dev/null || true
-	$SUDO docker network create backup 2>/dev/null || true
-	$SUDO docker network create media 2>/dev/null || true
-	$SUDO docker volume create traefik-logs 2>/dev/null || true
+	ensure_external_networks
 
 	# Registry auth
 	cd "$REPO_DIR"
@@ -497,6 +502,7 @@ cmd_update_infra() {
 	sync_submodules || warn "Submodule sync failed, continuing"
 
 	docker_relogin
+	ensure_external_networks
 
 	step "1/1" "Redeploying docker-cd..."
 	redeploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
@@ -517,6 +523,7 @@ cmd_update_infra_force() {
 	sync_submodules || warn "Submodule sync failed, continuing"
 
 	docker_relogin
+	ensure_external_networks
 
 	step "1/1" "Force-redeploying docker-cd..."
 	redeploy_compose "$REPO_DIR/infra/docker-cd" docker-cd 1

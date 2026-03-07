@@ -104,7 +104,7 @@ services:
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
-      - traefik
+      - backup
       - zipline-internal
     depends_on:
       zipline-db:
@@ -137,6 +137,8 @@ services:
 
 networks:
   traefik:
+    external: true
+  backup:
     external: true
   zipline-internal:
     internal: true

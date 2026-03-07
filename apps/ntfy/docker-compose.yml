@@ -19,6 +19,7 @@ services:
       - ./templates:/etc/ntfy/templates:ro
     networks:
       - traefik
+      - backup
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/v1/health"]
       interval: 30s
@@ -72,7 +73,7 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - traefik
+      - backup
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "borgmatic --version"]
@@ -96,4 +97,6 @@ services:
 
 networks:
   traefik:
+    external: true
+  backup:
     external: true
