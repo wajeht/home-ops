@@ -21,7 +21,7 @@ services:
     volumes:
       - ./mirror-sync.sh:/scripts/mirror-sync.sh:ro
     networks:
-      - traefik
+      - gitea-internal
     restart: unless-stopped
     init: true
     cap_drop:
@@ -59,6 +59,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     networks:
       - traefik
+      - gitea-internal
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
       interval: 30s
@@ -107,7 +108,7 @@ services:
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
-      - traefik
+      - backup
     healthcheck:
       test: ["CMD-SHELL", "borgmatic --version"]
       interval: 1m
@@ -137,3 +138,6 @@ services:
 networks:
   traefik:
     external: true
+  backup:
+    external: true
+  gitea-internal:

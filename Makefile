@@ -18,11 +18,11 @@ install-fresh:
 uninstall:
 	@./scripts/home-ops.sh uninstall
 
-## update: Redeploy infra (traefik + google-auth + docker-cd)
+## update: Pull latest and redeploy docker-cd
 update:
 	@./scripts/home-ops.sh update-infra
 
-## update-force: Force-recreate infra containers (traefik + google-auth + docker-cd)
+## update-force: Pull latest and force-recreate docker-cd
 update-force:
 	@./scripts/home-ops.sh update-infra-force
 

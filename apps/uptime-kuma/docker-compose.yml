@@ -58,7 +58,7 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - traefik
+      - backup
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "borgmatic --version"]
@@ -82,4 +82,6 @@ services:
 
 networks:
   traefik:
+    external: true
+  backup:
     external: true

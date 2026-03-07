@@ -59,7 +59,7 @@ services:
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
-      - traefik
+      - backup
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "borgmatic --version"]
@@ -88,6 +88,8 @@ services:
 
 networks:
   traefik:
+    external: true
+  backup:
     external: true
   media:
     external: true

@@ -105,7 +105,7 @@ services:
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
-      - traefik
+      - backup
       - bitmagnet-internal
     depends_on:
       bitmagnet-db:
@@ -138,6 +138,8 @@ services:
 
 networks:
   traefik:
+    external: true
+  backup:
     external: true
   bitmagnet-internal:
     internal: true

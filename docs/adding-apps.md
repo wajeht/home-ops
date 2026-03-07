@@ -368,7 +368,7 @@ Create `apps/myapp/borgmatic-crontab.txt` (pick a unique time slot, add human-re
 0 1 * * * PATH=$PATH:/usr/local/bin /usr/local/bin/borgmatic --verbosity -2 --syslog-verbosity 1
 ```
 
-Add borgmatic service to `docker-compose.yml` (must join app's internal network for DB access):
+Add borgmatic service to `docker-compose.yml` (must join `backup` for ntfy notifications and app internal network for DB access):
 
 ```yaml
 myapp-borgmatic:
@@ -386,7 +386,7 @@ myapp-borgmatic:
     - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
     - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
   networks:
-    - traefik
+    - backup
     - myapp-internal
   depends_on:
     myapp-db:
@@ -498,7 +498,7 @@ myapp-borgmatic:
     - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
     - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
   networks:
-    - traefik
+    - backup
   restart: unless-stopped
   healthcheck:
     test: ["CMD-SHELL", "borgmatic --version"]

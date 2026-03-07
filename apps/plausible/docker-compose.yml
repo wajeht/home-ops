@@ -145,7 +145,7 @@ services:
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
     networks:
-      - traefik
+      - backup
       - plausible-internal
     depends_on:
       plausible-db:
@@ -178,6 +178,8 @@ services:
 
 networks:
   traefik:
+    external: true
+  backup:
     external: true
   plausible-internal:
     internal: true

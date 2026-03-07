@@ -11,5 +11,5 @@ Core services that other apps depend on.
 Managed via `./scripts/home-ops.sh`:
 
 - `install` — first-time deploy of all infra + apps
-- `update-infra` — pull latest and redeploy traefik + google-auth + docker-cd
-- `update-infra-force` — same but force-recreate containers
+- `update-infra` — pull latest and redeploy docker-cd
+- `update-infra-force` — same but force-recreate docker-cd
