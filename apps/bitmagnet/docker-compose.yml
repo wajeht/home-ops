@@ -140,3 +140,4 @@ networks:
   traefik:
     external: true
   bitmagnet-internal:
+    internal: true

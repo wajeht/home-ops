@@ -28,6 +28,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.docker-cd-api.rule=Host(`cd.jaw.dev`) && PathPrefix(`/api/`)"
       - "traefik.http.routers.docker-cd-api.entrypoints=websecure"
+      - "traefik.http.routers.docker-cd-api.middlewares=rate-limit-api@file"
       - "traefik.http.services.docker-cd.loadbalancer.server.port=80"
       - "traefik.http.routers.docker-cd-api.priority=100"
       - "traefik.http.routers.docker-cd-badges.rule=Host(`cd.jaw.dev`) && PathPrefix(`/badges/`)"

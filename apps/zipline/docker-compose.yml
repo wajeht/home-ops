@@ -139,3 +139,4 @@ networks:
   traefik:
     external: true
   zipline-internal:
+    internal: true

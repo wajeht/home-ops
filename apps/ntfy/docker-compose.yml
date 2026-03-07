@@ -51,6 +51,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.ntfy.rule=Host(`ntfy.jaw.dev`)"
       - "traefik.http.routers.ntfy.entrypoints=websecure"
+      - "traefik.http.routers.ntfy.middlewares=rate-limit-api@file"
       - "traefik.http.services.ntfy.loadbalancer.server.port=80"
   ntfy-borgmatic:
     container_name: ntfy-borgmatic
