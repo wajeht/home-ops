@@ -1,3 +1,4 @@
+# force
 services:
   miniflux:
     container_name: miniflux
