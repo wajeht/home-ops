@@ -13,20 +13,20 @@ shfmt -d -i 0 -ci scripts/*.sh || fail=1
 
 # Shellcheck
 echo "Checking shell scripts..."
-shellcheck -x scripts/home-ops.sh || fail=1
+shellcheck -x scripts/home-ops.sh scripts/lint.sh || fail=1
 
 # SOPS encryption
 echo "Checking SOPS encryption..."
-for f in $(find . -name '.env.sops' -not -path './.git/*' -not -path './apps/adguard/*'); do
+while IFS= read -r -d '' f; do
 	if ! grep -q 'sops_mac=' "$f"; then
 		echo "ERROR: $f is not SOPS-encrypted"
 		fail=1
 	fi
-done
+done < <(find . -name '.env.sops' -not -path './.git/*' -not -path './apps/adguard/*' -print0)
 
 # Container hardening
 echo "Checking container hardening..."
-for f in $(find apps -name 'docker-compose.yml'); do
+while IFS= read -r -d '' f; do
 	if ! grep -q 'cap_drop' "$f"; then
 		echo "ERROR: $f missing cap_drop: [ALL]"
 		fail=1
@@ -35,17 +35,17 @@ for f in $(find apps -name 'docker-compose.yml'); do
 		echo "ERROR: $f missing security_opt: no-new-privileges"
 		fail=1
 	fi
-done
+done < <(find apps -name 'docker-compose.yml' -print0)
 
 # Compose syntax
 echo "Checking compose files..."
-tmp_env=$(mktemp)
-trap 'rm -f "$tmp_env"' EXIT
-for f in $(find . -name 'docker-compose.yml' -not -path './.git/*' -not -path './apps/adguard/*'); do
-	if ! docker compose --env-file "$tmp_env" -f "$f" config -q 2>/dev/null; then
+while IFS= read -r -d '' f; do
+	dir=$(dirname "$f")
+	touch "$dir/.env"
+	if ! docker compose -f "$f" config -q 2>/dev/null; then
 		echo "ERROR: $f is invalid"
 		fail=1
 	fi
-done
+done < <(find . -name 'docker-compose.yml' -not -path './.git/*' -not -path './apps/adguard/*' -print0)
 
 exit $fail
