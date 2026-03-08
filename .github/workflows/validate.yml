@@ -12,36 +12,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 25
-      - run: make lint
-
-  sops:
-    runs-on: [self-hosted, linux, default]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check .env.sops files are encrypted
-        run: |
-          fail=0
-          for f in $(find . -name '.env.sops' -not -path './.git/*'); do
-            if ! grep -q 'sops_mac=' "$f"; then
-              echo "::error file=$f::Not SOPS-encrypted"
-              fail=1
-            fi
-          done
-          exit $fail
-
-  compose:
-    runs-on: [self-hosted, linux, default]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validate compose files
-        run: |
-          fail=0
-          for f in $(find . -name 'docker-compose.yml' -not -path './.git/*'); do
-            dir=$(dirname "$f")
-            touch "$dir/.env"
-            if ! docker compose -f "$f" config -q 2>/dev/null; then
-              echo "::error file=$f::Invalid compose file"
-              fail=1
-            fi
-          done
-          exit $fail
+      - run: ./scripts/lint.sh

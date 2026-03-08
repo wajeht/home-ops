@@ -262,13 +262,21 @@ nfs_mount() {
 	fi
 	info "Mounting $name: $NAS_IP:$nas_path -> $local_path"
 	mkdir -p "$local_path"
-	$SUDO mount -t nfs "$NAS_IP:$nas_path" "$local_path" && ok "$name" || err "$name failed"
+	if $SUDO mount -t nfs "$NAS_IP:$nas_path" "$local_path"; then
+		ok "$name"
+	else
+		err "$name failed"
+	fi
 }
 
 nfs_unmount() {
 	local name=$1 nas_path=$2 local_path=$3
 	info "Unmounting $name: $local_path"
-	$SUDO umount "$local_path" 2>/dev/null && ok "$name" || dim "Not mounted"
+	if $SUDO umount "$local_path" 2>/dev/null; then
+		ok "$name"
+	else
+		dim "Not mounted"
+	fi
 }
 
 nfs_status() {
@@ -292,9 +300,9 @@ cmd_nfs() {
 		IFS='|' read -r name nas_path local_path <<<"$mount"
 		if [[ "$target" == "all" || "$target" == "$name" ]]; then
 			case "$action" in
-			mount) nfs_mount "$name" "$nas_path" "$local_path" ;;
-			unmount | umount) nfs_unmount "$name" "$nas_path" "$local_path" ;;
-			status) nfs_status "$name" "$nas_path" "$local_path" ;;
+				mount) nfs_mount "$name" "$nas_path" "$local_path" ;;
+				unmount | umount) nfs_unmount "$name" "$nas_path" "$local_path" ;;
+				status) nfs_status "$name" "$nas_path" "$local_path" ;;
 			esac
 		fi
 	done
@@ -447,7 +455,7 @@ cmd_uninstall() {
 	cd "$USER_HOME"
 
 	step "3/4" "Removing networks..."
-	for i in 1 2 3; do
+	for _ in 1 2 3; do
 		$SUDO docker network prune -f 2>/dev/null || true
 		$SUDO docker network rm traefik 2>/dev/null || true
 		$SUDO docker network rm backup 2>/dev/null || true
@@ -621,6 +629,7 @@ cmd_update_submodules() {
 	}
 
 	local updated=0
+	# shellcheck disable=SC2016
 	git submodule foreach --quiet 'echo $sm_path' | while read -r sm_path; do
 		local name
 		name=$(basename "$sm_path")
@@ -643,73 +652,73 @@ cmd_update_submodules() {
 # MAIN
 #=============================================================================
 case "${1:-}" in
-setup)
-	cmd_setup
-	;;
-nfs)
-	shift
-	cmd_nfs "$@"
-	;;
-install)
-	cmd_install
-	;;
-install-fresh)
-	cmd_install_fresh
-	;;
-uninstall)
-	cmd_uninstall
-	;;
-status)
-	cmd_status
-	;;
-relogin)
-	cmd_relogin
-	;;
-update-infra)
-	cmd_update_infra
-	;;
-update-infra-force)
-	cmd_update_infra_force
-	;;
-borgmatic-init)
-	cmd_borgmatic_init
-	;;
-borgmatic-backup)
-	shift
-	cmd_borgmatic_backup "$@"
-	;;
-update-submodules)
-	cmd_update_submodules
-	;;
-*)
-	echo -e "${BOLD}home-ops${NC} management script"
-	echo ""
-	echo -e "Usage: ${CYAN}$0${NC} <command> [args]"
-	echo ""
-	echo -e "${BOLD}Commands:${NC}"
-	echo -e "  ${GREEN}setup${NC}                    Create all data directories"
-	echo -e "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
-	echo -e "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
-	echo -e "  ${GREEN}nfs status${NC}               Show NFS mount status"
-	echo -e "  ${GREEN}install${NC}                  Deploy all services"
-	echo -e "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
-	echo -e "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
-	echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
-	echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
-	echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
-	echo -e "  ${GREEN}borgmatic-init${NC}           Initialize borg repos for all borgmatic containers"
-	echo -e "  ${GREEN}borgmatic-backup${NC} [app]    Run backup (all or single app)"
-	echo -e "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
-	echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
-	echo ""
-	echo -e "${BOLD}Examples:${NC}"
-	echo -e "  ${DIM}$0 setup${NC}                 # Create directories"
-	echo -e "  ${DIM}$0 nfs mount${NC}             # Mount all NFS shares"
-	echo -e "  ${DIM}$0 nfs mount plex${NC}        # Mount only plex"
-	echo -e "  ${DIM}$0 install${NC}               # Deploy everything"
-	echo -e "  ${DIM}$0 install-fresh${NC}         # Force full docker-cd app reconcile"
-	echo -e "  ${DIM}$0 update-infra-force${NC}    # Force-recreate infra containers"
-	echo -e "  ${DIM}$0 status${NC}                # Show status"
-	exit 1
-	;;
+	setup)
+		cmd_setup
+		;;
+	nfs)
+		shift
+		cmd_nfs "$@"
+		;;
+	install)
+		cmd_install
+		;;
+	install-fresh)
+		cmd_install_fresh
+		;;
+	uninstall)
+		cmd_uninstall
+		;;
+	status)
+		cmd_status
+		;;
+	relogin)
+		cmd_relogin
+		;;
+	update-infra)
+		cmd_update_infra
+		;;
+	update-infra-force)
+		cmd_update_infra_force
+		;;
+	borgmatic-init)
+		cmd_borgmatic_init
+		;;
+	borgmatic-backup)
+		shift
+		cmd_borgmatic_backup "$@"
+		;;
+	update-submodules)
+		cmd_update_submodules
+		;;
+	*)
+		echo -e "${BOLD}home-ops${NC} management script"
+		echo ""
+		echo -e "Usage: ${CYAN}$0${NC} <command> [args]"
+		echo ""
+		echo -e "${BOLD}Commands:${NC}"
+		echo -e "  ${GREEN}setup${NC}                    Create all data directories"
+		echo -e "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
+		echo -e "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
+		echo -e "  ${GREEN}nfs status${NC}               Show NFS mount status"
+		echo -e "  ${GREEN}install${NC}                  Deploy all services"
+		echo -e "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
+		echo -e "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
+		echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
+		echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
+		echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
+		echo -e "  ${GREEN}borgmatic-init${NC}           Initialize borg repos for all borgmatic containers"
+		echo -e "  ${GREEN}borgmatic-backup${NC} [app]    Run backup (all or single app)"
+		echo -e "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
+		echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
+		echo ""
+		echo -e "${BOLD}Examples:${NC}"
+		echo -e "  ${DIM}$0 setup${NC}                 # Create directories"
+		echo -e "  ${DIM}$0 nfs mount${NC}             # Mount all NFS shares"
+		echo -e "  ${DIM}$0 nfs mount plex${NC}        # Mount only plex"
+		echo -e "  ${DIM}$0 install${NC}               # Deploy everything"
+		echo -e "  ${DIM}$0 install-fresh${NC}         # Force full docker-cd app reconcile"
+		echo -e "  ${DIM}$0 update-infra-force${NC}    # Force-recreate infra containers"
+		echo -e "  ${DIM}$0 status${NC}                # Show status"
+		exit 1
+		;;
 esac
