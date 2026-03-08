@@ -16,9 +16,6 @@ services:
       retries: 3
     restart: unless-stopped
     init: true
-    read_only: true
-    tmpfs:
-      - /tmp
     cap_drop:
       - ALL
     cap_add:
