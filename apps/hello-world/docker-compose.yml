@@ -1,4 +1,3 @@
-# force
 services:
   hello-world:
     image: ghcr.io/wajeht/hello-world:e33b264
