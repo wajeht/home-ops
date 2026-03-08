@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint push fix-git clean update-submodules help
+.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint push fix-git clean update-submodules resources help
 
 ## setup: Create all data directories
 setup:
@@ -81,6 +81,10 @@ clean:
 	@docker system prune -a -f
 	@docker volume prune -f
 	@docker network prune -f
+
+## resources: Report total CPU/memory limits across all stacks
+resources:
+	@./scripts/check-resources.sh
 
 ## help: Show available make targets
 help:
