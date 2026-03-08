@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint validate push fix-git clean update-submodules help
+.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint push fix-git clean update-submodules help
 
 ## setup: Create all data directories
 setup:
@@ -46,37 +46,19 @@ borgmatic-backup:
 borgmatic-backup-%:
 	@./scripts/home-ops.sh borgmatic-backup $*
 
-## format: Format YAML/Markdown/JSON files
+## format: Format YAML/Markdown/JSON/Shell files
 format:
 	@npx oxfmt "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
+	@shfmt -w -i 0 -ci scripts/*.sh
 
-## lint: Check formatting
+## lint: Check formatting + shellcheck + SOPS + hardening + compose syntax
 lint:
-	@npx oxfmt --check "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
+	@./scripts/lint.sh
 
-## validate: Validate encryption + docker compose files
-validate: lint
-	@fail=0; \
-	tmp_env=$$(mktemp); \
-	trap 'rm -f "$$tmp_env"' EXIT; \
-	for f in $$(find . -name '.env.sops' -not -path './.git/*' -not -path './apps/adguard/*'); do \
-		if ! grep -q 'sops_mac=' "$$f"; then \
-			echo "ERROR: $$f is not SOPS-encrypted"; \
-			fail=1; \
-		fi; \
-	done; \
-	for f in $$(find . -name 'docker-compose.yml' -not -path './.git/*' -not -path './apps/adguard/*'); do \
-		if ! docker compose --env-file "$$tmp_env" -f "$$f" config -q 2>/dev/null; then \
-			echo "ERROR: $$f is invalid"; \
-			fail=1; \
-		fi; \
-	done; \
-	exit $$fail
-
-## push: Format, validate, commit, and push changes
+## push: Format, lint, commit, and push changes
 push:
 	@$(MAKE) format
-	@$(MAKE) validate
+	@$(MAKE) lint
 	@git add -A
 	@curl -s https://commit.jaw.dev/ | sh -s -- --no-verify
 	@git push --no-verify
