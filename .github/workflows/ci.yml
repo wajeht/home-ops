@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: [self-hosted, linux, default]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 25
+      - run: ./scripts/lint.sh
+
+  sync:
+    if: github.event_name == 'push'
+    needs: lint
+    runs-on: [self-hosted, linux, default]
+    steps:
+      - name: Trigger docker-cd sync
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${{ secrets.DOCKER_CD_API_SECRET }}" \
+            "${{ secrets.DOCKER_CD_URL }}/api/sync" | jq .
