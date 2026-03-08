@@ -9,12 +9,18 @@ Renovate automatically creates PRs when third-party Docker image versions are av
 ```
 new third-party image tag available
     ↓
-Renovate detects new version
+Renovate detects new version (every 3 hours)
     ↓
-creates PR for review
+waits for minimumReleaseAge (patch: 0d, minor: 1d, major: 3d)
     ↓
-merge PR → docker-cd deploys
+creates PR
+    ↓
+CI passes → GitHub auto-merges (patch/minor/digest)
+    ↓
+docker-cd deploys
 ```
+
+Major updates require manual review and merge.
 
 ## Configuration
 
@@ -58,6 +64,19 @@ merge PR → docker-cd deploys
 | ------------------ | ----------------------------- |
 | `ghcr.io/wajeht/*` | Ignored (uses instant deploy) |
 | Third-party images | Creates PR for review         |
+
+## Auto-Merge
+
+Shared config: [wajeht/renovate-config](https://github.com/wajeht/renovate-config)
+
+| Update | Release Age | Auto-Merge |
+| ------ | ----------- | ---------- |
+| Patch  | 0 days      | Yes (PR)   |
+| Minor  | 1 day       | Yes (PR)   |
+| Major  | 3 days      | No         |
+| Digest | 0 days      | Yes (PR)   |
+
+Requires `platformAutomerge: true` + GitHub branch protection with required status checks. Without branch protection, auto-merge won't trigger.
 
 ## Troubleshooting
 
