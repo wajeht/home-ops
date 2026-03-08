@@ -3,14 +3,6 @@ set -euo pipefail
 
 fail=0
 
-# Formatting
-echo "Checking formatting..."
-npx oxfmt --check "**/*.{yml,yaml,md,json}" '!apps/adguard/**' || fail=1
-
-# Shell formatting
-echo "Checking shell formatting..."
-shfmt -d -i 0 -ci scripts/*.sh || fail=1
-
 # Shellcheck
 echo "Checking shell scripts..."
 shellcheck -x scripts/home-ops.sh scripts/lint.sh || fail=1

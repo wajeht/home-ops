@@ -18,6 +18,10 @@ jobs:
         run: |
           command -v shellcheck &>/dev/null || sudo apt-get install -y shellcheck
           command -v shfmt &>/dev/null || sudo apt-get install -y shfmt
+      - name: Check formatting
+        run: |
+          npx oxfmt --check "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
+          shfmt -d -i 0 -ci scripts/*.sh
       - run: ./scripts/lint.sh
 
   sync:
