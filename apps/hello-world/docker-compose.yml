@@ -133,3 +133,4 @@ networks:
   backup:
     external: true
   internal:
+    internal: true
