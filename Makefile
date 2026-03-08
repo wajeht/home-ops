@@ -59,6 +59,7 @@ lint:
 push:
 	@$(MAKE) format
 	@$(MAKE) lint
+	@$(MAKE) resources
 	@git add -A
 	@curl -s https://commit.jaw.dev/ | sh -s -- --no-verify
 	@git push --no-verify
