@@ -432,9 +432,9 @@ cmd_uninstall() {
 
 	# Stop core infra first to prevent re-deployments.
 	step "1/4" "Stopping core infra..."
-	cd "$REPO_DIR/infra/docker-cd" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
-	cd "$REPO_DIR/apps/google-auth" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
-	cd "$REPO_DIR/apps/traefik" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null || true
+	(cd "$REPO_DIR/infra/docker-cd" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null) || true
+	(cd "$REPO_DIR/apps/google-auth" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null) || true
+	(cd "$REPO_DIR/apps/traefik" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null) || true
 
 	# Best-effort submodule sync so uninstall also sees submodule apps.
 	if [ -f "$REPO_DIR/.gitmodules" ] && command -v git &>/dev/null; then
@@ -449,7 +449,7 @@ cmd_uninstall() {
 	for dir in "$REPO_DIR"/apps/*/; do
 		if [ -f "$dir/docker-compose.yml" ]; then
 			dim "Stopping $(basename "$dir")..."
-			cd "$dir" && $SUDO docker compose down -v 2>/dev/null || true
+			(cd "$dir" && $SUDO docker compose down -v 2>/dev/null) || true
 		fi
 	done
 	cd "$USER_HOME"
