@@ -6,11 +6,7 @@ services:
       - /home/jaw/data/homeassistant:/config
     environment:
       - TZ=America/Chicago
-    ports:
-      - "8123:8123"
-      - "21064:21064"
-    networks:
-      - traefik
+    network_mode: host
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123"]
       interval: 30s
@@ -42,7 +38,7 @@ services:
       - "traefik.http.routers.homeassistant.rule=Host(`ha.jaw.dev`)"
       - "traefik.http.routers.homeassistant.entrypoints=websecure"
       - "traefik.http.routers.homeassistant.middlewares=google-auth@file"
-      - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+      - "traefik.http.services.homeassistant.loadbalancer.server.url=http://192.168.4.161:8123"
 
   homeassistant-borgmatic:
     container_name: homeassistant-borgmatic
@@ -86,7 +82,5 @@ services:
         max-file: "3"
 
 networks:
-  traefik:
-    external: true
   backup:
     external: true
