@@ -63,6 +63,7 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+      - /mosquitto/log
     cap_drop:
       - ALL
     security_opt:
@@ -73,9 +74,9 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-i", "healthcheck", "-W", "3"]
+      test: ["CMD", "mosquitto_pub", "-t", "healthcheck", "-m", "ok", "-i", "healthcheck"]
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       retries: 3
       start_period: 10s
     deploy:
