@@ -60,6 +60,8 @@ services:
     container_name: mosquitto
     restart: unless-stopped
     init: true
+    ports:
+      - "1883:1883"
     tmpfs:
       - /tmp
     cap_drop:
