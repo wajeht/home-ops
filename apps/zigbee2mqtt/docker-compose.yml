@@ -60,12 +60,16 @@ services:
     container_name: mosquitto
     restart: unless-stopped
     init: true
-    read_only: true
     tmpfs:
       - /tmp
-      - /mosquitto/log
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
     security_opt:
       - no-new-privileges:true
     volumes:
