@@ -66,7 +66,7 @@ services:
       - backup
     healthcheck:
       test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 1m
+      interval: 30s
       timeout: 10s
       retries: 3
     restart: unless-stopped
