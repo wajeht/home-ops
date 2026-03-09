@@ -1,7 +1,7 @@
 services:
   plausible:
     container_name: plausible
-    image: ghcr.io/plausible/community-edition:v2.1.5@sha256:1f9d3fb861e10cc9ac9643a94ce5938eb17e7553ecac76941e94abe58ffc5621
+    image: ghcr.io/plausible/community-edition:v3.2.0@sha256:3d8af8d4a1be32c3dcc5e8dc01496639d945edd9963827e18abe984dd6bda086
     command: sh -c "/entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
     env_file:
       - .env
