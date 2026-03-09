@@ -131,7 +131,7 @@ Borgmatic sidecars use:
 ```yaml
 healthcheck:
   test: ["CMD-SHELL", "borgmatic --version"]
-  interval: 1m
+  interval: 30s
   timeout: 10s
   retries: 3
 ```
@@ -402,7 +402,7 @@ myapp-borgmatic:
   restart: unless-stopped
   healthcheck:
     test: ["CMD-SHELL", "borgmatic --version"]
-    interval: 1m
+    interval: 30s
     timeout: 10s
     retries: 3
   cap_drop:
@@ -510,7 +510,7 @@ myapp-borgmatic:
   restart: unless-stopped
   healthcheck:
     test: ["CMD-SHELL", "borgmatic --version"]
-    interval: 1m
+    interval: 30s
     timeout: 10s
     retries: 3
   cap_drop:
