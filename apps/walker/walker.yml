@@ -2,4 +2,4 @@ repos:
   - repo: wajeht/home-ops
     pools:
       - name: default
-        runners: 8
+        runners: 0
