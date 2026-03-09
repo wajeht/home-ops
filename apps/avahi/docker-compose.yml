@@ -2,7 +2,6 @@ services:
   avahi:
     container_name: avahi
     image: flungo/avahi:latest@sha256:803451d0200610298d30d3151240f47c5de4d6558f6a3a36340692048cdf28e0
-    network_mode: host
     environment:
       - REFLECTOR_ENABLE_REFLECTOR=yes
       - SERVER_USE_IPV4=yes
@@ -25,6 +24,9 @@ services:
       - NET_RAW
     security_opt:
       - no-new-privileges:true
+    networks:
+      - traefik
+      - lan
     deploy:
       resources:
         limits:
@@ -35,3 +37,16 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+networks:
+  traefik:
+    external: true
+  lan:
+    driver: macvlan
+    driver_opts:
+      parent: enp0s31f6
+    ipam:
+      config:
+        - subnet: 192.168.4.0/24
+          gateway: 192.168.4.1
+          ip_range: 192.168.4.200/30
