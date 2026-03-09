@@ -116,7 +116,7 @@ services:
 
   immich-db:
     container_name: immich-db
-    image: ghcr.io/immich-app/postgres:15-vectorchord0.3.0-pgvectors0.2.0@sha256:e4f336e5098a278bca43641ae118435dde58b2d9d3029effc682dc35f9fbb488
+    image: ghcr.io/immich-app/postgres:16-vectorchord0.3.0-pgvectors0.2.0@sha256:5b434f184ec644c4e1a4076e2e7d4bee45631646a52e956b5ff74ac51e79cc00
     env_file:
       - .env
     environment:
