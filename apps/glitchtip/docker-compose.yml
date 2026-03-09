@@ -1,7 +1,7 @@
 services:
   glitchtip:
     container_name: glitchtip
-    image: glitchtip/glitchtip:6@sha256:b896187991b80a203c42dcb940064f340225eb84a2beced106c5ef80db44bfc6
+    image: glitchtip/glitchtip:6@sha256:6a52f2854c93833d8eb06584d0b7aaddbb50d822c1bf26a545967affb4e40853
     env_file:
       - .env
     environment:
