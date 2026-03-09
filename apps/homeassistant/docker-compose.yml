@@ -6,6 +6,8 @@ services:
       - /home/jaw/data/homeassistant:/config
     environment:
       - TZ=America/Chicago
+    ports:
+      - "8123:8123"
     networks:
       - traefik
     healthcheck:
