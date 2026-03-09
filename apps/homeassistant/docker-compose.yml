@@ -8,7 +8,6 @@ services:
       - TZ=America/Chicago
     ports:
       - "8123:8123"
-      - "21064:21064"
     networks:
       - traefik
     healthcheck:
