@@ -200,6 +200,12 @@
         description: Auth Gateway
         siteMonitor: http://authelia:9091
 
+    - Zigbee2MQTT:
+        icon: zigbee2mqtt
+        href: https://z2m.jaw.dev
+        description: Zigbee Bridge
+        siteMonitor: http://zigbee2mqtt:8080
+
     - DDNS Updater:
         icon: mdi-dns
         href: https://ddns.jaw.dev
@@ -377,6 +383,12 @@
         href: https://linx.jaw.dev
         description: File Sharing
         siteMonitor: http://linx:8080
+
+    - Garage:
+        icon: mdi-garage
+        href: https://garage.jaw.dev
+        description: S3 Storage
+        siteMonitor: http://garage-webui:3909
 
 - Dev:
     - Code Server:
