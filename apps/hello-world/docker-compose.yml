@@ -1,7 +1,7 @@
 # force
 services:
   hello-world:
-    image: ghcr.io/wajeht/hello-world:c3225ee
+    image: ghcr.io/wajeht/hello-world:a3b965f
     env_file:
       - .env
     networks:
