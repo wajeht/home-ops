@@ -51,11 +51,16 @@ flowchart LR
             zigbee{{Zigbee Gateway}}
         end
 
+        subgraph tplink[TP-Link TL-SG608P]
+            poe{{PoE Switch}}
+        end
+
         nfs -->|NFS| apps
         adguard -->|DNS| unifi
         unifi --> nfs
-        unifi -->|PoE| zigbee
-        unifi -->|PoE| adguard
+        unifi --> poe
+        poe -->|PoE| zigbee
+        poe -->|PoE| adguard
         zigbee -->|Zigbee| apps
     end
 
@@ -71,6 +76,7 @@ flowchart LR
     style adguard fill:#d4f0d7,stroke:#68bc71,color:#333
     style unifi fill:#cce0f5,stroke:#0559c9,color:#333
     style zigbee fill:#f5e6ff,stroke:#9b59b6,color:#333
+    style poe fill:#fff3e0,stroke:#e67e22,color:#333
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It polls every 5 min or instantly via `/api/sync` webhook, auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates.
