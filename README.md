@@ -15,19 +15,20 @@ GitOps-driven homelab running on Docker Compose
 
 ```mermaid
 flowchart LR
-    subgraph app_repo[App Repos]
+    subgraph app_repo[github.com/wajeht/*]
         app_push([git push])
         app_renovate([Renovate])
     end
 
-    subgraph ops_repo[home-ops]
+    subgraph ops_repo[github.com/wajeht/home-ops]
         ops_push([git push])
         ops_renovate([Renovate])
+        github[(repo)]
     end
 
     app_push --> ci{{GitHub Actions}} -->|build + push| ghcr[(GHCR)]
     app_renovate -->|update deps| ci
-    ci -->|update tag| github[(home-ops)]
+    ci -->|update tag| github
     ops_push --> github
     ops_renovate -->|update images| github
     github -->|/api/sync| cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| traefik -->|proxy| apps
