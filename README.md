@@ -18,14 +18,14 @@ flowchart LR
     subgraph app_repo["GitHub — custom-repo"]
         app_push([git push])
         app_renovate([Renovate])
-        ci{{GitHub Actions}}
+        ci[GitHub Actions]
         ghcr[(GHCR)]
     end
 
     subgraph ops_repo["GitHub — home-ops"]
         ops_push([git push])
         ops_renovate([Renovate])
-        ops_ci{{GitHub Actions}}
+        ops_ci[GitHub Actions]
     end
 
     app_push --> ci -->|build + push| ghcr
@@ -92,6 +92,11 @@ flowchart LR
     style zigbee fill:#f5e6ff,stroke:#9b59b6,color:#333
     style poe fill:#d1d5db,stroke:#6b7280,color:#333
     style ap fill:#cce0f5,stroke:#0559c9,color:#333
+    style traefik fill:#e0f2fe,stroke:#0284c7,color:#333
+    style docker_cd fill:#dbeafe,stroke:#2563eb,color:#333
+    style google_auth fill:#fef3c7,stroke:#d97706,color:#333
+    style apps fill:#f0fdf4,stroke:#16a34a,color:#333
+    style nfs fill:#e0e7ff,stroke:#4f46e5,color:#333
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It polls every 5 min or instantly via `/api/sync` webhook, auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates.
