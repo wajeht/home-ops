@@ -136,12 +136,6 @@ Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It p
 
 All containers are [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, health checks, and log rotation. [Borgmatic](https://torsion.org/borgmatic/) handles automated backups — 2 critical apps hourly, rest daily — with database dumps (8 Postgres + 19 SQLite), weekly integrity checks, and ntfy notifications.
 
-**Security Layers** — every request passes through multiple layers of protection:
-
-- **Cloudflare**: WAF, region blocking, DDoS protection, bot management, SSL termination
-- **UniFi Cloud Gateway**: Region blocking, IDS/IPS, threat management, Cloudflare-only firewall rules
-- **Traefik**: Google OAuth forward-auth, rate limiting, auto TLS via DNS challenge
-
 ## Hardware
 
 | Device                                                                                                                                                                                                                                                           | RAM  | Storage  | OS              | Function       |
