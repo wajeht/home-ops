@@ -18,20 +18,22 @@ flowchart LR
     subgraph app_repo[github.com/wajeht/*]
         app_push([git push])
         app_renovate([Renovate])
+        ci{{GitHub Actions}}
+        ghcr[(GHCR)]
     end
 
     subgraph ops_repo[github.com/wajeht/home-ops]
         ops_push([git push])
         ops_renovate([Renovate])
-        github[(repo)]
+        ops_ci{{GitHub Actions}}
     end
 
-    app_push --> ci{{GitHub Actions}} -->|build + push| ghcr[(GHCR)]
+    app_push --> ci -->|build + push| ghcr
     app_renovate -->|update deps| ci
-    ci -->|update tag| github
-    ops_push --> github
-    ops_renovate -->|update images| github
-    github -->|/api/sync| cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| traefik -->|proxy| apps
+    ci -->|update tag| ops_ci
+    ops_push --> ops_ci
+    ops_renovate -->|update images| ops_ci
+    ops_ci -->|/api/sync| cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| traefik -->|proxy| apps
 
     subgraph infra[Infra]
         subgraph dell[Dell OptiPlex 7050 Micro]
@@ -80,9 +82,9 @@ flowchart LR
     style ops_repo fill:#e8f4fd,stroke:#4a90d9
     style infra fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
     style cf fill:#fde8d0,stroke:#f6821f,color:#333
-    style github fill:#d1d5db,stroke:#24292e,color:#333
     style ghcr fill:#d1d5db,stroke:#24292e,color:#333
-    style ci fill:#d1d5db,stroke:#24292e,color:#333
+    classDef gha fill:#d1d5db,stroke:#24292e,color:#333
+    class ci,ops_ci gha
     style app_renovate fill:#d5d7f2,stroke:#1a1f6c,color:#333
     style ops_renovate fill:#d5d7f2,stroke:#1a1f6c,color:#333
     style adguard fill:#d4f0d7,stroke:#68bc71,color:#333
