@@ -15,17 +15,21 @@ GitOps-driven homelab running on Docker Compose
 
 ```mermaid
 flowchart LR
-    subgraph triggers[Triggers]
-        app_push([App: git push])
-        ops_push([home-ops: git push])
-        renovate([Renovate])
+    subgraph app_repo[App Repos]
+        app_push([git push])
+        app_renovate([Renovate])
+    end
+
+    subgraph ops_repo[home-ops]
+        ops_push([git push])
+        ops_renovate([Renovate])
     end
 
     app_push --> ci[GitHub Actions] -->|build + push| ghcr[(GHCR)]
-    ghcr -->|push image| github((GitHub))
-    ci -->|update tag| github
-    ops_push --> ci
-    renovate -->|auto-merge| ci
+    app_renovate -->|update deps| ci
+    ci -->|update tag| github((home-ops))
+    ops_push --> github
+    ops_renovate -->|update images| github
     github -->|/api/sync| cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| traefik -->|proxy| apps
 
     subgraph infra[Infra]
@@ -71,13 +75,15 @@ flowchart LR
 
     traefik -.->|DNS01| unifi
 
-    style triggers fill:#e8f4fd,stroke:#4a90d9
+    style app_repo fill:#e8f4fd,stroke:#4a90d9
+    style ops_repo fill:#e8f4fd,stroke:#4a90d9
     style infra fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
     style cf fill:#fde8d0,stroke:#f6821f,color:#333
     style github fill:#d1d5db,stroke:#24292e,color:#333
     style ghcr fill:#d1d5db,stroke:#24292e,color:#333
     style ci fill:#d1d5db,stroke:#24292e,color:#333
-    style renovate fill:#d5d7f2,stroke:#1a1f6c,color:#333
+    style app_renovate fill:#d5d7f2,stroke:#1a1f6c,color:#333
+    style ops_renovate fill:#d5d7f2,stroke:#1a1f6c,color:#333
     style adguard fill:#d4f0d7,stroke:#68bc71,color:#333
     style unifi fill:#cce0f5,stroke:#0559c9,color:#333
     style zigbee fill:#f5e6ff,stroke:#9b59b6,color:#333
