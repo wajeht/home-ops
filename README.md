@@ -64,7 +64,7 @@ flowchart LR
         zigbee -->|Zigbee| apps
     end
 
-    traefik -.->|DNS01| cf
+    traefik -.->|DNS01| unifi
 
     style triggers fill:#e8f4fd,stroke:#4a90d9
     style infra fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
