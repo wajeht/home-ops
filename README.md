@@ -26,12 +26,12 @@ flowchart LR
     ci -->|update tag| github
     ops_push --> ci
     renovate -->|auto-merge| ci
-    github -->|poll + api/sync | cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| traefik -->|proxy| docker_cd
+    github -->|/api/sync| cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| traefik -->|proxy| apps
 
     subgraph infra[Infra]
         subgraph dell[Dell OptiPlex 7050 Micro]
             docker_cd[docker-cd] -->|compose up| apps[apps/*]
-            traefik[Traefik] -->|proxy| apps
+            traefik[Traefik] -->|proxy| docker_cd
             traefik -->|forward-auth| google_auth[Google Auth] -->|authed| apps
         end
 
