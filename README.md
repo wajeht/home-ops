@@ -33,7 +33,7 @@ flowchart LR
     ci -->|update tag| ops_ci
     ops_push --> ops_ci
     ops_renovate -->|update images| ops_ci
-    ops_ci -->|/api/sync| cf -->|Cloudflare IPs only| unifi -->|:80/:443| traefik -->|proxy| apps
+    ops_ci -->|/api/sync| cf --> unifi -->|:80/:443| traefik -->|proxy| apps
 
     subgraph cloudflare[Cloudflare]
         cf((WAF))
@@ -55,6 +55,7 @@ flowchart LR
 
         subgraph ucg[UniFi Cloud Gateway Ultra]
             unifi{{Firewall}}
+            ucg_cf[Cloudflare IPs Only]
             ucg_region[Region Blocking]
             ucg_ids[IDS/IPS]
             ucg_threat[Threat Management]
@@ -96,6 +97,7 @@ flowchart LR
     style cf_region fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_ddos fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_bot fill:#fde8d0,stroke:#f6821f,color:#333
+    style ucg_cf fill:#fde8e8,stroke:#dc2626,color:#333
     style ucg_region fill:#fde8e8,stroke:#dc2626,color:#333
     style ucg_ids fill:#fde8e8,stroke:#dc2626,color:#333
     style ucg_threat fill:#fde8e8,stroke:#dc2626,color:#333
