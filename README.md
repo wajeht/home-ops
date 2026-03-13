@@ -53,7 +53,10 @@ flowchart LR
 
         nfs -->|NFS| apps
         adguard -->|DNS| unifi
-        unifi -->|Zigbee| zigbee
+        unifi --> nfs
+        unifi -->|PoE| zigbee
+        unifi -->|PoE| adguard
+        zigbee -->|Zigbee| apps
     end
 
     traefik -.->|DNS01| cf
