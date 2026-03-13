@@ -37,9 +37,9 @@ flowchart LR
 
     subgraph cloudflare[Cloudflare]
         cf((WAF))
-        cf_region[Region Blocking]
-        cf_ddos[DDoS Protection]
-        cf_bot[Bot Management]
+        cf_region([Region Blocking])
+        cf_ddos([DDoS Protection])
+        cf_bot([Bot Management])
     end
 
     subgraph infra[Infra]
@@ -55,10 +55,10 @@ flowchart LR
 
         subgraph ucg[UniFi Cloud Gateway Ultra]
             unifi{{Firewall}}
-            ucg_cf[Cloudflare IPs Only]
-            ucg_region[Region Blocking]
-            ucg_ids[IDS/IPS]
-            ucg_threat[Threat Management]
+            ucg_cf([Cloudflare IPs Only])
+            ucg_region([Region Blocking])
+            ucg_ids([IDS/IPS])
+            ucg_threat([Threat Management])
         end
 
         subgraph pi[Raspberry Pi 5]
@@ -116,6 +116,15 @@ flowchart LR
     style google_auth fill:#fef3c7,stroke:#d97706,color:#333
     style apps fill:#f0fdf4,stroke:#16a34a,color:#333
     style nfs fill:#e0e7ff,stroke:#4f46e5,color:#333
+    classDef trigger fill:#fce7f3,stroke:#db2777,color:#333
+    class app_push,ops_push trigger
+    style dell fill:#fffbeb,stroke:#d97706
+    style nas fill:#fffbeb,stroke:#d97706
+    style ucg fill:#fef2f2,stroke:#dc2626
+    style pi fill:#f0fdf4,stroke:#22c55e
+    style slzb fill:#faf5ff,stroke:#9b59b6
+    style tplink fill:#f3f4f6,stroke:#6b7280
+    style u6 fill:#eff6ff,stroke:#0559c9
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It polls every 5 min or instantly via `/api/sync` webhook, auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates.
