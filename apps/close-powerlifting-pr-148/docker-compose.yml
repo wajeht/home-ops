@@ -1,6 +1,6 @@
 services:
   close-powerlifting:
-    image: ghcr.io/wajeht/close-powerlifting:7082f1d
+    image: ghcr.io/wajeht/close-powerlifting:0e308f9
     env_file:
       - .env
     environment:
@@ -41,17 +41,10 @@ services:
         max-file: "3"
     labels:
       - traefik.enable=true
-      - traefik.http.routers.close-powerlifting-pr-148.rule=Host(`closepowerlifting.com`) || Host(`www.closepowerlifting.com`)
+      - traefik.http.routers.close-powerlifting-pr-148.rule=Host(`pr-148-close-powerlifting.jaw.dev`) || Host(`pr-148-close-powerlifting.jaw.dev`)
       - traefik.http.routers.close-powerlifting-pr-148.entrypoints=websecure
       - traefik.http.routers.close-powerlifting-pr-148.middlewares=rate-limit-global@file
       - traefik.http.services.close-powerlifting-pr-148.loadbalancer.server.port=80
-      - traefik.http.routers.close-powerlifting-pr-148-redirect.rule=Host(`pr-148-close-powerlifting.jaw.dev`)
-      - traefik.http.routers.close-powerlifting-pr-148-redirect.entrypoints=websecure
-      - traefik.http.routers.close-powerlifting-pr-148-redirect.middlewares=close-powerlifting-redirect
-      - traefik.http.routers.close-powerlifting-pr-148-redirect.service=noop@internal
-      - traefik.http.middlewares.close-powerlifting-redirect.redirectregex.regex=^https?://close-powerlifting\.jaw\.dev(.*)$
-      - traefik.http.middlewares.close-powerlifting-redirect.redirectregex.replacement=https://closepowerlifting.com$$1
-      - traefik.http.middlewares.close-powerlifting-redirect.redirectregex.permanent=true
 networks:
   traefik:
     external: true
