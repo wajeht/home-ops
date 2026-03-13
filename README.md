@@ -32,7 +32,7 @@ flowchart LR
         subgraph dell[Dell OptiPlex 7050 Micro]
             docker_cd[docker-cd] -->|compose up| apps[apps/*]
             traefik[Traefik] -->|proxy| apps
-            google_auth[Google Auth] -->|forward-auth| traefik
+            traefik -->|forward-auth| google_auth[Google Auth] -->|authed| apps
         end
 
         subgraph nas[Synology DS923+]
