@@ -47,8 +47,13 @@ flowchart LR
             adguard[AdGuard Home]
         end
 
+        subgraph slzb[SMLIGHT SLZB-MR3U]
+            zigbee{{Zigbee Gateway}}
+        end
+
         nfs -->|NFS| apps
         adguard -->|DNS| unifi
+        unifi -->|Zigbee| zigbee
     end
 
     traefik -.->|DNS01| cf
@@ -74,16 +79,16 @@ All containers are [hardened](docs/adding-apps.md#container-hardening) with drop
 
 ## Hardware
 
-| Device                                                                                                                                                                                                                                                          | RAM  | Storage  | OS              | Function    |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | -------- | --------------- | ----------- |
-| [Dell OptiPlex 7050 Micro (i7-7700)](https://www.amazon.com/s?k=dell+optiplex+7050+micro+i7-7700)                                                                                                                                                               | 32GB | 1TB SSD  | Ubuntu 24.04    | Docker Host |
-| [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/) + [GeeekPi P33 NVMe PoE+ HAT](https://www.amazon.com/dp/B0DMW98LBR)                                                                                                                      | 8GB  | 128GB SD | Raspberry Pi OS | AdGuard     |
-| [Synology DS923+](https://www.amazon.com/dp/B0BM7KDN6R)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [WD Red Plus 8TB](https://www.amazon.com/s?k=WD+Red+Plus+8TB) x2<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Seagate IronWolf 12TB](https://www.amazon.com/s?k=Seagate+IronWolf+12TB) x2 | 20GB | 25TB SHR | DSM             | NAS         |
-| [UniFi Cloud Gateway Ultra](https://store.ui.com/us/en/products/ucg-ultra)                                                                                                                                                                                      | 3GB  | 16GB     | UniFi OS        | Firewall    |
-| [UniFi U6+](https://store.ui.com/us/en/products/u6-plus)                                                                                                                                                                                                        | -    | -        | -               | WiFi 6 AP   |
-| [SMLIGHT SLZB-MR3U](https://www.amazon.com/dp/B0FB97W6CN)                                                                                                                                                                                                       | -    | -        | -               | Zigbee GW   |
-| [TP-Link TL-SG608P](https://www.amazon.com/TP-Link-Gigabit-Ethernet-Desktop-TL-SG1008P/dp/B00BP0SSAS)                                                                                                                                                           | -    | -        | -               | PoE Switch  |
-| [CyberPower 1500VA AVR](https://www.amazon.com/CyberPower-CP1500AVRLCD-Intelligent-Outlets-Mini-Tower/dp/B000FBK3QK)                                                                                                                                            | -    | -        | -               | UPS         |
+| Device                                                                                                                                                                                                                                                          | RAM  | Storage  | OS              | Function       |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | -------- | --------------- | -------------- |
+| [Dell OptiPlex 7050 Micro (i7-7700)](https://www.amazon.com/s?k=dell+optiplex+7050+micro+i7-7700)                                                                                                                                                               | 32GB | 1TB SSD  | Ubuntu 24.04    | Docker Host    |
+| [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/) + [GeeekPi P33 NVMe PoE+ HAT](https://www.amazon.com/dp/B0DMW98LBR)                                                                                                                      | 8GB  | 128GB SD | Raspberry Pi OS | AdGuard        |
+| [Synology DS923+](https://www.amazon.com/dp/B0BM7KDN6R)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [WD Red Plus 8TB](https://www.amazon.com/s?k=WD+Red+Plus+8TB) x2<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Seagate IronWolf 12TB](https://www.amazon.com/s?k=Seagate+IronWolf+12TB) x2 | 20GB | 25TB SHR | DSM             | NAS            |
+| [UniFi Cloud Gateway Ultra](https://store.ui.com/us/en/products/ucg-ultra)                                                                                                                                                                                      | 3GB  | 16GB     | UniFi OS        | Firewall       |
+| [UniFi U6+](https://store.ui.com/us/en/products/u6-plus)                                                                                                                                                                                                        | -    | -        | -               | WiFi 6 AP      |
+| [SMLIGHT SLZB-MR3U](https://www.amazon.com/dp/B0FB97W6CN)                                                                                                                                                                                                       | -    | -        | -               | Zigbee Gateway |
+| [TP-Link TL-SG608P](https://www.amazon.com/TP-Link-Gigabit-Ethernet-Desktop-TL-SG1008P/dp/B00BP0SSAS)                                                                                                                                                           | -    | -        | -               | PoE Switch     |
+| [CyberPower 1500VA AVR](https://www.amazon.com/CyberPower-CP1500AVRLCD-Intelligent-Outlets-Mini-Tower/dp/B000FBK3QK)                                                                                                                                            | -    | -        | -               | UPS            |
 
 With all equipment connected: 69W idle @ 120V, 145 min UPS runtime, 50 kWh/mo (~$6/mo).
 
