@@ -25,9 +25,9 @@ flowchart LR
         ops_renovate([Renovate])
     end
 
-    app_push --> ci[GitHub Actions] -->|build + push| ghcr[(GHCR)]
+    app_push --> ci{{GitHub Actions}} -->|build + push| ghcr[(GHCR)]
     app_renovate -->|update deps| ci
-    ci -->|update tag| github((home-ops))
+    ci -->|update tag| github[(home-ops)]
     ops_push --> github
     ops_renovate -->|update images| github
     github -->|/api/sync| cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| traefik -->|proxy| apps
