@@ -33,7 +33,14 @@ flowchart LR
     ci -->|update tag| ops_ci
     ops_push --> ops_ci
     ops_renovate -->|update images| ops_ci
-    ops_ci -->|/api/sync| cf((Cloudflare)) -->|Cloudflare IPs only| unifi -->|:80/:443| traefik -->|proxy| apps
+    ops_ci -->|/api/sync| cf -->|Cloudflare IPs only| unifi -->|:80/:443| traefik -->|proxy| apps
+
+    subgraph cloudflare[Cloudflare]
+        cf((WAF))
+        cf_region[Region Blocking]
+        cf_ddos[DDoS Protection]
+        cf_bot[Bot Management]
+    end
 
     subgraph infra[Infra]
         subgraph dell[Dell OptiPlex 7050 Micro]
@@ -48,6 +55,9 @@ flowchart LR
 
         subgraph ucg[UniFi Cloud Gateway Ultra]
             unifi{{Firewall}}
+            ucg_region[Region Blocking]
+            ucg_ids[IDS/IPS]
+            ucg_threat[Threat Management]
         end
 
         subgraph pi[Raspberry Pi 5]
@@ -81,7 +91,14 @@ flowchart LR
     style app_repo fill:#e8f4fd,stroke:#4a90d9
     style ops_repo fill:#e8f4fd,stroke:#4a90d9
     style infra fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
+    style cloudflare fill:#fde8d0,stroke:#f6821f
     style cf fill:#fde8d0,stroke:#f6821f,color:#333
+    style cf_region fill:#fde8d0,stroke:#f6821f,color:#333
+    style cf_ddos fill:#fde8d0,stroke:#f6821f,color:#333
+    style cf_bot fill:#fde8d0,stroke:#f6821f,color:#333
+    style ucg_region fill:#fde8e8,stroke:#dc2626,color:#333
+    style ucg_ids fill:#fde8e8,stroke:#dc2626,color:#333
+    style ucg_threat fill:#fde8e8,stroke:#dc2626,color:#333
     style ghcr fill:#d1d5db,stroke:#24292e,color:#333
     classDef gha fill:#d1d5db,stroke:#24292e,color:#333
     class ci,ops_ci gha
@@ -106,6 +123,12 @@ Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It p
 [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~60min via polling). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
 
 All containers are [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, health checks, and log rotation. [Borgmatic](https://torsion.org/borgmatic/) handles automated backups — 2 critical apps hourly, rest daily — with database dumps (8 Postgres + 19 SQLite), weekly integrity checks, and ntfy notifications.
+
+**Security Layers** — every request passes through multiple layers of protection:
+
+- **Cloudflare**: WAF, region blocking, DDoS protection, bot management, SSL termination
+- **UniFi Cloud Gateway**: Region blocking, IDS/IPS, threat management, Cloudflare-only firewall rules
+- **Traefik**: Google OAuth forward-auth, rate limiting, auto TLS via DNS challenge
 
 ## Hardware
 
