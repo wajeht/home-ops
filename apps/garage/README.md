@@ -33,6 +33,20 @@ This is required because Garage is designed for multi-node clusters — even sin
 
 Use the web UI at `garage.jaw.dev` to create buckets, access keys, and manage permissions.
 
+## S3 Clients (Cyberduck, etc.)
+
+Connect using S3-compatible mode with endpoint `s3.jaw.dev` (port 443, HTTPS). Use access key/secret from the web UI.
+
+**Important:** Disable virtual-hosted style (use path-style) — the wildcard cert is `*.jaw.dev` which doesn't cover `<bucket>.s3.jaw.dev`.
+
+For Cyberduck:
+
+```bash
+defaults write ch.sudo.cyberduck s3.bucket.virtualhost.disable true
+```
+
+Restart Cyberduck after applying.
+
 ## Backups
 
 Borgmatic backs up `~/data/garage/` to `~/backup/garage/` (NFS) daily at 2:10 AM.
