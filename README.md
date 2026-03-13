@@ -62,7 +62,7 @@ flowchart LR
         end
 
         subgraph pi[Raspberry Pi 5]
-            adguard[AdGuard Home]
+            adguard[AdGuard Home] --> unbound[Unbound]
         end
 
         subgraph slzb[SMLIGHT SLZB-MR3U]
@@ -107,6 +107,7 @@ flowchart LR
     style app_renovate fill:#d5d7f2,stroke:#1a1f6c,color:#333
     style ops_renovate fill:#d5d7f2,stroke:#1a1f6c,color:#333
     style adguard fill:#d4f0d7,stroke:#68bc71,color:#333
+    style unbound fill:#d4f0d7,stroke:#68bc71,color:#333
     style unifi fill:#fde8e8,stroke:#dc2626,color:#333
     style zigbee fill:#f5e6ff,stroke:#9b59b6,color:#333
     style poe fill:#d1d5db,stroke:#6b7280,color:#333
