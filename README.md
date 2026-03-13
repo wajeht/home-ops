@@ -67,6 +67,7 @@ flowchart LR
     style renovate fill:#d5d7f2,stroke:#1a1f6c,color:#333
     style adguard fill:#d4f0d7,stroke:#68bc71,color:#333
     style unifi fill:#cce0f5,stroke:#0559c9,color:#333
+    style zigbee fill:#f5e6ff,stroke:#9b59b6,color:#333
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It polls every 5 min or instantly via `/api/sync` webhook, auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates.
