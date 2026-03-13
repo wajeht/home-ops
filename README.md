@@ -15,14 +15,14 @@ GitOps-driven homelab running on Docker Compose
 
 ```mermaid
 flowchart LR
-    subgraph app_repo[github.com/wajeht/*]
+    subgraph app_repo["github.com/wajeht/&lt;custom-repo&gt;"]
         app_push([git push])
         app_renovate([Renovate])
         ci{{GitHub Actions}}
         ghcr[(GHCR)]
     end
 
-    subgraph ops_repo[github.com/wajeht/home-ops]
+    subgraph ops_repo["github.com/wajeht/home-ops"]
         ops_push([git push])
         ops_renovate([Renovate])
         ops_ci{{GitHub Actions}}
