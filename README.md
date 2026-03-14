@@ -8,6 +8,7 @@
 ![Swap](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/swap&style=flat&cacheSeconds=300)
 ![Disk](https://img.shields.io/endpoint?url=https://cd.jaw.dev/badges/disk&style=flat&cacheSeconds=300)
 ![Temp](https://img.shields.io/endpoint?url=https%3A%2F%2Fcd.jaw.dev%2Fbadges%2Ftemperature%3Funit%3Df&style=flat&cacheSeconds=300)
+![Power](https://img.shields.io/endpoint?url=https://power-badge.jaw.dev/badge&style=flat&cacheSeconds=300)
 
 GitOps-driven homelab running on Docker Compose
 
