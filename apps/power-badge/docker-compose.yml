@@ -23,7 +23,7 @@ services:
       - "traefik.http.routers.power-badge.middlewares=rate-limit-global@file"
       - "traefik.http.services.power-badge.loadbalancer.server.port=80"
     healthcheck:
-      test: ["CMD", "/power-badge", "-health"]
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost/healthz"]
       interval: 30s
       timeout: 5s
       retries: 3
