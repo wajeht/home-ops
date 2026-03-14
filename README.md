@@ -97,7 +97,6 @@ flowchart LR
         poe -->|PoE| zigbee
         poe -->|PoE| adguard
         poe -->|PoE| ap
-        zigbee -->|Zigbee| apps
     end
 
     traefik -.->|DNS01| unifi
@@ -139,6 +138,8 @@ flowchart LR
     style slzb fill:#faf5ff,stroke:#9b59b6
     style tplink fill:#f3f4f6,stroke:#6b7280
     style u6 fill:#eff6ff,stroke:#0559c9
+    style plugs fill:#f5e6ff,stroke:#9b59b6,color:#333
+    style switches fill:#f5e6ff,stroke:#9b59b6,color:#333
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It polls every 5 min or instantly via `/api/sync` webhook, auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates.
