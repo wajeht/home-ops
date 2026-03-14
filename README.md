@@ -99,7 +99,7 @@ flowchart LR
         poe -->|PoE| ap
     end
 
-    traefik -.->|DNS01| unifi
+    docker_cd -.->|poll 5m| traefik -.->|poll 5m| unifi -.->|poll 5m| cf -.->|poll 5m| ops_ci
 
     style app_repo fill:#e8f4fd,stroke:#4a90d9
     style ops_repo fill:#e8f4fd,stroke:#4a90d9
@@ -140,6 +140,10 @@ flowchart LR
     style u6 fill:#eff6ff,stroke:#0559c9
     style plugs fill:#f5e6ff,stroke:#9b59b6,color:#333
     style switches fill:#f5e6ff,stroke:#9b59b6,color:#333
+    linkStyle 24 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 25 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 26 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 27 stroke:#22c55e,stroke-dasharray:5
 ```
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It polls every 5 min or instantly via `/api/sync` webhook, auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates.
