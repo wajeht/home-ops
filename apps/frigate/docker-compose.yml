@@ -1,0 +1,66 @@
+services:
+  frigate:
+    container_name: frigate
+    image: ghcr.io/blakeblackshear/frigate:0.15.1
+    env_file:
+      - .env
+    shm_size: 256m
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - "993"
+      - "44"
+    ports:
+      - "5000:5000" # API (for Home Assistant integration)
+      - "8554:8554" # RTSP restream
+      - "8555:8555/tcp" # WebRTC
+      - "8555:8555/udp" # WebRTC
+    volumes:
+      - /home/jaw/data/frigate:/config
+      - /home/jaw/data/frigate/media:/media/frigate
+      - ./config.yml:/config/config.yml:ro
+      - /etc/localtime:/etc/localtime:ro
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1073741824
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5000/api/version || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    stop_grace_period: 30s
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 4G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frigate.rule=Host(`frigate.jaw.dev`)"
+      - "traefik.http.routers.frigate.entrypoints=websecure"
+      - "traefik.http.routers.frigate.middlewares=google-auth@file"
+      - "traefik.http.services.frigate.loadbalancer.server.port=8971"
+
+networks:
+  traefik:
+    external: true
