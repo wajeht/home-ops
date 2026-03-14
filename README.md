@@ -55,7 +55,6 @@ flowchart LR
             Vaultwarden
             Paperless-ngx
             Immich
-            Sonarr
             +53 more"]
         end
 
