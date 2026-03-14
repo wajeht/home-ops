@@ -37,6 +37,7 @@ jobs:
     steps:
       - name: Trigger docker-cd sync
         run: |
-          curl -sS -X POST \
+          RESPONSE=$(curl -sS --max-time 10 -X POST \
             -H "Authorization: Bearer ${{ secrets.DOCKER_CD_API_SECRET }}" \
-            "${{ secrets.DOCKER_CD_URL }}/api/sync" | jq .
+            "${{ secrets.DOCKER_CD_URL }}/api/sync" 2>&1) || true
+          echo "$RESPONSE" | jq . 2>/dev/null || echo "Response: $RESPONSE"
