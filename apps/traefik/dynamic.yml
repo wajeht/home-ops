@@ -24,6 +24,9 @@ http:
         customFrameOptionsValue: "SAMEORIGIN"
         referrerPolicy: "strict-origin-when-cross-origin"
         permissionsPolicy: "camera=(), microphone=(), geolocation=()"
+        customResponseHeaders:
+          Cross-Origin-Opener-Policy: "same-origin"
+          Cross-Origin-Resource-Policy: "same-origin"
 
     rate-limit-global:
       rateLimit:
