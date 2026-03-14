@@ -79,6 +79,9 @@ flowchart LR
             zigbee{{Zigbee Gateway}}
         end
 
+        zigbee -->|Zigbee| plugs([Smart Plugs x4])
+        zigbee -->|Zigbee| switches([Smart Switches x2])
+
         subgraph tplink[TP-Link TL-SG608P]
             poe{{PoE Switch}}
         end
