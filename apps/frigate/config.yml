@@ -1,0 +1,64 @@
+mqtt:
+  enabled: false
+
+database:
+  path: /config/frigate.db
+
+detectors:
+  cpu1:
+    type: cpu
+    num_threads: 2
+
+ffmpeg:
+  hwaccel_args: preset-vaapi
+
+objects:
+  track:
+    - person
+    - dog
+    - cat
+
+record:
+  enabled: true
+  retain:
+    days: 1
+    mode: motion
+  events:
+    retain:
+      default: 1
+      mode: active_objects
+
+snapshots:
+  enabled: true
+  retain:
+    default: 2
+
+go2rtc:
+  streams:
+    tapo_cam:
+      - "ffmpeg:rtsp://{FRIGATE_CAM_USER}:{FRIGATE_CAM_PASS}@{FRIGATE_CAM_IP}:554/stream1#video=copy#audio=copy"
+
+cameras:
+  tapo_cam:
+    enabled: true
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/tapo_cam
+          roles:
+            - record
+        - path: rtsp://{FRIGATE_CAM_USER}:{FRIGATE_CAM_PASS}@{FRIGATE_CAM_IP}:554/stream2
+          roles:
+            - detect
+    detect:
+      width: 640
+      height: 360
+      fps: 5
+    objects:
+      track:
+        - person
+        - dog
+        - cat
+    record:
+      enabled: true
+    snapshots:
+      enabled: true
