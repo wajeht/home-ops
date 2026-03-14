@@ -44,9 +44,19 @@ flowchart LR
 
     subgraph infra[Infra]
         subgraph dell[Dell OptiPlex 7050 Micro]
-            docker_cd[docker-cd] -->|compose up| apps[apps/*]
+            docker_cd[docker-cd] -->|compose up| apps
             traefik[Traefik] -->|proxy| docker_cd
             traefik -->|forward-auth| google_auth[Google Auth] -->|authed| apps
+
+            apps["apps/*
+            Home Assistant
+            Plex
+            Gitea
+            Vaultwarden
+            Paperless-ngx
+            Immich
+            Sonarr
+            +53 more"]
         end
 
         subgraph nas[Synology DS923+]
