@@ -18,7 +18,7 @@ services:
     volumes:
       - /home/jaw/data/frigate:/config
       - /home/jaw/data/frigate/media:/media/frigate
-      - ./config.yml:/config/config.yml:ro
+      - ./config.yml:/config/config.yml
       - /etc/localtime:/etc/localtime:ro
       - type: tmpfs
         target: /tmp/cache
