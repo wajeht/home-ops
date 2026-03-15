@@ -42,6 +42,7 @@ services:
       - FOWNER
       - SETGID
       - SETUID
+      - PERFMON
     security_opt:
       - no-new-privileges:true
     deploy:

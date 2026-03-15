@@ -1,6 +1,5 @@
 auth:
   enabled: true
-  reset_admin_password: true
   trusted_proxies:
     - 172.18.0.0/16
   failed_login_rate_limit: "1/second;5/minute;20/hour"

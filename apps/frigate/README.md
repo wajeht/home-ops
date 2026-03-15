@@ -91,7 +91,7 @@ ONVIF PTZ on port 2020. Manual pan/tilt works in Frigate UI and HA Advanced Came
 - Frigate's TLS disabled (`tls: false`) — traefik handles TLS, routes to port 8971 (authenticated, no TLS)
 - Config must NOT be mounted as `:ro` — Frigate needs to migrate config between versions
 - `record.events` config removed in 0.15+ — causes validation error
-- GPU stats polling fails without `SYS_PERF` cap (harmless, GPU accel still works)
+- GPU stats polling needs `PERFMON` cap (added, shows GPU usage in Frigate UI)
 - Streaming through Cloudflare adds latency — use LAN IP for best experience
 - Two-way audio requires WebRTC (doesn't work through Cloudflare) — use LAN IP
 
