@@ -44,7 +44,13 @@ Camera (RTSP) → go2rtc (restream + VAAPI transcode) → Frigate (detect + reco
 
 ## secrets
 
-Credentials in `.env.sops`, referenced in config.yml as `{FRIGATE_CAM_USER}`, `{FRIGATE_CAM_PASS}`, `{FRIGATE_CAM_IP}`.
+Credentials in `.env.sops`, referenced in config.yml as `{FRIGATE_CAM_USER}`, `{FRIGATE_CAM_PASS}`, `{FRIGATE_CAM_IP}`, `{FRIGATE_TAPO_SHA256}`.
+
+The SHA256 hash is of the Tapo **cloud/app** password (not camera account):
+
+```bash
+echo -n "tapo-cloud-password" | shasum -a 256 | awk '{print toupper($0)}'
+```
 
 ```bash
 sops apps/frigate/.env.sops
@@ -60,6 +66,10 @@ sops apps/frigate/.env.sops
 - `rolling_update: false` — stateful app, can't run multiple instances
 - Traefik routes to port 5000 (internal HTTP API), not 8971 (nginx with TLS)
 - Only tracking `person` — apartment use case, no need for dog/cat detection
+- Audio detection — fire alarm, scream, yell, glass breaking
+- Two-way audio via `tapo://` protocol (SHA256 of Tapo cloud password in `.env.sops`)
+- Object filter: `min_score: 0.5`, `min_area: 1500` to reduce false positives
+- `clean_copy: false` — not using Frigate+, saves disk
 
 ## PTZ
 
@@ -75,6 +85,7 @@ ONVIF PTZ on port 2020. Manual pan/tilt works in Frigate UI and HA Advanced Came
 - `record.events` config removed in 0.15+ — causes validation error
 - GPU stats polling fails without `SYS_PERF` cap (harmless, GPU accel still works)
 - Streaming through Cloudflare adds latency — use LAN IP for best experience
+- Two-way audio requires WebRTC (doesn't work through Cloudflare) — use LAN IP
 
 ## network
 
