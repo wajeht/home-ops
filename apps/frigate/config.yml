@@ -55,6 +55,8 @@ snapshots:
     default: 1
 
 go2rtc:
+  api:
+    origin: "*"
   webrtc:
     candidates:
       - 192.168.4.161:8555
