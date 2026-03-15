@@ -23,10 +23,6 @@ detectors:
   ov:
     type: openvino
     device: GPU
-    model:
-      path: /openvino-model/ssdlite_mobilenet_v2.xml
-      width: 300
-      height: 300
 
 ffmpeg:
   hwaccel_args: preset-vaapi
