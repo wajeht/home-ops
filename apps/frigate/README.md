@@ -88,6 +88,7 @@ ONVIF PTZ on port 2020. Manual pan/tilt works in Frigate UI and HA Advanced Came
 ## gotchas
 
 - Tapo ONVIF port is **2020**, not 8000
+- ONVIF `host` env var `{FRIGATE_CAM_IP}` doesn't resolve — Frigate bug (ONVIF module skips env substitution despite docs saying it's supported). Hardcoded IP as workaround
 - Don't use raw RTSP in go2rtc — use direct `rtsp://` (not `ffmpeg:rtsp://`) for the main stream, add ffmpeg transcode as second source
 - Frigate uses s6-overlay — do NOT add `init: true`
 - Frigate's TLS disabled (`tls: false`) — traefik handles TLS, routes to port 8971 (authenticated, no TLS)

@@ -88,7 +88,8 @@ cameras:
   tapo_cam:
     enabled: true
     onvif:
-      host: "{FRIGATE_CAM_IP}"
+      # TODO: env var {FRIGATE_CAM_IP} doesn't resolve here — Frigate bug, ONVIF module skips env substitution
+      host: 192.168.30.56
       port: 2020
       user: "{FRIGATE_CAM_USER}"
       password: "{FRIGATE_CAM_PASS}"
