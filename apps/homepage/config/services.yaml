@@ -206,6 +206,12 @@
         description: Zigbee Bridge
         siteMonitor: http://zigbee2mqtt:8080
 
+    - Frigate:
+        icon: frigate
+        href: https://frigate.jaw.dev
+        description: NVR
+        siteMonitor: http://frigate:8971
+
     - DDNS Updater:
         icon: mdi-dns
         href: https://ddns.jaw.dev
@@ -337,6 +343,12 @@
         description: IP Lookup
         siteMonitor: http://ip:80
 
+    - Power Badge:
+        icon: mdi-shield-check
+        href: https://power-badge.jaw.dev
+        description: Power Badge
+        siteMonitor: http://power-badge:80
+
 - Tools:
     - Vaultwarden:
         icon: vaultwarden
@@ -377,6 +389,12 @@
         href: https://search.jaw.dev
         description: Search Engine
         siteMonitor: http://searxng:8080
+
+    - Excalidraw:
+        icon: excalidraw
+        href: https://draw.jaw.dev
+        description: Whiteboard
+        siteMonitor: http://excalidraw:80
 
     - Linx:
         icon: filerun
@@ -423,6 +441,12 @@
         icon: github
         href: https://github.com/wajeht
         description: Profile
+
+    - Hello World:
+        icon: mdi-hand-wave
+        href: https://hello-world.jaw.dev
+        description: Test App
+        siteMonitor: http://hello-world:3000
 
     - Home Ops:
         icon: github
