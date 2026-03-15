@@ -125,17 +125,18 @@ Settings → WiFi → Create New:
 - **Network:** IoT (VLAN 30)
 - **Radio Band:** 2.4 GHz only (most IoT devices are 2.4 only)
 
-#### 3. Firewall rules (auto-created by Isolate Network)
+#### 3. Firewall rules
 
-UniFi auto-creates these rules when "Isolate Network" is checked:
+UniFi auto-creates isolation rules when "Isolate Network" is checked, but two **manual** LAN In rules are needed so the server can talk to IoT devices:
 
-| Rule               | Action | Source          | Destination     | Purpose                  |
-| ------------------ | ------ | --------------- | --------------- | ------------------------ |
-| Isolate IoT        | Drop   | 192.168.30.0/24 | All VLANs       | IoT can't reach main LAN |
-| Allow main → IoT   | Accept | 192.168.4.0/24  | 192.168.30.0/24 | Server can reach cameras |
-| Block IoT internet | Drop   | 192.168.30.0/24 | Any             | No cloud phoning home    |
+| Rule                      | Action | Source          | Destination   | Purpose                       |
+| ------------------------- | ------ | --------------- | ------------- | ----------------------------- |
+| Allow Server to IoT       | Accept | 192.168.4.161   | IoT network   | Server can reach cameras      |
+| Allow IoT to Server       | Accept | IoT network     | 192.168.4.161 | Return traffic back to server |
+| Isolate IoT (auto)        | Drop   | 192.168.30.0/24 | All VLANs     | IoT can't reach main LAN      |
+| Block IoT internet (auto) | Drop   | 192.168.30.0/24 | Any           | No cloud phoning home         |
 
-No manual firewall rules needed — the "Isolate Network" toggle handles it.
+The two manual rules must have a lower ID than the auto-created isolation rules so they're evaluated first.
 
 #### 4. Move devices to IoT WiFi
 
