@@ -211,6 +211,9 @@
         href: https://frigate.jaw.dev
         description: NVR
         siteMonitor: http://frigate:8971
+        widget:
+          type: frigate
+          url: http://frigate:5000
 
     - DDNS Updater:
         icon: mdi-dns
