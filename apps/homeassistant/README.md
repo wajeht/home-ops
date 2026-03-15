@@ -4,12 +4,18 @@ Home Assistant at `ha.jaw.dev`.
 
 ## auth
 
-Two Traefik routers on the same host:
+Two Traefik routers, two subdomains, same backend:
 
-- **`homeassistant`** (priority 1) — catches all requests, Google Auth protected (browser access)
-- **`homeassistant-api`** (priority 10) — matches `/api/`, `/auth/`, `/websocket` paths, no Google Auth (Companion App access). HA's own token auth protects these endpoints. Rate-limited.
+- **`ha.jaw.dev`** — Google Auth protected (browser access)
+- **`ha-app.jaw.dev`** — no Google Auth, HA's own auth + rate limiting (Companion App)
 
-This lets the iPhone/Android Companion App connect to `ha.jaw.dev` directly — it uses HA's Bearer token auth on `/api/` which doesn't need Google OAuth.
+Google blocks OAuth in WebViews (`disallowed_useragent`), so the Companion App can't use Google Auth. Separate subdomain is the standard solution — HA's own auth (username/password + optional 2FA) protects the app endpoint.
+
+### Companion App setup
+
+1. Add `ha-app.jaw.dev` CNAME in Cloudflare DNS (same target as `ha.jaw.dev`)
+2. In the app: Settings → Home → External URL → `https://ha-app.jaw.dev`
+3. Internal URL stays `http://192.168.4.161:8123`
 
 ## first deploy
 
