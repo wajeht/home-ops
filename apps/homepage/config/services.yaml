@@ -352,6 +352,34 @@
         description: Power Badge
         # siteMonitor: http://power-badge:80
 
+    - Commit:
+        icon: git
+        href: https://commit.jaw.dev
+        description: AI Commits
+        # siteMonitor: http://commit:80
+
+    - Git Redirect:
+        icon: git
+        href: https://git.jaw.dev
+        description: Git URL Shortener
+        # siteMonitor: http://git:80
+
+    - Hello World:
+        icon: mdi-hand-wave
+        href: https://hello-world.jaw.dev
+        description: Test App
+        # siteMonitor: http://hello-world:3000
+
+    - GitHub:
+        icon: github
+        href: https://github.com/wajeht
+        description: Profile
+
+    - Home Ops:
+        icon: github
+        href: https://github.com/wajeht/home-ops
+        description: This Repo
+
 - Tools:
     - Vaultwarden:
         icon: vaultwarden
@@ -411,24 +439,11 @@
         description: S3 Storage
         # siteMonitor: http://garage-webui:3909
 
-- Dev:
     - Code Server:
         icon: vscode
         href: https://code.jaw.dev
         description: Web IDE
         # siteMonitor: http://code-server:8080
-
-    - Commit:
-        icon: git
-        href: https://commit.jaw.dev
-        description: AI Commits
-        # siteMonitor: http://commit:80
-
-    - Git Redirect:
-        icon: git
-        href: https://git.jaw.dev
-        description: Git URL Shortener
-        # siteMonitor: http://git:80
 
     - Gitea:
         icon: gitea
@@ -439,19 +454,3 @@
         #   type: gitea
         #   url: http://gitea:3000
         #   key: "{{HOMEPAGE_VAR_GITEA_KEY}}"
-
-    - GitHub:
-        icon: github
-        href: https://github.com/wajeht
-        description: Profile
-
-    - Hello World:
-        icon: mdi-hand-wave
-        href: https://hello-world.jaw.dev
-        description: Test App
-        # siteMonitor: http://hello-world:3000
-
-    - Home Ops:
-        icon: github
-        href: https://github.com/wajeht/home-ops
-        description: This Repo

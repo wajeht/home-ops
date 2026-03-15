@@ -33,6 +33,3 @@ layout:
   Tools:
     style: column
     tab: Apps
-  Dev:
-    style: column
-    tab: Apps
