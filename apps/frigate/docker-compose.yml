@@ -11,10 +11,10 @@ services:
       - "993"
       - "44"
     ports:
-      - "5000:5000" # API (for Home Assistant integration)
-      - "8554:8554" # RTSP restream
-      - "8555:8555/tcp" # WebRTC
-      - "8555:8555/udp" # WebRTC
+      - "127.0.0.1:5000:5000" # API (localhost only, Traefik/HA use Docker network)
+      - "127.0.0.1:8554:8554" # RTSP restream (localhost only)
+      - "8555:8555/tcp" # WebRTC (needs LAN access)
+      - "8555:8555/udp" # WebRTC (needs LAN access)
     volumes:
       - /home/jaw/data/frigate:/config
       - /home/jaw/data/frigate/media:/media/frigate
@@ -59,7 +59,7 @@ services:
       - "traefik.http.routers.frigate.rule=Host(`frigate.jaw.dev`)"
       - "traefik.http.routers.frigate.entrypoints=websecure"
       - "traefik.http.routers.frigate.middlewares=google-auth@file"
-      - "traefik.http.services.frigate.loadbalancer.server.port=5000"
+      - "traefik.http.services.frigate.loadbalancer.server.port=8971"
 
 networks:
   traefik:
