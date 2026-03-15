@@ -46,6 +46,11 @@ go2rtc:
 cameras:
   tapo_cam:
     enabled: true
+    onvif:
+      host: "{FRIGATE_CAM_IP}"
+      port: 2020
+      user: "{FRIGATE_CAM_USER}"
+      password: "{FRIGATE_CAM_PASS}"
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/tapo_cam
