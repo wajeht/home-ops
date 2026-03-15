@@ -77,6 +77,8 @@ sops apps/frigate/.env.sops
 - `clean_copy: false` — not using Frigate+, saves disk
 - `preset-record-generic-audio-aac` — recordings include camera audio (Tapo outputs PCM-ALAW, must transcode to AAC for MP4)
 - `contour_area: 25` — medium motion sensitivity (default 10 too sensitive for apartment)
+- Detect stream uses QSV decode (`preset-intel-qsv-h264`) — avoids VAAPI "Failed to sync surface" crash from GPU contention. QSV uses a separate driver pipeline from VAAPI so they don't conflict
+- `model` is a **top-level** config block, not nested under `detectors` — Frigate's config migration mangles it otherwise
 - `api.origin: "*"` — CORS for hass-web-proxy integration (remote streaming via HA)
 
 ## PTZ
