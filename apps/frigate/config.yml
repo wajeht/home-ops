@@ -29,7 +29,7 @@ detectors:
 ffmpeg:
   hwaccel_args: preset-vaapi
   output_args:
-    record: preset-record-generic-audio-copy
+    record: preset-record-generic-audio-aac
 
 audio:
   enabled: true
