@@ -10,11 +10,6 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /var/cache/nginx
-      - /var/run
     init: true
     cap_drop:
       - ALL
