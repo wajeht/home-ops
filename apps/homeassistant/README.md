@@ -49,23 +49,44 @@ views:
     path: ""
     cards:
       - type: custom:advanced-camera-card
+        profiles:
+          - scrubbing
         cameras:
           - camera_entity: camera.tapo_cam
             live_provider: go2rtc
             go2rtc:
               modes:
-                - mse
                 - webrtc
-                - mp4
-                - mjpeg
+                - mse
               stream: tapo_cam
+        menu:
+          buttons:
+            microphone:
+              enabled: true
+              type: momentary
+            fullscreen:
+              enabled: true
+            media_player:
+              enabled: false
+            snapshots:
+              enabled: true
+            clips:
+              enabled: true
+            timeline:
+              enabled: true
         live:
+          microphone:
+            always_connected: true
+            disconnect_seconds: 1
           auto_play:
             - selected
             - visible
           auto_pause:
             - unselected
             - hidden
+          auto_unmute:
+            - selected
+            - visible
           lazy_load: true
           show_image_during_load: true
           transition_effect: none
@@ -73,13 +94,16 @@ views:
             ptz:
               mode: "on"
               position: bottom-right
+            timeline:
+              mode: above
     title: Camera
     icon: mdi:webcam
 ```
 
 ### streaming notes
 
-- `mse` first for remote/Cloudflare access (WebRTC fails through reverse proxy)
-- `webrtc` first for LAN access (lowest latency)
+- `webrtc` first — lowest latency, two-way audio works on LAN
+- `mse` fallback — works through Cloudflare (no two-way audio)
 - go2rtc with VAAPI hardware transcode handles the stream
-- Cloudflare adds latency — use LAN IP (`192.168.4.161:8123`) for best experience
+- Two-way audio requires WebRTC — only works on LAN (`192.168.4.161:8123`)
+- Cloudflare adds latency — use LAN IP for best experience
