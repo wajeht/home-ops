@@ -18,6 +18,8 @@ detectors:
 
 ffmpeg:
   hwaccel_args: preset-vaapi
+  output_args:
+    record: preset-record-generic-audio-copy
 
 audio:
   enabled: true
@@ -87,6 +89,8 @@ cameras:
       width: 640
       height: 360
       fps: 5
+    motion:
+      contour_area: 25
     objects:
       track:
         - person
