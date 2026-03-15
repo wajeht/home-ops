@@ -52,7 +52,7 @@ snapshots:
   enabled: true
   clean_copy: false
   retain:
-    default: 1
+    default: 7
 
 go2rtc:
   api:
