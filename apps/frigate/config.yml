@@ -42,8 +42,9 @@ go2rtc:
       - 192.168.4.161:8555
   streams:
     tapo_cam:
-      - rtsp://{FRIGATE_CAM_USER}:{FRIGATE_CAM_PASS}@{FRIGATE_CAM_IP}:554/stream1
+      - rtsp://{FRIGATE_CAM_USER}:{FRIGATE_CAM_PASS}@{FRIGATE_CAM_IP}:554/stream1#backchannel=0
       - "ffmpeg:tapo_cam#video=h264#hardware=vaapi"
+      - tapo://admin:{FRIGATE_TAPO_SHA256}@{FRIGATE_CAM_IP}
 
 cameras:
   tapo_cam:
