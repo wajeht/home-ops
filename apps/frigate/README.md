@@ -6,7 +6,7 @@ Frigate NVR at `frigate.jaw.dev`. Self-hosted security camera system with AI obj
 
 - Dell OptiPlex 7050, Intel i7-7700 (Kaby Lake), Intel HD 630 GPU
 - VAAPI hardware acceleration for ffmpeg decoding/encoding
-- CPU detector (no Coral TPU yet)
+- OpenVINO detector on Intel HD 630 iGPU (replaced CPU detector)
 
 ## camera setup (TP-Link Tapo Pan/Tilt 2K)
 
@@ -14,8 +14,9 @@ Frigate NVR at `frigate.jaw.dev`. Self-hosted security camera system with AI obj
 2. Tapo app → Settings → Advanced Settings → Camera Account → create username/password (enables RTSP + ONVIF)
 3. Set video codec to **H.264** (not H.265/smart codec)
 4. Turn off watermark/timestamp in Display settings
-5. Set static IP in Network Settings
-6. Delete Tapo app — camera runs standalone
+5. Set static IP in Network Settings (192.168.30.56 on IoT VLAN)
+6. Connect to `IoT` WiFi SSID
+7. Delete Tapo app — camera runs standalone
 
 ### camera specs
 
@@ -52,11 +53,13 @@ sops apps/frigate/.env.sops
 ## key config decisions
 
 - `auth: false` — disabled, google-auth handles access
+- `openvino` detector on `GPU` — uses Intel HD 630 iGPU for object detection (much lower CPU than CPU detector)
 - `preset-vaapi` — Intel HD 630 hardware decoding for ffmpeg
 - `#hardware=vaapi` — go2rtc uses GPU for transcoding WebRTC/MSE streams
 - `webrtc.candidates: 192.168.4.161:8555` — tells go2rtc the server LAN IP for WebRTC
 - `rolling_update: false` — stateful app, can't run multiple instances
 - Traefik routes to port 5000 (internal HTTP API), not 8971 (nginx with TLS)
+- Only tracking `person` — apartment use case, no need for dog/cat detection
 
 ## PTZ
 
@@ -73,10 +76,15 @@ ONVIF PTZ on port 2020. Manual pan/tilt works in Frigate UI and HA Advanced Came
 - GPU stats polling fails without `SYS_PERF` cap (harmless, GPU accel still works)
 - Streaming through Cloudflare adds latency — use LAN IP for best experience
 
+## network
+
+Camera is on IoT VLAN (192.168.30.0/24, VLAN 30), isolated from main LAN. Server reaches it via manual UniFi firewall rules. See `docs/security.md` for VLAN and firewall details.
+
 ## adding a new camera
 
-1. Set up camera with static IP, H.264 codec, RTSP/ONVIF enabled
-2. Add credentials to `.env.sops`
-3. Add go2rtc stream in `config.yml`
-4. Add camera block with ffmpeg inputs, onvif, detect, record, snapshots
-5. Push and redeploy
+1. Set up camera with static IP on IoT VLAN, H.264 codec, RTSP/ONVIF enabled
+2. Connect to `IoT` WiFi SSID
+3. Add credentials to `.env.sops`
+4. Add go2rtc stream in `config.yml`
+5. Add camera block with ffmpeg inputs, onvif, detect, record, snapshots
+6. Push and redeploy
