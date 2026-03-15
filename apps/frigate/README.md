@@ -70,6 +70,7 @@ sops apps/frigate/.env.sops
 - Two-way audio via `tapo://` protocol (SHA256 of Tapo cloud password in `.env.sops`)
 - Object filter: `min_score: 0.5`, `min_area: 1500` to reduce false positives
 - `clean_copy: false` — not using Frigate+, saves disk
+- `api.origin: "*"` — CORS for hass-web-proxy integration (remote streaming via HA)
 
 ## PTZ
 
