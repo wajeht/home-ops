@@ -129,14 +129,18 @@ Settings → WiFi → Create New:
 
 UniFi auto-creates isolation rules when "Isolate Network" is checked, but two **manual** LAN In rules are needed so the server can talk to IoT devices:
 
-| Rule                      | Action | Source          | Destination   | Purpose                       |
-| ------------------------- | ------ | --------------- | ------------- | ----------------------------- |
-| Allow Server to IoT       | Accept | 192.168.4.161   | IoT network   | Server can reach cameras      |
-| Allow IoT to Server       | Accept | IoT network     | 192.168.4.161 | Return traffic back to server |
-| Isolate IoT (auto)        | Drop   | 192.168.30.0/24 | All VLANs     | IoT can't reach main LAN      |
-| Block IoT internet (auto) | Drop   | 192.168.30.0/24 | Any           | No cloud phoning home         |
+| Rule                          | Action | Source          | Destination | State                | Purpose                  |
+| ----------------------------- | ------ | --------------- | ----------- | -------------------- | ------------------------ |
+| Allow Server to IoT           | Accept | 192.168.4.161   | IoT network | Any                  | Server can reach cameras |
+| Allow Established/Related IoT | Accept | IoT network     | Any         | Established, Related | Return traffic only      |
+| Isolate IoT (auto)            | Drop   | 192.168.30.0/24 | All VLANs   | Any                  | IoT can't reach main LAN |
+| Block IoT internet (auto)     | Drop   | 192.168.30.0/24 | Any         | Any                  | No cloud phoning home    |
 
-The two manual rules must have a lower ID than the auto-created isolation rules so they're evaluated first.
+**Why two manual rules?** The "Isolate Network" toggle blocks all inter-VLAN traffic, including return traffic from IoT devices back to the server. Without these rules, the server can send packets to the camera but never gets a response.
+
+**Why Established/Related instead of a broad allow?** A broad "Allow IoT → Server" rule lets a compromised IoT device initiate new connections to the server. Using Established/Related state means IoT devices can only respond to connections the server started — they can never open new connections to anything.
+
+Both manual rules must have a lower ID than the auto-created isolation rules (60001+) so they're evaluated first.
 
 #### 4. Move devices to IoT WiFi
 
@@ -152,6 +156,8 @@ From your main LAN (192.168.4.x):
 ```bash
 # Server can reach camera
 ping 192.168.30.56
+nc -zv 192.168.30.56 554   # RTSP
+nc -zv 192.168.30.56 2020  # ONVIF
 
 # Camera can't reach server (test from camera's perspective)
 # No way to test directly, but Tapo app should fail remotely
