@@ -10,9 +10,9 @@ database:
   path: /config/frigate.db
 
 detectors:
-  cpu1:
-    type: cpu
-    num_threads: 2
+  ov:
+    type: openvino
+    device: GPU
 
 ffmpeg:
   hwaccel_args: preset-vaapi
