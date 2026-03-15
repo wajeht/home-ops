@@ -25,6 +25,8 @@ detectors:
     device: GPU
     model:
       path: /openvino-model/ssdlite_mobilenet_v2.xml
+      width: 300
+      height: 300
 
 ffmpeg:
   hwaccel_args: preset-vaapi
@@ -86,6 +88,8 @@ cameras:
       port: 2020
       user: "{FRIGATE_CAM_USER}"
       password: "{FRIGATE_CAM_PASS}"
+      autotracking:
+        enabled: false
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/tapo_cam
