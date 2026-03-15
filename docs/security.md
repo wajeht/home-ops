@@ -90,13 +90,88 @@ sudo systemctl disable --now ModemManager wpa_supplicant packagekit udisks2 upow
 
 Traefik and Portainer mount `/var/run/docker.sock` (root-equivalent access). Consider [docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy) to limit API access.
 
+## IoT VLAN
+
+Isolates IoT devices (cameras, sensors, smart plugs) from the main LAN. Devices can't reach the internet or other VLANs, but the server can reach them.
+
+### Network layout
+
+| Network | VLAN ID | Subnet          | Internet | Purpose              |
+| ------- | ------- | --------------- | -------- | -------------------- |
+| Default | 1       | 192.168.4.0/24  | Yes      | Main LAN, server     |
+| Guest   | 2       | 192.168.2.0/24  | Yes      | Guest WiFi           |
+| IoT     | 30      | 192.168.30.0/24 | No       | Cameras, IoT devices |
+
+### Setup (UniFi Cloud Gateway Ultra)
+
+#### 1. Create IoT network
+
+Settings → Networks → Create New:
+
+- **Name:** IoT
+- **VLAN ID:** 30
+- **IPv4 Address:** 192.168.30.1, Netmask /24
+- **Isolate Network:** checked (blocks IoT → other VLANs)
+- **Allow Internet Access:** unchecked (blocks IoT → internet)
+- **mDNS:** checked (device discovery across VLANs)
+- **DHCP:** Server, range 192.168.30.6 - 192.168.30.254
+
+#### 2. Create IoT WiFi
+
+Settings → WiFi → Create New:
+
+- **Name:** IoT
+- **Password:** set one
+- **Network:** IoT (VLAN 30)
+- **Radio Band:** 2.4 GHz only (most IoT devices are 2.4 only)
+
+#### 3. Firewall rules (auto-created by Isolate Network)
+
+UniFi auto-creates these rules when "Isolate Network" is checked:
+
+| Rule               | Action | Source          | Destination     | Purpose                  |
+| ------------------ | ------ | --------------- | --------------- | ------------------------ |
+| Isolate IoT        | Drop   | 192.168.30.0/24 | All VLANs       | IoT can't reach main LAN |
+| Allow main → IoT   | Accept | 192.168.4.0/24  | 192.168.30.0/24 | Server can reach cameras |
+| Block IoT internet | Drop   | 192.168.30.0/24 | Any             | No cloud phoning home    |
+
+No manual firewall rules needed — the "Isolate Network" toggle handles it.
+
+#### 4. Move devices to IoT WiFi
+
+1. Open device app (e.g., Tapo) → WiFi settings → connect to `IoT` SSID
+2. Set static IP (e.g., 192.168.30.56 for camera)
+3. Update `.env.sops` with new IP
+4. Push and redeploy
+
+#### 5. Verify isolation
+
+From your main LAN (192.168.4.x):
+
+```bash
+# Server can reach camera
+ping 192.168.30.56
+
+# Camera can't reach server (test from camera's perspective)
+# No way to test directly, but Tapo app should fail remotely
+```
+
+### Key points
+
+- IoT devices get no internet — TP-Link, Tuya, etc. can't phone home
+- IoT devices can't reach your main LAN — compromised camera can't attack your server
+- Server (192.168.4.161) can reach IoT VLAN — Frigate/HA connects to cameras
+- mDNS enabled — allows device discovery across VLANs if needed
+- Camera credentials still in `.env.sops` — only the IP changes when moving VLANs
+- Delete vendor apps after setup — camera runs standalone on RTSP/ONVIF
+
 ## Checklist
 
 - [x] Disable rpcbind (NFS v4.1)
 - [x] Enable UFW firewall
+- [x] IoT VLAN (VLAN 30, 192.168.30.0/24)
 - [ ] SSH: key-only auth
 - [ ] Install fail2ban
 - [ ] Disable unnecessary services
 - [ ] Bind non-Traefik ports to 127.0.0.1
 - [ ] Docker socket proxy
-- [ ] IoT VLAN ([#154](https://github.com/wajeht/home-ops/issues/154))
