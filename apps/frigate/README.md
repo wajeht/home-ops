@@ -39,7 +39,7 @@ Camera (RTSP) → go2rtc (restream + VAAPI transcode) → Frigate (detect + reco
 ## storage
 
 - Config + DB: `~/data/frigate/` (local SSD)
-- Recordings: `~/data/frigate/media/` (local SSD, 1-day retention, ~2-3GB/day for one 2K camera)
+- Recordings: `~/data/frigate/media/` (local SSD, 7-day retention, ~7.6GB/day motion-only for one 2K camera, ~53GB total)
 - No NAS needed at this scale, no borgmatic backup (config in git, recordings are ephemeral)
 
 ## secrets

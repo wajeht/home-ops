@@ -45,7 +45,7 @@ review:
 record:
   enabled: true
   retain:
-    days: 1
+    days: 7
     mode: motion
 
 snapshots:
