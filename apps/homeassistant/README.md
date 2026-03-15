@@ -2,6 +2,15 @@
 
 Home Assistant at `ha.jaw.dev`.
 
+## auth
+
+Two Traefik routers on the same host:
+
+- **`homeassistant`** (priority 1) — catches all requests, Google Auth protected (browser access)
+- **`homeassistant-api`** (priority 10) — matches `/api/`, `/auth/`, `/websocket` paths, no Google Auth (Companion App access). HA's own token auth protects these endpoints. Rate-limited.
+
+This lets the iPhone/Android Companion App connect to `ha.jaw.dev` directly — it uses HA's Bearer token auth on `/api/` which doesn't need Google OAuth.
+
 ## first deploy
 
 After deploy, add trusted proxy config on the server:
