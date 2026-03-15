@@ -20,8 +20,8 @@ ffmpeg:
 objects:
   track:
     - person
-    - dog
-    - cat
+    # - dog
+    # - cat
 
 record:
   enabled: true
@@ -66,8 +66,8 @@ cameras:
     objects:
       track:
         - person
-        - dog
-        - cat
+        # - dog
+        # - cat
     record:
       enabled: true
     snapshots:
