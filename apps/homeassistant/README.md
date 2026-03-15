@@ -15,3 +15,20 @@ http:
 ```
 
 Then restart: `sudo docker restart homeassistant`
+
+## HACS
+
+HACS (Home Assistant Community Store) must be installed manually once (persists across image updates via `~/data/homeassistant/custom_components/`):
+
+```bash
+docker exec homeassistant bash -c "wget -O - https://get.hacs.xyz | bash -"
+sudo docker restart homeassistant
+```
+
+Then in HA UI: Settings → Devices & Services → Add Integration → search "HACS" → follow GitHub auth flow.
+
+## Frigate
+
+Requires HACS. In HACS → search "Frigate" → install → restart HA.
+
+Then: Settings → Devices & Services → Add Integration → search "Frigate" → URL: `http://frigate:5000`
