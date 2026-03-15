@@ -38,9 +38,16 @@ services:
         max-file: "3"
     labels:
       - "traefik.enable=true"
+      # Browser access — Google Auth protected
       - "traefik.http.routers.homeassistant.rule=Host(`ha.jaw.dev`)"
       - "traefik.http.routers.homeassistant.entrypoints=websecure"
       - "traefik.http.routers.homeassistant.middlewares=google-auth@file"
+      - "traefik.http.routers.homeassistant.priority=1"
+      # Companion App — HA's own auth (API paths excluded from Google Auth)
+      - "traefik.http.routers.homeassistant-api.rule=Host(`ha.jaw.dev`) && (PathPrefix(`/api/`) || PathPrefix(`/auth/`) || PathPrefix(`/websocket`))"
+      - "traefik.http.routers.homeassistant-api.entrypoints=websecure"
+      - "traefik.http.routers.homeassistant-api.middlewares=rate-limit-global@file"
+      - "traefik.http.routers.homeassistant-api.priority=10"
       - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
 
   homeassistant-borgmatic:
