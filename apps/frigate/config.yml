@@ -103,7 +103,7 @@ cameras:
         - path: rtsp://{FRIGATE_CAM_USER}:{FRIGATE_CAM_PASS}@{FRIGATE_CAM_IP}:554/stream2
           roles:
             - detect
-          hwaccel_args: preset-intel-qsv-h264
+          hwaccel_args: ""
     detect:
       width: 640
       height: 360
