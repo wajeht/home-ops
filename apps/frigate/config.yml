@@ -1,5 +1,15 @@
 auth:
+  enabled: true
+  trusted_proxies:
+    - 172.18.0.0/16
+  failed_login_rate_limit: "1/second;5/minute;20/hour"
+
+tls:
   enabled: false
+
+proxy:
+  header_map:
+    user: X-Forwarded-User
 
 mqtt:
   enabled: true

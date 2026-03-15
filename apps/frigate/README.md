@@ -58,7 +58,12 @@ sops apps/frigate/.env.sops
 
 ## key config decisions
 
-- `auth: false` — disabled, google-auth handles access
+- `auth: true` — Frigate's built-in auth enabled as defense in depth behind google-auth
+- `tls: false` — Traefik handles TLS, Frigate doesn't need its own
+- `proxy.header_map.user: X-Forwarded-User` — reads authenticated user from google-auth
+- `trusted_proxies: 172.18.0.0/16` — trusts Traefik on Docker network
+- `failed_login_rate_limit` — brute force protection
+- Traefik routes to port 8971 (authenticated) instead of 5000 (unauthenticated)
 - `openvino` detector on `GPU` — uses Intel HD 630 iGPU for object detection (much lower CPU than CPU detector)
 - `preset-vaapi` — Intel HD 630 hardware decoding for ffmpeg
 - `#hardware=vaapi` — go2rtc uses GPU for transcoding WebRTC/MSE streams
@@ -83,7 +88,7 @@ ONVIF PTZ on port 2020. Manual pan/tilt works in Frigate UI and HA Advanced Came
 - Tapo ONVIF port is **2020**, not 8000
 - Don't use raw RTSP in go2rtc — use direct `rtsp://` (not `ffmpeg:rtsp://`) for the main stream, add ffmpeg transcode as second source
 - Frigate uses s6-overlay — do NOT add `init: true`
-- Frigate's nginx does TLS on port 8971 — traefik must point to port 5000 instead
+- Frigate's TLS disabled (`tls: false`) — traefik handles TLS, routes to port 8971 (authenticated, no TLS)
 - Config must NOT be mounted as `:ro` — Frigate needs to migrate config between versions
 - `record.events` config removed in 0.15+ — causes validation error
 - GPU stats polling fails without `SYS_PERF` cap (harmless, GPU accel still works)
