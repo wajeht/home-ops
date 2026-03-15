@@ -75,7 +75,7 @@ sops apps/frigate/.env.sops
 - Two-way audio via `tapo://` protocol (SHA256 of Tapo cloud password in `.env.sops`)
 - Object filter: `min_score: 0.5`, `min_area: 1500` to reduce false positives
 - `clean_copy: false` — not using Frigate+, saves disk
-- `preset-record-generic-audio-copy` — recordings include camera audio
+- `preset-record-generic-audio-aac` — recordings include camera audio (Tapo outputs PCM-ALAW, must transcode to AAC for MP4)
 - `contour_area: 25` — medium motion sensitivity (default 10 too sensitive for apartment)
 - `api.origin: "*"` — CORS for hass-web-proxy integration (remote streaming via HA)
 
