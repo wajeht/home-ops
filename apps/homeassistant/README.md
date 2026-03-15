@@ -86,6 +86,12 @@ views:
               enabled: true
             timeline:
               enabled: true
+            screenshot:
+              enabled: true
+            download:
+              enabled: true
+            ptz_home:
+              enabled: true
         live:
           microphone:
             always_connected: false
@@ -107,7 +113,10 @@ views:
               mode: "on"
               position: bottom-right
             timeline:
-              mode: above
+              mode: below
+        view:
+          keyboard_shortcuts:
+            enabled: true
     title: LAN
     icon: mdi:lan
   - type: panel
@@ -135,6 +144,12 @@ views:
               enabled: true
             timeline:
               enabled: true
+            screenshot:
+              enabled: true
+            download:
+              enabled: true
+            ptz_home:
+              enabled: true
         live:
           auto_play:
             - selected
@@ -150,7 +165,12 @@ views:
               mode: "on"
               position: bottom-right
             timeline:
-              mode: above
+              mode: below
+        view:
+          keyboard_shortcuts:
+            enabled: true
+    title: Remote
+    icon: mdi:cloud
 ```
 
 ### streaming notes
@@ -161,5 +181,8 @@ views:
 - PTZ works on both tabs — it's HTTP API calls (browser → HA → Frigate → ONVIF → camera)
 - `scrubbing` profile enables dragging the timeline to scrub through recordings
 - `always_connected: false` — mic connects on demand (avoids permission errors remotely)
+- `screenshot` / `download` — capture stills or download clips from live view
+- `ptz_home` — return camera to home position after panning
+- `keyboard_shortcuts` — arrow keys control PTZ
 - go2rtc with VAAPI hardware transcode handles all streams
 - Frigate needs `go2rtc.api.origin: "*"` in config for hass-web-proxy CORS
