@@ -35,11 +35,23 @@ Then: Settings → Devices & Services → Add Integration → search "Frigate" �
 
 Auto-discovers cameras via MQTT (mosquitto in zigbee2mqtt stack).
 
+## Home Assistant Web Proxy
+
+Required for proxying go2rtc streams through HA. Install via HACS → Integrations → search "hass-web-proxy" → install → restart HA → Settings → Devices & Services → Add Integration → search "Proxy".
+
 ## Advanced Camera Card
 
 Requires HACS. In HACS → search "Advanced Camera Card" by dermotduffy (type: Frontend/Dashboard) → install → hard refresh browser (Cmd+Shift+R).
 
-Create a custom dashboard (Settings → Dashboards → Add Dashboard) since the default Overview page doesn't support custom cards. Set view layout to **Panel (single card)**.
+One dashboard with two tabs: **LAN** (full features) and **Remote** (clear streaming through Cloudflare).
+
+Create dashboard: Settings → Dashboards → Add Dashboard → set to **Panel (single card)**.
+
+### setup
+
+1. Install **Advanced Camera Card** via HACS (Frontend/Dashboard)
+2. Install **hass-web-proxy** via HACS (Integration) → add integration in Settings → Devices & Services
+3. Create dashboard, edit YAML, paste the config below
 
 ### dashboard YAML
 
@@ -76,7 +88,7 @@ views:
               enabled: true
         live:
           microphone:
-            always_connected: true
+            always_connected: false
             disconnect_seconds: 1
           auto_play:
             - selected
@@ -96,14 +108,58 @@ views:
               position: bottom-right
             timeline:
               mode: above
-    title: Camera
-    icon: mdi:webcam
+    title: LAN
+    icon: mdi:lan
+  - type: panel
+    path: remote
+    title: Remote
+    icon: mdi:cloud
+    cards:
+      - type: custom:advanced-camera-card
+        profiles:
+          - scrubbing
+        cameras:
+          - camera_entity: camera.tapo_cam
+            live_provider: ha
+        menu:
+          buttons:
+            microphone:
+              enabled: false
+            fullscreen:
+              enabled: true
+            media_player:
+              enabled: false
+            snapshots:
+              enabled: true
+            clips:
+              enabled: true
+            timeline:
+              enabled: true
+        live:
+          auto_play:
+            - selected
+            - visible
+          auto_pause:
+            - unselected
+            - hidden
+          lazy_load: true
+          show_image_during_load: true
+          transition_effect: none
+          controls:
+            ptz:
+              mode: "on"
+              position: bottom-right
+            timeline:
+              mode: above
 ```
 
 ### streaming notes
 
-- `webrtc` first — lowest latency, two-way audio works on LAN
-- `mse` fallback — works through Cloudflare (no two-way audio)
-- go2rtc with VAAPI hardware transcode handles the stream
-- Two-way audio requires WebRTC — only works on LAN (`192.168.4.161:8123`)
-- Cloudflare adds latency — use LAN IP for best experience
+- **LAN tab** (`192.168.4.161:8123`): `go2rtc` provider → WebRTC (lowest latency, two-way audio, PTZ)
+- **Remote tab** (`ha.jaw.dev`): `ha` provider → HA native stream (clear quality through Cloudflare, PTZ works)
+- Two-way audio requires WebRTC (direct UDP) — LAN only, Cloudflare can't proxy UDP
+- PTZ works on both tabs — it's HTTP API calls (browser → HA → Frigate → ONVIF → camera)
+- `scrubbing` profile enables dragging the timeline to scrub through recordings
+- `always_connected: false` — mic connects on demand (avoids permission errors remotely)
+- go2rtc with VAAPI hardware transcode handles all streams
+- Frigate needs `go2rtc.api.origin: "*"` in config for hass-web-proxy CORS
