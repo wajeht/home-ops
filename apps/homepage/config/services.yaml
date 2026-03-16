@@ -454,3 +454,9 @@
         #   type: gitea
         #   url: http://gitea:3000
         #   key: "{{HOMEPAGE_VAR_GITEA_KEY}}"
+
+    - DbGate:
+        icon: dbgate
+        href: https://dbgate.jaw.dev
+        description: Database Manager
+        # siteMonitor: http://dbgate:3000
