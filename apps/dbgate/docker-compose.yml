@@ -5,6 +5,10 @@ services:
     volumes:
       - /home/jaw/data/dbgate:/root/.dbgate
       - /home/jaw/data/close-powerlifting:/mnt/close-powerlifting
+      - /home/jaw/data/bang:/mnt/bang
+      - /home/jaw/data/favicon:/mnt/favicon
+      - /home/jaw/data/screenshot:/mnt/screenshot
+      - /home/jaw/data/calendar:/mnt/calendar
     networks:
       - traefik
       - miniflux-internal
