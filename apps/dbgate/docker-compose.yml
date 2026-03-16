@@ -7,13 +7,13 @@ services:
     networks:
       - traefik
       - miniflux-internal
-      - plausible-internal
-      - zipline-internal
-      - glitchtip-internal
-      - bitmagnet-internal
       - hello-world-internal
-      - paperless-internal
       - immich-internal
+      # - plausible-internal
+      # - zipline-internal
+      # - glitchtip-internal
+      # - bitmagnet-internal
+      # - paperless-internal
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000"]
       interval: 30s
@@ -48,24 +48,24 @@ networks:
   miniflux-internal:
     external: true
     name: miniflux_miniflux-internal
-  plausible-internal:
-    external: true
-    name: plausible_plausible-internal
-  zipline-internal:
-    external: true
-    name: zipline_zipline-internal
-  glitchtip-internal:
-    external: true
-    name: glitchtip_glitchtip-internal
-  bitmagnet-internal:
-    external: true
-    name: bitmagnet_bitmagnet-internal
   hello-world-internal:
     external: true
     name: hello-world_internal
-  paperless-internal:
-    external: true
-    name: paperless-ngx_paperless-internal
   immich-internal:
     external: true
     name: immich_immich-internal
+  # plausible-internal:
+  #   external: true
+  #   name: plausible_plausible-internal
+  # zipline-internal:
+  #   external: true
+  #   name: zipline_zipline-internal
+  # glitchtip-internal:
+  #   external: true
+  #   name: glitchtip_glitchtip-internal
+  # bitmagnet-internal:
+  #   external: true
+  #   name: bitmagnet_bitmagnet-internal
+  # paperless-internal:
+  #   external: true
+  #   name: paperless-ngx_paperless-internal
