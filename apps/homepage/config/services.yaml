@@ -227,6 +227,12 @@
         description: Dependency Updates
         # siteMonitor: http://renovate:8080
 
+    - DbGate:
+        icon: dbgate
+        href: https://dbgate.jaw.dev
+        description: Database Manager
+        # siteMonitor: http://dbgate:3000
+
 - Logs:
     - Ntfy:
         icon: ntfy
