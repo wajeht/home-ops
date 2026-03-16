@@ -4,7 +4,7 @@ services:
     image: dbgate/dbgate:latest@sha256:718a43db70a187917489a2865108862e40e671be055b0c96d7e8ffb3f0047f31
     volumes:
       - /home/jaw/data/dbgate:/root/.dbgate
-      - /home/jaw/data/close-powerlifting:/mnt/close-powerlifting:ro
+      - /home/jaw/data/close-powerlifting:/mnt/close-powerlifting
     networks:
       - traefik
       - miniflux-internal
