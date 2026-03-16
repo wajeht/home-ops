@@ -1,0 +1,71 @@
+services:
+  dbgate:
+    container_name: dbgate
+    image: dbgate/dbgate:latest
+    volumes:
+      - /home/jaw/data/dbgate:/root/.dbgate
+    networks:
+      - traefik
+      - miniflux-internal
+      - plausible-internal
+      - zipline-internal
+      - glitchtip-internal
+      - bitmagnet-internal
+      - hello-world-internal
+      - paperless-internal
+      - immich-internal
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dbgate.rule=Host(`dbgate.jaw.dev`)"
+      - "traefik.http.routers.dbgate.entrypoints=websecure"
+      - "traefik.http.routers.dbgate.middlewares=google-auth@file"
+      - "traefik.http.services.dbgate.loadbalancer.server.port=3000"
+
+networks:
+  traefik:
+    external: true
+  miniflux-internal:
+    external: true
+    name: miniflux_miniflux-internal
+  plausible-internal:
+    external: true
+    name: plausible_plausible-internal
+  zipline-internal:
+    external: true
+    name: zipline_zipline-internal
+  glitchtip-internal:
+    external: true
+    name: glitchtip_glitchtip-internal
+  bitmagnet-internal:
+    external: true
+    name: bitmagnet_bitmagnet-internal
+  hello-world-internal:
+    external: true
+    name: hello-world_internal
+  paperless-internal:
+    external: true
+    name: paperless-ngx_paperless-internal
+  immich-internal:
+    external: true
+    name: immich_immich-internal
