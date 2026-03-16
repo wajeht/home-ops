@@ -2,6 +2,8 @@ services:
   dbgate:
     container_name: dbgate
     image: dbgate/dbgate:latest@sha256:718a43db70a187917489a2865108862e40e671be055b0c96d7e8ffb3f0047f31
+    env_file:
+      - .env
     volumes:
       - /home/jaw/data/dbgate:/root/.dbgate
       - /home/jaw/data/close-powerlifting:/mnt/close-powerlifting
