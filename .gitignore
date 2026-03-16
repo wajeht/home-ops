@@ -46,6 +46,9 @@ tmp/
 *.tmp
 *.bak
 
+# Personal notes
+docs/todo.md
+
 # Claude
 .claude/settings.local.json
 CLAUDE.md

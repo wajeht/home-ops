@@ -461,8 +461,8 @@
         #   url: http://gitea:3000
         #   key: "{{HOMEPAGE_VAR_GITEA_KEY}}"
 
-    - DbGate:
-        icon: dbgate
-        href: https://dbgate.jaw.dev
-        description: Database Manager
-        # siteMonitor: http://dbgate:3000
+    - Speed Test:
+        icon: openspeedtest
+        href: https://speedtest.jaw.dev
+        description: Network Speed Test
+        # siteMonitor: http://speedtest:3000
