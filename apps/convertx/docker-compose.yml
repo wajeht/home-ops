@@ -10,11 +10,14 @@ services:
       - /home/jaw/data/convertx:/app/data
     networks:
       - traefik
+    tmpfs:
+      - /tmp
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
       timeout: 5s
       retries: 3
+      start_period: 30s
     restart: unless-stopped
     init: true
     cap_drop:
@@ -41,7 +44,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.convertx.rule=Host(`convertx.jaw.dev`)"
       - "traefik.http.routers.convertx.entrypoints=websecure"
-      - "traefik.http.routers.seerr.middlewares=google-auth-user@file"
+      - "traefik.http.routers.convertx.middlewares=google-auth-user@file"
       - "traefik.http.services.convertx.loadbalancer.server.port=3000"
 
 networks:
