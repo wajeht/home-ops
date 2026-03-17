@@ -4,7 +4,7 @@ services:
     image: ghcr.io/blakeblackshear/frigate:0.17.0@sha256:5be5ce3b79f8b09a52957afea9d4a23ad62c9f077a05d9047e3404eb78c304a8
     env_file:
       - .env
-    shm_size: 256m
+    shm_size: 512m
     devices:
       - /dev/dri:/dev/dri
     group_add:
