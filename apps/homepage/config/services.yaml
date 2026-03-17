@@ -387,6 +387,12 @@
         description: This Repo
 
 - Tools:
+    - ConvertX:
+        icon: mdi-file-swap
+        href: https://convertx.jaw.dev
+        description: File Converter
+        # siteMonitor: http://convertx:3000
+
     - Vaultwarden:
         icon: vaultwarden
         href: https://vault.jaw.dev
