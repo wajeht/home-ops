@@ -1,3 +1,4 @@
+# force
 services:
   prowlarr:
     container_name: prowlarr
