@@ -6,6 +6,8 @@ services:
       - .env
     environment:
       - TZ=America/Chicago
+    devices:
+      - /dev/dri:/dev/dri
     volumes:
       - /home/jaw/data/convertx:/app/data
     networks:
@@ -33,8 +35,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2.0"
-          memory: 1G
+          cpus: "4.0"
+          memory: 2G
     logging:
       driver: "json-file"
       options:
