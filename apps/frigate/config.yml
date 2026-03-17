@@ -55,6 +55,9 @@ objects:
       min_score: 0.5
       min_area: 1500
 
+notifications:
+  enabled: true
+
 review:
   alerts:
     labels:
