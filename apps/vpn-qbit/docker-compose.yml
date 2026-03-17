@@ -13,6 +13,8 @@ services:
     environment:
       - TZ=America/Chicago
       - FIREWALL_VPN_INPUT_PORTS=45839
+      - HTTPPROXY=on
+      - HTTPPROXY_LISTENING_ADDRESS=:8888
     volumes:
       - /home/jaw/data/gluetun:/gluetun
     networks:
