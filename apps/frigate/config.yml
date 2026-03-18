@@ -53,7 +53,15 @@ objects:
   filters:
     person:
       min_score: 0.5
+      threshold: 0.7
       min_area: 1500
+      max_area: 100000
+
+birdseye:
+  enabled: true
+  mode: objects
+  width: 1280
+  height: 720
 
 semantic_search:
   enabled: true
@@ -65,6 +73,7 @@ face_recognition:
 
 notifications:
   enabled: true
+  cooldown: 30
 
 review:
   alerts:
@@ -124,6 +133,8 @@ cameras:
       fps: 5
     motion:
       contour_area: 25
+      lightning_threshold: 0.8
+      improve_contrast: true
     objects:
       track:
         - person
