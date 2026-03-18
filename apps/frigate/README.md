@@ -65,7 +65,7 @@ sops apps/frigate/.env.sops
 - `failed_login_rate_limit` — brute force protection
 - Traefik routes to port 8971 (authenticated) instead of 5000 (unauthenticated)
 - `openvino` detector on `GPU` with YOLOv9-t (320x320) — much better accuracy than default MobileNet SSD (300x300), ~30ms inference on HD 630
-- `preset-vaapi` — Intel HD 630 hardware decoding for ffmpeg
+- No `hwaccel_args` on any Frigate ffmpeg input — record stream doesn't decode (just copies), detect stream uses CPU decode. Eliminates GPU contention with OpenVINO + face recognition + embeddings. VAAPI is only used by go2rtc for WebRTC/MSE transcode (separate from Frigate's ffmpeg)
 - `#hardware=vaapi` — go2rtc uses GPU for transcoding WebRTC/MSE streams
 - `webrtc.candidates: 192.168.4.161:8555` — tells go2rtc the server LAN IP for WebRTC
 - `rolling_update: false` — stateful app, can't run multiple instances
@@ -77,7 +77,7 @@ sops apps/frigate/.env.sops
 - `clean_copy: false` — not using Frigate+, saves disk
 - `preset-record-generic-audio-aac` — recordings include camera audio (Tapo outputs PCM-ALAW, must transcode to AAC for MP4)
 - `contour_area: 25` — medium motion sensitivity (default 10 too sensitive for apartment)
-- Detect stream uses CPU decode (`hwaccel_args: ""`) — VAAPI causes "Failed to sync surface" (GPU contention), QSV causes "exceeded fps limit" (too fast). CPU decode at 640x360@5fps is ~1% CPU, stable
+- Detect stream uses CPU decode (no hwaccel_args) — VAAPI causes "Failed to sync surface" when GPU is busy with OpenVINO + face recognition + embeddings (known Intel iHD driver bug, see media-driver#469). QSV causes "exceeded fps limit" on 7th gen. CPU decode at 640x360@5fps is ~1% CPU, stable. Record stream doesn't need hwaccel_args either — Frigate just copies the raw stream without decoding
 - `model` is a **top-level** config block, not nested under `detectors` — Frigate's config migration mangles it otherwise
 - `api.origin: "*"` — CORS for hass-web-proxy integration (remote streaming via HA)
 
