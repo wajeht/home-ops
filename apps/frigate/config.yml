@@ -74,14 +74,14 @@ review:
 record:
   enabled: true
   retain:
-    days: 7
+    days: 30
     mode: motion
 
 snapshots:
   enabled: true
   clean_copy: false
   retain:
-    default: 7
+    default: 30
 
 go2rtc:
   api:
@@ -118,6 +118,7 @@ cameras:
           roles:
             - detect
     detect:
+      enabled: true
       width: 640
       height: 360
       fps: 5
