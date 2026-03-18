@@ -75,6 +75,7 @@ All per-app borg repos are stored on NFS (`~/backup/<app>/`) so backups survive 
 | homeassistant      | 2:05 AM  | SQLite+files  | `~/backup/homeassistant/`      |
 | zigbee2mqtt        | 2:10 AM  | Files only    | `~/backup/zigbee2mqtt/`        |
 | dbgate             | 2:15 AM  | Files only    | `~/backup/dbgate/`             |
+| frigate            | 2:20 AM  | SQLite+files  | `~/backup/frigate/`            |
 | **global**         | 2:30 AM  | All ~/data/   | `~/backup/borg/`               |
 
 ### Borgmatic Commands
