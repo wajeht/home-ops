@@ -18,7 +18,7 @@ services:
       - "8555:8555/udp" # WebRTC (needs LAN access)
     volumes:
       - /home/jaw/data/frigate:/config
-      - /home/jaw/data/frigate/media:/media/frigate
+      - /mnt/sata/frigate/media:/media/frigate
       - ./config.yml:/config/config.yml
       - ./yolov9-t-320.onnx:/config/model_cache/yolov9-t-320.onnx:ro
       - /etc/localtime:/etc/localtime:ro
