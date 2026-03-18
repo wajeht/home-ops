@@ -16,7 +16,9 @@ sqlite_databases:
 
 repositories:
   - path: /repository
-    label: prowlarr
+    label: nas
+  - path: /local-backup
+    label: local
 
 archive_name_format: "prowlarr-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3

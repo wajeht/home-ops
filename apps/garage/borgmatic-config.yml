@@ -6,7 +6,9 @@ exclude_patterns:
 
 repositories:
   - path: /repository
-    label: garage
+    label: nas
+  - path: /local-backup
+    label: local
 
 archive_name_format: "garage-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3

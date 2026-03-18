@@ -4,7 +4,9 @@ sqlite_databases:
 
 repositories:
   - path: /repository
-    label: mm2us
+    label: nas
+  - path: /local-backup
+    label: local
 
 archive_name_format: "mm2us-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3

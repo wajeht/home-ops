@@ -106,6 +106,7 @@ services:
     volumes:
       - /home/jaw/data/zigbee2mqtt:/source/data
       - /home/jaw/backup/zigbee2mqtt:/repository
+      - /mnt/sata/backup/zigbee2mqtt:/local-backup
       - /home/jaw/data/zigbee2mqtt/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

@@ -52,6 +52,7 @@ services:
     volumes:
       - /home/jaw/data/calendar:/source/data
       - /home/jaw/backup/calendar:/repository
+      - /mnt/sata/backup/calendar:/local-backup
       - /home/jaw/data/calendar/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

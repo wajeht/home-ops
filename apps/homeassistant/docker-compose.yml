@@ -58,6 +58,7 @@ services:
     volumes:
       - /home/jaw/data/homeassistant:/source/data
       - /home/jaw/backup/homeassistant:/repository
+      - /mnt/sata/backup/homeassistant:/local-backup
       - /home/jaw/data/homeassistant/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

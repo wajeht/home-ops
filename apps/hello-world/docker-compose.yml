@@ -93,6 +93,7 @@ services:
       - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - /home/jaw/backup/hello-world:/repository
+      - /mnt/sata/backup/hello-world:/local-backup
       - /home/jaw/data/hello-world/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
