@@ -6,7 +6,7 @@ Frigate NVR at `frigate.jaw.dev`. Self-hosted security camera system with AI obj
 
 - Dell OptiPlex 7050, Intel i7-7700 (Kaby Lake), Intel HD 630 GPU
 - VAAPI hardware acceleration for ffmpeg decoding/encoding
-- OpenVINO detector on Intel HD 630 iGPU (replaced CPU detector)
+- OpenVINO detector on Intel HD 630 iGPU with YOLOv9-t model (upgraded from default MobileNet SSD)
 
 ## camera setup (TP-Link Tapo Pan/Tilt 2K)
 
@@ -64,7 +64,7 @@ sops apps/frigate/.env.sops
 - `trusted_proxies: 172.18.0.0/16` — trusts Traefik on Docker network
 - `failed_login_rate_limit` — brute force protection
 - Traefik routes to port 8971 (authenticated) instead of 5000 (unauthenticated)
-- `openvino` detector on `GPU` — uses Intel HD 630 iGPU for object detection (much lower CPU than CPU detector)
+- `openvino` detector on `GPU` with YOLOv9-t (320x320) — much better accuracy than default MobileNet SSD (300x300), ~30ms inference on HD 630
 - `preset-vaapi` — Intel HD 630 hardware decoding for ffmpeg
 - `#hardware=vaapi` — go2rtc uses GPU for transcoding WebRTC/MSE streams
 - `webrtc.candidates: 192.168.4.161:8555` — tells go2rtc the server LAN IP for WebRTC
@@ -97,10 +97,75 @@ ONVIF PTZ on port 2020. Manual pan/tilt works in Frigate UI and HA Advanced Came
 - GPU stats polling needs `PERFMON` cap (added, shows GPU usage in Frigate UI)
 - Streaming through Cloudflare adds latency — use LAN IP for best experience
 - Two-way audio requires WebRTC (doesn't work through Cloudflare) — use LAN IP
+- YOLOv9 model uses `nchw` input tensor and `float` dtype — different from MobileNet's `nhwc`/`bgr`. Wrong config = silent bad detections
+- YOLOv9 uses COCO-80 labels (`/labelmap/coco-80.txt`, built into container), MobileNet uses COCO-91 — don't mix them up
+- First startup after model change is very slow (OpenVINO ONNX→IR compilation), don't assume it's broken
 
 ## network
 
 Camera is on IoT VLAN (192.168.30.0/24, VLAN 30), isolated from main LAN. Server reaches it via manual UniFi firewall rules. See `docs/security.md` for VLAN and firewall details.
+
+## detection model
+
+### why YOLOv9-t over MobileNet SSD (default)
+
+Frigate ships with SSDLite MobileNet v2 (2018-era, 300x300) as the default OpenVINO model. It works but has noticeably worse detection accuracy — more false positives, missed detections at distance, and lower confidence scores compared to modern YOLO models.
+
+Frigate's own docs now recommend OpenVINO on Intel iGPU over Google Coral TPU for new setups. The Coral is locked to MobileNet SSD (can't run YOLO), has increasingly problematic driver maintenance across kernel updates, and offers no accuracy advantage. Our Intel HD 630 iGPU with OpenVINO runs YOLOv9-t at ~30ms inference — well within the 200ms budget at 5fps detect — with significantly better accuracy.
+
+### why not Coral TPU
+
+Evaluated and decided against for this setup:
+
+- **Accuracy**: Coral is locked to old MobileNet SSD models (300x300). YOLOv9 on iGPU is much more accurate
+- **Speed**: Coral is faster (~2-3ms vs ~30ms) but speed isn't the bottleneck with 1 camera at 5fps (200ms budget)
+- **Drivers**: Coral gasket driver is unsigned (requires Secure Boot disabled), breaks across kernel updates, increasingly unmaintained
+- **Hardware**: OptiPlex 7050 Micro has a free M.2 A+E WiFi slot (Q270 chipset, standard PCIe — no CNVi lockout) where a Coral M.2 would physically fit. USB Coral also works (confirmed by other 7050 users). But neither is worth it given the accuracy trade-off
+- **Scaling**: Coral becomes worthwhile at 5+ cameras where dedicated inference offloads the iGPU for ffmpeg decode. At 1 camera, no benefit
+
+### why 320x320 and not 640
+
+Frigate crops frames to motion regions before running detection. At 320x320 the model sees a zoomed-in crop of where motion was detected, so effective resolution is similar to 640 on the full frame. Going to 640 doubles inference time (~60ms) with minimal accuracy gain. Only useful for very small/distant objects.
+
+### why `t` (tiny) and not `s` (small)
+
+The `s` model is ~2x slower (~60ms on HD 630). With 1 camera and 200ms frame budget, `s` would still work, but `t` leaves more headroom for future cameras or iGPU contention with VAAPI decode and Immich ML.
+
+### model file
+
+The model file (`yolov9-t-320.onnx`, 8.8MB) is checked into git and bind-mounted read-only into the container at `/config/model_cache/`. Frigate doesn't auto-download YOLO models for OpenVINO — you must export and supply the `.onnx` file yourself.
+
+First startup after a model change is slow (OpenVINO compiles ONNX to an internal IR cache). Subsequent starts are fast.
+
+### re-exporting the model
+
+To re-export (e.g., different size or model variant), run on any machine with Docker:
+
+```bash
+cd /tmp && docker build . --build-arg MODEL_SIZE=t --build-arg IMG_SIZE=320 --output . -f- <<'EOF'
+FROM python:3.11 AS build
+RUN apt-get update && apt-get install --no-install-recommends -y cmake libgl1 && rm -rf /var/lib/apt/lists/*
+COPY --from=ghcr.io/astral-sh/uv:0.10.4 /uv /bin/
+WORKDIR /yolov9
+ADD https://github.com/WongKinYiu/yolov9.git .
+RUN uv pip install --system -r requirements.txt
+RUN uv pip install --system onnx==1.18.0 onnxruntime onnxscript
+ARG MODEL_SIZE
+ARG IMG_SIZE
+ADD https://github.com/WongKinYiu/yolov9/releases/download/v0.1/yolov9-${MODEL_SIZE}-converted.pt yolov9-${MODEL_SIZE}.pt
+RUN sed -i "s/ckpt = torch.load(attempt_download(w), map_location='cpu')/ckpt = torch.load(attempt_download(w), map_location='cpu', weights_only=False)/g" models/experimental.py
+RUN python3 export.py --weights ./yolov9-${MODEL_SIZE}.pt --imgsz ${IMG_SIZE} --include onnx
+FROM scratch
+ARG MODEL_SIZE
+ARG IMG_SIZE
+COPY --from=build /yolov9/yolov9-${MODEL_SIZE}.onnx /yolov9-${MODEL_SIZE}-${IMG_SIZE}.onnx
+EOF
+
+# copy into repo
+cp yolov9-t-320.onnx ~/Dev/home-ops/apps/frigate/
+```
+
+Build args: `MODEL_SIZE` = `t` (tiny) or `s` (small), `IMG_SIZE` = `320` or `640`. Output is `yolov9-{size}-{img}.onnx`.
 
 ## adding a new camera
 
