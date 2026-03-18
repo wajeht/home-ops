@@ -6,7 +6,9 @@ postgresql_databases:
 
 repositories:
   - path: /repository
-    label: bitmagnet
+    label: nas
+  - path: /local-backup
+    label: local
 
 archive_name_format: "bitmagnet-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3

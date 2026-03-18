@@ -55,6 +55,7 @@ services:
     volumes:
       - /home/jaw/data/radarr:/source/data
       - /home/jaw/backup/radarr:/repository
+      - /mnt/sata/backup/radarr:/local-backup
       - /home/jaw/data/radarr/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

@@ -14,7 +14,9 @@ sqlite_databases:
 
 repositories:
   - path: /repository
-    label: ntfy
+    label: nas
+  - path: /local-backup
+    label: local
 
 archive_name_format: "ntfy-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3

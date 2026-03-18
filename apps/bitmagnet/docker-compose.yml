@@ -102,6 +102,7 @@ services:
       - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - /home/jaw/backup/bitmagnet:/repository
+      - /mnt/sata/backup/bitmagnet:/local-backup
       - /home/jaw/data/bitmagnet/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

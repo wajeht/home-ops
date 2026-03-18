@@ -334,7 +334,9 @@ postgresql_databases:
 
 repositories:
   - path: /repository
-    label: myapp
+    label: nas
+  - path: /local-backup
+    label: local
 
 archive_name_format: "myapp-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3
@@ -390,6 +392,7 @@ myapp-borgmatic:
   volumes:
     - /home/jaw/data/myapp:/source/data:ro
     - /home/jaw/backup/myapp:/repository
+    - /mnt/sata/backup/myapp:/local-backup
     - /home/jaw/data/myapp/borgmatic:/borgmatic/state
     - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
     - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
@@ -455,7 +458,9 @@ sqlite_databases:
 
 repositories:
   - path: /repository
-    label: myapp
+    label: nas
+  - path: /local-backup
+    label: local
 
 archive_name_format: "myapp-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3
@@ -502,6 +507,7 @@ myapp-borgmatic:
   volumes:
     - /home/jaw/data/myapp:/source/data
     - /home/jaw/backup/myapp:/repository
+    - /mnt/sata/backup/myapp:/local-backup
     - /home/jaw/data/myapp/borgmatic:/borgmatic/state
     - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
     - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

@@ -64,6 +64,7 @@ services:
     volumes:
       - /home/jaw/data/ntfy:/source/data
       - /home/jaw/backup/ntfy:/repository
+      - /mnt/sata/backup/ntfy:/local-backup
       - /home/jaw/data/ntfy/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

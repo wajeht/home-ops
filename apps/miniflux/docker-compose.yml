@@ -97,6 +97,7 @@ services:
       - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - /home/jaw/backup/miniflux:/repository
+      - /mnt/sata/backup/miniflux:/local-backup
       - /home/jaw/data/miniflux/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
