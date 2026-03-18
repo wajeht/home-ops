@@ -2,7 +2,7 @@
 services:
   dbgate:
     container_name: dbgate
-    image: dbgate/dbgate:latest@sha256:718a43db70a187917489a2865108862e40e671be055b0c96d7e8ffb3f0047f31
+    image: dbgate/dbgate:latest@sha256:b054b3dd3a1cc27f6955b4152d7f546ae48f34659b3e2db6b98df7e6e6da9c84
     env_file:
       - .env
     volumes:
