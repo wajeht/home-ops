@@ -222,7 +222,11 @@ make borgmatic-init
 make borgmatic-backup
 ```
 
-### 5. Verify
+### 5. OS Tuning
+
+See [Quick Start — OS Tuning](quick-start.md#os-tuning) for swappiness and CPU governor settings.
+
+### 6. Verify
 
 ```bash
 ./scripts/home-ops.sh status
