@@ -179,6 +179,13 @@ SUDO="sudo"
 REPO_DIR="$USER_HOME/home-ops"
 export SOPS_AGE_KEY_FILE="$USER_HOME/.sops/age-key.txt"
 
+# SATA config (local secondary disk)
+SATA_DEVICE="/dev/sda1"
+SATA_MOUNT="/mnt/sata"
+SATA_DIRS=(
+	"$SATA_MOUNT/frigate/media"
+)
+
 # NFS config
 NAS_IP="192.168.4.219"
 NFS_MOUNTS=(
@@ -309,6 +316,65 @@ cmd_nfs() {
 }
 
 #=============================================================================
+# SATA - Mount/unmount local SATA drive
+#=============================================================================
+sata_mount() {
+	if mountpoint -q "$SATA_MOUNT" 2>/dev/null; then
+		dim "sata: Already mounted"
+		return
+	fi
+	if [ ! -b "$SATA_DEVICE" ]; then
+		warn "SATA device $SATA_DEVICE not found, skipping"
+		return
+	fi
+	info "Mounting SATA: $SATA_DEVICE -> $SATA_MOUNT"
+	$SUDO mkdir -p "$SATA_MOUNT"
+	if $SUDO mount "$SATA_DEVICE" "$SATA_MOUNT"; then
+		# Ensure fstab entry exists
+		if ! grep -q "$SATA_DEVICE.*$SATA_MOUNT" /etc/fstab 2>/dev/null; then
+			echo "$SATA_DEVICE $SATA_MOUNT ext4 defaults 0 2" | $SUDO tee -a /etc/fstab >/dev/null
+			dim "Added fstab entry"
+		fi
+		# Create subdirectories
+		for dir in "${SATA_DIRS[@]}"; do
+			$SUDO mkdir -p "$dir"
+		done
+		$SUDO chown -R 1000:1000 "$SATA_MOUNT"
+		ok "sata"
+	else
+		err "sata mount failed"
+	fi
+}
+
+sata_unmount() {
+	info "Unmounting SATA: $SATA_MOUNT"
+	if $SUDO umount "$SATA_MOUNT" 2>/dev/null; then
+		ok "sata"
+	else
+		dim "Not mounted"
+	fi
+}
+
+sata_status() {
+	if mountpoint -q "$SATA_MOUNT" 2>/dev/null; then
+		printf "${GREEN}%-10s${NC} MOUNTED   " "sata:"
+		df -h "$SATA_MOUNT" | awk 'NR==2 {print $3"/"$2" ("$5" used)"}'
+	else
+		printf "${RED}%-10s${NC} NOT MOUNTED\n" "sata:"
+	fi
+}
+
+cmd_sata() {
+	local action=${1:-status}
+	case "$action" in
+		mount) sata_mount ;;
+		unmount | umount) sata_unmount ;;
+		status) sata_status ;;
+		*) echo -e "Usage: $0 sata {mount|unmount|status}" ;;
+	esac
+}
+
+#=============================================================================
 # INSTALL - Deploy all services
 #=============================================================================
 cmd_install() {
@@ -346,8 +412,9 @@ cmd_install() {
 		$SUDO chmod +x /usr/local/bin/sops
 	fi
 
-	# Mount NFS shares before creating dirs (so NFS paths aren't created as local dirs)
-	step "3/4" "NFS + Directories..."
+	# Mount drives before creating dirs (so mount paths aren't created as local dirs)
+	step "3/4" "Mounts + Directories..."
+	sata_mount
 	cmd_nfs mount all
 	cmd_setup
 
@@ -480,11 +547,14 @@ cmd_status() {
 	echo -e "${BOLD}Containers:${NC}"
 	$SUDO docker ps --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || dim "None"
 	echo ""
+	echo -e "${BOLD}SATA:${NC}"
+	sata_status
+	echo ""
 	echo -e "${BOLD}NFS Mounts:${NC}"
 	cmd_nfs status
 	echo ""
 	echo -e "${BOLD}Disk:${NC}"
-	df -h "$USER_HOME/data" "$USER_HOME/plex" 2>/dev/null | tail -n +2 || true
+	df -h "$USER_HOME/data" "$USER_HOME/plex" "$SATA_MOUNT" 2>/dev/null | tail -n +2 || true
 }
 
 #=============================================================================
@@ -655,6 +725,10 @@ case "${1:-}" in
 	setup)
 		cmd_setup
 		;;
+	sata)
+		shift
+		cmd_sata "$@"
+		;;
 	nfs)
 		shift
 		cmd_nfs "$@"
@@ -697,6 +771,9 @@ case "${1:-}" in
 		echo ""
 		echo -e "${BOLD}Commands:${NC}"
 		echo -e "  ${GREEN}setup${NC}                    Create all data directories"
+		echo -e "  ${GREEN}sata mount${NC}               Mount SATA drive (/mnt/sata)"
+		echo -e "  ${GREEN}sata unmount${NC}             Unmount SATA drive"
+		echo -e "  ${GREEN}sata status${NC}              Show SATA mount status"
 		echo -e "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
 		echo -e "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
 		echo -e "  ${GREEN}nfs status${NC}               Show NFS mount status"
