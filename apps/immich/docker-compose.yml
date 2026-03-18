@@ -75,7 +75,8 @@ services:
       - .env
     environment:
       - TZ=America/Chicago
-      - MACHINE_LEARNING_MODEL_TTL=600
+      - MACHINE_LEARNING_MODEL_TTL=0
+      - MACHINE_LEARNING_MODEL_INTRA_OP_THREADS=4
     volumes:
       - /home/jaw/data/immich/model-cache:/cache
     networks:
