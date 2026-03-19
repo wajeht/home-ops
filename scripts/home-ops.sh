@@ -708,7 +708,8 @@ cmd_images() {
 			local running_file
 			running_file=$(mktemp)
 			docker ps --format '{{.Image}}' | while read -r img; do
-				docker image inspect --format '{{.Id}}' "$img" 2>/dev/null || true
+				docker image inspect --format '{{.Id}}' "$img" 2>/dev/null | sed 's/sha256://' | head -c12 || true
+				echo
 			done | sort -u >"$running_file"
 
 			echo ""
