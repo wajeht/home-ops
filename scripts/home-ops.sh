@@ -705,17 +705,16 @@ cmd_images() {
 
 	case "$action" in
 		status)
-			# Build lookup of image IDs used by running containers
 			local running_file
 			running_file=$(mktemp)
-			$SUDO docker ps --format '{{.Image}}' | while read -r img; do
-				$SUDO docker image inspect --format '{{.Id}}' "$img" 2>/dev/null
+			docker ps --format '{{.Image}}' | while read -r img; do
+				docker image inspect --format '{{.Id}}' "$img" 2>/dev/null || true
 			done | sort -u >"$running_file"
 
 			echo ""
 			echo -e "${BOLD}Stale images (outdated, freed after next redeploy):${NC}"
 			local stale_out
-			stale_out=$($SUDO docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | awk -F'\t' '$3 == "<none>"' | while IFS=$'\t' read -r id repo tag size; do
+			stale_out=$(docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | awk -F'\t' '$3 == "<none>"' | while IFS=$'\t' read -r id repo _ size; do
 				grep -q "$id" "$running_file" 2>/dev/null && printf "  %-45s %10s\n" "$repo" "$size" || true
 			done)
 			if [ -z "$stale_out" ]; then dim "None"; else echo "$stale_out"; fi
@@ -723,7 +722,7 @@ cmd_images() {
 			echo ""
 			echo -e "${BOLD}Prunable images (safe to remove now):${NC}"
 			local prunable_out
-			prunable_out=$($SUDO docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | while IFS=$'\t' read -r id repo tag size; do
+			prunable_out=$(docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | while IFS=$'\t' read -r id repo tag size; do
 				grep -q "$id" "$running_file" 2>/dev/null || printf "  %-45s %10s\n" "$repo:$tag" "$size"
 			done)
 			if [ -z "$prunable_out" ]; then dim "None"; else echo "$prunable_out"; fi
@@ -733,13 +732,13 @@ cmd_images() {
 			echo ""
 			echo -e "${BOLD}Orphan volumes:${NC}"
 			local total_vols orphan_vols
-			total_vols=$($SUDO docker volume ls -q | wc -l)
-			orphan_vols=$($SUDO docker volume ls -f dangling=true -q | wc -l)
+			total_vols=$(docker volume ls -q | wc -l)
+			orphan_vols=$(docker volume ls -f dangling=true -q | wc -l)
 			echo -e "  ${orphan_vols} orphan (${total_vols} total)"
 
 			echo ""
 			echo -e "${BOLD}Docker disk usage:${NC}"
-			$SUDO docker system df
+			docker system df
 
 			echo ""
 			dim "Stale images free up after docker-cd redeploys those stacks"
@@ -747,13 +746,13 @@ cmd_images() {
 			;;
 		prune)
 			info "Removing unused images..."
-			$SUDO docker image prune -af
+			docker image prune -af
 			echo ""
 			info "Removing orphan volumes..."
-			$SUDO docker volume prune -f
+			docker volume prune -f
 			echo ""
 			info "Final state:"
-			$SUDO docker system df
+			docker system df
 			ok "Cleanup complete"
 			;;
 		*)
