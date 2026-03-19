@@ -1,3 +1,4 @@
+# lint-ignore: no-new-privileges — container uses su (setuid binary) for internal PG/Redis setup
 services:
   readmeabook:
     container_name: readmeabook
@@ -12,16 +13,17 @@ services:
       - /home/jaw/data/readmeabook/db:/var/lib/postgresql/data
       - /home/jaw/data/readmeabook/redis:/var/lib/redis
       - /home/jaw/plex:/data
+      - /home/jaw/plex/downloads:/downloads
       - /home/jaw/plex/audiobooks:/media
     networks:
       - traefik
       - media
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO /dev/null http://localhost:3030/api/health || exit 1"]
+      test: ["CMD", "curl", "-f", "http://localhost:3030/api/health"]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 60s
+      retries: 5
+      start_period: 120s
     restart: unless-stopped
     stop_grace_period: 30s
     oom_score_adj: -300
@@ -34,9 +36,6 @@ services:
       - SETGID
       - SETUID
       - NET_BIND_SERVICE
-      - NET_RAW
-    security_opt:
-      - no-new-privileges:true
     deploy:
       resources:
         limits:

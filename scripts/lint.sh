@@ -19,11 +19,11 @@ done < <(find . -name '.env.sops' -not -path './.git/*' -not -path './apps/adgua
 # Container hardening
 echo "Checking container hardening..."
 while IFS= read -r -d '' f; do
-	if ! grep -q 'cap_drop' "$f"; then
+	if ! grep -q 'cap_drop' "$f" && ! grep -q '# lint-ignore: cap_drop' "$f"; then
 		echo "ERROR: $f missing cap_drop: [ALL]"
 		fail=1
 	fi
-	if ! grep -q 'no-new-privileges' "$f"; then
+	if ! grep -q 'no-new-privileges' "$f" && ! grep -q '# lint-ignore: no-new-privileges' "$f"; then
 		echo "ERROR: $f missing security_opt: no-new-privileges"
 		fail=1
 	fi
