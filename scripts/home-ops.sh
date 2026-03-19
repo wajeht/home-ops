@@ -736,15 +736,7 @@ cmd_images() {
 			;;
 		prune)
 			info "Removing unused images..."
-			local to_remove
-			to_remove=$($SUDO docker images --format '{{.ID}}' | while read -r id; do
-				if ! $SUDO docker ps -q --filter "ancestor=$id" 2>/dev/null | grep -q .; then
-					echo "$id"
-				fi
-			done)
-			if [ -n "$to_remove" ]; then
-				echo "$to_remove" | xargs $SUDO docker image rm 2>/dev/null || true
-			fi
+			$SUDO docker image prune -af
 			echo ""
 			info "Removing orphan volumes..."
 			$SUDO docker volume prune -f
