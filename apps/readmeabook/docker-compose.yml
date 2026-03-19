@@ -1,0 +1,60 @@
+services:
+  readmeabook:
+    container_name: readmeabook
+    image: ghcr.io/kikootwo/readmeabook:v1.1.6
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/readmeabook/config:/app/config
+      - /home/jaw/data/readmeabook/cache:/app/cache
+      - /home/jaw/data/readmeabook/db:/var/lib/postgresql/data
+      - /home/jaw/data/readmeabook/redis:/var/lib/redis
+      - /home/jaw/plex:/data
+      - /home/jaw/plex/audiobooks:/media
+    networks:
+      - traefik
+      - media
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3030/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    stop_grace_period: 30s
+    init: true
+    oom_score_adj: -300
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.readmeabook.rule=Host(`readmeabook.jaw.dev`)"
+      - "traefik.http.routers.readmeabook.entrypoints=websecure"
+      - "traefik.http.routers.readmeabook.middlewares=google-auth@file"
+      - "traefik.http.services.readmeabook.loadbalancer.server.port=3030"
+
+networks:
+  traefik:
+    external: true
+  media:
+    external: true
