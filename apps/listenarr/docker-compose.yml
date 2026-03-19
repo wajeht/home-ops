@@ -1,0 +1,49 @@
+services:
+  listenarr:
+    container_name: listenarr
+    image: ghcr.io/listenarrs/listenarr:canary
+    user: "1000:1000"
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/listenarr:/app/config
+      - /home/jaw/plex/audiobooks:/audiobooks
+      - /home/jaw/plex:/data
+    networks:
+      - traefik
+      - media
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4545"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    stop_grace_period: 30s
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.listenarr.rule=Host(`listenarr.jaw.dev`)"
+      - "traefik.http.routers.listenarr.entrypoints=websecure"
+      - "traefik.http.routers.listenarr.middlewares=google-auth@file"
+      - "traefik.http.services.listenarr.loadbalancer.server.port=4545"
+
+networks:
+  traefik:
+    external: true
+  media:
+    external: true
