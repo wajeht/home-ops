@@ -706,23 +706,19 @@ cmd_images() {
 	case "$action" in
 		status)
 			echo ""
-			echo -e "${BOLD}Dangling images (replaced by newer versions):${NC}"
-			local dangling
-			dangling=$($SUDO docker images --filter 'dangling=true' --format '{{.Repository}}:{{.Tag}}\t{{.Size}}\t{{.CreatedSince}}' | sort -t$'\t' -k2 -rh)
-			if [ -z "$dangling" ]; then
+			echo -e "${BOLD}Unused images (not used by any running container):${NC}"
+			local running_images unused_images
+			running_images=$($SUDO docker ps --format '{{.Image}}' | sort -u)
+			unused_images=$($SUDO docker images --format '{{.Repository}}:{{.Tag}}\t{{.Size}}\t{{.CreatedSince}}\t{{.ID}}' | while IFS=$'\t' read -r name size age id; do
+				if ! echo "$running_images" | grep -q "$id" && ! $SUDO docker ps --format '{{.Image}}' | grep -q "$name"; then
+					printf "  %-55s %10s  %s\n" "$name" "$size" "$age"
+				fi
+			done)
+			if [ -z "$unused_images" ]; then
 				dim "None"
 			else
-				echo "$dangling" | while IFS=$'\t' read -r name size age; do
-					printf "  %-50s %10s  %s\n" "$name" "$size" "$age"
-				done
+				echo "$unused_images"
 			fi
-
-			echo ""
-			echo -e "${BOLD}Unused images (not referenced by any container):${NC}"
-			local unused_count unused_size
-			unused_count=$($SUDO docker images --filter 'dangling=true' -q | wc -l)
-			unused_size=$($SUDO docker system df --format '{{.Reclaimable}}' | head -1)
-			echo -e "  ${unused_count} images, ${unused_size} reclaimable"
 
 			echo ""
 			echo -e "${BOLD}Orphan volumes (not used by any container):${NC}"
