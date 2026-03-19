@@ -703,6 +703,9 @@ cmd_images() {
 	local action=${1:-status}
 	header "Docker Cleanup"
 
+	# Cache sudo credential upfront
+	$SUDO true
+
 	case "$action" in
 		status)
 			# Get image IDs used by running containers
