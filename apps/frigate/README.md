@@ -11,22 +11,9 @@ Frigate NVR at `frigate.jaw.dev`. Self-hosted security camera system with AI obj
 
 ## devices
 
-| Device                   | Type       | Connection      | Path            | Resolution                   | Format     |
-| ------------------------ | ---------- | --------------- | --------------- | ---------------------------- | ---------- |
-| TP-Link Tapo Pan/Tilt 2K | IP camera  | WiFi (IoT VLAN) | RTSP via go2rtc | 2K main + 640x360 sub        | H.264      |
-| Elgato Facecam MK.2      | USB webcam | USB 2.0         | `/dev/video0`   | 1080p@60, 720p@120, 540p@120 | MJPEG only |
-
-### server-side tools
-
-`v4l-utils` installed on server for diagnosing USB cameras:
-
-```bash
-# list connected V4L2 devices
-v4l2-ctl --list-devices
-
-# list supported formats/resolutions for a device
-sudo v4l2-ctl -d /dev/video0 --list-formats-ext
-```
+| Device                   | Type      | Connection      | Path            | Resolution            | Format |
+| ------------------------ | --------- | --------------- | --------------- | --------------------- | ------ |
+| TP-Link Tapo Pan/Tilt 2K | IP camera | WiFi (IoT VLAN) | RTSP via go2rtc | 2K main + 640x360 sub | H.264  |
 
 ## camera setup (TP-Link Tapo Pan/Tilt 2K)
 
