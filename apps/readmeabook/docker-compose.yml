@@ -17,7 +17,7 @@ services:
       - traefik
       - media
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3030/api/health"]
+      test: ["CMD-SHELL", "wget -qO /dev/null http://localhost:3030/api/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
