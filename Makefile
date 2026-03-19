@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint push fix-git clean update-submodules resources help
+.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint push fix-git images images-prune clean update-submodules resources help
 
 ## setup: Create all data directories
 setup:
@@ -77,7 +77,15 @@ fix-git:
 	@git add .
 	@git commit -m "untrack files in .gitignore"
 
-## clean: Prune docker system objects
+## images: Show unused Docker images and orphan volumes
+## images-prune: Remove unused images (>7d) and orphan volumes
+images:
+	@./scripts/home-ops.sh images
+
+images-prune:
+	@./scripts/home-ops.sh images prune
+
+## clean: Nuclear prune — removes ALL unused images, volumes, networks
 clean:
 	@docker system prune -a -f
 	@docker volume prune -f
