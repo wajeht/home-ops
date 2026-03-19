@@ -2,7 +2,6 @@ services:
   listenarr:
     container_name: listenarr
     image: ghcr.io/listenarrs/listenarr:canary
-    user: "1000:1000"
     environment:
       - TZ=America/Chicago
     volumes:
@@ -23,6 +22,12 @@ services:
     init: true
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
     security_opt:
       - no-new-privileges:true
     deploy:
