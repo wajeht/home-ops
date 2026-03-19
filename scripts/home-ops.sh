@@ -697,6 +697,65 @@ cmd_borgmatic_backup() {
 }
 
 #=============================================================================
+# IMAGES - Show/remove unused Docker images and volumes
+#=============================================================================
+cmd_images() {
+	local action=${1:-status}
+	header "Docker Cleanup"
+
+	case "$action" in
+		status)
+			echo ""
+			echo -e "${BOLD}Dangling images (replaced by newer versions):${NC}"
+			local dangling
+			dangling=$($SUDO docker images --filter 'dangling=true' --format '{{.Repository}}:{{.Tag}}\t{{.Size}}\t{{.CreatedSince}}' | sort -t$'\t' -k2 -rh)
+			if [ -z "$dangling" ]; then
+				dim "None"
+			else
+				echo "$dangling" | while IFS=$'\t' read -r name size age; do
+					printf "  %-50s %10s  %s\n" "$name" "$size" "$age"
+				done
+			fi
+
+			echo ""
+			echo -e "${BOLD}Unused images (not referenced by any container):${NC}"
+			local unused_count unused_size
+			unused_count=$($SUDO docker images --filter 'dangling=true' -q | wc -l)
+			unused_size=$($SUDO docker system df --format '{{.Reclaimable}}' | head -1)
+			echo -e "  ${unused_count} images, ${unused_size} reclaimable"
+
+			echo ""
+			echo -e "${BOLD}Orphan volumes (not used by any container):${NC}"
+			local total_vols orphan_vols
+			total_vols=$($SUDO docker volume ls -q | wc -l)
+			orphan_vols=$($SUDO docker volume ls -f dangling=true -q | wc -l)
+			echo -e "  ${orphan_vols} orphan volumes (${total_vols} total)"
+
+			echo ""
+			echo -e "${BOLD}Docker disk usage:${NC}"
+			$SUDO docker system df
+
+			echo ""
+			dim "Run '$0 images prune' to remove all unused images and volumes"
+			;;
+		prune)
+			info "Removing dangling images..."
+			$SUDO docker image prune -af --filter "until=168h"
+			echo ""
+			info "Removing orphan volumes..."
+			$SUDO docker volume prune -f
+			echo ""
+			info "Final state:"
+			$SUDO docker system df
+			ok "Cleanup complete"
+			;;
+		*)
+			echo -e "Usage: $0 images [status|prune]"
+			;;
+	esac
+}
+
+#=============================================================================
 # UPDATE-SUBMODULES - Update submodules to latest and commit
 #=============================================================================
 cmd_update_submodules() {
@@ -771,6 +830,10 @@ case "${1:-}" in
 		shift
 		cmd_borgmatic_backup "$@"
 		;;
+	images)
+		shift
+		cmd_images "$@"
+		;;
 	update-submodules)
 		cmd_update_submodules
 		;;
@@ -795,6 +858,8 @@ case "${1:-}" in
 		echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
 		echo -e "  ${GREEN}borgmatic-init${NC}           Initialize borg repos for all borgmatic containers"
 		echo -e "  ${GREEN}borgmatic-backup${NC} [app]    Run backup (all or single app)"
+		echo -e "  ${GREEN}images${NC}                   Show unused Docker images and volumes"
+		echo -e "  ${GREEN}images prune${NC}             Remove unused images (>7d) and orphan volumes"
 		echo -e "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
 		echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
 		echo ""
