@@ -63,9 +63,9 @@ birdseye:
   width: 1280
   height: 720
 
-semantic_search:
-  enabled: true
-  model_size: small
+# semantic_search:
+#   enabled: true
+#   model_size: small
 
 face_recognition:
   enabled: true
