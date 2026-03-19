@@ -707,22 +707,24 @@ cmd_images() {
 		status)
 			# Get image IDs used by running containers
 			local running_ids
-			running_ids=$($SUDO docker ps --format '{{.Image}}' | xargs -I{} $SUDO docker inspect --format '{{.Id}}' {} 2>/dev/null | sort -u)
+			running_ids=$($SUDO docker ps --format '{{.Image}}' | while read -r img; do
+				$SUDO docker image inspect --format '{{.Id}}' "$img" 2>/dev/null
+			done | sort -u)
 
-			local prunable="" stale="" prunable_size=0 stale_size=0
-			while IFS=$'\t' read -r repo tag size age id rawsize; do
+			local all_images
+			all_images=$($SUDO docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedSince}}')
+
+			local prunable="" stale=""
+			while IFS=$'\t' read -r id repo tag size age; do
 				[ -z "$id" ] && continue
 				if echo "$running_ids" | grep -q "$id"; then
-					# Running container uses this image — check if tag is <none> (outdated)
 					if [ "$tag" = "<none>" ]; then
-						stale="${stale}  ${YELLOW}${repo}:${tag}${NC}$(printf '%*s' $((45 - ${#repo})) '') ${size}  ${age}\n"
-						stale_size=$((stale_size + rawsize))
+						stale="${stale}$(printf "  ${YELLOW}%-50s${NC} %10s  %s\n" "${repo}:<none>" "$size" "$age")\n"
 					fi
 				else
-					prunable="${prunable}  ${repo}:${tag}$(printf '%*s' $((45 - ${#repo})) '') ${size}  ${age}\n"
-					prunable_size=$((prunable_size + rawsize))
+					prunable="${prunable}$(printf "  %-50s %10s  %s\n" "${repo}:${tag}" "$size" "$age")\n"
 				fi
-			done < <($SUDO docker images --format '{{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedSince}}\t{{.ID}}\t{{.VirtualSize}}')
+			done <<<"$all_images"
 
 			echo ""
 			echo -e "${BOLD}Prunable images (safe to remove now):${NC}"
