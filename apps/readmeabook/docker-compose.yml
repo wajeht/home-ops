@@ -2,7 +2,7 @@
 services:
   readmeabook:
     container_name: readmeabook
-    image: ghcr.io/kikootwo/readmeabook:1.1.6
+    image: ghcr.io/kikootwo/readmeabook:1.1.6@sha256:9309ae5b0c3466befa6e4fadebef94776fd10942fec0415e97bd99bb752c88b2
     environment:
       - PUID=1000
       - PGID=1000
