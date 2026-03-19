@@ -7,6 +7,26 @@ Frigate NVR at `frigate.jaw.dev`. Self-hosted security camera system with AI obj
 - Dell OptiPlex 7050, Intel i7-7700 (Kaby Lake), Intel HD 630 GPU
 - VAAPI hardware acceleration for ffmpeg decoding/encoding
 - OpenVINO detector on Intel HD 630 iGPU with YOLOv9-t model (upgraded from default MobileNet SSD)
+- Micron M600 1TB SATA mounted at `/mnt/sata` — dedicated to Frigate recordings
+
+## devices
+
+| Device                   | Type       | Connection      | Path            | Resolution                   | Format     |
+| ------------------------ | ---------- | --------------- | --------------- | ---------------------------- | ---------- |
+| TP-Link Tapo Pan/Tilt 2K | IP camera  | WiFi (IoT VLAN) | RTSP via go2rtc | 2K main + 640x360 sub        | H.264      |
+| Elgato Facecam MK.2      | USB webcam | USB 2.0         | `/dev/video0`   | 1080p@60, 720p@120, 540p@120 | MJPEG only |
+
+### server-side tools
+
+`v4l-utils` installed on server for diagnosing USB cameras:
+
+```bash
+# list connected V4L2 devices
+v4l2-ctl --list-devices
+
+# list supported formats/resolutions for a device
+sudo v4l2-ctl -d /dev/video0 --list-formats-ext
+```
 
 ## camera setup (TP-Link Tapo Pan/Tilt 2K)
 

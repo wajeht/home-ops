@@ -8,6 +8,7 @@ services:
     shm_size: 512m
     devices:
       - /dev/dri:/dev/dri
+      - /dev/video0:/dev/video0
     group_add:
       - "993"
       - "44"

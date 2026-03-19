@@ -105,6 +105,8 @@ go2rtc:
       - tapo://admin:{FRIGATE_TAPO_SHA256}@{FRIGATE_CAM_IP}
     tapo_cam_sub:
       - rtsp://{FRIGATE_CAM_USER}:{FRIGATE_CAM_PASS}@{FRIGATE_CAM_IP}:554/stream2
+    desk_cam:
+      - "ffmpeg:device?video=/dev/video0&video_size=1280x720&framerate=30&input_format=mjpeg#video=h264#hardware=vaapi"
 
 cameras:
   tapo_cam:
@@ -140,6 +142,29 @@ cameras:
         - person
         # - dog
         # - cat
+    record:
+      enabled: true
+    snapshots:
+      enabled: true
+
+  desk_cam:
+    enabled: true
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/desk_cam
+          roles:
+            - detect
+            - record
+    detect:
+      enabled: true
+      width: 1280
+      height: 720
+      fps: 5
+    motion:
+      contour_area: 25
+    objects:
+      track:
+        - person
     record:
       enabled: true
     snapshots:
