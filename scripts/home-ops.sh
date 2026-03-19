@@ -715,7 +715,9 @@ cmd_images() {
 			echo -e "${BOLD}Stale images (outdated, freed after next redeploy):${NC}"
 			local stale_out
 			stale_out=$(docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | awk -F'\t' '$3 == "<none>"' | while IFS=$'\t' read -r id repo _ size; do
-				grep -q "$id" "$running_file" 2>/dev/null && printf "  %-45s %10s\n" "$repo" "$size" || true
+				if grep -q "$id" "$running_file" 2>/dev/null; then
+					printf "  %-45s %10s\n" "$repo" "$size"
+				fi
 			done)
 			if [ -z "$stale_out" ]; then dim "None"; else echo "$stale_out"; fi
 
