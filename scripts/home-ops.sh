@@ -735,8 +735,8 @@ cmd_images() {
 			dim "Run '$0 images prune' to remove all unused images and volumes"
 			;;
 		prune)
-			info "Removing dangling images..."
-			$SUDO docker image prune -af --filter "until=168h"
+			info "Removing unused images (older than 7 days)..."
+			$SUDO docker system prune -af --filter "until=168h"
 			echo ""
 			info "Removing orphan volumes..."
 			$SUDO docker volume prune -f
