@@ -703,48 +703,32 @@ cmd_images() {
 	local action=${1:-status}
 	header "Docker Cleanup"
 
-	# Cache sudo credential upfront
-	$SUDO true
-
 	case "$action" in
 		status)
-			# Get image IDs used by running containers
-			local running_ids
-			running_ids=$($SUDO docker ps --format '{{.Image}}' | while read -r img; do
+			# Build lookup of image IDs used by running containers
+			local running_file
+			running_file=$(mktemp)
+			$SUDO docker ps --format '{{.Image}}' | while read -r img; do
 				$SUDO docker image inspect --format '{{.Id}}' "$img" 2>/dev/null
-			done | sort -u)
+			done | sort -u >"$running_file"
 
-			local all_images
-			all_images=$($SUDO docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedSince}}')
-
-			local prunable="" stale=""
-			while IFS=$'\t' read -r id repo tag size age; do
-				[ -z "$id" ] && continue
-				if echo "$running_ids" | grep -q "$id"; then
-					if [ "$tag" = "<none>" ]; then
-						stale="${stale}$(printf "  ${YELLOW}%-50s${NC} %10s  %s\n" "${repo}:<none>" "$size" "$age")\n"
-					fi
-				else
-					prunable="${prunable}$(printf "  %-50s %10s  %s\n" "${repo}:${tag}" "$size" "$age")\n"
-				fi
-			done <<<"$all_images"
+			echo ""
+			echo -e "${BOLD}Stale images (outdated, freed after next redeploy):${NC}"
+			local stale_out
+			stale_out=$($SUDO docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | awk -F'\t' '$3 == "<none>"' | while IFS=$'\t' read -r id repo tag size; do
+				grep -q "$id" "$running_file" 2>/dev/null && printf "  %-45s %10s\n" "$repo" "$size" || true
+			done)
+			if [ -z "$stale_out" ]; then dim "None"; else echo "$stale_out"; fi
 
 			echo ""
 			echo -e "${BOLD}Prunable images (safe to remove now):${NC}"
-			if [ -z "$prunable" ]; then
-				dim "None"
-			else
-				echo -e "$prunable"
-			fi
+			local prunable_out
+			prunable_out=$($SUDO docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | while IFS=$'\t' read -r id repo tag size; do
+				grep -q "$id" "$running_file" 2>/dev/null || printf "  %-45s %10s\n" "$repo:$tag" "$size"
+			done)
+			if [ -z "$prunable_out" ]; then dim "None"; else echo "$prunable_out"; fi
 
-			echo ""
-			echo -e "${BOLD}Stale images (outdated but still used by running containers):${NC}"
-			if [ -z "$stale" ]; then
-				dim "None"
-			else
-				echo -e "$stale"
-				dim "These free up after docker-cd redeploys with newer images"
-			fi
+			rm -f "$running_file"
 
 			echo ""
 			echo -e "${BOLD}Orphan volumes:${NC}"
@@ -757,10 +741,9 @@ cmd_images() {
 			echo -e "${BOLD}Docker disk usage:${NC}"
 			$SUDO docker system df
 
-			if [ -n "$prunable" ]; then
-				echo ""
-				dim "Run '$0 images prune' to remove prunable images and orphan volumes"
-			fi
+			echo ""
+			dim "Stale images free up after docker-cd redeploys those stacks"
+			dim "Run '$0 images prune' to remove prunable images and orphan volumes"
 			;;
 		prune)
 			info "Removing unused images..."
