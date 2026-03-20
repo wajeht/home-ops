@@ -76,7 +76,7 @@ Shared config: [wajeht/renovate-config](https://github.com/wajeht/renovate-confi
 | Major  | 3 days      | No         |
 | Digest | 0 days      | Yes (PR)   |
 
-Requires `platformAutomerge: true` + GitHub branch protection with required status checks. Without branch protection, auto-merge won't trigger.
+Requires `platformAutomerge: true` + GitHub branch protection with required status checks and **"Require branches to be up to date before merging" (`strict: true`)**. Without `strict`, GitHub can merge PRs with stale lock files when multiple Renovate PRs are open simultaneously.
 
 ## Troubleshooting
 
