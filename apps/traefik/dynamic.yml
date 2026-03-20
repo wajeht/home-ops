@@ -26,7 +26,7 @@ http:
         permissionsPolicy: "camera=(), microphone=(), geolocation=()"
         customResponseHeaders:
           Cross-Origin-Opener-Policy: "same-origin"
-          Cross-Origin-Resource-Policy: "same-origin"
+          Cross-Origin-Resource-Policy: "cross-origin"
 
     rate-limit-global:
       rateLimit:
