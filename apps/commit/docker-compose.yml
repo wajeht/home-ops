@@ -1,6 +1,6 @@
 services:
   commit:
-    image: ghcr.io/wajeht/commit:bf6ca23
+    image: ghcr.io/wajeht/commit:d1460a6
     networks:
       - traefik
     env_file:
