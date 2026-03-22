@@ -7,6 +7,7 @@ services:
     cap_add:
       - NET_ADMIN
       - NET_RAW
+      - DAC_OVERRIDE
     devices:
       - /dev/net/tun:/dev/net/tun
     env_file:
