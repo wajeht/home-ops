@@ -16,6 +16,8 @@ services:
       - FIREWALL_VPN_INPUT_PORTS=45839
       - HTTPPROXY=on
       - HTTPPROXY_LISTENING_ADDRESS=:8888
+    tmpfs:
+      - /tmp
     volumes:
       - /home/jaw/data/gluetun:/gluetun
     networks:
