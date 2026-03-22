@@ -17,6 +17,7 @@ services:
     environment:
       - TZ=America/Chicago
       - FIREWALL_VPN_INPUT_PORTS=45839
+      - BLOCK_MALICIOUS=off
       - HTTPPROXY=on
       - HTTPPROXY_LISTENING_ADDRESS=:8888
     tmpfs:
