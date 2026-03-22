@@ -12,16 +12,16 @@
       - /
       - /host/nas
 
-- openmeteo:
-    label: Amarillo
-    latitude: 35.222
-    longitude: -101.8313
-    units: imperial
-    cache: 5
+# - openmeteo:
+#     label: Amarillo
+#     latitude: 35.222
+#     longitude: -101.8313
+#     units: imperial
+#     cache: 5
 
-- unifi_console:
-    url: https://192.168.4.1
-    key: "{{HOMEPAGE_VAR_UNIFI_KEY}}"
+# - unifi_console:
+#     url: https://192.168.4.1
+#     key: "{{HOMEPAGE_VAR_UNIFI_KEY}}"
 
 - datetime:
     text_size: l
