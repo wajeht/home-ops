@@ -8,6 +8,8 @@ services:
       - NET_ADMIN
       - NET_RAW
       - DAC_OVERRIDE
+      - CHOWN
+      - FOWNER
     devices:
       - /dev/net/tun:/dev/net/tun
     env_file:
