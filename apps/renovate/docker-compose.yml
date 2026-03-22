@@ -22,6 +22,7 @@ services:
       RENOVATE_CACHE_HARD_TTL_MINUTES: "20160"
       RENOVATE_ONBOARDING_CONFIG_FILE_NAME: ".github/renovate.json"
       MEND_RNV_AUTODISCOVER_FILTER: "wajeht/*"
+      RENOVATE_BINARY_SOURCE: install
     volumes:
       - /home/jaw/data/renovate:/data
     networks:
