@@ -14,7 +14,7 @@ services:
       GITHUB_COM_TOKEN: ${GITHUB_COM_TOKEN}
       RENOVATE_SECRETS: ${RENOVATE_SECRETS}
       NODE_OPTIONS: "--max-old-space-size=2048" # OOM on large repos (e.g. docker-cd) at 1536
-      LOG_LEVEL: info
+      LOG_LEVEL: debug
       MEND_RNV_CRON_JOB_SCHEDULER_ALL: "0 0,8,18 * * *" # 3x daily (12am, 8am, 6pm), renovate config schedule controls PR creation
       RENOVATE_REPOSITORY_CACHE: enabled
       RENOVATE_OPTIMIZE_FOR_DISABLED: "true"
