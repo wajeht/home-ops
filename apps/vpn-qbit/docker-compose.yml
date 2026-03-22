@@ -18,6 +18,7 @@ services:
       - TZ=America/Chicago
       - SERVER_COUNTRIES=United States
       - SERVER_CITIES=Dallas Texas
+      - WIREGUARD_MTU=1400
       - FIREWALL_VPN_INPUT_PORTS=45839
       - BLOCK_MALICIOUS=off
       - HTTPPROXY=on
