@@ -36,8 +36,9 @@ sops apps/renovate/.env.sops
 
 1. Create GitHub App at https://github.com/settings/apps/new
    - Webhook URL: `https://renovate.jaw.dev/webhook`
-   - Permissions: Contents, Issues, PRs, Commit statuses, Checks (read/write), Metadata (read)
-   - Events: Push, Pull request, Repository
+   - Repository permissions: Administration (read), Checks (read/write), Codespaces metadata (read), Commit statuses (read/write), Contents (read/write), Dependabot alerts (read), Issues (read/write), Metadata (read), Pull requests (read/write), Workflows (read/write)
+   - Organization permissions: Members (read)
+   - Events: Fork, Issues, Pull request, Push, Repository
 2. Generate private key from app settings page
 3. Install app on account (all repos)
 4. Register for free license key at https://www.mend.io/mend-renovate-community/
@@ -47,5 +48,5 @@ sops apps/renovate/.env.sops
 
 - Container runs as `uid=12021` — data dir needs matching ownership
 - SQLite DB persists at `~/data/renovate/renovate.db`
-- Scheduler runs hourly by default
+- Scheduler runs 3x daily (12am, 8am, 6pm UTC)
 - Webhooks trigger immediate re-scan on push/PR events
