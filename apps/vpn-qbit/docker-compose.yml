@@ -17,7 +17,7 @@ services:
     environment:
       - TZ=America/Chicago
       - SERVER_COUNTRIES=United States
-      - SERVER_CITIES=Dallas
+      - SERVER_CITIES=Dallas Texas
       - FIREWALL_VPN_INPUT_PORTS=45839
       - BLOCK_MALICIOUS=off
       - HTTPPROXY=on
