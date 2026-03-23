@@ -296,10 +296,21 @@ nfs_status() {
 	fi
 }
 
+nfs_persist() {
+	local name=$1 nas_path=$2 local_path=$3
+	local entry="$NAS_IP:$nas_path $local_path nfs4 defaults,_netdev,nofail 0 0"
+	if grep -qF "$NAS_IP:$nas_path" /etc/fstab; then
+		dim "$name: already in fstab"
+	else
+		echo "$entry" | $SUDO tee -a /etc/fstab >/dev/null
+		ok "$name: added to fstab"
+	fi
+}
+
 cmd_nfs() {
 	local action=$1 target=${2:-all}
 	[ -z "$action" ] && {
-		echo -e "Usage: $0 nfs {mount|unmount|status} [plex|backup|all]"
+		echo -e "Usage: $0 nfs {mount|unmount|persist|status} [plex|backup|all]"
 		exit 1
 	}
 
@@ -309,6 +320,7 @@ cmd_nfs() {
 			case "$action" in
 				mount) nfs_mount "$name" "$nas_path" "$local_path" ;;
 				unmount | umount) nfs_unmount "$name" "$nas_path" "$local_path" ;;
+				persist) nfs_persist "$name" "$nas_path" "$local_path" ;;
 				status) nfs_status "$name" "$nas_path" "$local_path" ;;
 			esac
 		fi
@@ -857,6 +869,7 @@ case "${1:-}" in
 		echo -e "  ${GREEN}sata status${NC}              Show SATA mount status"
 		echo -e "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
 		echo -e "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
+		echo -e "  ${GREEN}nfs persist${NC} [target]     Add NFS mounts to fstab (survives reboot)"
 		echo -e "  ${GREEN}nfs status${NC}               Show NFS mount status"
 		echo -e "  ${GREEN}install${NC}                  Deploy all services"
 		echo -e "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
