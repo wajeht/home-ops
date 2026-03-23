@@ -2,22 +2,15 @@ services:
   meshcentral:
     container_name: meshcentral
     image: ghcr.io/ylianst/meshcentral:latest@sha256:b2ed98974f85a04d78698ae441931e98d3d536ef5561f5b4e93e2985c1173734
-    environment:
-      - HOSTNAME=meshcentral.jaw.dev
-      - REVERSE_PROXY=traefik
-      - REVERSE_PROXY_TLS_PORT=443
-      - ALLOW_NEW_ACCOUNTS=false
-      - WEBRTC=true
-      - IFRAME=false
-      - REDIR_PORT=0
     volumes:
+      - ./config.json:/opt/meshcentral/config.json.template:ro
       - /home/jaw/data/meshcentral/data:/opt/meshcentral/meshcentral-data
       - /home/jaw/data/meshcentral/files:/opt/meshcentral/meshcentral-files
       - /home/jaw/data/meshcentral/backups:/opt/meshcentral/meshcentral-backups
     networks:
       - traefik
     healthcheck:
-      test: ["CMD-SHELL", "curl -sfk https://localhost:443 || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:443 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -51,7 +44,6 @@ services:
       - "traefik.http.routers.meshcentral.entrypoints=websecure"
       - "traefik.http.routers.meshcentral.middlewares=google-auth@file"
       - "traefik.http.services.meshcentral.loadbalancer.server.port=443"
-      - "traefik.http.services.meshcentral.loadbalancer.server.scheme=https"
 networks:
   traefik:
     external: true

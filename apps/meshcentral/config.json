@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Ylianst/MeshCentral/master/meshcentral-config-schema.json",
+  "settings": {
+    "plugins": { "enabled": false },
+    "cert": "meshcentral.jaw.dev",
+    "port": 443,
+    "redirPort": 0,
+    "AgentPong": 300,
+    "TLSOffload": "127.0.0.1",
+    "SelfUpdate": false,
+    "AllowFraming": false,
+    "WebRTC": true
+  },
+  "domains": {
+    "": {
+      "title": "MeshCentral",
+      "minify": true,
+      "NewAccounts": false,
+      "localSessionRecording": true,
+      "certUrl": "meshcentral.jaw.dev:443"
+    }
+  }
+}
