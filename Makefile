@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint push fix-git images images-prune clean update-submodules resources help
+.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint push fix-git images images-prune clean update-submodules resources nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status help
 
 ## setup: Create all data directories
 setup:
@@ -94,6 +94,26 @@ clean:
 ## resources: Report total CPU/memory limits across all stacks
 resources:
 	@./scripts/check-resources.sh
+
+## nfs-mount: Mount NFS shares
+nfs-mount:
+	@./scripts/home-ops.sh nfs mount
+
+## nfs-unmount: Unmount NFS shares
+nfs-unmount:
+	@./scripts/home-ops.sh nfs unmount
+
+## nfs-persist: Add NFS mounts to fstab (survives reboot)
+nfs-persist:
+	@./scripts/home-ops.sh nfs persist
+
+## nfs-unpersist: Remove NFS mounts from fstab
+nfs-unpersist:
+	@./scripts/home-ops.sh nfs unpersist
+
+## nfs-status: Show NFS mount status
+nfs-status:
+	@./scripts/home-ops.sh nfs status
 
 ## help: Show available make targets
 help:
