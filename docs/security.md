@@ -6,19 +6,19 @@ Server hardening for the Dell OptiPlex 7050 (Ubuntu 24.04).
 
 Scanned from LAN via `nmap -F <server-ip>`:
 
-| Port  | Service        | Status             | Action                                        |
-| ----- | -------------- | ------------------ | --------------------------------------------- |
-| 22    | SSH            | open               | Harden (see SSH below)                        |
-| 80    | HTTP           | open (Traefik)     | OK — redirects to HTTPS                       |
-| 443   | HTTPS          | open (Traefik)     | OK                                            |
-| 111   | rpcbind        | **disabled**       | Unnecessary (NFS v4.1 doesn't need it)        |
-| 1883  | MQTT           | open (Zigbee2MQTT) | Blocked by UFW, Docker-internal only          |
-| 2283  | Immich         | open               | Blocked by UFW, access via Traefik only       |
-| 8123  | Home Assistant | open               | Blocked by UFW, access via Traefik only       |
-| 16992 | Intel AMT HTTP | open               | LAN only — remote management (vPro)           |
-| 16993 | Intel AMT HTTPS| open               | LAN only — remote management (vPro)           |
-| 5900  | AMT KVM/VNC    | open               | LAN only — remote screen access (vPro)        |
-| 32400 | Plex           | open               | OK — needs direct access for remote streaming |
+| Port  | Service         | Status             | Action                                        |
+| ----- | --------------- | ------------------ | --------------------------------------------- |
+| 22    | SSH             | open               | Harden (see SSH below)                        |
+| 80    | HTTP            | open (Traefik)     | OK — redirects to HTTPS                       |
+| 443   | HTTPS           | open (Traefik)     | OK                                            |
+| 111   | rpcbind         | **disabled**       | Unnecessary (NFS v4.1 doesn't need it)        |
+| 1883  | MQTT            | open (Zigbee2MQTT) | Blocked by UFW, Docker-internal only          |
+| 2283  | Immich          | open               | Blocked by UFW, access via Traefik only       |
+| 8123  | Home Assistant  | open               | Blocked by UFW, access via Traefik only       |
+| 16992 | Intel AMT HTTP  | open               | LAN only — remote management (vPro)           |
+| 16993 | Intel AMT HTTPS | open               | LAN only — remote management (vPro)           |
+| 5900  | AMT KVM/VNC     | open               | LAN only — remote screen access (vPro)        |
+| 32400 | Plex            | open               | OK — needs direct access for remote streaming |
 
 To restrict ports further, change Docker port mappings from `0.0.0.0:PORT:PORT` to `127.0.0.1:PORT:PORT`.
 
