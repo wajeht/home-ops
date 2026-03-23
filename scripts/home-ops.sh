@@ -229,7 +229,7 @@ cmd_setup() {
 	for dir in "${STATIC_DIRS[@]}"; do
 		total=$((total + 1))
 		if [ ! -d "$dir" ]; then
-			$SUDO mkdir -p "$dir"
+			mkdir -p "$dir"
 			dim "Created: $dir"
 			created=$((created + 1))
 		fi
@@ -243,7 +243,7 @@ cmd_setup() {
 	for dir in $dirs; do
 		discovered=$((discovered + 1))
 		if [ ! -e "$dir" ]; then
-			$SUDO mkdir -p "$dir"
+			mkdir -p "$dir"
 			dim "Created: $dir"
 			created=$((created + 1))
 		fi
@@ -251,7 +251,7 @@ cmd_setup() {
 	dim "Found $discovered volume mounts across compose files"
 
 	chmod 700 "$USER_HOME/.sops" 2>/dev/null || true
-	$SUDO chown -R 1000:1000 "$USER_HOME/plex" "$USER_HOME/data" 2>/dev/null || true
+	# No blanket chown — containers handle internal ownership via CHOWN/FOWNER caps
 	# Traefik runs as root in container (cap_drop: ALL removes DAC_OVERRIDE)
 	# acme.json must be owned by root or Traefik can't read/write it
 	$SUDO chown root:root "$USER_HOME/data/traefik/certs/acme.json" 2>/dev/null || true
