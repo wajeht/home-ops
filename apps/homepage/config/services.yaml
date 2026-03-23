@@ -215,6 +215,11 @@
         #   type: frigate
         #   url: http://frigate:5000
 
+    - Intel AMT:
+        icon: mdi-desktop-tower-monitor
+        href: http://192.168.4.161:16992
+        description: Remote KVM / Power Control
+
     - DDNS Updater:
         icon: mdi-dns
         href: https://ddns.jaw.dev
