@@ -288,12 +288,18 @@ nfs_unmount() {
 
 nfs_status() {
 	local name=$1 nas_path=$2 local_path=$3
+	local mount_status fstab_status
 	if mountpoint -q "$local_path" 2>/dev/null; then
-		printf "${GREEN}%-10s${NC} MOUNTED   " "$name:"
-		df -h "$local_path" | awk 'NR==2 {print $3"/"$2" ("$5" used)"}'
+		mount_status="${GREEN}MOUNTED${NC}   $(df -h "$local_path" | awk 'NR==2 {print $3"/"$2" ("$5" used)"}')"
 	else
-		printf "${RED}%-10s${NC} NOT MOUNTED\n" "$name:"
+		mount_status="${RED}NOT MOUNTED${NC}"
 	fi
+	if grep -qF "$NAS_IP:$nas_path" /etc/fstab; then
+		fstab_status="${GREEN}PERSISTED${NC}"
+	else
+		fstab_status="${DIM}NOT PERSISTED${NC}"
+	fi
+	printf "%-10s %b  %b\n" "$name:" "$mount_status" "$fstab_status"
 }
 
 nfs_persist() {
@@ -307,10 +313,20 @@ nfs_persist() {
 	fi
 }
 
+nfs_unpersist() {
+	local name=$1 nas_path=$2 local_path=$3
+	if grep -qF "$NAS_IP:$nas_path" /etc/fstab; then
+		$SUDO sed -i "\|$NAS_IP:$nas_path|d" /etc/fstab
+		ok "$name: removed from fstab"
+	else
+		dim "$name: not in fstab"
+	fi
+}
+
 cmd_nfs() {
 	local action=$1 target=${2:-all}
 	[ -z "$action" ] && {
-		echo -e "Usage: $0 nfs {mount|unmount|persist|status} [plex|backup|all]"
+		echo -e "Usage: $0 nfs {mount|unmount|persist|unpersist|status} [plex|backup|all]"
 		exit 1
 	}
 
@@ -321,6 +337,7 @@ cmd_nfs() {
 				mount) nfs_mount "$name" "$nas_path" "$local_path" ;;
 				unmount | umount) nfs_unmount "$name" "$nas_path" "$local_path" ;;
 				persist) nfs_persist "$name" "$nas_path" "$local_path" ;;
+				unpersist) nfs_unpersist "$name" "$nas_path" "$local_path" ;;
 				status) nfs_status "$name" "$nas_path" "$local_path" ;;
 			esac
 		fi
@@ -870,6 +887,7 @@ case "${1:-}" in
 		echo -e "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
 		echo -e "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
 		echo -e "  ${GREEN}nfs persist${NC} [target]     Add NFS mounts to fstab (survives reboot)"
+		echo -e "  ${GREEN}nfs unpersist${NC} [target]   Remove NFS mounts from fstab"
 		echo -e "  ${GREEN}nfs status${NC}               Show NFS mount status"
 		echo -e "  ${GREEN}install${NC}                  Deploy all services"
 		echo -e "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
