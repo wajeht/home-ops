@@ -35,5 +35,7 @@ echo 'GOVERNOR="performance"' | sudo tee /etc/default/cpufrequtils
 ./scripts/home-ops.sh borgmatic-backup # Run backup on all borgmatic containers
 ./scripts/home-ops.sh status         # Show services, mounts, disk usage
 ./scripts/home-ops.sh nfs mount      # Mount NFS shares
+./scripts/home-ops.sh nfs persist    # Add NFS mounts to fstab (survives reboot)
+./scripts/home-ops.sh sata persist   # Add SATA mount to fstab (survives reboot)
 ./scripts/home-ops.sh setup          # Create data directories
 ```

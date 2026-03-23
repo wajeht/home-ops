@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint push fix-git images images-prune clean update-submodules resources nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status help
+.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint push fix-git images images-prune clean update-submodules resources nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status sata-mount sata-unmount sata-persist sata-unpersist sata-status help
 
 ## setup: Create all data directories
 setup:
@@ -114,6 +114,26 @@ nfs-unpersist:
 ## nfs-status: Show NFS mount status
 nfs-status:
 	@./scripts/home-ops.sh nfs status
+
+## sata-mount: Mount SATA drive
+sata-mount:
+	@./scripts/home-ops.sh sata mount
+
+## sata-unmount: Unmount SATA drive
+sata-unmount:
+	@./scripts/home-ops.sh sata unmount
+
+## sata-persist: Add SATA mount to fstab (survives reboot)
+sata-persist:
+	@./scripts/home-ops.sh sata persist
+
+## sata-unpersist: Remove SATA mount from fstab
+sata-unpersist:
+	@./scripts/home-ops.sh sata unpersist
+
+## sata-status: Show SATA mount status
+sata-status:
+	@./scripts/home-ops.sh sata status
 
 ## help: Show available make targets
 help:

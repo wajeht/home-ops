@@ -219,10 +219,12 @@ cd ~/home-ops && ./scripts/home-ops.sh install
 
 The install script handles everything: Docker, SOPS, networks, and docker-cd deployment.
 
-### 3. Mount NFS (for media)
+### 3. Mount NFS and SATA
 
 ```bash
 ./scripts/home-ops.sh nfs mount
+./scripts/home-ops.sh nfs persist      # survive reboots
+./scripts/home-ops.sh sata persist     # survive reboots
 ```
 
 ### 4. Initialize Borgmatic

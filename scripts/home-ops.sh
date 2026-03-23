@@ -221,6 +221,12 @@ ensure_external_networks() {
 # SETUP - Create directories
 #=============================================================================
 cmd_setup() {
+	header "Mounts"
+	sata_mount
+	sata_persist
+	cmd_nfs mount all
+	cmd_nfs persist all
+
 	header "Creating directories"
 	local created=0 total=0
 
@@ -359,11 +365,6 @@ sata_mount() {
 	info "Mounting SATA: $SATA_DEVICE -> $SATA_MOUNT"
 	$SUDO mkdir -p "$SATA_MOUNT"
 	if $SUDO mount "$SATA_DEVICE" "$SATA_MOUNT"; then
-		# Ensure fstab entry exists
-		if ! grep -q "$SATA_DEVICE.*$SATA_MOUNT" /etc/fstab 2>/dev/null; then
-			echo "$SATA_DEVICE $SATA_MOUNT ext4 defaults 0 2" | $SUDO tee -a /etc/fstab >/dev/null
-			dim "Added fstab entry"
-		fi
 		# Create subdirectories
 		for dir in "${SATA_DIRS[@]}"; do
 			$SUDO mkdir -p "$dir"
@@ -384,13 +385,38 @@ sata_unmount() {
 	fi
 }
 
-sata_status() {
-	if mountpoint -q "$SATA_MOUNT" 2>/dev/null; then
-		printf "${GREEN}%-10s${NC} MOUNTED   " "sata:"
-		df -h "$SATA_MOUNT" | awk 'NR==2 {print $3"/"$2" ("$5" used)"}'
+sata_persist() {
+	local entry="$SATA_DEVICE $SATA_MOUNT ext4 defaults 0 2"
+	if grep -qF "$SATA_DEVICE" /etc/fstab; then
+		dim "sata: already in fstab"
 	else
-		printf "${RED}%-10s${NC} NOT MOUNTED\n" "sata:"
+		echo "$entry" | $SUDO tee -a /etc/fstab >/dev/null
+		ok "sata: added to fstab"
 	fi
+}
+
+sata_unpersist() {
+	if grep -qF "$SATA_DEVICE" /etc/fstab; then
+		$SUDO sed -i "\|$SATA_DEVICE|d" /etc/fstab
+		ok "sata: removed from fstab"
+	else
+		dim "sata: not in fstab"
+	fi
+}
+
+sata_status() {
+	local mount_status fstab_status
+	if mountpoint -q "$SATA_MOUNT" 2>/dev/null; then
+		mount_status="${GREEN}MOUNTED${NC}   $(df -h "$SATA_MOUNT" | awk 'NR==2 {print $3"/"$2" ("$5" used)"}')"
+	else
+		mount_status="${RED}NOT MOUNTED${NC}"
+	fi
+	if grep -qF "$SATA_DEVICE" /etc/fstab; then
+		fstab_status="${GREEN}PERSISTED${NC}"
+	else
+		fstab_status="${DIM}NOT PERSISTED${NC}"
+	fi
+	printf "%-10s %b  %b\n" "sata:" "$mount_status" "$fstab_status"
 }
 
 cmd_sata() {
@@ -398,8 +424,10 @@ cmd_sata() {
 	case "$action" in
 		mount) sata_mount ;;
 		unmount | umount) sata_unmount ;;
+		persist) sata_persist ;;
+		unpersist) sata_unpersist ;;
 		status) sata_status ;;
-		*) echo -e "Usage: $0 sata {mount|unmount|status}" ;;
+		*) echo -e "Usage: $0 sata {mount|unmount|persist|unpersist|status}" ;;
 	esac
 }
 
@@ -441,10 +469,8 @@ cmd_install() {
 		$SUDO chmod +x /usr/local/bin/sops
 	fi
 
-	# Mount drives before creating dirs (so mount paths aren't created as local dirs)
+	# Mount, persist, and create dirs
 	step "3/4" "Mounts + Directories..."
-	sata_mount
-	cmd_nfs mount all
 	cmd_setup
 
 	# Create external networks
@@ -883,6 +909,8 @@ case "${1:-}" in
 		echo -e "  ${GREEN}setup${NC}                    Create all data directories"
 		echo -e "  ${GREEN}sata mount${NC}               Mount SATA drive (/mnt/sata)"
 		echo -e "  ${GREEN}sata unmount${NC}             Unmount SATA drive"
+		echo -e "  ${GREEN}sata persist${NC}             Add SATA mount to fstab (survives reboot)"
+		echo -e "  ${GREEN}sata unpersist${NC}           Remove SATA mount from fstab"
 		echo -e "  ${GREEN}sata status${NC}              Show SATA mount status"
 		echo -e "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
 		echo -e "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
