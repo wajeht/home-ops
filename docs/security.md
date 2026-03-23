@@ -15,6 +15,9 @@ Scanned from LAN via `nmap -F <server-ip>`:
 | 1883  | MQTT           | open (Zigbee2MQTT) | Blocked by UFW, Docker-internal only          |
 | 2283  | Immich         | open               | Blocked by UFW, access via Traefik only       |
 | 8123  | Home Assistant | open               | Blocked by UFW, access via Traefik only       |
+| 16992 | Intel AMT HTTP | open               | LAN only — remote management (vPro)           |
+| 16993 | Intel AMT HTTPS| open               | LAN only — remote management (vPro)           |
+| 5900  | AMT KVM/VNC    | open               | LAN only — remote screen access (vPro)        |
 | 32400 | Plex           | open               | OK — needs direct access for remote streaming |
 
 To restrict ports further, change Docker port mappings from `0.0.0.0:PORT:PORT` to `127.0.0.1:PORT:PORT`.
@@ -172,11 +175,22 @@ nc -zv 192.168.30.56 2020  # ONVIF
 - Camera credentials still in `.env.sops` — only the IP changes when moving VLANs
 - Delete vendor apps after setup — camera runs standalone on RTSP/ONVIF
 
+## Intel AMT/vPro
+
+AMT runs on the Management Engine chipset independently of the OS. It listens on ports 16992/16993/5900 and provides remote power control and KVM.
+
+- **Access**: `http://192.168.4.161:16992` or HTTPS on 16993
+- **KVM**: VNC client to port 5900
+- **Risk**: AMT has had critical CVEs (auth bypass, RCE) — keep BIOS firmware updated
+- **Mitigation**: LAN-only access, UFW doesn't affect AMT (runs below OS), firewall at router blocks inbound
+- USB Provision disabled, User Consent set to None, Remote IT config disabled
+
 ## Checklist
 
 - [x] Disable rpcbind (NFS v4.1)
 - [x] Enable UFW firewall
 - [x] IoT VLAN (VLAN 30, 192.168.30.0/24)
+- [x] Intel AMT/vPro enabled (remote power + KVM)
 - [ ] SSH: key-only auth
 - [ ] Install fail2ban
 - [ ] Disable unnecessary services
