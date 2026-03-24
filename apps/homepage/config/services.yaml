@@ -278,6 +278,12 @@
         description: Docker Logs
         # siteMonitor: http://dozzle:8080
 
+    - Beszel:
+        icon: beszel
+        href: https://beszel.jaw.dev
+        description: Server Monitor
+        # siteMonitor: http://beszel:8090
+
     - Plausible:
         icon: plausible
         href: https://plausible.jaw.dev
