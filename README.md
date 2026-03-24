@@ -56,7 +56,7 @@ flowchart LR
             Vaultwarden
             Paperless-ngx
             Immich
-            +53 more"]
+            +54 more"]
         end
 
         subgraph nas[Synology DS923+]
@@ -152,7 +152,7 @@ Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It p
 
 [Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~60min via polling). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
 
-All containers are [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, health checks, and log rotation. [Borgmatic](https://torsion.org/borgmatic/) handles automated backups — 2 critical apps hourly, rest daily — with database dumps (8 Postgres + 21 SQLite) and file backups, weekly integrity checks, and ntfy notifications.
+All containers are [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, health checks, and log rotation. [Borgmatic](https://torsion.org/borgmatic/) handles automated backups — 2 critical apps hourly, rest daily — with database dumps (8 Postgres + 22 SQLite) and file backups, weekly integrity checks, and ntfy notifications.
 
 ## Hardware
 

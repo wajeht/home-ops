@@ -82,6 +82,7 @@ Borgmatic writes to both repos sequentially in a single cron run. Global borgmat
 | dbgate             | 2:15 AM  | Files only    | `~/backup/dbgate/`             | `/mnt/sata/backup/dbgate/`             |
 | frigate            | 2:20 AM  | SQLite+files  | `~/backup/frigate/`            | `/mnt/sata/backup/frigate/`            |
 | listenarr          | 2:25 AM  | SQLite+files  | `~/backup/listenarr/`          | `/mnt/sata/backup/listenarr/`          |
+| beszel             | 2:35 AM  | SQLite+files  | `~/backup/beszel/`             | `/mnt/sata/backup/beszel/`             |
 | **global**         | 2:30 AM  | All ~/data/   | `~/backup/borg/`               | —                                      |
 
 ### Borgmatic Commands
