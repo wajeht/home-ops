@@ -53,6 +53,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/extra-filesystems/host:ro
+      - /dev:/dev:ro
     networks:
       - beszel-internal
     logging:
@@ -64,6 +65,8 @@ services:
     init: true
     cap_drop:
       - ALL
+    cap_add:
+      - SYS_RAWIO
     read_only: true
     security_opt:
       - no-new-privileges:true
