@@ -48,6 +48,8 @@ services:
       - .env
     environment:
       - PORT=45876
+      - FILESYSTEM=/dev/nvme0n1p2
+      - SENSORS=coretemp_package_id_0,nvme_composite
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/extra-filesystems/host:ro
