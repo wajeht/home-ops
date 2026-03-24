@@ -50,6 +50,7 @@ services:
       - PORT=45876
       - FILESYSTEM=/dev/nvme0n1p2
       - SENSORS=coretemp_package_id_0,nvme_composite
+      - SMART_INTERVAL=1h
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/extra-filesystems/host:ro
