@@ -6,6 +6,7 @@ services:
       - /home/jaw/data/beszel:/beszel_data
     networks:
       - traefik
+      - beszel-internal
     healthcheck:
       test: ["CMD", "/beszel", "health"]
       interval: 30s
@@ -39,6 +40,36 @@ services:
       - "traefik.http.routers.beszel.entrypoints=websecure"
       - "traefik.http.routers.beszel.middlewares=google-auth@file"
       - "traefik.http.services.beszel.loadbalancer.server.port=8090"
+
+  beszel-agent:
+    container_name: beszel-agent
+    image: henrygd/beszel-agent:0.18@sha256:00829897142460910ed1de162b166d2494916c061ecdb092de3b0653818c02b9
+    env_file:
+      - .env
+    environment:
+      - PORT=45876
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/extra-filesystems/host:ro
+    networks:
+      - beszel-internal
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
 
   beszel-borgmatic:
     container_name: beszel-borgmatic
@@ -87,3 +118,5 @@ networks:
     external: true
   backup:
     external: true
+  beszel-internal:
+    internal: true
