@@ -53,7 +53,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/extra-filesystems/host:ro
-      - /dev:/dev:ro
+    devices:
+      - /dev/nvme0:/dev/nvme0
+      - /dev/sda:/dev/sda
     networks:
       - beszel-internal
     logging:
