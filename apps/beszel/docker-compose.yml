@@ -69,6 +69,7 @@ services:
       - ALL
     cap_add:
       - SYS_RAWIO
+      - SYS_ADMIN
     read_only: true
     security_opt:
       - no-new-privileges:true
