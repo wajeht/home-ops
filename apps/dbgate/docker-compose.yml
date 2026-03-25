@@ -1,4 +1,3 @@
-# force
 services:
   dbgate:
     container_name: dbgate
