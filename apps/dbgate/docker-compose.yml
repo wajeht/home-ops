@@ -13,7 +13,7 @@ services:
       - /home/jaw/data/calendar:/mnt/calendar
     networks:
       - traefik
-      - miniflux-internal
+      # - miniflux-internal
       - hello-world-internal
       - immich-internal
       # - plausible-internal
@@ -96,9 +96,9 @@ networks:
     external: true
   backup:
     external: true
-  miniflux-internal:
-    external: true
-    name: miniflux_miniflux-internal
+  # miniflux-internal:
+  #   external: true
+  #   name: miniflux_miniflux-internal
   hello-world-internal:
     external: true
     name: hello-world_internal
