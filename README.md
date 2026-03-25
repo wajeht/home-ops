@@ -63,7 +63,7 @@ flowchart LR
             nfs[(NFS)]
         end
 
-        subgraph ucg[UniFi Cloud Gateway Ultra]
+        subgraph ucg[UniFi Cloud Gateway Fiber]
             unifi{{Firewall}}
             ucg_cf([Cloudflare IPs Only])
             ucg_region([Region Blocking])
@@ -82,7 +82,7 @@ flowchart LR
         zigbee -->|Zigbee| plugs([Smart Plugs x4])
         zigbee -->|Zigbee| switches([Smart Switches x2])
 
-        subgraph tplink[TP-Link TL-SG608P]
+        subgraph uswflex[UniFi Flex 2.5G PoE]
             poe{{PoE Switch}}
         end
 
@@ -136,7 +136,7 @@ flowchart LR
     style ucg fill:#fef2f2,stroke:#dc2626
     style pi fill:#f0fdf4,stroke:#22c55e
     style slzb fill:#faf5ff,stroke:#9b59b6
-    style tplink fill:#f3f4f6,stroke:#6b7280
+    style uswflex fill:#f3f4f6,stroke:#6b7280
     style u6 fill:#eff6ff,stroke:#0559c9
     style plugs fill:#f5e6ff,stroke:#9b59b6,color:#333
     style switches fill:#f5e6ff,stroke:#9b59b6,color:#333
@@ -161,11 +161,12 @@ All containers are [hardened](docs/adding-apps.md#container-hardening) with drop
 | [Dell OptiPlex 7050 Micro (i7-7700)](https://www.amazon.com/s?k=dell+optiplex+7050+micro+i7-7700)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [WD Blue SN570 1TB NVMe](https://www.amazon.com/s?k=WD+Blue+SN570+1TB) (OS + apps)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Micron M600 1TB SATA](https://www.amazon.com/s?k=Micron+M600+1TB) (Frigate recordings) | 32GB | 2TB      | Ubuntu 24.04    | Docker Host    |
 | [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [GeeekPi P33 NVMe PoE+ HAT](https://www.amazon.com/dp/B0DMW98LBR)                                                                                                                                                                  | 8GB  | 128GB SD | Raspberry Pi OS | AdGuard        |
 | [Synology DS923+](https://www.amazon.com/dp/B0BM7KDN6R)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [WD Red Plus 8TB](https://www.amazon.com/s?k=WD+Red+Plus+8TB) x2<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Seagate IronWolf 12TB](https://www.amazon.com/s?k=Seagate+IronWolf+12TB) x2                                                                        | 20GB | 25TB SHR | DSM             | NAS            |
-| [UniFi Cloud Gateway Ultra](https://store.ui.com/us/en/products/ucg-ultra)                                                                                                                                                                                                                                                             | 3GB  | 16GB     | UniFi OS        | Firewall       |
+| [UniFi Cloud Gateway Fiber](https://store.ui.com/us/en/products/ucg-fiber)                                                                                                                                                                                                                                                             | 3GB  | 10GB     | UniFi OS        | Firewall       |
 | [UniFi U6+](https://store.ui.com/us/en/products/u6-plus)                                                                                                                                                                                                                                                                               | -    | -        | -               | WiFi 6 AP      |
 | [SMLIGHT SLZB-MR3U](https://www.amazon.com/dp/B0FB97W6CN)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [THIRDREALITY Smart Plug Gen3](https://www.amazon.com/dp/B0GHQT8TQ8) x4<br>&nbsp;&nbsp;&nbsp;&nbsp;— [THIRDREALITY Smart Switch](https://www.amazon.com/dp/B0CR9ZSV5L) x2                                                                       | -    | -        | -               | Zigbee Gateway |
-| [TP-Link TL-SG608P](https://www.amazon.com/TP-Link-Gigabit-Ethernet-Desktop-TL-SG1008P/dp/B00BP0SSAS)                                                                                                                                                                                                                                  | -    | -        | -               | PoE Switch     |
+| [UniFi Flex 2.5G PoE 8-Port](https://store.ui.com/us/en/products/usw-flex-2-5g-8-poe)                                                                                                                                                                                                                                                  | -    | -        | -               | PoE Switch     |
 | [CyberPower 1500VA AVR](https://www.amazon.com/CyberPower-CP1500AVRLCD-Intelligent-Outlets-Mini-Tower/dp/B000FBK3QK)                                                                                                                                                                                                                   | -    | -        | -               | UPS            |
+| [DeskPi RackMate T2 12U](https://www.amazon.com/dp/B0FYNM62F7)                                                                                                                                                                                                                                                               | -    | -        | -               | Rack           |
 
 With all equipment connected: 69W idle @ 120V, 145 min UPS runtime, 50 kWh/mo (~$6/mo).
 
