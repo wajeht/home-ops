@@ -103,8 +103,8 @@ docker exec <app>-borgmatic borgmatic list
 # List archive contents
 docker exec <app>-borgmatic borg list /repository::<archive-name>
 
-# Init single borg repo
-docker exec <app>-borgmatic borgmatic init --encryption repokey-blake2
+# Init single borg repo (borgmatic 2.x syntax)
+docker exec <app>-borgmatic borgmatic repo-create --encryption repokey-aes-ocb
 ```
 
 ### How Restore Works
@@ -245,6 +245,82 @@ See [Quick Start — OS Tuning](quick-start.md#os-tuning) for swappiness and CPU
 
 ```bash
 ./scripts/home-ops.sh status
+```
+
+## After Hardware Migration / Full Redeploy
+
+When swapping hardware (e.g. new gateway) or deleting docker-cd state to force a full redeploy, several things break. Here's the checklist:
+
+### 1. NFS Mounts (fix FIRST)
+
+NFS mounts drop on reboot/network change. If docker-cd deploys before NFS is mounted, containers see empty dirs instead of NAS data.
+
+```bash
+make nfs-mount
+make nfs-persist
+```
+
+**Must be done before restarting any containers**, otherwise:
+
+- Immich sees empty upload dir, fails mount checks
+- Global borgmatic sees empty repo, `borgmatic init` tries to create a new one
+- Per-app borgmatic can't reach NAS repos
+
+### 2. SATA Mount
+
+```bash
+make sata-mount
+make sata-persist
+```
+
+### 3. Immich Upload Markers
+
+Immich v2.6+ checks `.immich` marker files in upload subdirs on startup. After a fresh deploy these don't exist yet:
+
+```bash
+cd ~/immich/upload
+mkdir -p thumbs upload backups library profile encoded-video
+for d in thumbs upload backups library profile encoded-video; do touch $d/.immich; done
+docker restart immich
+```
+
+### 4. Stale Borg Locks
+
+Containers that were running when the redeploy happened may leave stale lock files:
+
+```bash
+docker exec <app>-borgmatic borg break-lock /repository
+docker exec <app>-borgmatic borg break-lock /local-backup
+```
+
+### 5. Container Permission Issues
+
+After a fresh deploy, some containers crash with `EACCES: permission denied` because `cap_drop: ALL` removes filesystem caps. If a container needs to write to its data dir, it needs caps:
+
+```bash
+# Check logs for EACCES errors
+docker logs <container> --tail 20
+
+# Fix: add cap_add to docker-compose.yml (most apps need these)
+cap_add:
+  - CHOWN
+  - DAC_OVERRIDE
+  - FOWNER
+  - SETGID
+  - SETUID
+```
+
+### 6. External Network Dependencies
+
+dbgate and similar apps depend on other stacks' internal networks (e.g. `miniflux_miniflux-internal`). If those stacks haven't deployed yet, the dependent stack fails. docker-cd retries, so just wait or trigger another sync after all stacks are up.
+
+### 7. Borgmatic Init
+
+After everything is up and NFS is mounted:
+
+```bash
+make borgmatic-init
+make borgmatic-backup    # optional: run first backup immediately
 ```
 
 ## Testing Recovery
