@@ -39,13 +39,12 @@ Connect using S3-compatible mode with endpoint `s3.jaw.dev` (port 443, HTTPS). U
 
 **Important:** Disable virtual-hosted style (use path-style) — the wildcard cert is `*.jaw.dev` which doesn't cover `<bucket>.s3.jaw.dev`.
 
-For Cyberduck:
+For Cyberduck (run once, then restart):
 
 ```bash
 defaults write ch.sudo.cyberduck s3.bucket.virtualhost.disable true
+defaults write ch.sudo.cyberduck s3.region.default garage
 ```
-
-Restart Cyberduck after applying.
 
 ## Backups
 
