@@ -112,7 +112,6 @@ services:
       - /home/jaw/data/qbittorrent:/source/qbittorrent
       - /home/jaw/data/gluetun:/source/gluetun
       - /home/jaw/backup/vpn-qbit:/repository
-      - /mnt/sata/backup/vpn-qbit:/local-backup
       - /home/jaw/data/qbittorrent/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
