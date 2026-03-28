@@ -6,7 +6,7 @@ services:
       - .env
     environment:
       - TZ=America/Chicago
-      - NAME=cyberpower
+      - NAME=ups
       - DRIVER=usbhid-ups
       - PORT=auto
       - VENDORID=0764
@@ -20,7 +20,7 @@ services:
     networks:
       - nut-internal
     healthcheck:
-      test: ["CMD", "/usr/bin/upsc", "cyberpower@localhost"]
+      test: ["CMD", "/usr/bin/upsc", "ups@localhost"]
       interval: 30s
       timeout: 5s
       retries: 3
