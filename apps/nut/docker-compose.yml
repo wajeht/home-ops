@@ -1,0 +1,92 @@
+services:
+  nut:
+    container_name: nut
+    image: instantlinux/nut-upsd:2.8.3-r3@sha256:a3de216f044ba9ddd2181a04fe3e5299c91063e8c2dbd0577f82bca5717061f7
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Chicago
+      - NAME=cyberpower
+      - DRIVER=usbhid-ups
+      - PORT=auto
+      - VENDORID=0764
+      - PRODUCTID=0601
+      - MAXAGE=25
+      - DESCRIPTION=CyberPower PR1500LCDRT2U
+    ports:
+      - "3493:3493"
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    healthcheck:
+      test: ["CMD", "/usr/bin/upsc", "cyberpower@localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  peanut:
+    container_name: peanut
+    image: brandawg93/peanut:5.22.0@sha256:cb503d95f8c0ac4738ee54e4a5d3d1ac33d4dcd958b195adffc9e94e0143c10b
+    environment:
+      - TZ=America/Chicago
+      - NUT_HOST=nut
+      - NUT_PORT=3493
+      - WEB_PORT=8080
+    depends_on:
+      nut:
+        condition: service_healthy
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/api/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.peanut.rule=Host(`nut.jaw.dev`)"
+      - "traefik.http.routers.peanut.entrypoints=websecure"
+      - "traefik.http.routers.peanut.middlewares=google-auth@file"
+      - "traefik.http.services.peanut.loadbalancer.server.port=8080"
+
+networks:
+  traefik:
+    external: true
