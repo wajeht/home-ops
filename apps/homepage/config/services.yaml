@@ -221,6 +221,11 @@
         #   type: frigate
         #   url: http://frigate:5000
 
+    - Proxmox:
+        icon: proxmox
+        href: https://proxmox.jaw.dev
+        description: Hypervisor
+
     - Intel AMT (7050):
         icon: mdi-desktop-tower-monitor
         href: http://192.168.4.161:16992
