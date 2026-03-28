@@ -21,7 +21,7 @@ services:
         max-size: "10m"
         max-file: "3"
     volumes:
-      - /home/jaw/data/bin/portcheck:/portcheck:ro
+      - ./portcheck:/portcheck:ro
     healthcheck:
       test: ["CMD", "/portcheck", "tcp", "127.0.0.1:4181"]
       interval: 30s
