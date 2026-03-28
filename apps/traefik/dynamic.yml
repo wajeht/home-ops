@@ -1,8 +1,4 @@
 http:
-  serversTransports:
-    proxmox-transport:
-      insecureSkipVerify: true
-
   middlewares:
     redirect-to-main:
       redirectRegex:
@@ -59,13 +55,6 @@ http:
           ipStrategy:
             ipv6Subnet: 64
 
-    lan-only:
-      ipAllowList:
-        sourceRange:
-          - "192.168.0.0/16"
-          - "10.0.0.0/8"
-          - "172.16.0.0/12"
-
     google-auth-forward:
       forwardAuth:
         address: http://google-auth:4181
@@ -98,16 +87,6 @@ http:
           - google-auth-user-forward
 
   routers:
-    proxmox:
-      rule: "Host(`proxmox.jaw.dev`)"
-      entrypoints:
-        - websecure
-      middlewares:
-        - lan-only
-        - google-auth
-      service: proxmox
-      tls: {}
-
     # Catch-all for unknown subdomains (low priority)
     catchall:
       rule: "HostRegexp(`[a-z0-9-]+\\.jaw\\.dev`)"
@@ -120,12 +99,6 @@ http:
       tls: {}
 
   services:
-    proxmox:
-      loadBalancer:
-        servers:
-          - url: "https://192.168.4.162:8006"
-        serversTransport: proxmox-transport
-
     # Dummy service for redirects (never actually used)
     dummy:
       loadBalancer:
