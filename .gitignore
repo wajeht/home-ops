@@ -49,6 +49,7 @@ tmp/
 # Personal notes
 docs/notes.md
 docs/todo.md
+docs/k3s.md
 
 # Claude
 .claude/settings.local.json

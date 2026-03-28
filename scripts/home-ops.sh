@@ -314,6 +314,8 @@ nfs_persist() {
 	if grep -qF "$NAS_IP:$nas_path" /etc/fstab; then
 		dim "$name: already in fstab"
 	else
+		# Remove stale entries for same mount point (e.g. old NAS IP)
+		$SUDO sed -i "\| $local_path |d" /etc/fstab
 		echo "$entry" | $SUDO tee -a /etc/fstab >/dev/null
 		ok "$name: added to fstab"
 	fi
