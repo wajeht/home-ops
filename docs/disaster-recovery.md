@@ -110,7 +110,7 @@ docker exec <app>-borgmatic borgmatic list
 docker exec <app>-borgmatic borg list /repository::<archive-name>
 
 # Init single borg repo (borgmatic 2.x syntax)
-docker exec <app>-borgmatic borgmatic repo-create --encryption repokey-aes-ocb
+docker exec <app>-borgmatic borgmatic repo-create --encryption repokey-blake2
 ```
 
 ### How Restore Works
