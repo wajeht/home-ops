@@ -79,6 +79,12 @@
         #   url: http://audiobookshelf:80
         #   key: "{{HOMEPAGE_VAR_AUDIOBOOKSHELF_KEY}}"
 
+    - Listenarr:
+        icon: listenarr
+        href: https://listenarr.jaw.dev
+        description: Music
+        # siteMonitor: http://listenarr:5656
+
     - Immich:
         icon: immich
         href: https://immich.jaw.dev
