@@ -46,7 +46,7 @@ services:
 
   peanut:
     container_name: peanut
-    image: brandawg93/peanut:5.22.0@sha256:cb503d95f8c0ac4738ee54e4a5d3d1ac33d4dcd958b195adffc9e94e0143c10b
+    image: brandawg93/peanut:5.22.0@sha256:968cb14fdce89ae3a0437037b5d0a98b262d549fbe4fb75c2dee1c4d422b0c9b
     environment:
       - TZ=America/Chicago
       - NUT_HOST=nut
