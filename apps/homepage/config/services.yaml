@@ -223,7 +223,7 @@
 
     - Proxmox:
         icon: proxmox
-        href: https://proxmox.jaw.dev
+        href: https://192.168.4.162:8006
         description: Hypervisor
 
     - Intel AMT (7050):
