@@ -37,7 +37,7 @@ Automated daily backups via borgmatic (borg wrapper). Encrypted, deduplicated, c
 
 ### Per-App Borgmatic
 
-Each app with important data has its own borgmatic instance backing up DB + files to **two** borg repos simultaneously. Staggered schedules prevent resource contention.
+Each app with important data has its own borgmatic instance backing up DB + files to NAS via NFS. Staggered schedules prevent resource contention.
 
 Apps with databases use `postgresql_databases` or `sqlite_databases` hooks for consistent DB snapshots. All apps also back up their full `~/data/<app>/` directory (excluding borgmatic state and raw DB files already handled by hooks).
 
@@ -78,6 +78,7 @@ Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 | gains              | 2:00 AM  | SQLite (DB)   | `~/backup/gains/`              |
 | homeassistant      | 2:05 AM  | SQLite+files  | `~/backup/homeassistant/`      |
 | zigbee2mqtt        | 2:10 AM  | Files only    | `~/backup/zigbee2mqtt/`        |
+| garage             | 2:30 AM  | Files only    | `~/backup/garage/`             |
 | dbgate             | 2:15 AM  | Files only    | `~/backup/dbgate/`             |
 | frigate            | 2:20 AM  | SQLite+files  | `~/backup/frigate/`            |
 | listenarr          | 2:25 AM  | SQLite+files  | `~/backup/listenarr/`          |
@@ -88,6 +89,7 @@ Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 | bazarr             | 2:55 AM  | SQLite+files  | `~/backup/bazarr/`             |
 | sabnzbd            | 3:00 AM  | SQLite+files  | `~/backup/sabnzbd/`            |
 | vpn-qbit           | 3:05 AM  | Files only    | `~/backup/vpn-qbit/`           |
+| nut                | 3:10 AM  | Files only    | `~/backup/nut/`                |
 | **global**         | 3:30 AM  | All ~/data/   | `~/backup/borg/`               |
 
 ### Borgmatic Commands
