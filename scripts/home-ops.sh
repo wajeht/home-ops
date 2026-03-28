@@ -691,7 +691,7 @@ cmd_borgmatic_init() {
 			fi
 		done
 		if [ "$needs_init" = "1" ]; then
-			if $SUDO docker exec "$c" borgmatic repo-create --encryption repokey-aes-ocb &>/dev/null; then
+			if $SUDO docker exec "$c" borgmatic repo-create --encryption repokey-blake2 &>/dev/null; then
 				ok "$c: initialized"
 				initialized=$((initialized + 1))
 			else
@@ -737,7 +737,7 @@ cmd_borgmatic_backup() {
 		# Auto-init if repo doesn't exist
 		if ! $SUDO docker exec "$c" borg info /repository &>/dev/null; then
 			info "$c: initializing..."
-			$SUDO docker exec "$c" borgmatic repo-create --encryption repokey-aes-ocb &>/dev/null || true
+			$SUDO docker exec "$c" borgmatic repo-create --encryption repokey-blake2 &>/dev/null || true
 		fi
 		info "$c: backing up..."
 		if $SUDO docker exec "$c" borgmatic create --verbosity -1 2>&1; then
