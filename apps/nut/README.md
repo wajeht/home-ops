@@ -37,15 +37,31 @@ Configure in settings (gear icon):
 
 ## NUT Clients
 
-### Synology NAS
+### Synology NAS — DONE
 
-DSM → Control Panel → Hardware & Power → UPS:
+DSM GUI alone doesn't work with non-Synology NUT servers. Needs SSH config:
 
-- Enable UPS support
-- UPS type: "Synology UPS server"
-- Network UPS server IP: `192.168.4.161`
+1. DSM → Control Panel → Hardware & Power → UPS:
+   - Enable UPS support
+   - UPS type: "Synology UPS server"
+   - Network UPS server IP: `192.168.4.161`
+   - Apply (will show "Cannot connect" — that's expected)
 
-**NOTE:** DSM's "Synology UPS server" mode only works with other Synology NAS running NUT, not generic NUT servers. It will show "Cannot connect to the network UPS server." To make it work, you'd need to enable SSH on the NAS and manually edit `/etc/ups/upsmon.conf` — but DSM updates overwrite these changes. For now, the NAS is not connected to NUT.
+2. DSM → Control Panel → Terminal & SNMP → Enable SSH
+
+3. SSH into NAS and fix the shutdown command:
+
+   ```bash
+   ssh jaw@192.168.4.218
+   sudo sed -i 's|SHUTDOWNCMD ""|SHUTDOWNCMD "/sbin/shutdown -h now"|' /etc/ups/upsmon.conf
+   sudo systemctl restart ups-net.service
+   ```
+
+4. DSM UPS page should now show connected
+
+**WARNING:** DSM updates may overwrite `/etc/ups/upsmon.conf`. If NUT stops working after a DSM update, re-run step 3.
+
+DSM auto-configures the correct MONITOR line (`MONITOR ups@192.168.4.161 1 monuser secret slave`) — only the empty `SHUTDOWNCMD` needs fixing via SSH.
 
 ### OptiPlex 5050 (Proxmox) — DONE
 
