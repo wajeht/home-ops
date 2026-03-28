@@ -398,16 +398,6 @@
         description: Test App
         # siteMonitor: http://hello-world:3000
 
-    - GitHub:
-        icon: github
-        href: https://github.com/wajeht
-        description: Profile
-
-    - Home Ops:
-        icon: github
-        href: https://github.com/wajeht/home-ops
-        description: This Repo
-
 - Tools:
     - ConvertX:
         icon: mdi-file-swap
