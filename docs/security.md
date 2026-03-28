@@ -105,7 +105,7 @@ Isolates IoT devices (cameras, sensors, smart plugs) from the main LAN. Devices 
 | Guest   | 2       | 192.168.2.0/24  | Yes      | Guest WiFi           |
 | IoT     | 30      | 192.168.30.0/24 | No       | Cameras, IoT devices |
 
-### Setup (UniFi Cloud Gateway Ultra)
+### Setup (UniFi Cloud Gateway Fiber)
 
 #### 1. Create IoT network
 

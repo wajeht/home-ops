@@ -83,7 +83,13 @@ Borgmatic writes to both repos sequentially in a single cron run. Global borgmat
 | frigate            | 2:20 AM  | SQLite+files  | `~/backup/frigate/`            | `/mnt/sata/backup/frigate/`            |
 | listenarr          | 2:25 AM  | SQLite+files  | `~/backup/listenarr/`          | `/mnt/sata/backup/listenarr/`          |
 | beszel             | 2:35 AM  | SQLite+files  | `~/backup/beszel/`             | `/mnt/sata/backup/beszel/`             |
-| **global**         | 2:30 AM  | All ~/data/   | `~/backup/borg/`               | —                                      |
+| traefik            | 2:40 AM  | Files only    | `~/backup/traefik/`            | `/mnt/sata/backup/traefik/`            |
+| plex               | 2:45 AM  | SQLite+files  | `~/backup/plex/`               | `/mnt/sata/backup/plex/`               |
+| seerr              | 2:50 AM  | SQLite+files  | `~/backup/seerr/`              | `/mnt/sata/backup/seerr/`              |
+| bazarr             | 2:55 AM  | SQLite+files  | `~/backup/bazarr/`             | `/mnt/sata/backup/bazarr/`             |
+| sabnzbd            | 3:00 AM  | SQLite+files  | `~/backup/sabnzbd/`            | `/mnt/sata/backup/sabnzbd/`            |
+| vpn-qbit           | 3:05 AM  | Files only    | `~/backup/vpn-qbit/`           | `/mnt/sata/backup/vpn-qbit/`           |
+| **global**         | 3:30 AM  | All ~/data/   | `~/backup/borg/`               | —                                      |
 
 ### Borgmatic Commands
 
@@ -263,7 +269,7 @@ make nfs-persist
 **Must be done before restarting any containers**, otherwise:
 
 - Immich sees empty upload dir, fails mount checks
-- Global borgmatic sees empty repo, `borgmatic init` tries to create a new one
+- Global borgmatic sees empty repo, `borgmatic repo-create` tries to create a new one
 - Per-app borgmatic can't reach NAS repos
 
 ### 2. SATA Mount
