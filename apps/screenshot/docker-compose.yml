@@ -1,6 +1,6 @@
 services:
   screenshot:
-    image: ghcr.io/wajeht/screenshot:d29ab5c
+    image: ghcr.io/wajeht/screenshot:4cd2694
     environment:
       TZ: America/Chicago
       APP_ENV: production
