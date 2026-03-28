@@ -65,7 +65,6 @@ services:
     volumes:
       - /home/jaw/data/dbgate:/source/data
       - /home/jaw/backup/dbgate:/repository
-      - /mnt/sata/backup/dbgate:/local-backup
       - /home/jaw/data/dbgate/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

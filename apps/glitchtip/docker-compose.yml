@@ -111,7 +111,6 @@ services:
     volumes:
       - /home/jaw/data/glitchtip:/source/data:ro
       - /home/jaw/backup/glitchtip:/repository
-      - /mnt/sata/backup/glitchtip:/local-backup
       - /home/jaw/data/glitchtip/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

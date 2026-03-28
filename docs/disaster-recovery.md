@@ -6,7 +6,7 @@ How to recreate the homelab from scratch.
 
 | Data                  | Location                | Backup Strategy                |
 | --------------------- | ----------------------- | ------------------------------ |
-| App configs/databases | `~/data/`               | Borgmatic → NAS + local SATA   |
+| App configs/databases | `~/data/`               | Borgmatic → NAS                |
 | SOPS age key          | `~/.sops/age-key.txt`   | Borgmatic → NAS                |
 | Docker auth           | `~/.docker/config.json` | Recreatable via `docker login` |
 | Secrets               | .env.sops files         | Encrypted in git               |
@@ -28,7 +28,7 @@ Automated daily backups via borgmatic (borg wrapper). Encrypted, deduplicated, c
 
 ### Global Borgmatic
 
-- **Schedule**: Daily at 2:30am CT (after all per-app backups)
+- **Schedule**: Daily at 3:30am CT (after all per-app backups)
 - **Source**: `~/data/` + `~/.sops/`
 - **Destination**: `~/backup/borg/` (NFS from NAS)
 - **Retention**: 7 daily, 4 weekly, 6 monthly
@@ -41,55 +41,54 @@ Each app with important data has its own borgmatic instance backing up DB + file
 
 Apps with databases use `postgresql_databases` or `sqlite_databases` hooks for consistent DB snapshots. All apps also back up their full `~/data/<app>/` directory (excluding borgmatic state and raw DB files already handled by hooks).
 
-Each per-app borgmatic backs up to two destinations:
+Each per-app borgmatic backs up to:
 
 - **NAS** (`~/backup/<app>/` via NFS) — survives local disk failure
-- **Local SATA** (`/mnt/sata/backup/<app>/`) — fast restores, survives NAS failure
 
-Borgmatic writes to both repos sequentially in a single cron run. Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
+Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 
-| App                | Schedule | Type          | NAS Repo                       | SATA Repo                              |
-| ------------------ | -------- | ------------- | ------------------------------ | -------------------------------------- |
-| gitea              | Hourly   | SQLite+files  | `~/backup/gitea/`              | `/mnt/sata/backup/gitea/`              |
-| vaultwarden        | Hourly   | SQLite+files  | `~/backup/vaultwarden/`        | `/mnt/sata/backup/vaultwarden/`        |
-| miniflux           | 12:00 AM | Postgres (DB) | `~/backup/miniflux/`           | `/mnt/sata/backup/miniflux/`           |
-| plausible          | 12:05 AM | PG + files    | `~/backup/plausible/`          | `/mnt/sata/backup/plausible/`          |
-| zipline            | 12:10 AM | PG + files    | `~/backup/zipline/`            | `/mnt/sata/backup/zipline/`            |
-| glitchtip          | 12:15 AM | PG + files    | `~/backup/glitchtip/`          | `/mnt/sata/backup/glitchtip/`          |
-| bitmagnet          | 12:20 AM | Postgres (DB) | `~/backup/bitmagnet/`          | `/mnt/sata/backup/bitmagnet/`          |
-| hello-world        | 12:25 AM | Postgres (DB) | `~/backup/hello-world/`        | `/mnt/sata/backup/hello-world/`        |
-| paperless          | 12:30 AM | PG + files    | `~/backup/paperless/`          | `/mnt/sata/backup/paperless/`          |
-| immich             | 12:35 AM | Postgres (DB) | `~/backup/immich/`             | `/mnt/sata/backup/immich/`             |
-| uptime-kuma        | 12:40 AM | SQLite+files  | `~/backup/uptime-kuma/`        | `/mnt/sata/backup/uptime-kuma/`        |
-| authelia           | 12:45 AM | SQLite+files  | `~/backup/authelia/`           | `/mnt/sata/backup/authelia/`           |
-| sonarr             | 12:50 AM | SQLite+files  | `~/backup/sonarr/`             | `/mnt/sata/backup/sonarr/`             |
-| radarr             | 12:55 AM | SQLite+files  | `~/backup/radarr/`             | `/mnt/sata/backup/radarr/`             |
-| prowlarr           | 1:00 AM  | SQLite+files  | `~/backup/prowlarr/`           | `/mnt/sata/backup/prowlarr/`           |
-| tautulli           | 1:05 AM  | SQLite+files  | `~/backup/tautulli/`           | `/mnt/sata/backup/tautulli/`           |
-| audiobookshelf     | 1:10 AM  | SQLite+files  | `~/backup/audiobookshelf/`     | `/mnt/sata/backup/audiobookshelf/`     |
-| changedetection    | 1:15 AM  | Files only    | `~/backup/changedetection/`    | `/mnt/sata/backup/changedetection/`    |
-| ntfy               | 1:20 AM  | SQLite+files  | `~/backup/ntfy/`               | `/mnt/sata/backup/ntfy/`               |
-| close-powerlifting | 1:25 AM  | SQLite (DB)   | `~/backup/close-powerlifting/` | `/mnt/sata/backup/close-powerlifting/` |
-| bang               | 1:30 AM  | SQLite (DB)   | `~/backup/bang/`               | `/mnt/sata/backup/bang/`               |
-| favicon            | 1:35 AM  | SQLite+files  | `~/backup/favicon/`            | `/mnt/sata/backup/favicon/`            |
-| mm2us              | 1:40 AM  | SQLite (DB)   | `~/backup/mm2us/`              | `/mnt/sata/backup/mm2us/`              |
-| notify             | 1:45 AM  | SQLite (DB)   | `~/backup/notify/`             | `/mnt/sata/backup/notify/`             |
-| calendar           | 1:50 AM  | SQLite (DB)   | `~/backup/calendar/`           | `/mnt/sata/backup/calendar/`           |
-| screenshot         | 1:55 AM  | SQLite+files  | `~/backup/screenshot/`         | `/mnt/sata/backup/screenshot/`         |
-| gains              | 2:00 AM  | SQLite (DB)   | `~/backup/gains/`              | `/mnt/sata/backup/gains/`              |
-| homeassistant      | 2:05 AM  | SQLite+files  | `~/backup/homeassistant/`      | `/mnt/sata/backup/homeassistant/`      |
-| zigbee2mqtt        | 2:10 AM  | Files only    | `~/backup/zigbee2mqtt/`        | `/mnt/sata/backup/zigbee2mqtt/`        |
-| dbgate             | 2:15 AM  | Files only    | `~/backup/dbgate/`             | `/mnt/sata/backup/dbgate/`             |
-| frigate            | 2:20 AM  | SQLite+files  | `~/backup/frigate/`            | `/mnt/sata/backup/frigate/`            |
-| listenarr          | 2:25 AM  | SQLite+files  | `~/backup/listenarr/`          | `/mnt/sata/backup/listenarr/`          |
-| beszel             | 2:35 AM  | SQLite+files  | `~/backup/beszel/`             | `/mnt/sata/backup/beszel/`             |
-| traefik            | 2:40 AM  | Files only    | `~/backup/traefik/`            | `/mnt/sata/backup/traefik/`            |
-| plex               | 2:45 AM  | SQLite+files  | `~/backup/plex/`               | `/mnt/sata/backup/plex/`               |
-| seerr              | 2:50 AM  | SQLite+files  | `~/backup/seerr/`              | `/mnt/sata/backup/seerr/`              |
-| bazarr             | 2:55 AM  | SQLite+files  | `~/backup/bazarr/`             | `/mnt/sata/backup/bazarr/`             |
-| sabnzbd            | 3:00 AM  | SQLite+files  | `~/backup/sabnzbd/`            | `/mnt/sata/backup/sabnzbd/`            |
-| vpn-qbit           | 3:05 AM  | Files only    | `~/backup/vpn-qbit/`           | `/mnt/sata/backup/vpn-qbit/`           |
-| **global**         | 3:30 AM  | All ~/data/   | `~/backup/borg/`               | —                                      |
+| App                | Schedule | Type          | Repo                           |
+| ------------------ | -------- | ------------- | ------------------------------ |
+| gitea              | Hourly   | SQLite+files  | `~/backup/gitea/`              |
+| vaultwarden        | Hourly   | SQLite+files  | `~/backup/vaultwarden/`        |
+| miniflux           | 12:00 AM | Postgres (DB) | `~/backup/miniflux/`           |
+| plausible          | 12:05 AM | PG + files    | `~/backup/plausible/`          |
+| zipline            | 12:10 AM | PG + files    | `~/backup/zipline/`            |
+| glitchtip          | 12:15 AM | PG + files    | `~/backup/glitchtip/`          |
+| bitmagnet          | 12:20 AM | Postgres (DB) | `~/backup/bitmagnet/`          |
+| hello-world        | 12:25 AM | Postgres (DB) | `~/backup/hello-world/`        |
+| paperless          | 12:30 AM | PG + files    | `~/backup/paperless/`          |
+| immich             | 12:35 AM | Postgres (DB) | `~/backup/immich/`             |
+| uptime-kuma        | 12:40 AM | SQLite+files  | `~/backup/uptime-kuma/`        |
+| authelia           | 12:45 AM | SQLite+files  | `~/backup/authelia/`           |
+| sonarr             | 12:50 AM | SQLite+files  | `~/backup/sonarr/`             |
+| radarr             | 12:55 AM | SQLite+files  | `~/backup/radarr/`             |
+| prowlarr           | 1:00 AM  | SQLite+files  | `~/backup/prowlarr/`           |
+| tautulli           | 1:05 AM  | SQLite+files  | `~/backup/tautulli/`           |
+| audiobookshelf     | 1:10 AM  | SQLite+files  | `~/backup/audiobookshelf/`     |
+| changedetection    | 1:15 AM  | Files only    | `~/backup/changedetection/`    |
+| ntfy               | 1:20 AM  | SQLite+files  | `~/backup/ntfy/`               |
+| close-powerlifting | 1:25 AM  | SQLite (DB)   | `~/backup/close-powerlifting/` |
+| bang               | 1:30 AM  | SQLite (DB)   | `~/backup/bang/`               |
+| favicon            | 1:35 AM  | SQLite+files  | `~/backup/favicon/`            |
+| mm2us              | 1:40 AM  | SQLite (DB)   | `~/backup/mm2us/`              |
+| notify             | 1:45 AM  | SQLite (DB)   | `~/backup/notify/`             |
+| calendar           | 1:50 AM  | SQLite (DB)   | `~/backup/calendar/`           |
+| screenshot         | 1:55 AM  | SQLite+files  | `~/backup/screenshot/`         |
+| gains              | 2:00 AM  | SQLite (DB)   | `~/backup/gains/`              |
+| homeassistant      | 2:05 AM  | SQLite+files  | `~/backup/homeassistant/`      |
+| zigbee2mqtt        | 2:10 AM  | Files only    | `~/backup/zigbee2mqtt/`        |
+| dbgate             | 2:15 AM  | Files only    | `~/backup/dbgate/`             |
+| frigate            | 2:20 AM  | SQLite+files  | `~/backup/frigate/`            |
+| listenarr          | 2:25 AM  | SQLite+files  | `~/backup/listenarr/`          |
+| beszel             | 2:35 AM  | SQLite+files  | `~/backup/beszel/`             |
+| traefik            | 2:40 AM  | Files only    | `~/backup/traefik/`            |
+| plex               | 2:45 AM  | SQLite+files  | `~/backup/plex/`               |
+| seerr              | 2:50 AM  | SQLite+files  | `~/backup/seerr/`              |
+| bazarr             | 2:55 AM  | SQLite+files  | `~/backup/bazarr/`             |
+| sabnzbd            | 3:00 AM  | SQLite+files  | `~/backup/sabnzbd/`            |
+| vpn-qbit           | 3:05 AM  | Files only    | `~/backup/vpn-qbit/`           |
+| **global**         | 3:30 AM  | All ~/data/   | `~/backup/borg/`               |
 
 ### Borgmatic Commands
 
@@ -117,19 +116,14 @@ docker exec <app>-borgmatic borgmatic repo-create --encryption repokey-blake2
 
 `borgmatic restore` restores **databases only** (via pg_restore/sqlite3). `borgmatic extract` extracts **files only**. For apps with both DB + files, you need both commands.
 
-Each app has two backup repos: NAS (`--repository nas`) and local SATA (`--repository local`). Use `--repository` to pick which one to restore from. Local SATA is faster; NAS is the fallback if the local disk died.
-
 ### Restore: DB-Only App (e.g. miniflux, gains)
 
 ```bash
-# Restore DB from latest archive (from local SATA — faster)
-docker exec <app>-borgmatic borgmatic restore --archive latest --repository local
-
-# Or from NAS (if SATA is dead)
-docker exec <app>-borgmatic borgmatic restore --archive latest --repository nas
+# Restore DB from latest archive
+docker exec <app>-borgmatic borgmatic restore --archive latest
 
 # Or from a specific archive
-docker exec <app>-borgmatic borgmatic restore --archive <archive-name> --repository local
+docker exec <app>-borgmatic borgmatic restore --archive <archive-name>
 ```
 
 That's it — no files to extract.
@@ -141,10 +135,10 @@ That's it — no files to extract.
 docker stop <app>
 
 # 2. Extract files to data dir
-docker exec <app>-borgmatic borgmatic extract --archive latest --destination / --repository local
+docker exec <app>-borgmatic borgmatic extract --archive latest --destination / --archive latest
 
 # 3. Restore DB
-docker exec <app>-borgmatic borgmatic restore --archive latest --repository local
+docker exec <app>-borgmatic borgmatic restore --archive latest
 
 # 4. Start the app
 docker start <app>
@@ -159,7 +153,7 @@ Files extract to `/source/data/` inside the container which maps to `~/data/<app
 docker stop <app>
 
 # 2. Extract files
-docker exec <app>-borgmatic borgmatic extract --archive latest --destination / --repository local
+docker exec <app>-borgmatic borgmatic extract --archive latest --destination / --archive latest
 
 # 3. Start the app
 docker start <app>
@@ -169,11 +163,10 @@ docker start <app>
 
 ```bash
 # Extract a specific subdirectory
-docker exec <app>-borgmatic borgmatic extract --archive latest --destination / --path source/data/uploads --repository local
+docker exec <app>-borgmatic borgmatic extract --archive latest --destination / --path source/data/uploads --archive latest
 
 # List archive contents first to find paths
 docker exec <app>-borgmatic borg list /repository::<archive-name>
-docker exec <app>-borgmatic borg list /local-backup::<archive-name>
 ```
 
 ### Global Borgmatic
@@ -296,7 +289,6 @@ Containers that were running when the redeploy happened may leave stale lock fil
 
 ```bash
 docker exec <app>-borgmatic borg break-lock /repository
-docker exec <app>-borgmatic borg break-lock /local-backup
 ```
 
 ### 5. Container Permission Issues

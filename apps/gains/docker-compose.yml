@@ -52,7 +52,6 @@ services:
     volumes:
       - /home/jaw/data/gains:/source/data
       - /home/jaw/backup/gains:/repository
-      - /mnt/sata/backup/gains:/local-backup
       - /home/jaw/data/gains/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

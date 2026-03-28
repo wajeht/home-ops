@@ -49,7 +49,6 @@ services:
     volumes:
       - /home/jaw/data/mm2us:/source/data
       - /home/jaw/backup/mm2us:/repository
-      - /mnt/sata/backup/mm2us:/local-backup
       - /home/jaw/data/mm2us/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro

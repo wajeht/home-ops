@@ -11,8 +11,6 @@ exclude_patterns:
 repositories:
   - path: /repository
     label: nas
-  - path: /local-backup
-    label: local
 
 archive_name_format: "vpn-qbit-{now:%Y-%m-%d-%H%M%S}"
 compression: zstd,3

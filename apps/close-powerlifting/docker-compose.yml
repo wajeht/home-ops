@@ -59,7 +59,6 @@ services:
     volumes:
       - /home/jaw/data/close-powerlifting:/source/data
       - /home/jaw/backup/close-powerlifting:/repository
-      - /mnt/sata/backup/close-powerlifting:/local-backup
       - /home/jaw/data/close-powerlifting/borgmatic:/borgmatic/state
       - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
       - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
