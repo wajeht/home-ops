@@ -16,6 +16,8 @@ services:
       - DESCRIPTION=CyberPower PR1500LCDRT2U
     ports:
       - "3493:3493"
+    volumes:
+      - ./upsd.users:/etc/nut/upsd.users:ro
     devices:
       - /dev/bus/usb:/dev/bus/usb
     networks:
