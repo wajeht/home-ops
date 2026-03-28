@@ -683,13 +683,9 @@ cmd_borgmatic_init() {
 	local initialized=0 skipped=0 failed=0
 	for c in $containers; do
 		local needs_init=0
-		# Check both repos (nas + local sata)
-		for repo in /repository /local-backup; do
-			if $SUDO docker exec "$c" test -d "$repo" 2>/dev/null && ! $SUDO docker exec "$c" borg info "$repo" &>/dev/null; then
-				needs_init=1
-				break
-			fi
-		done
+		if ! $SUDO docker exec "$c" borg info /repository &>/dev/null; then
+			needs_init=1
+		fi
 		if [ "$needs_init" = "1" ]; then
 			if $SUDO docker exec "$c" borgmatic repo-create --encryption repokey-blake2 &>/dev/null; then
 				ok "$c: initialized"
