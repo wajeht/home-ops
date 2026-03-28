@@ -1,7 +1,7 @@
 services:
   searxng:
     container_name: searxng
-    image: searxng/searxng@sha256:f01ceee858fe70e0ba6bf96934cdfad1ecc51fc528e72e17065b800f98ea87bb
+    image: searxng/searxng@sha256:9704da55c660a6c412aa3f270c6e2b04d76a942e8b025b123206b897f8af0adc
     env_file:
       - .env
     environment:
