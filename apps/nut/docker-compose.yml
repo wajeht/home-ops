@@ -17,6 +17,8 @@ services:
       - "3493:3493"
     devices:
       - /dev/bus/usb:/dev/bus/usb
+    networks:
+      - nut-internal
     healthcheck:
       test: ["CMD", "/usr/bin/upsc", "cyberpower@localhost"]
       interval: 30s
@@ -57,6 +59,7 @@ services:
         condition: service_healthy
     networks:
       - traefik
+      - nut-internal
     healthcheck:
       test: ["CMD", "/portcheck", "--port", "8080"]
       interval: 30s
@@ -92,3 +95,4 @@ services:
 networks:
   traefik:
     external: true
+  nut-internal:
