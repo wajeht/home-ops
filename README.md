@@ -142,7 +142,7 @@ flowchart LR
     linkStyle 27 stroke:#22c55e,stroke-dasharray:5
 ```
 
-An uncomplicated, single-node homelab that adheres to DevOps/GitOps best practices.
+An uncomplicated, single-node homelab that adheres to DevOps best practices.
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) handles the rest — auto-discovers `apps/*/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, rolling deploys. [Traefik](https://traefik.io/traefik/) routes via Docker labels with wildcard SSL. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh; own images deploy in ~1 min via [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow).
 
