@@ -6,6 +6,11 @@ exclude_patterns:
   - "*/Cache"
   - "*/Crash Reports"
   - "*/Logs"
+  - "*/Metadata"
+  - "*/Media"
+  - "*/Drivers"
+  - "*/Scanners"
+  - "*/Codecs"
   - "*/com.plexapp.plugins.library.db*"
   - "*/com.plexapp.plugins.library.blobs.db*"
 
