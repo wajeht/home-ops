@@ -212,15 +212,6 @@
         description: Zigbee Bridge
         # siteMonitor: http://zigbee2mqtt:8080
 
-    - Frigate:
-        icon: frigate
-        href: https://frigate.jaw.dev
-        description: NVR
-        # siteMonitor: http://frigate:8971
-        # widget:
-        #   type: frigate
-        #   url: http://frigate:5000
-
     - Proxmox:
         icon: proxmox
         href: https://192.168.4.162:8006
@@ -255,6 +246,15 @@
         # siteMonitor: http://dbgate:3000
 
 - Logs:
+    - Frigate:
+        icon: frigate
+        href: https://frigate.jaw.dev
+        description: NVR
+        # siteMonitor: http://frigate:8971
+        # widget:
+        #   type: frigate
+        #   url: http://frigate:5000
+
     - Ntfy:
         icon: ntfy
         href: https://ntfy.jaw.dev
