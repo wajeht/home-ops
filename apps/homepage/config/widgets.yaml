@@ -1,4 +1,5 @@
 - resources:
+    label: system
     expanded: true
     cpu: true
     memory: true
