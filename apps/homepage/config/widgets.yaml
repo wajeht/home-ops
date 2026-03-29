@@ -11,6 +11,7 @@
     disk:
       - /
       - /host/nas
+      - /host/sata
 
 # - openmeteo:
 #     label: Amarillo
