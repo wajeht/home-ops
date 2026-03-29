@@ -17,7 +17,7 @@ services:
       - "traefik.http.routers.hello-world.middlewares=rate-limit-global@file"
       - "traefik.http.services.hello-world.loadbalancer.server.port=3000"
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:30/healthz"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/healthz"]
       interval: 30s
       timeout: 5s
       retries: 3
