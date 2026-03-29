@@ -7,14 +7,19 @@
     uptime: true
 
 - resources:
+    label: infra
     expanded: true
-    disk:
-      - label: infra
-        path: /
-      - label: nas
-        path: /host/nas
-      - label: frigate
-        path: /host/sata
+    disk: /
+
+- resources:
+    label: nas
+    expanded: true
+    disk: /host/nas
+
+- resources:
+    label: frigate
+    expanded: true
+    disk: /host/sata
 
 # - openmeteo:
 #     label: Amarillo
