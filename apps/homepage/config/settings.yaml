@@ -15,18 +15,18 @@ quicklaunch:
   showSearchSuggestions: true
   provider: google
 layout:
-  Media:
-    style: column
-    tab: Media
-  Downloaders:
-    style: column
-    tab: Media
   Systems:
     style: column
     tab: Infra
   Logs:
     style: column
     tab: Infra
+  Media:
+    style: column
+    tab: Media
+  Downloaders:
+    style: column
+    tab: Media
   Personal:
     style: column
     tab: Apps
