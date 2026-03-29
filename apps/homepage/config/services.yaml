@@ -239,12 +239,6 @@
         description: Dependency Updates
         # siteMonitor: http://renovate:8080
 
-    - DbGate:
-        icon: dbgate
-        href: https://dbgate.jaw.dev
-        description: Database Manager
-        # siteMonitor: http://dbgate:3000
-
 - Logs:
     - Frigate:
         icon: frigate
@@ -404,6 +398,12 @@
         # siteMonitor: http://hello-world:3000
 
 - Tools:
+    - DbGate:
+        icon: dbgate
+        href: https://dbgate.jaw.dev
+        description: Database Manager
+        # siteMonitor: http://dbgate:3000
+
     - ConvertX:
         icon: mdi-file-swap
         href: https://convertx.jaw.dev
