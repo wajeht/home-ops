@@ -5,6 +5,8 @@ exclude_patterns:
   - "*/borgmatic"
   - "*/listenarr.db*"
   - "*/ffmpeg"
+  - "*/logs"
+  - "*/cache"
 
 sqlite_databases:
   - name: listenarr

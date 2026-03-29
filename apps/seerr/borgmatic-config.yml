@@ -5,6 +5,7 @@ exclude_patterns:
   - "*/borgmatic"
   - "*/db.sqlite3*"
   - "*/logs"
+  - "*/cache"
 
 sqlite_databases:
   - name: seerr

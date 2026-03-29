@@ -8,6 +8,8 @@ exclude_patterns:
   - "*/asp"
   - "*/logs"
   - "*/Sentry"
+  - "*/MediaCover"
+  - "*/Backups"
   - "*.pid"
 
 sqlite_databases:
