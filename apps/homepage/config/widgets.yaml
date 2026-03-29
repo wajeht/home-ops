@@ -9,9 +9,12 @@
 - resources:
     expanded: true
     disk:
-      - /
-      - /host/nas
-      - /host/sata
+      - label: infra
+        path: /
+      - label: nas
+        path: /host/nas
+      - label: frigate
+        path: /host/sata
 
 # - openmeteo:
 #     label: Amarillo
