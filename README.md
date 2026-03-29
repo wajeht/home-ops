@@ -146,13 +146,11 @@ flowchart LR
     linkStyle 27 stroke:#22c55e,stroke-dasharray:5
 ```
 
-Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It polls every 5 min or instantly via `/api/sync` webhook, auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates.
+An uncomplicated, single-node homelab that adheres to GitOps practices.
 
-[Traefik](https://traefik.io/traefik/) handles routing via Docker labels with auto SSL via Cloudflare DNS challenge. [traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth) provides Google OAuth protection.
+Push to git, [docker-cd](https://github.com/wajeht/docker-cd) handles the rest — auto-discovers `apps/*/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, rolling deploys. [Traefik](https://traefik.io/traefik/) routes via Docker labels with wildcard SSL. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh; own images deploy in ~1 min via [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow).
 
-[Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~60min via polling). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
-
-All containers are [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, health checks, and log rotation. [Borgmatic](https://torsion.org/borgmatic/) handles automated backups — all apps daily (12:00-3:20 AM staggered, global at 3:45 AM) — with database dumps (8 Postgres + 24 SQLite) and file backups to NAS, weekly integrity checks, and ntfy notifications.
+All containers [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, and health checks. [Borgmatic](https://torsion.org/borgmatic/) backs up nightly — 8 Postgres + 24 SQLite dumps + files to NAS — with integrity checks and ntfy alerts.
 
 ## Hardware
 
