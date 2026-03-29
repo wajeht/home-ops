@@ -1,7 +1,7 @@
 services:
   listenarr:
     container_name: listenarr
-    image: ghcr.io/listenarrs/listenarr:canary@sha256:6367e8752db2670ccd1392800d5a99341707e2611786f8d81ed2254b13a647be
+    image: ghcr.io/listenarrs/listenarr:canary@sha256:fb38022dea285d2e0a844b0df378e1e6b3f5ed5b9be16d8c8f82ab6fc3124276
     environment:
       - TZ=America/Chicago
     volumes:
