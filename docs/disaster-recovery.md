@@ -28,7 +28,7 @@ Automated daily backups via borgmatic (borg wrapper). Encrypted, deduplicated, c
 
 ### Global Borgmatic
 
-- **Schedule**: Daily at 3:30am CT (after all per-app backups)
+- **Schedule**: Daily at 3:45am CT (after all per-app backups)
 - **Source**: `~/data/` + `~/.sops/`
 - **Destination**: `~/backup/borg/` (NFS from NAS)
 - **Retention**: 7 daily, 4 weekly, 6 monthly
@@ -49,8 +49,6 @@ Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 
 | App                | Schedule | Type          | Repo                           |
 | ------------------ | -------- | ------------- | ------------------------------ |
-| gitea              | Hourly   | SQLite+files  | `~/backup/gitea/`              |
-| vaultwarden        | Hourly   | SQLite+files  | `~/backup/vaultwarden/`        |
 | miniflux           | 12:00 AM | Postgres (DB) | `~/backup/miniflux/`           |
 | plausible          | 12:05 AM | PG + files    | `~/backup/plausible/`          |
 | zipline            | 12:10 AM | PG + files    | `~/backup/zipline/`            |
@@ -90,7 +88,9 @@ Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 | sabnzbd            | 3:00 AM  | SQLite+files  | `~/backup/sabnzbd/`            |
 | vpn-qbit           | 3:05 AM  | Files only    | `~/backup/vpn-qbit/`           |
 | nut                | 3:10 AM  | Files only    | `~/backup/nut/`                |
-| **global**         | 3:30 AM  | All ~/data/   | `~/backup/borg/`               |
+| vaultwarden        | 3:15 AM  | SQLite+files  | `~/backup/vaultwarden/`        |
+| gitea              | 3:20 AM  | SQLite+files  | `~/backup/gitea/`              |
+| **global**         | 3:45 AM  | All ~/data/   | `~/backup/borg/`               |
 
 ### Borgmatic Commands
 
