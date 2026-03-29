@@ -4,11 +4,14 @@ services:
     image: ghcr.io/wajeht/hydra-server:v0.0.1@sha256:ab6d99d3e346ad56ab21eee95f67ccc9018023154599c2fccb0926e4be801c64
     restart: unless-stopped
     init: true
-    read_only: true
-    tmpfs:
-      - /tmp
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
     security_opt:
       - no-new-privileges:true
     env_file:
