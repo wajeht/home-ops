@@ -21,10 +21,11 @@ services:
     volumes:
       - /home/jaw/data/hydra-server/data:/data
       - /home/jaw/data/hydra-server/config:/app/config
+      - ./portcheck:/portcheck:ro
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/status"]
+      test: ["CMD", "/portcheck", "--port", "3000"]
       interval: 30s
       timeout: 10s
       retries: 3
