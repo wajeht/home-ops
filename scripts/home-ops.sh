@@ -275,7 +275,7 @@ nfs_mount() {
 	fi
 	info "Mounting $name: $NAS_IP:$nas_path -> $local_path"
 	mkdir -p "$local_path"
-	if $SUDO mount -t nfs "$NAS_IP:$nas_path" "$local_path"; then
+	if $SUDO mount -t nfs -o nconnect=4,rsize=1048576,wsize=1048576,noatime "$NAS_IP:$nas_path" "$local_path"; then
 		ok "$name"
 	else
 		err "$name failed"
@@ -310,7 +310,10 @@ nfs_status() {
 
 nfs_persist() {
 	local name=$1 nas_path=$2 local_path=$3
-	local entry="$NAS_IP:$nas_path $local_path nfs4 defaults,_netdev,nofail 0 0"
+	# nconnect=4: 4 parallel TCP connections per mount (needs kernel 5.3+)
+	# rsize/wsize=1048576: 1MB read/write chunks (server may negotiate lower)
+	# noatime: skip access-time updates to reduce unnecessary NAS writes
+	local entry="$NAS_IP:$nas_path $local_path nfs4 defaults,_netdev,nofail,nconnect=4,rsize=1048576,wsize=1048576,noatime 0 0"
 	if grep -qF "$NAS_IP:$nas_path" /etc/fstab; then
 		dim "$name: already in fstab"
 	else
