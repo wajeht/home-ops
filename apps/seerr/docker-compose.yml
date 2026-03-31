@@ -36,6 +36,11 @@ services:
       - "traefik.http.routers.seerr.entrypoints=websecure"
       - "traefik.http.routers.seerr.middlewares=google-auth-user@file"
       - "traefik.http.services.seerr.loadbalancer.server.port=5055"
+      # Bypass forward auth for Plex OAuth callbacks (requires valid Plex token anyway)
+      - "traefik.http.routers.seerr-auth.rule=Host(`seerr.jaw.dev`) && PathPrefix(`/api/v1/auth`)"
+      - "traefik.http.routers.seerr-auth.entrypoints=websecure"
+      - "traefik.http.routers.seerr-auth.middlewares=rate-limit-auth@file"
+      - "traefik.http.routers.seerr-auth.service=seerr"
 
   seerr-borgmatic:
     container_name: seerr-borgmatic
