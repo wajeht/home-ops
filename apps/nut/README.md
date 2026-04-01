@@ -52,7 +52,7 @@ DSM GUI alone doesn't work with non-Synology NUT servers. Needs SSH config:
 3. SSH into NAS and fix the shutdown command:
 
    ```bash
-   ssh jaw@192.168.4.218
+   ssh jaw@192.168.4.243
    sudo sed -i 's|SHUTDOWNCMD ""|SHUTDOWNCMD "/sbin/shutdown -h now"|' /etc/ups/upsmon.conf
    sudo systemctl restart ups-net.service
    ```
