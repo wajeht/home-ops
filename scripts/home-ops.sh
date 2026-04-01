@@ -187,7 +187,7 @@ SATA_DIRS=(
 )
 
 # NFS config
-NAS_IP="192.168.4.218"
+NAS_IP="192.168.4.243"
 NFS_MOUNTS=(
 	"plex|/volume1/plex|$USER_HOME/plex"
 	"backup|/volume1/backup|$USER_HOME/backup"
