@@ -59,6 +59,7 @@ http:
       forwardAuth:
         address: http://google-auth:4181
         trustForwardHeader: true
+        maxResponseBodySize: 4096
         authResponseHeaders:
           - X-Forwarded-User
 
@@ -77,6 +78,7 @@ http:
       forwardAuth:
         address: http://google-auth-user:4181
         trustForwardHeader: true
+        maxResponseBodySize: 4096
         authResponseHeaders:
           - X-Forwarded-User
 
@@ -96,7 +98,11 @@ http:
         - redirect-to-main
       service: dummy
       priority: 1
-      tls: {}
+      tls:
+        domains:
+          - main: jaw.dev
+            sans:
+              - "*.jaw.dev"
 
   services:
     # Dummy service for redirects (never actually used)
