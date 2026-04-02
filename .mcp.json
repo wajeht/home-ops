@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "hindsight": {
-      "type": "sse",
-      "url": "http://192.168.4.161:8888/mcp/sse"
-    }
-  }
-}
