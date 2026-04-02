@@ -56,3 +56,5 @@ docs/k3s.md
 CLAUDE.md
 *.sqlite
 .mcp.json
+.agents
+skills-lock.json
