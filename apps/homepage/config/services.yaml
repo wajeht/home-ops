@@ -428,6 +428,12 @@
         description: Dev Utilities
         # siteMonitor: http://it-tools:80
 
+    - Hindsight:
+        icon: mdi-brain
+        href: https://hindsight.jaw.dev
+        description: Agent Memory
+        # siteMonitor: http://hindsight:9999
+
     - Paperless:
         icon: paperless-ngx
         href: https://paperless.jaw.dev
