@@ -45,7 +45,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.hindsight.rule=Host(`hindsight.jaw.dev`)"
       - "traefik.http.routers.hindsight.entrypoints=websecure"
-      - "traefik.http.routers.hindsight.middlewares=rate-limit-global@file"
+      - "traefik.http.routers.hindsight.middlewares=google-auth@file"
       - "traefik.http.services.hindsight.loadbalancer.server.port=8888"
 
   hindsight-borgmatic:
