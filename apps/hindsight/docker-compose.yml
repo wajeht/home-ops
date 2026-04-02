@@ -12,6 +12,7 @@ services:
     networks:
       - traefik
     ports:
+      - "8888:8888"
       - "9999:9999"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8888/health"]
