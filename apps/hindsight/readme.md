@@ -38,13 +38,56 @@ Create `~/.hindsight/claude-code.json`:
   "hindsightApiToken": "<HINDSIGHT_API_MCP_AUTH_TOKEN from .env.sops>",
   "dynamicBankId": true,
   "dynamicBankGranularity": ["agent", "project"],
-  "bankMission": "...",
-  "retainMission": "...",
   "debug": true
 }
 ```
 
-Restart Claude Code. Verify with `/plugin` — should show `hindsight-memory` enabled.
+Get the token:
+
+```bash
+sops -d --input-type dotenv --output-type dotenv apps/hindsight/.env.sops | grep MCP_AUTH_TOKEN
+```
+
+## MCP Server (optional, project-scoped)
+
+The plugin handles auto-recall/retain. MCP gives Claude explicit tools to query/store memories on demand. Both can run together.
+
+Create `.mcp.json` in project root (gitignored):
+
+```json
+{
+  "mcpServers": {
+    "hindsight": {
+      "type": "http",
+      "url": "http://192.168.4.161:8888/mcp/",
+      "headers": {
+        "Authorization": "Bearer <HINDSIGHT_API_MCP_AUTH_TOKEN>"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Code. Verify with `/plugin` (plugin) and `/mcp` (MCP server).
+
+## Per-Bank Missions
+
+Missions are configured per-bank in the dashboard (`hindsight.jaw.dev` → select bank → gear icon → Configuration). Not in the global config — this way each project gets tailored extraction rules.
+
+## New Machine Setup
+
+1. Install Claude Code
+2. Install plugin:
+   ```bash
+   claude plugin marketplace add vectorize-io/hindsight
+   claude plugin install hindsight-memory
+   ```
+3. Create `~/.hindsight/claude-code.json` (see above)
+4. Decrypt token: `sops -d --input-type dotenv --output-type dotenv apps/hindsight/.env.sops | grep MCP_AUTH_TOKEN`
+5. Create `.mcp.json` in project root (see above, gitignored)
+6. Restart Claude Code
+
+Memories are on the server — same banks, same context, picks up where you left off.
 
 ## How It Works
 
