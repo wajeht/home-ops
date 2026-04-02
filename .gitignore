@@ -55,3 +55,4 @@ docs/k3s.md
 .claude/settings.local.json
 CLAUDE.md
 *.sqlite
+.mcp.json
