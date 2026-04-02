@@ -81,10 +81,16 @@ review:
       - person
 
 record:
-  enabled: false
+  enabled: true
+  retain:
+    days: 30
+    mode: motion
 
 snapshots:
-  enabled: false
+  enabled: true
+  clean_copy: false
+  retain:
+    default: 30
 
 go2rtc:
   api:
@@ -135,6 +141,6 @@ cameras:
         # - dog
         # - cat
     record:
-      enabled: false
+      enabled: true
     snapshots:
-      enabled: false
+      enabled: true
