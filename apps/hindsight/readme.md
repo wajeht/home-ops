@@ -10,11 +10,11 @@ Temporal semantic memory system for Claude Code. Automatically recalls relevant 
 
 Single container runs 3 services:
 
-| Service | Port | Purpose |
-|---------|------|---------|
-| API | 8888 | Memory engine — retain/recall/reflect + internal worker |
-| Control Plane | 9999 | Web dashboard — browse banks, entities, memories |
-| Worker | (internal) | Background task processor — runs inside API by default |
+| Service       | Port       | Purpose                                                 |
+| ------------- | ---------- | ------------------------------------------------------- |
+| API           | 8888       | Memory engine — retain/recall/reflect + internal worker |
+| Control Plane | 9999       | Web dashboard — browse banks, entities, memories        |
+| Worker        | (internal) | Background task processor — runs inside API by default  |
 
 - Gemini handles fact extraction server-side (configured via `HINDSIGHT_API_LLM_PROVIDER=gemini`)
 - Embedded PostgreSQL with pgvector at `~/data/hindsight/pg`
@@ -55,13 +55,13 @@ Restart Claude Code. Verify with `/plugin` — should show `hindsight-memory` en
 
 ## Key Config Options
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `bankMission` | generic | Guides what kind of facts to extract — be specific |
-| `retainMission` | generic | What to extract vs ignore — list concrete fact types |
-| `recallBudget` | `mid` | `low` = fast, `mid` = balanced, `high` = thorough |
-| `retainEveryNTurns` | `10` | How often to retain during a session |
-| `debug` | `false` | Show `[Hindsight]` prefixed logs |
+| Setting             | Default | Description                                          |
+| ------------------- | ------- | ---------------------------------------------------- |
+| `bankMission`       | generic | Guides what kind of facts to extract — be specific   |
+| `retainMission`     | generic | What to extract vs ignore — list concrete fact types |
+| `recallBudget`      | `mid`   | `low` = fast, `mid` = balanced, `high` = thorough    |
+| `retainEveryNTurns` | `10`    | How often to retain during a session                 |
+| `debug`             | `false` | Show `[Hindsight]` prefixed logs                     |
 
 ## Best Practices (from docs)
 
