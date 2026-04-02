@@ -17,6 +17,13 @@
   ],
   "packageRules": [
     {
+      "description": "Ignore apps excluded from docker-cd deployment",
+      "matchFileNames": [
+        "/(^|/)apps\\/(adguard|authelia|autobrr|bitmagnet|changedetection|cleanuparr|glitchtip|huntarr|hydra-server|linx|miniflux|paperless-ngx|plausible|portainer|readmeabook|recyclarr|searxng|stirling-pdf|tautulli|walker|zipline)\\//"
+      ],
+      "enabled": false
+    },
+    {
       "enabled": false,
       "matchPackageNames": ["/^ghcr\\.io/wajeht//"]
     },
