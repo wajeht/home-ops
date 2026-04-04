@@ -76,8 +76,8 @@ services:
       - .env
     environment:
       - TZ=America/Chicago
-      - MACHINE_LEARNING_MODEL_TTL=0
-      - MACHINE_LEARNING_MODEL_INTRA_OP_THREADS=4
+      - MACHINE_LEARNING_MODEL_TTL=600
+      - MACHINE_LEARNING_MODEL_INTRA_OP_THREADS=2
     volumes:
       - /home/jaw/data/immich/model-cache:/cache
     networks:
@@ -109,7 +109,7 @@ services:
       resources:
         limits:
           cpus: "2.0"
-          memory: 4G
+          memory: 2G
     logging:
       driver: "json-file"
       options:
