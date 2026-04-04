@@ -20,6 +20,12 @@ nodes:
   #   controlPlane: false
   #   installDisk: /dev/nvme0n1
 
+patches:
+  - |-
+    machine:
+      install:
+        wipe: true
+
 controlPlane:
   schematic:
     customization:
