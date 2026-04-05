@@ -68,6 +68,7 @@ CLAUDE.md
 *.sqlite
 .mcp.json
 .agents
+AGENTS.md
 .claude
 skills-lock.json
 opencode.jsonc
