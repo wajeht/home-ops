@@ -1,6 +1,6 @@
 services:
   ufc:
-    image: ghcr.io/wajeht/ufc:a6d42d6
+    image: ghcr.io/wajeht/ufc:71d9167
     environment:
       TZ: America/Chicago
     networks:
