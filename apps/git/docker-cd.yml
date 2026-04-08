@@ -1,1 +1,2 @@
 rolling_update: true
+ignore_deployment: true
