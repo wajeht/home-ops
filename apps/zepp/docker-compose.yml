@@ -1,6 +1,6 @@
 services:
   zepp:
-    image: ghcr.io/wajeht/zepp:01ba949
+    image: ghcr.io/wajeht/zepp:192f1e8
     container_name: zepp
     env_file:
       - .env.sops
