@@ -11,7 +11,7 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:80/api/healthz"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:80/nope-this-does-not-exist"]
       interval: 30s
       timeout: 5s
       retries: 3
