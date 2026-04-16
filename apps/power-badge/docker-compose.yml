@@ -1,6 +1,6 @@
 services:
   power-badge:
-    image: ghcr.io/wajeht/power-badge:2f45721
+    image: ghcr.io/wajeht/power-badge:a9042d2
     container_name: power-badge
     restart: unless-stopped
     read_only: true
