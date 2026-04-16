@@ -7,7 +7,7 @@ services:
     environment:
       - TZ=America/Chicago
     volumes:
-      - /home/jaw/data/zepp:/usr/src/app/src/db/sqlite
+      - /home/jaw/data/zepp:/usr/src/app/dist/src/db/sqlite
     networks:
       - traefik
     healthcheck:
