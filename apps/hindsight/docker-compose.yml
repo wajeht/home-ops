@@ -1,7 +1,7 @@
 services:
   hindsight:
     container_name: hindsight
-    image: ghcr.io/vectorize-io/hindsight:0.5.1@sha256:2fa86f472707224307d540bd4ed4c3109ecac42a7be765287256f314cdd6b844
+    image: ghcr.io/vectorize-io/hindsight:0.5.3@sha256:d68b1b0db2001ad5455d286b40ed1314ee2e09e2abb1d661a5d45599e5c19a7f
     env_file:
       - .env
     environment:
