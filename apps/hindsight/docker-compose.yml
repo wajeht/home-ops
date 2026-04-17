@@ -6,7 +6,7 @@ services:
       - .env
     environment:
       - TZ=America/Chicago
-      - HINDSIGHT_API_RETAIN_BATCH_ENABLED=true
+      - HINDSIGHT_API_RETAIN_BATCH_ENABLED=false
     volumes:
       - /home/jaw/data/hindsight/pg:/home/hindsight/.pg0
     networks:
