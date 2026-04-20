@@ -313,14 +313,17 @@ nfs_persist() {
 	# nconnect=4: 4 parallel TCP connections per mount (needs kernel 5.3+)
 	# rsize/wsize=1048576: 1MB read/write chunks (server may negotiate lower)
 	# noatime: skip access-time updates to reduce unnecessary NAS writes
-	local entry="$NAS_IP:$nas_path $local_path nfs4 defaults,_netdev,nofail,nconnect=4,rsize=1048576,wsize=1048576,noatime 0 0"
-	if grep -qF "$NAS_IP:$nas_path" /etc/fstab; then
+	# x-systemd.before/required-by=docker.service: block docker until NFS is mounted,
+	#   so containers don't bind-mount the empty placeholder dir on boot
+	local opts="defaults,_netdev,nofail,nconnect=4,rsize=1048576,wsize=1048576,noatime,x-systemd.before=docker.service,x-systemd.required-by=docker.service"
+	local entry="$NAS_IP:$nas_path $local_path nfs4 $opts 0 0"
+	if grep -qxF "$entry" /etc/fstab; then
 		dim "$name: already in fstab"
 	else
-		# Remove stale entries for same mount point (e.g. old NAS IP)
+		# Remove stale entries for same mount point (old IP, old options, etc.)
 		$SUDO sed -i "\| $local_path |d" /etc/fstab
 		echo "$entry" | $SUDO tee -a /etc/fstab >/dev/null
-		ok "$name: added to fstab"
+		ok "$name: added to fstab (run 'sudo systemctl daemon-reload' to apply)"
 	fi
 }
 
