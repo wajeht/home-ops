@@ -50,6 +50,10 @@ services:
         max-file: "3"
     labels:
       - "traefik.enable=true"
+      # Public endpoint for Plex.tv server-reachability probes (no auth)
+      - "traefik.http.routers.plex-identity.rule=Host(`plex.jaw.dev`) && Path(`/identity`)"
+      - "traefik.http.routers.plex-identity.entrypoints=websecure"
+      - "traefik.http.routers.plex-identity.priority=100"
       - "traefik.http.routers.plex.rule=Host(`plex.jaw.dev`)"
       - "traefik.http.routers.plex.entrypoints=websecure"
       - "traefik.http.routers.plex.middlewares=google-auth-user-no-ratelimit@file"
