@@ -1,7 +1,7 @@
 services:
   nut:
     container_name: nut
-    image: instantlinux/nut-upsd:2.8.3-r3@sha256:a3de216f044ba9ddd2181a04fe3e5299c91063e8c2dbd0577f82bca5717061f7
+    image: instantlinux/nut-upsd:2.8.3-r3@sha256:edadf0d18b7e240fba0e4073dfcc13f19f93839de0656f4b39752c0cad880cd5
     env_file:
       - .env
     environment:
