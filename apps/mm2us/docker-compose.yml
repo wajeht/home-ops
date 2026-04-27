@@ -1,6 +1,6 @@
 services:
   mm2us:
-    image: ghcr.io/wajeht/mm2us.com:e9e38a8
+    image: ghcr.io/wajeht/mm2us.com:74b3551
     env_file:
       - .env
     environment:
