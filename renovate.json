@@ -32,12 +32,9 @@
       "enabled": false
     },
     {
-      "description": "Pin LinuxServer images to stable -lsNNN tags; ignore unstable/develop/nightly/development channels",
+      "description": "Pin LinuxServer images to stable -lsNNN tags; reject unstable/develop/nightly/development channels",
       "matchPackageNames": ["/^linuxserver\\//"],
-      "ignoreVersions": [
-        "/^(unstable|develop|nightly)-/",
-        "/-(unstable|develop|nightly|development)(-|$)/"
-      ]
+      "allowedVersions": "/^v?\\d[\\w.-]*-ls\\d+$/"
     }
   ]
 }
