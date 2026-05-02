@@ -102,6 +102,7 @@ flowchart LR
     docker_cd -.->|poll 5m| traefik -.->|poll 5m| unifi -.->|poll 5m| cf -.->|poll 5m| ops_ci
 
     poe -->|PoE| nvr
+    nvr -->|WiFi| camera([G6 Instant Camera])
 
     style app_repo fill:#e8f4fd,stroke:#4a90d9
     style ops_repo fill:#e8f4fd,stroke:#4a90d9
@@ -142,6 +143,7 @@ flowchart LR
     style u6 fill:#eff6ff,stroke:#0559c9
     style unvr fill:#fef2f2,stroke:#dc2626
     style nvr fill:#fde8e8,stroke:#dc2626,color:#333
+    style camera fill:#fde8e8,stroke:#dc2626,color:#333
     style plugs fill:#f5e6ff,stroke:#9b59b6,color:#333
     style switches fill:#f5e6ff,stroke:#9b59b6,color:#333
     linkStyle 24 stroke:#22c55e,stroke-dasharray:5
