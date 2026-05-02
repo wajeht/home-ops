@@ -102,6 +102,9 @@ flowchart LR
         adguard -->|DNS| unifi
         unifi --> nfs
         unifi --> poe
+        unifi -->|2.5GbE| docker_cd
+        unifi -->|2.5GbE| talos_cp
+        unifi -->|2.5GbE| talos_worker
         poe -->|PoE| zigbee
         poe -->|PoE| adguard
         poe -->|PoE| ap
@@ -157,10 +160,10 @@ flowchart LR
     style camera fill:#fde8e8,stroke:#dc2626,color:#333
     style plugs fill:#f5e6ff,stroke:#9b59b6,color:#333
     style switches fill:#f5e6ff,stroke:#9b59b6,color:#333
-    linkStyle 26 stroke:#22c55e,stroke-dasharray:5
-    linkStyle 27 stroke:#22c55e,stroke-dasharray:5
-    linkStyle 28 stroke:#22c55e,stroke-dasharray:5
     linkStyle 29 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 30 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 31 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 32 stroke:#22c55e,stroke-dasharray:5
 ```
 
 GitOps-driven homelab running on Docker Compose.
