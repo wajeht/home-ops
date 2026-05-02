@@ -1,7 +1,7 @@
 services:
   beszel:
     container_name: beszel
-    image: henrygd/beszel:0.18@sha256:64bcaa60d1ed4149f0628c70cf68044b5d1ea90b3437de41e009e873f50e3f36
+    image: henrygd/beszel:0.18@sha256:a849ad80814b6a1a3be665304dcace5d4854b3bed7bde4dd1227e8ce1b82d477
     volumes:
       - /home/jaw/data/beszel:/beszel_data
     networks:
