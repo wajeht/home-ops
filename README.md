@@ -102,9 +102,9 @@ flowchart LR
         adguard -->|DNS| unifi
         unifi --> nfs
         unifi --> poe
-        unifi -->|2.5GbE| docker_cd
-        unifi -->|2.5GbE| talos_cp
-        unifi -->|2.5GbE| talos_worker
+        unifi -->|2.5GbE| dell
+        unifi -->|2.5GbE| dell5050
+        unifi -->|2.5GbE| dell7070
         poe -->|PoE| zigbee
         poe -->|PoE| adguard
         poe -->|PoE| ap
