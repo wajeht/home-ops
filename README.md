@@ -100,7 +100,7 @@ flowchart LR
 
         nfs -->|NFS| apps
         adguard -->|DNS| unifi
-        unifi --> nfs
+        unifi -->|2.5GbE| nfs
         unifi --> poe
         unifi -->|2.5GbE| dell
         unifi -->|2.5GbE| dell5050
