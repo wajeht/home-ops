@@ -97,12 +97,11 @@ flowchart LR
         poe -->|PoE| zigbee
         poe -->|PoE| adguard
         poe -->|PoE| ap
+        poe -->|PoE| nvr
+        nvr -->|WiFi| camera([G6 Instant Camera])
     end
 
     docker_cd -.->|poll 5m| traefik -.->|poll 5m| unifi -.->|poll 5m| cf -.->|poll 5m| ops_ci
-
-    poe -->|PoE| nvr
-    nvr -->|WiFi| camera([G6 Instant Camera])
 
     style app_repo fill:#e8f4fd,stroke:#4a90d9
     style ops_repo fill:#e8f4fd,stroke:#4a90d9
@@ -146,10 +145,10 @@ flowchart LR
     style camera fill:#fde8e8,stroke:#dc2626,color:#333
     style plugs fill:#f5e6ff,stroke:#9b59b6,color:#333
     style switches fill:#f5e6ff,stroke:#9b59b6,color:#333
-    linkStyle 24 stroke:#22c55e,stroke-dasharray:5
-    linkStyle 25 stroke:#22c55e,stroke-dasharray:5
     linkStyle 26 stroke:#22c55e,stroke-dasharray:5
     linkStyle 27 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 28 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 29 stroke:#22c55e,stroke-dasharray:5
 ```
 
 GitOps-driven homelab running on Docker Compose.
