@@ -1,7 +1,7 @@
 services:
   uptime-kuma:
     container_name: uptime-kuma
-    image: louislam/uptime-kuma:2@sha256:a8e5e69ce185d5425fcbf2ab14ddf808df5651fb2747a46a17cecf8ed5fd1af2
+    image: louislam/uptime-kuma:2@sha256:9aeb4e51d038047f414309c77a1af553281ca535723cb88907d907269d0a908e
     volumes:
       - /home/jaw/data/uptime-kuma:/app/data
     networks:
