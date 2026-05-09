@@ -3,6 +3,8 @@
 .env.*
 !.env.example
 !*.env.sops
+# PR temp deploys copy app .env.sops files here so docker-cd can merge overrides.
+!*.env.sops.override
 *.secret
 *.key
 *.pem
