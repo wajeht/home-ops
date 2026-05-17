@@ -5,15 +5,16 @@ services:
       - .env
     environment:
       - TZ=America/Chicago
-    volumes:
-      - /home/jaw/data/close-powerlifting:/usr/src/app/dist/src/db/sqlite
+    # No host volume needed — the data snapshot is baked into the image
+    # by the weekly update-data.yml workflow. The container is stateless.
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:80/healthz"]
       interval: 30s
-      timeout: 5s
+      timeout: 10s
       retries: 3
+      start_period: 30s
     restart: unless-stopped
     init: true
     cap_drop:
@@ -28,13 +29,12 @@ services:
     deploy:
       resources:
         limits:
-          # Steady-state usage is ~200-300 MB / well under 0.1 CPU. The bump
-          # is for the nightly 4am ingest of the OpenPowerlifting CSV: it
-          # peaks at ~2 GB RSS (SQLite cache + mmap + WAL holding the full
-          # transaction) and saturates one core while parsing 3.9M rows.
-          # See src/utils/ingest.ts INGEST_PRAGMAS.
+          # The whole OPL dataset lives in V8's heap. Steady state ~3.9 GB
+          # live + ~30% V8 overhead ≈ 5 GB; peak during a rebuild reaches
+          # ~9-10 GB. 10 GB gives the loader headroom; the nightly refresh
+          # exits the process so a fresh restart doesn't double the heap.
           cpus: "2.0"
-          memory: 3G
+          memory: 10G
     logging:
       driver: "json-file"
       options:
