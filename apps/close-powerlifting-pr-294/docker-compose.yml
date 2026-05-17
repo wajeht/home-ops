@@ -1,6 +1,6 @@
 services:
   close-powerlifting:
-    image: ghcr.io/wajeht/close-powerlifting:f54a5d6
+    image: ghcr.io/wajeht/close-powerlifting:cad5442
     env_file:
       - .env
     environment:
