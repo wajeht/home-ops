@@ -34,8 +34,8 @@ services:
           # peaks at ~2 GB RSS (SQLite cache + mmap + WAL holding the full
           # transaction) and saturates one core while parsing 3.9M rows.
           # See src/utils/ingest.ts INGEST_PRAGMAS.
-          cpus: "1.0"
-          memory: 2.5G
+          cpus: "2.0"
+          memory: 3G
     logging:
       driver: "json-file"
       options:
