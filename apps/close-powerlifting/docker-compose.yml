@@ -33,8 +33,8 @@ services:
           # live + ~30% V8 overhead ≈ 5 GB; peak during a rebuild reaches
           # ~9-10 GB. 10 GB gives the loader headroom; the nightly refresh
           # exits the process so a fresh restart doesn't double the heap.
-          cpus: "2.0"
-          memory: 6G
+          cpus: "1"
+          memory: 5G
     logging:
       driver: "json-file"
       options:
