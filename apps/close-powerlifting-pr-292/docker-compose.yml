@@ -1,0 +1,54 @@
+services:
+  close-powerlifting:
+    image: ghcr.io/wajeht/close-powerlifting:2b1fd18
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - close-powerlifting:/usr/src/app/dist/src/db/sqlite
+    networks:
+      - traefik
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - "-f"
+        - http://localhost:80/healthz
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 2.5G
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.close-powerlifting-pr-292.rule=Host(`pr-292-close-powerlifting.jaw.dev`) || Host(`pr-292-close-powerlifting.jaw.dev`)
+      - traefik.http.routers.close-powerlifting-pr-292.entrypoints=websecure
+      - traefik.http.routers.close-powerlifting-pr-292.middlewares=rate-limit-global@file
+      - traefik.http.services.close-powerlifting-pr-292.loadbalancer.server.port=80
+networks:
+  traefik:
+    external: true
+  backup:
+    external: true
+volumes:
+  close-powerlifting: null
