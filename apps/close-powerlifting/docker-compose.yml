@@ -28,8 +28,13 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: 512M
+          # Steady-state usage is ~200-300 MB / well under 0.1 CPU. The bump
+          # is for the nightly 4am ingest of the OpenPowerlifting CSV: it
+          # peaks at ~2 GB RSS (SQLite cache + mmap + WAL holding the full
+          # transaction) and saturates one core while parsing 3.9M rows.
+          # See src/utils/ingest.ts INGEST_PRAGMAS.
+          cpus: "1.0"
+          memory: 2.5G
     logging:
       driver: "json-file"
       options:
