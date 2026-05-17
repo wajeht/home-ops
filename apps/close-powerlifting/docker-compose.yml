@@ -34,7 +34,7 @@ services:
           # ~9-10 GB. 10 GB gives the loader headroom; the nightly refresh
           # exits the process so a fresh restart doesn't double the heap.
           cpus: "2.0"
-          memory: 10G
+          memory: 6G
     logging:
       driver: "json-file"
       options:
