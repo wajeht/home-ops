@@ -17,17 +17,12 @@
   ],
   "packageRules": [
     {
-      "description": "Ignore apps excluded from docker-cd deployment",
-      "matchFileNames": [
-        "/(^|/)apps\\/(adguard|audiobookshelf|authelia|autobrr|bazarr|bitmagnet|changedetection|cleanuparr|code-server|convertx|excalidraw|frigate|git|glitchtip|hello-world|hindsight|huntarr|hydra-server|it-tools|linx|listenarr|miniflux|nut|paperless-ngx|plausible|portainer|readmeabook|recyclarr|scrypted|searxng|sonarr|speedtest|stirling-pdf|tautulli|vaultwarden|walker|zepp|zipline)\\//"
-      ],
-      "enabled": false
-    },
-    {
+      "description": "Own images deploy via their own pipelines, not Renovate",
       "enabled": false,
       "matchPackageNames": ["/^ghcr\\.io/wajeht//"]
     },
     {
+      "description": "Zipline upstream tags are not semver-friendly",
       "matchPackageNames": ["ghcr.io/diced/zipline"],
       "enabled": false
     },
