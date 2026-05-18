@@ -87,7 +87,7 @@ format:
 ## lint: Validate Kubernetes manifests (skipped if kubeconform not installed)
 lint:
 	@if command -v kubeconform >/dev/null; then \
-		find kubernetes -name '*.yaml' -not -path '*/clusterconfig/*' -not -path '*/talsecret*' \
+		find kubernetes -name '*.yaml' -not -path 'kubernetes/talos/*' \
 			-exec kubeconform -strict -summary -skip CustomResourceDefinition {} +; \
 	else \
 		echo "skipping: install kubeconform to enable manifest validation (brew install kubeconform)"; \
