@@ -42,10 +42,10 @@ talos-health:
 talos-dashboard:
 	@talosctl --talosconfig $(TALOSCONFIG) --nodes $(or $(NODE),$(CP_NODE)) dashboard
 
-## talos-reset: Wipe and reset a node (NODE=192.168.4.x required)
+## talos-reset: Wipe and reboot a node into maintenance mode (NODE=192.168.4.x required)
 talos-reset:
 	@test -n "$(NODE)" || (echo "NODE=192.168.4.x required" && exit 1)
-	@talosctl --talosconfig $(TALOSCONFIG) --nodes $(NODE) reset --graceful=false
+	@talosctl --talosconfig $(TALOSCONFIG) --nodes $(NODE) --endpoints $(NODE) reset --graceful=false --reboot
 
 ## flux-bootstrap: Install FluxCD into the cluster
 flux-bootstrap:
