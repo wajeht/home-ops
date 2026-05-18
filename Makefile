@@ -1,139 +1,105 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update update-force status relogin borgmatic-init borgmatic-backup format lint push fix-git images images-prune clean update-submodules resources nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status sata-mount sata-unmount sata-persist sata-unpersist sata-status help
+KUBECONFIG := kubernetes/talos/clusterconfig/kubeconfig
+TALOSCONFIG := kubernetes/talos/clusterconfig/talosconfig
+CP_NODE := 192.168.4.162
 
-## setup: Create all data directories
-setup:
-	@./scripts/home-ops.sh setup
+.PHONY: help \
+	talos-config talos-apply talos-bootstrap talos-kubeconfig talos-upgrade talos-upgrade-k8s talos-health talos-dashboard talos-reset \
+	flux-bootstrap flux-reconcile flux-status flux-tree \
+	cluster-status pods nodes \
+	format lint push
 
-## install: Deploy core infra and bootstrap docker-cd
-install:
-	@./scripts/home-ops.sh install
+## talos-config: Regenerate Talos machine configs from talconfig.yaml
+talos-config:
+	@cd kubernetes/talos && talhelper genconfig
 
-## install-fresh: Reset docker-cd state then deploy infra (forces full app reconcile)
-install-fresh:
-	@./scripts/home-ops.sh install-fresh
+## talos-apply: Apply Talos configs to all nodes
+talos-apply: talos-config
+	@cd kubernetes/talos && talhelper gencommand apply | bash
 
-## uninstall: Remove all stacks and cleanup
-uninstall:
-	@./scripts/home-ops.sh uninstall
+## talos-bootstrap: Bootstrap etcd on control plane (first-time only)
+talos-bootstrap:
+	@cd kubernetes/talos && talhelper gencommand bootstrap | bash
 
-## update: Pull latest and redeploy docker-cd
-update:
-	@./scripts/home-ops.sh update-infra
+## talos-kubeconfig: Fetch kubeconfig from cluster
+talos-kubeconfig:
+	@talosctl --talosconfig $(TALOSCONFIG) kubeconfig --nodes $(CP_NODE) $(KUBECONFIG)
 
-## update-force: Pull latest and force-recreate docker-cd
-update-force:
-	@./scripts/home-ops.sh update-infra-force
+## talos-upgrade: Upgrade Talos version (after bumping talosVersion in talconfig.yaml)
+talos-upgrade: talos-config
+	@cd kubernetes/talos && talhelper gencommand upgrade | bash
 
-## status: Show containers, mounts, and disk usage
-status:
-	@./scripts/home-ops.sh status
+## talos-upgrade-k8s: Upgrade Kubernetes version (after bumping kubernetesVersion in talconfig.yaml)
+talos-upgrade-k8s: talos-config
+	@cd kubernetes/talos && talhelper gencommand upgrade-k8s | bash
 
-## relogin: Refresh docker registry credentials
-relogin:
-	@./scripts/home-ops.sh relogin
+## talos-health: Check cluster health
+talos-health:
+	@talosctl --talosconfig $(TALOSCONFIG) --nodes $(CP_NODE) health
 
-## borgmatic-init: Initialize borg repos for all borgmatic containers
-borgmatic-init:
-	@./scripts/home-ops.sh borgmatic-init
+## talos-dashboard: Live dashboard for a node (NODE=192.168.4.x)
+talos-dashboard:
+	@talosctl --talosconfig $(TALOSCONFIG) --nodes $(or $(NODE),$(CP_NODE)) dashboard
 
-## borgmatic-backup: Run backup on all borgmatic containers
-## borgmatic-backup-<app>: Run backup for single app (e.g. make borgmatic-backup-homeassistant)
-borgmatic-backup:
-	@./scripts/home-ops.sh borgmatic-backup
+## talos-reset: Wipe and reset a node (NODE=192.168.4.x required)
+talos-reset:
+	@test -n "$(NODE)" || (echo "NODE=192.168.4.x required" && exit 1)
+	@talosctl --talosconfig $(TALOSCONFIG) --nodes $(NODE) reset --graceful=false
 
-borgmatic-backup-%:
-	@./scripts/home-ops.sh borgmatic-backup $*
+## flux-bootstrap: Install FluxCD into the cluster
+flux-bootstrap:
+	@flux bootstrap github \
+		--owner=wajeht \
+		--repository=home-ops \
+		--branch=kubernetes \
+		--path=kubernetes/flux \
+		--personal
 
-## format: Format YAML/Markdown/JSON/Shell files
+## flux-reconcile: Force reconcile all Flux resources
+flux-reconcile:
+	@flux reconcile source git flux-system
+	@flux reconcile kustomization flux-system
+
+## flux-status: Show all Flux resources
+flux-status:
+	@flux get all -A
+
+## flux-tree: Show Flux reconciliation tree
+flux-tree:
+	@flux tree kustomization flux-system -A
+
+## cluster-status: Show nodes, pods, and Flux status
+cluster-status: nodes pods flux-status
+
+## nodes: Show cluster nodes
+nodes:
+	@kubectl get nodes -o wide
+
+## pods: Show all pods across namespaces
+pods:
+	@kubectl get pods -A
+
+## format: Format YAML/Markdown/JSON files
 format:
-	@npx oxfmt "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
-	@shfmt -w -i 0 -ci scripts/*.sh
+	@npx oxfmt "**/*.{yml,yaml,md,json}"
 
-## lint: Check formatting + shellcheck + SOPS + hardening + compose syntax
+## lint: Validate Kubernetes manifests (skipped if kubeconform not installed)
 lint:
-	@./scripts/lint.sh
+	@if command -v kubeconform >/dev/null; then \
+		find kubernetes -name '*.yaml' -not -path '*/clusterconfig/*' -not -path '*/talsecret*' \
+			-exec kubeconform -strict -summary -skip CustomResourceDefinition {} +; \
+	else \
+		echo "skipping: install kubeconform to enable manifest validation (brew install kubeconform)"; \
+	fi
 
 ## push: Format, lint, commit, and push changes
 push:
 	@$(MAKE) format
 	@$(MAKE) lint
-	@$(MAKE) resources
 	@git add -A
 	@curl -s https://commit.jaw.dev/ | sh -s -- --no-verify
 	@git push --no-verify
-
-## update-submodules: Pull latest for all submodules
-update-submodules:
-	@git submodule update --remote
-	@git add -A
-	@git commit -m "chore: update submodules"
-	@git push
-
-## fix-git: Rebuild index while respecting .gitignore
-fix-git:
-	@git rm -r --cached . -f
-	@git add .
-	@git commit -m "untrack files in .gitignore"
-
-## images: Show unused Docker images and orphan volumes
-## images-prune: Remove unused images (>7d) and orphan volumes
-images:
-	@./scripts/home-ops.sh images
-
-images-prune:
-	@./scripts/home-ops.sh images prune
-
-## clean: Nuclear prune — removes ALL unused images, volumes, networks
-clean:
-	@docker system prune -a -f
-	@docker volume prune -f
-	@docker network prune -f
-
-## resources: Report total CPU/memory limits across all stacks
-resources:
-	@./scripts/check-resources.sh
-
-## nfs-mount: Mount NFS shares
-nfs-mount:
-	@./scripts/home-ops.sh nfs mount
-
-## nfs-unmount: Unmount NFS shares
-nfs-unmount:
-	@./scripts/home-ops.sh nfs unmount
-
-## nfs-persist: Add NFS mounts to fstab (survives reboot)
-nfs-persist:
-	@./scripts/home-ops.sh nfs persist
-
-## nfs-unpersist: Remove NFS mounts from fstab
-nfs-unpersist:
-	@./scripts/home-ops.sh nfs unpersist
-
-## nfs-status: Show NFS mount status
-nfs-status:
-	@./scripts/home-ops.sh nfs status
-
-## sata-mount: Mount SATA drive
-sata-mount:
-	@./scripts/home-ops.sh sata mount
-
-## sata-unmount: Unmount SATA drive
-sata-unmount:
-	@./scripts/home-ops.sh sata unmount
-
-## sata-persist: Add SATA mount to fstab (survives reboot)
-sata-persist:
-	@./scripts/home-ops.sh sata persist
-
-## sata-unpersist: Remove SATA mount from fstab
-sata-unpersist:
-	@./scripts/home-ops.sh sata unpersist
-
-## sata-status: Show SATA mount status
-sata-status:
-	@./scripts/home-ops.sh sata status
 
 ## help: Show available make targets
 help:
