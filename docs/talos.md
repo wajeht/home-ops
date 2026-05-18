@@ -81,12 +81,17 @@ talhelper genconfig
 ### 5. Apply configs
 
 ```bash
-# Apply to all nodes
+# First-time apply (nodes in maintenance mode — no TLS/auth yet)
+talhelper gencommand apply --extra-flags=--insecure | bash
+
+# After cluster is configured, normal apply works:
 talhelper gencommand apply | bash
 
-# Apply to specific node
+# Apply to one node only
 talhelper gencommand apply --node soapwa | bash
 ```
+
+> Use `--extra-flags=--insecure` when a node is in maintenance mode (fresh boot or post-reset). Once it has a config + cluster certs, drop the flag.
 
 ### 6. Bootstrap cluster (once, first control plane only)
 
@@ -113,13 +118,14 @@ Two tools, different jobs:
 **talhelper** — config management (define, generate, apply, upgrade):
 
 ```bash
-talhelper genconfig                          # generate configs from talconfig.yaml
-talhelper gencommand apply | bash            # apply configs to all nodes
-talhelper gencommand apply --node soapwa | bash  # apply to one node
-talhelper gencommand bootstrap | bash        # bootstrap cluster (once)
-talhelper gencommand upgrade | bash          # upgrade Talos version
-talhelper gencommand upgrade-k8s | bash      # upgrade Kubernetes version
-talhelper gensecret > talsecret.sops.yaml    # generate new cluster secrets
+talhelper genconfig                                            # generate configs from talconfig.yaml
+talhelper gencommand apply | bash                              # apply to already-configured nodes
+talhelper gencommand apply --extra-flags=--insecure | bash     # apply to maintenance-mode nodes (first-time or post-reset)
+talhelper gencommand apply --node soapwa | bash                # apply to one node
+talhelper gencommand bootstrap | bash                          # bootstrap cluster (once)
+talhelper gencommand upgrade | bash                            # upgrade Talos version
+talhelper gencommand upgrade-k8s | bash                        # upgrade Kubernetes version
+talhelper gensecret > talsecret.sops.yaml                      # generate new cluster secrets
 ```
 
 **talosctl** — day-to-day operations (inspect, debug, interact):
@@ -132,7 +138,9 @@ talosctl get disks --nodes <IP>              # list disks
 talosctl get systemdisk --nodes <IP>         # check boot disk
 talosctl dmesg --nodes <IP>                  # kernel logs
 talosctl logs <service> --nodes <IP>         # service logs (etcd, kubelet, etc)
-talosctl reset --nodes <IP> --graceful=false # wipe and reset a node
+talosctl reset --nodes <IP> --endpoints <IP> \
+    --graceful=false --reboot \
+    --system-labels-to-wipe EPHEMERAL,STATE   # wipe data, keep Talos OS, reboot
 talosctl get members                         # list cluster members
 ```
 
@@ -188,7 +196,7 @@ talhelper gencommand upgrade-k8s | bash
 3. `sops -e -i talsecret.sops.yaml`
 4. `talhelper genconfig`
 5. Boot all nodes from Talos USB
-6. `talhelper gencommand apply | bash`
+6. `talhelper gencommand apply --extra-flags=--insecure | bash` (insecure = nodes are in maintenance mode)
 7. `talhelper gencommand bootstrap | bash`
 8. `talosctl kubeconfig --nodes 192.168.4.162`
 9. `kubectl get nodes`
@@ -196,8 +204,17 @@ talhelper gencommand upgrade-k8s | bash
 ### Reset a node
 
 ```bash
-talosctl reset --nodes <NODE_IP> --graceful=false
+talosctl reset --nodes <NODE_IP> --endpoints <NODE_IP> \
+    --graceful=false --reboot \
+    --system-labels-to-wipe EPHEMERAL,STATE
 ```
+
+Flags explained:
+
+- `--graceful=false` — don't try to cordon/drain (we're wiping, no point)
+- `--reboot` — power back on after wipe (default is shut down — surprise gotcha)
+- `--system-labels-to-wipe EPHEMERAL,STATE` — wipe only data + config partitions, keep the Talos OS install. Otherwise default `--wipe-mode all` nukes everything and you'd need a USB to reinstall.
+- `--endpoints <NODE_IP>` — talk directly to the target node (don't route through the cluster CP, which may itself be wiped/down)
 
 ### Check what disks a node has (before installing)
 

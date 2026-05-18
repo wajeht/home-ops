@@ -5,7 +5,7 @@ TALOSCONFIG := kubernetes/talos/clusterconfig/talosconfig
 CP_NODE := 192.168.4.162
 
 .PHONY: help \
-	talos-config talos-apply talos-bootstrap talos-kubeconfig talos-upgrade talos-upgrade-k8s talos-health talos-dashboard talos-reset talos-lint \
+	talos-config talos-apply talos-apply-insecure talos-bootstrap talos-kubeconfig talos-upgrade talos-upgrade-k8s talos-health talos-dashboard talos-reset talos-lint \
 	flux-bootstrap flux-reconcile flux-status flux-tree \
 	cluster-status pods nodes \
 	format lint push
