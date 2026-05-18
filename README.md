@@ -90,21 +90,11 @@ flowchart LR
             nvr{{NVR}}
         end
 
-        subgraph dell5050[Dell OptiPlex 5050 Micro]
-            talos_cp{{Talos K8s Control Plane}}
-        end
-
-        subgraph dell7070[Dell OptiPlex 7070 Micro]
-            talos_worker{{Talos K8s Worker}}
-        end
-
         nfs -->|NFS| apps
         adguard -->|DNS| unifi
         unifi -->|2.5GbE| nfs
         unifi --> poe
         unifi -->|2.5GbE| dell
-        unifi -->|2.5GbE| dell5050
-        unifi -->|2.5GbE| dell7070
         poe -->|PoE| zigbee
         poe -->|PoE| adguard
         poe -->|PoE| ap
@@ -145,10 +135,6 @@ flowchart LR
     classDef trigger fill:#fce7f3,stroke:#db2777,color:#333
     class app_push,ops_push trigger
     style dell fill:#fffbeb,stroke:#d97706
-    style dell5050 fill:#fffbeb,stroke:#d97706
-    style dell7070 fill:#fffbeb,stroke:#d97706
-    style talos_cp fill:#dbeafe,stroke:#326ce5,color:#333
-    style talos_worker fill:#dbeafe,stroke:#326ce5,color:#333
     style nas fill:#fffbeb,stroke:#d97706
     style ucg fill:#fef2f2,stroke:#dc2626
     style pi fill:#f0fdf4,stroke:#22c55e
