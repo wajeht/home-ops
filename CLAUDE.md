@@ -22,8 +22,7 @@ GitOps-driven k8s homelab on Talos Linux, modeled after [upstream/home-ops](http
 
 - **Cluster**: 2 nodes — `soapwa` (CP, 192.168.4.162) + `yanlon` (worker, 192.168.4.163). `apollo` (.161) joins after docker-cd is retired.
 - **GitOps**: FluxCD watches this repo, reconciles `kubernetes/apps/`
-- **CNI**: Cilium (replaces default Flannel) + Gateway API
-- **Ingress**: ingress-nginx + MetalLB/kube-vip for LAN VIP
+- **CNI / Ingress / LB**: Cilium handles all three — CNI (replaces default Flannel), Gateway API (replaces ingress-nginx after its [March 2026 retirement](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/)), and LB IPAM for LAN VIPs (no MetalLB needed)
 - **TLS**: cert-manager with Cloudflare DNS challenge (`*.jaw.dev` wildcard)
 - **DNS**: external-dns auto-syncs Cloudflare records from ingresses
 - **Storage**: Longhorn (block PVs) + nfs-subdir-external-provisioner (Synology NFS at 192.168.4.243)

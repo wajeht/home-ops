@@ -4,7 +4,7 @@
 
 GitOps-driven homelab running on Talos Linux + Kubernetes.
 
-Push to git, [FluxCD](https://fluxcd.io/) reconciles the cluster — auto-discovers `kubernetes/apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, applies HelmReleases. [Cilium](https://cilium.io/) handles networking, [ingress-nginx](https://github.com/kubernetes/ingress-nginx) routes traffic, [cert-manager](https://cert-manager.io/) issues wildcard TLS via Cloudflare DNS. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh. Backups via per-app [Restic](https://restic.net/) `HelmRelease`s to NAS.
+Push to git, [FluxCD](https://fluxcd.io/) reconciles the cluster — auto-discovers `kubernetes/apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, applies HelmReleases. [Cilium](https://cilium.io/) handles networking, traffic routing (via Gateway API), and LB IPAM. [cert-manager](https://cert-manager.io/) issues wildcard TLS via Cloudflare DNS. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh. Backups via per-app [Restic](https://restic.net/) `HelmRelease`s to NAS.
 
 Modeled after [upstream/home-ops](https://github.com/upstream/home-ops) — the canonical homelab pattern.
 
@@ -22,15 +22,15 @@ flowchart LR
 
     subgraph cluster["Talos K8s Cluster"]
         flux[FluxCD]
-        cilium[Cilium CNI]
-        ingress[ingress-nginx]
+        cilium["Cilium
+        CNI + Gateway API + LB IPAM"]
         cert[cert-manager]
         dns[external-dns]
         apps["kubernetes/apps/*
         HelmReleases"]
         flux -->|reconcile| apps
-        cilium --> ingress --> apps
-        cert -.->|TLS| ingress
+        cilium --> apps
+        cert -.->|TLS| cilium
         dns -.->|DNS records| cf
     end
 
@@ -41,7 +41,7 @@ flowchart LR
 
     push --> gha -->|update| flux
     renovate --> gha
-    waf --> ingress
+    waf --> cilium
     apps --> longhorn
     apps --> nfs
 

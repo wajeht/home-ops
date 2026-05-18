@@ -4,37 +4,32 @@ Planned k8s stack running on top of [Talos](talos.md). Modeled after [upstream/h
 
 ## Stack
 
-| Layer         | Tool                                                                                                  | Purpose                                |
-| ------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| GitOps        | [FluxCD](https://fluxcd.io/)                                                                          | Watches repo, reconciles cluster state |
-| CNI           | [Cilium](https://cilium.io/)                                                                          | Networking + Gateway API               |
-| Ingress       | [ingress-nginx](https://github.com/kubernetes/ingress-nginx)                                          | HTTP/S ingress (replaces Traefik)      |
-| Load balancer | [MetalLB](https://metallb.universe.tf/) + [kube-vip](https://kube-vip.io/)                            | LAN VIP for API + ingress              |
-| TLS           | [cert-manager](https://cert-manager.io/)                                                              | Cloudflare DNS challenge (same as now) |
-| DNS           | [external-dns](https://github.com/kubernetes-sigs/external-dns)                                       | Auto-creates Cloudflare records        |
-| Secrets       | SOPS (in-cluster via Flux)                                                                            | Reuse existing age key                 |
-| Storage       | [Longhorn](https://longhorn.io/)                                                                      | Replicated block PVs                   |
-| NFS           | [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) | Synology NFS PVs                       |
-| Postgres      | [CloudNativePG](https://cloudnative-pg.io/)                                                           | Postgres operator                      |
-| Cache         | [Valkey](https://valkey.io/)                                                                          | Redis fork                             |
-| Backups       | [Restic](https://restic.net/) per-app                                                                 | Replaces borgmatic                     |
-| Monitoring    | [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts)                          | Prometheus + Grafana + Alertmanager    |
-| Badges        | [kromgo](https://github.com/kashalls/kromgo)                                                          | Cluster metrics as shields.io badges   |
-| Updates       | Renovate + GitHub Actions                                                                             | Same as docker-cd setup                |
+| Layer              | Tool                                                                                                  | Purpose                                                                                                                                                    |
+| ------------------ | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GitOps             | [FluxCD](https://fluxcd.io/)                                                                          | Watches repo, reconciles cluster state                                                                                                                     |
+| CNI / Ingress / LB | [Cilium](https://cilium.io/)                                                                          | CNI + Gateway API + LB IPAM (replaces ingress-nginx — [retired March 2026](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/) — and MetalLB) |
+| TLS                | [cert-manager](https://cert-manager.io/)                                                              | Cloudflare DNS challenge (same as now)                                                                                                                     |
+| DNS                | [external-dns](https://github.com/kubernetes-sigs/external-dns)                                       | Auto-creates Cloudflare records                                                                                                                            |
+| Secrets            | SOPS (in-cluster via Flux)                                                                            | Reuse existing age key                                                                                                                                     |
+| Storage            | [Longhorn](https://longhorn.io/)                                                                      | Replicated block PVs                                                                                                                                       |
+| NFS                | [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) | Synology NFS PVs                                                                                                                                           |
+| Postgres           | [CloudNativePG](https://cloudnative-pg.io/)                                                           | Postgres operator                                                                                                                                          |
+| Cache              | [Valkey](https://valkey.io/)                                                                          | Redis fork                                                                                                                                                 |
+| Backups            | [Restic](https://restic.net/) per-app                                                                 | Replaces borgmatic                                                                                                                                         |
+| Monitoring         | [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts)                          | Prometheus + Grafana + Alertmanager                                                                                                                        |
+| Badges             | [kromgo](https://github.com/kashalls/kromgo)                                                          | Cluster metrics as shields.io badges                                                                                                                       |
+| Updates            | Renovate + GitHub Actions                                                                             | Same as docker-cd setup                                                                                                                                    |
 
 ## Bootstrap Order
 
 1. Talos cluster up (see [talos.md](talos.md))
-2. **Cilium** (replaces default Flannel)
-3. **kube-vip** (HA VIP for API endpoint)
-4. **MetalLB** (LAN load balancer IPs)
-5. **FluxCD** (GitOps from this repo)
-6. **cert-manager** + Cloudflare issuer
-7. **external-dns**
-8. **ingress-nginx**
-9. **Longhorn** + **nfs-subdir-external-provisioner**
-10. **CNPG** (when first Postgres app needed)
-11. **kube-prometheus-stack**
+2. **Cilium** with CNI + Gateway API + LB IPAM all enabled (one chart, three jobs)
+3. **FluxCD** (GitOps from this repo)
+4. **cert-manager** + Cloudflare issuer
+5. **external-dns**
+6. **Longhorn** + **nfs-subdir-external-provisioner**
+7. **CNPG** (when first Postgres app needed)
+8. **kube-prometheus-stack**
 
 ## Repo Layout (planned)
 
