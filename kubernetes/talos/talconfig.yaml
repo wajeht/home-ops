@@ -6,11 +6,9 @@ endpoint: https://192.168.4.162:6443
 allowSchedulingOnControlPlanes: true
 
 # Cilium owns CNI + kube-proxy replacement + LB IPAM + Gateway API.
-# Talos must NOT install Flannel or kube-proxy.
+# Talos must NOT install Flannel.
 cniConfig:
   name: none
-proxy:
-  disabled: true
 
 nodes:
   - hostname: soapwa
@@ -33,6 +31,11 @@ patches:
     machine:
       install:
         wipe: true
+  # Disable kube-proxy — Cilium replaces it
+  - |-
+    cluster:
+      proxy:
+        disabled: true
 
 controlPlane:
   schematic:
