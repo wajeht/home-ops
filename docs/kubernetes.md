@@ -4,23 +4,23 @@ Planned k8s stack running on top of [Talos](talos.md). Modeled after [upstream/h
 
 ## Stack
 
-| Layer        | Tool                                                                  | Purpose                                |
-| ------------ | --------------------------------------------------------------------- | -------------------------------------- |
-| GitOps       | [FluxCD](https://fluxcd.io/)                                          | Watches repo, reconciles cluster state |
-| CNI          | [Cilium](https://cilium.io/)                                          | Networking + Gateway API               |
-| Ingress      | [ingress-nginx](https://github.com/kubernetes/ingress-nginx)          | HTTP/S ingress (replaces Traefik)      |
-| Load balancer| [MetalLB](https://metallb.universe.tf/) + [kube-vip](https://kube-vip.io/) | LAN VIP for API + ingress         |
-| TLS          | [cert-manager](https://cert-manager.io/)                              | Cloudflare DNS challenge (same as now) |
-| DNS          | [external-dns](https://github.com/kubernetes-sigs/external-dns)       | Auto-creates Cloudflare records        |
-| Secrets      | SOPS (in-cluster via Flux)                                            | Reuse existing age key                 |
-| Storage      | [Longhorn](https://longhorn.io/)                                      | Replicated block PVs                   |
-| NFS          | [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) | Synology NFS PVs |
-| Postgres     | [CloudNativePG](https://cloudnative-pg.io/)                           | Postgres operator                      |
-| Cache        | [Valkey](https://valkey.io/)                                          | Redis fork                             |
-| Backups      | [Restic](https://restic.net/) per-app                                 | Replaces borgmatic                     |
-| Monitoring   | [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts) | Prometheus + Grafana + Alertmanager |
-| Badges       | [kromgo](https://github.com/kashalls/kromgo)                          | Cluster metrics as shields.io badges   |
-| Updates      | Renovate + GitHub Actions                                             | Same as docker-cd setup                |
+| Layer         | Tool                                                                                                  | Purpose                                |
+| ------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| GitOps        | [FluxCD](https://fluxcd.io/)                                                                          | Watches repo, reconciles cluster state |
+| CNI           | [Cilium](https://cilium.io/)                                                                          | Networking + Gateway API               |
+| Ingress       | [ingress-nginx](https://github.com/kubernetes/ingress-nginx)                                          | HTTP/S ingress (replaces Traefik)      |
+| Load balancer | [MetalLB](https://metallb.universe.tf/) + [kube-vip](https://kube-vip.io/)                            | LAN VIP for API + ingress              |
+| TLS           | [cert-manager](https://cert-manager.io/)                                                              | Cloudflare DNS challenge (same as now) |
+| DNS           | [external-dns](https://github.com/kubernetes-sigs/external-dns)                                       | Auto-creates Cloudflare records        |
+| Secrets       | SOPS (in-cluster via Flux)                                                                            | Reuse existing age key                 |
+| Storage       | [Longhorn](https://longhorn.io/)                                                                      | Replicated block PVs                   |
+| NFS           | [nfs-subdir-external-provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner) | Synology NFS PVs                       |
+| Postgres      | [CloudNativePG](https://cloudnative-pg.io/)                                                           | Postgres operator                      |
+| Cache         | [Valkey](https://valkey.io/)                                                                          | Redis fork                             |
+| Backups       | [Restic](https://restic.net/) per-app                                                                 | Replaces borgmatic                     |
+| Monitoring    | [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts)                          | Prometheus + Grafana + Alertmanager    |
+| Badges        | [kromgo](https://github.com/kashalls/kromgo)                                                          | Cluster metrics as shields.io badges   |
+| Updates       | Renovate + GitHub Actions                                                                             | Same as docker-cd setup                |
 
 ## Bootstrap Order
 

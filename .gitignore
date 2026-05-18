@@ -63,11 +63,9 @@ kubernetes/talos/talsecret.yaml
 
 # Claude
 .claude/settings.local.json
-CLAUDE.md
 *.sqlite
 .mcp.json
 .agents
-AGENTS.md
 .claude
 skills-lock.json
 opencode.jsonc
