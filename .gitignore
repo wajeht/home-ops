@@ -54,9 +54,6 @@ docs/todo.md
 docs/k3s.md
 
 
-# Talos (old location, keeping until cleanup)
-talos/
-
 # Talos generated configs + plaintext secrets (contain private keys)
 kubernetes/talos/clusterconfig/
 kubernetes/talos/talsecret.yaml
