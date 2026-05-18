@@ -18,6 +18,10 @@ talos-config:
 talos-apply: talos-config
 	@cd kubernetes/talos && talhelper gencommand apply | bash
 
+## talos-apply-insecure: First-time apply to maintenance-mode nodes (no auth/TLS yet)
+talos-apply-insecure: talos-config
+	@cd kubernetes/talos && talhelper gencommand apply --extra-flags=--insecure | bash
+
 ## talos-bootstrap: Bootstrap etcd on control plane (first-time only)
 talos-bootstrap:
 	@cd kubernetes/talos && talhelper gencommand bootstrap | bash
@@ -42,10 +46,12 @@ talos-health:
 talos-dashboard:
 	@talosctl --talosconfig $(TALOSCONFIG) --nodes $(or $(NODE),$(CP_NODE)) dashboard
 
-## talos-reset: Wipe and reboot a node into maintenance mode (NODE=192.168.4.x required)
+## talos-reset: Wipe EPHEMERAL+STATE (keep Talos OS), reboot into maintenance mode (NODE=192.168.4.x)
 talos-reset:
 	@test -n "$(NODE)" || (echo "NODE=192.168.4.x required" && exit 1)
-	@talosctl --talosconfig $(TALOSCONFIG) --nodes $(NODE) --endpoints $(NODE) reset --graceful=false --reboot
+	@talosctl --talosconfig $(TALOSCONFIG) --nodes $(NODE) --endpoints $(NODE) reset \
+		--graceful=false --reboot \
+		--system-labels-to-wipe EPHEMERAL,STATE
 
 ## flux-bootstrap: Install FluxCD into the cluster
 flux-bootstrap:
