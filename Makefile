@@ -5,7 +5,7 @@ TALOSCONFIG := kubernetes/talos/clusterconfig/talosconfig
 CP_NODE := 192.168.4.162
 
 .PHONY: help \
-	talos-config talos-apply talos-bootstrap talos-kubeconfig talos-upgrade talos-upgrade-k8s talos-health talos-dashboard talos-reset \
+	talos-config talos-apply talos-bootstrap talos-kubeconfig talos-upgrade talos-upgrade-k8s talos-health talos-dashboard talos-reset talos-lint \
 	flux-bootstrap flux-reconcile flux-status flux-tree \
 	cluster-status pods nodes \
 	format lint push
@@ -84,13 +84,17 @@ pods:
 format:
 	@npx oxfmt "**/*.{yml,yaml,md,json}"
 
-## lint: Validate Kubernetes manifests (skipped if kubeconform not installed)
-lint:
+## talos-lint: Validate talconfig.yaml schema
+talos-lint:
+	@cd kubernetes/talos && talhelper validate talconfig
+
+## lint: Validate talconfig + Kubernetes manifests (skipped if tools not installed)
+lint: talos-lint
 	@if command -v kubeconform >/dev/null; then \
 		find kubernetes -name '*.yaml' -not -path 'kubernetes/talos/*' \
 			-exec kubeconform -strict -summary -skip CustomResourceDefinition {} +; \
 	else \
-		echo "skipping: install kubeconform to enable manifest validation (brew install kubeconform)"; \
+		echo "skipping kubeconform: install with 'brew install kubeconform'"; \
 	fi
 
 ## push: Format, lint, commit, and push changes
