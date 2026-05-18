@@ -4,7 +4,7 @@
 
 GitOps-driven homelab running on Talos Linux + Kubernetes.
 
-Push to git, [FluxCD](https://fluxcd.io/) reconciles the cluster — auto-discovers `kubernetes/apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, applies HelmReleases. [Cilium](https://cilium.io/) handles networking, traffic routing (via Gateway API), and LB IPAM. [cert-manager](https://cert-manager.io/) issues wildcard TLS via Cloudflare DNS. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh. Backups via per-app [Restic](https://restic.net/) `HelmRelease`s to NAS.
+Push to git, [FluxCD](https://fluxcd.io/) reconciles the cluster — auto-discovers `kubernetes/apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, applies HelmReleases. [Cilium](https://cilium.io/) handles networking, traffic routing (via Gateway API), and LB IPAM. [cert-manager](https://cert-manager.io/) issues wildcard TLS via Cloudflare DNS. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh. PVC backups via [Volsync](https://volsync.readthedocs.io/) (Restic under the hood) to NAS, with restore-on-PVC-create for easy disaster recovery.
 
 Modeled after [upstream/home-ops](https://github.com/upstream/home-ops) — the canonical homelab pattern.
 
