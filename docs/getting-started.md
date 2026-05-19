@@ -274,13 +274,20 @@ kubectl get clusterissuers
 
 ## Step 19 — Cloudflare Tunnel (cloudflared)
 
-Cluster's external entry point. No port forward, no exposed home IP. See [cloudflared.md](cloudflared.md) for the full setup.
+Cluster's external entry point. No port forward, no exposed home IP. **Locally-managed** tunnel (created via CLI, not the dashboard) so `config.yml` in git is authoritative. See [cloudflared.md](cloudflared.md) for the full setup + rationale.
 
-1. Create a tunnel in Cloudflare Zero Trust dashboard, copy the token
-2. Decode the token (`echo <token> | base64 -d | jq`) and build a `credentials.json` (`AccountTag`/`TunnelID`/`TunnelSecret`)
-3. SOPS-encrypt as `kubernetes/apps/cloudflared/app/secret.sops.yaml` (key: `credentials.json`)
-4. Add ingress rules in `kubernetes/apps/cloudflared/app/configmap.yaml` (tunnel UUID + per-hostname routes)
-5. Push — Flux deploys 2 replicas of cloudflared with anti-affinity. Cloudflare auto-creates the DNS CNAMEs for each hostname listed in the config
+```bash
+brew install cloudflared
+cloudflared tunnel login                                       # browser → pick wajeht.com zone
+cloudflared tunnel create home-ops-cluster                      # mints UUID + ~/.cloudflared/<uuid>.json
+cloudflared tunnel route dns home-ops-cluster "*.wajeht.com"   # one wildcard CNAME covers every app
+```
+
+Then in the repo:
+
+1. Copy `~/.cloudflared/<uuid>.json` contents into `kubernetes/apps/cloudflared/app/secret.sops.yaml` (`stringData.credentials.json`) and `sops --encrypt --in-place` it
+2. Set `tunnel: <uuid>` in `kubernetes/apps/cloudflared/app/configmap.yaml`; ingress is a single catch-all to `cilium-gateway-internet.kube-system.svc.cluster.local:80` (no per-hostname rules)
+3. Push — Flux deploys 2 replicas with anti-affinity. Adding new apps is just HTTPRoutes from here on; no DNS or `config.yml` edits needed
 
 ## Step 20 — Cilium Gateway + LB IPPool
 
@@ -436,7 +443,7 @@ Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
 12. **node-feature-discovery** + **intel-device-plugin** — for Plex transcoding
 13. **kube-prometheus-stack** — Prometheus + Grafana + Alertmanager
 14. **system-upgrade-controller** — auto Talos/k8s upgrades
-15. **external-dns** — only needed when migrating jaw.dev to the cluster (see [architecture.md](architecture.md) for the migration plan)
+15. **external-dns** — only if jaw.dev migration goes the direct port-forward route; not needed for the wildcard-tunnel pattern we use for `*.wajeht.com` (see [architecture.md](architecture.md) for the migration plan)
 
 Plus: **convert Cilium to HelmRelease** so Flux owns it going forward (so future Cilium upgrades = git commit, not `helm upgrade`).
 

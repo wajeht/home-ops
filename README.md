@@ -25,13 +25,15 @@ flowchart LR
         cilium["Cilium
         CNI + Gateway API + LB IPAM"]
         cert[cert-manager]
-        dns[external-dns]
+        cfd["cloudflared
+        (locally-managed tunnel)"]
         apps["kubernetes/apps/*
         HelmReleases"]
         flux -->|reconcile| apps
         cilium --> apps
         cert -.->|TLS| cilium
-        dns -.->|DNS records| cf
+        cfd -.->|outbound QUIC| cf
+        cilium -.->|Host-header routes| apps
     end
 
     subgraph storage["Storage"]

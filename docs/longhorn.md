@@ -138,9 +138,8 @@ The `!system_disk` selector ensures the OS disk on soapwa is not selected.
 
 Longhorn exposes a dashboard at `longhorn-frontend.longhorn-system.svc.cluster.local:80`. To expose it externally:
 
-1. Add a public hostname in Cloudflare Tunnel: `longhorn.wajeht.com → cilium-gateway-internet.kube-system.svc.cluster.local:80`
-2. Create an HTTPRoute attaching to the `internet` Gateway, hostname `longhorn.wajeht.com`, backend `longhorn-frontend`
-3. **Protect with oauth2-proxy** when we install it — Longhorn UI has no built-in auth
+1. Create an HTTPRoute attaching to the `internet` Gateway, hostname `longhorn.wajeht.com`, backend `longhorn-frontend` — the wildcard CNAME + cloudflared catch-all handle DNS and tunnel routing automatically (see [cloudflared.md](cloudflared.md))
+2. **Protect with oauth2-proxy** when we install it — Longhorn UI has no built-in auth
 
 For now, port-forward to access it locally:
 

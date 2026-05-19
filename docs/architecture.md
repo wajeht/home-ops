@@ -177,7 +177,9 @@ flowchart LR
 Cloudflare Tunnel solves the "homelab without exposing your IP" problem. The architecture:
 
 - **No port forwards.** cloudflared makes an **outbound** QUIC connection to Cloudflare's edge. Nothing on your LAN listens externally.
-- **DNS is automatic.** When you add a hostname to `cloudflared`'s `configmap.yaml` ingress rules (`<host>.wajeht.com → cilium-gateway-internet.kube-system.svc:80`) and push, Cloudflare creates a CNAME for you automatically.
+- **DNS is one wildcard.** A single `*.wajeht.com → <tunnel-id>.cfargotunnel.com` CNAME covers every subdomain. Adding a new app needs zero DNS changes.
+- **`config.yml` is a single catch-all.** Inside the tunnel, every request is forwarded to `cilium-gateway-internet.kube-system.svc.cluster.local:80` regardless of Host header — the Gateway + HTTPRoutes do per-app routing. Adding a new app needs zero `config.yml` changes.
+- **The tunnel is locally-managed** (created via `cloudflared tunnel create`, not the dashboard) so `config.yml` is authoritative — dashboard-created tunnels silently get their ingress config overridden from Cloudflare's edge.
 - **TLS is at the edge.** Cloudflare terminates HTTPS. Inside the tunnel/cluster, traffic is plain HTTP. No need for in-cluster certs (cert-manager is for other use cases — see below).
 - **Failover.** Two `cloudflared` replicas, anti-affinity to spread across nodes. Either pod going down still leaves the tunnel up via the other.
 
@@ -207,7 +209,7 @@ flowchart TB
         c_user --> c_cf --> c_cfd --> c_gw --> c_apps
     end
 
-    subgraph future["🎯 Future: jaw.dev (cluster takes over from docker-cd)"]
+    subgraph future["🎯 Future jaw.dev: Path B (direct port-forward — only if we don't reuse the tunnel)"]
         f_apps["app pods"]
         f_gw["Cilium Gateway<br/>+ TLS listener<br/>(cert-manager cert)"]
         f_ed["external-dns<br/>creates CNAME records"]
@@ -229,15 +231,13 @@ flowchart TB
 
 Once the cluster is proven stable and we've decommissioned docker-cd, we'll:
 
-1. **Install external-dns** (talks to Cloudflare API)
-2. **Wire it to watch HTTPRoutes** — for each HTTPRoute with a hostname, external-dns auto-creates a Cloudflare DNS record
-3. **Decide on the routing path**:
-   - **Path A: Continue with Cloudflare Tunnel** — external-dns becomes mostly cosmetic since the tunnel already auto-creates records. Skip it.
-   - **Path B: Switch to direct port-forward** (matches your current jaw.dev setup) — external-dns creates CNAMEs to a static record `home.jaw.dev → <WAN_IP>` (maintained by something like ddns-updater).
-4. **Issue certs** via cert-manager for `*.jaw.dev` on the Gateway listener
-5. **Update Cilium Gateway** with the TLS listener using the issued Certificate
+1. **Decide on the routing path**:
+   - **Path A: Continue with Cloudflare Tunnel** — apply the same `*.jaw.dev → <tunnel-id>.cfargotunnel.com` wildcard pattern we already use for `wajeht.com`. Zero extra infra. external-dns not needed.
+   - **Path B: Switch to direct port-forward** (matches your current jaw.dev setup) — needs external-dns to maintain CNAMEs against a static record `home.jaw.dev → <WAN_IP>` (kept in sync by something like ddns-updater).
+2. **Issue certs** via cert-manager for `*.jaw.dev` on the Gateway listener (Path B only — Path A keeps TLS at the Cloudflare edge)
+3. **Update Cilium Gateway** with a TLS listener using the issued Certificate (Path B only)
 
-We're not deciding this yet — depends on how the cluster proves itself with `*.wajeht.com` first.
+We're not deciding this yet — depends on how the cluster proves itself with `*.wajeht.com` first. Default lean is Path A since the wildcard tunnel pattern is already proven and adds no moving parts.
 
 ## Mental model: each component as a port-role
 
@@ -259,16 +259,16 @@ We're not deciding this yet — depends on how the cluster proves itself with `*
 
 ## What's NOT installed yet (and why each matters)
 
-| Component                                   | When to add                        | What it unlocks                                 |
-| ------------------------------------------- | ---------------------------------- | ----------------------------------------------- |
-| **nfs-subdir-external-provisioner (media)** | When migrating Plex                | Bulk media on `/volume1/Media`                  |
-| **oauth2-proxy**                            | Before exposing admin apps         | Google forward-auth replacement                 |
-| **node-feature-discovery**                  | When adding GPU/specialty hardware | Labels nodes by features                        |
-| **intel-device-plugin**                     | Before Plex                        | Exposes Intel iGPU for transcoding              |
-| **kube-prometheus-stack**                   | When you want graphs               | Prometheus + Grafana + Alertmanager             |
-| **kromgo**                                  | When you want README badges        | Exposes cluster metrics as shields.io endpoints |
-| **system-upgrade-controller**               | After cluster is stable            | Auto-upgrades Talos via CRDs                    |
-| **external-dns**                            | When migrating jaw.dev (see above) | Auto-creates Cloudflare records from HTTPRoutes |
+| Component                                   | When to add                        | What it unlocks                                                                             |
+| ------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------- |
+| **nfs-subdir-external-provisioner (media)** | When migrating Plex                | Bulk media on `/volume1/Media`                                                              |
+| **oauth2-proxy**                            | Before exposing admin apps         | Google forward-auth replacement                                                             |
+| **node-feature-discovery**                  | When adding GPU/specialty hardware | Labels nodes by features                                                                    |
+| **intel-device-plugin**                     | Before Plex                        | Exposes Intel iGPU for transcoding                                                          |
+| **kube-prometheus-stack**                   | When you want graphs               | Prometheus + Grafana + Alertmanager                                                         |
+| **kromgo**                                  | When you want README badges        | Exposes cluster metrics as shields.io endpoints                                             |
+| **system-upgrade-controller**               | After cluster is stable            | Auto-upgrades Talos via CRDs                                                                |
+| **external-dns**                            | Only if jaw.dev migrates to Path B | Auto-creates Cloudflare records from HTTPRoutes; not needed for the wildcard-tunnel pattern |
 
 ## Files-to-running-state map
 

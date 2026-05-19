@@ -247,16 +247,9 @@ resources:
   - ...
 ```
 
-### 9. Add the hostname to cloudflared's ingress rules
+### 9. (no DNS/tunnel step needed)
 
-Edit `kubernetes/apps/cloudflared/app/configmap.yaml` and add 2 lines under `ingress:` (above the `http_status:404` fallback):
-
-```yaml
-- hostname: hello-world.wajeht.com
-  service: http://cilium-gateway-internet.kube-system.svc.cluster.local:80
-```
-
-Push. Reloader restarts cloudflared (~30s) and Cloudflare auto-creates the CNAME. See [cloudflared.md](cloudflared.md) for full details.
+Nothing to wire up per app. The wildcard CNAME `*.wajeht.com → tunnel` covers any subdomain you create, and the cloudflared `config.yml` is a single catch-all that forwards everything to the Cilium Gateway. The HTTPRoute above (Step 7) does the per-app matching by Host header. See [cloudflared.md](cloudflared.md) if curious about the wildcard setup.
 
 ## Daily workflow
 

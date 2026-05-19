@@ -24,9 +24,9 @@ GitOps-driven k8s homelab on Talos Linux, modeled after [upstream/home-ops](http
 - **GitOps**: FluxCD watches this repo, reconciles `kubernetes/apps/`
 - **App chart**: bjw-s/app-template — universal Helm chart used by ~80% of apps
 - **CNI / Ingress / LB**: Cilium handles all three — CNI (replaces default Flannel), Gateway API (replaces ingress-nginx after its [March 2026 retirement](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/)), and LB IPAM for LAN VIPs (no MetalLB needed)
-- **External entry**: Cloudflare Tunnel (`cloudflared` in cluster) — outbound only, no port forward, no exposed home IP. The 7050 (docker-cd) still owns port 443 for `*.jaw.dev`, so the cluster uses `*.wajeht.com` via tunnel.
+- **External entry**: Cloudflare Tunnel (`cloudflared` in cluster) — outbound only, no port forward, no exposed home IP. **Locally-managed** tunnel (created via `cloudflared tunnel create`, not the dashboard) so `config.yml` in git is authoritative. The 7050 (docker-cd) still owns port 443 for `*.jaw.dev`, so the cluster uses `*.wajeht.com` via tunnel.
 - **TLS**: Cloudflare edge terminates HTTPS for tunneled traffic. cert-manager is installed and ready (with `letsencrypt-production` + `letsencrypt-staging` ClusterIssuers using Cloudflare DNS-01) for when we need in-cluster TLS (Gateway listeners, mTLS, or post-jaw.dev migration).
-- **DNS**: external-dns auto-syncs Cloudflare records from ingresses
+- **DNS**: one wildcard CNAME `*.wajeht.com → <tunnel-id>.cfargotunnel.com` covers every app; `config.yml` has a single catch-all rule and HTTPRoutes do the per-app routing. Adding a new app needs zero DNS or `config.yml` edits. external-dns NOT installed (and not needed for this pattern).
 - **Auth/SSO**: oauth2-proxy with Google as IdP (replaces traefik-forward-auth from docker-cd era)
 - **Storage**: Longhorn (block PVs, default StorageClass) — yanlon's 1TB SATA mounted at `/var/mnt/longhorn` via Talos UserVolume; `numberOfReplicas: 1` until soapwa gets a data disk.
 - **NFS storage**: nfs-subdir-external-provisioner → Synology `/volume1/backup` exposed as the `nfs-backup` StorageClass with `pathPattern: k8s/${.PVC.namespace}-${.PVC.name}-${.PVC.uid}` (keeps k8s data separate from docker-cd's borgmatic dirs). Used by Volsync as the Restic repo target. A second provisioner for `/volume1/Media` will be added when Plex migrates.
