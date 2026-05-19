@@ -137,14 +137,17 @@ When the cron fires:
 
 For restore, swap `ReplicationSource` for `ReplicationDestination` with the same Secret.
 
-## Synology side: what already needs to exist
+## Synology side: what needs to exist
 
 - NFS service enabled (Control Panel → File Services → NFS)
-- The `/volume1/backup` share already exported (it is — docker-cd uses it)
-- Squash to admin or no_root_squash so the provisioner can chmod/mkdir
-- Allowed subnet includes the cluster nodes (192.168.4.0/24)
+- The `/volume1/backup` share exported (it is — docker-cd already uses it)
+- **NFS export rules for each cluster node** (Control Panel → Shared Folder → `backup` → Edit → NFS Permissions):
+  - `192.168.4.162` (soapwa) — Read/Write, Squash: Map all users to admin, Security: sys
+  - `192.168.4.163` (yanlon) — same
+  - A single `192.168.4.0/24` rule works too, but DSM applies the first-matching rule, so check the order if an existing docker-cd rule is more restrictive
+- Squash to admin (or no_root_squash) so the provisioner can `chmod`/`mkdir`
 
-No new Synology config needed — we reuse the existing share.
+If mounts fail with `access denied by server`, the export rule is missing or doesn't cover the node IP — that was the symptom we hit during bootstrap.
 
 ## Resizing / archiving
 

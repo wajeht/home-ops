@@ -318,8 +318,8 @@ Required before any stateful app. See [longhorn.md](longhorn.md) for the full de
              type: xfs
    ```
 2. `make talos-config && make talos-apply` (live update, no reboot) — Talos partitions/formats/mounts the disk at `/var/mnt/longhorn`
-3. Add the Longhorn HelmRelease at `kubernetes/apps/longhorn-system/longhorn/` (chart `1.11.1`, `defaultDataPath=/var/mnt/longhorn`, `defaultReplicaCount=1`)
-4. Add a `StorageClass` named `longhorn` with `is-default-class: "true"` annotation
+3. Add the Longhorn HelmRelease at `kubernetes/apps/longhorn-system/longhorn/` (chart `1.11.1`, `defaultDataPath=/var/mnt/longhorn`, `defaultReplicaCount=1`, `persistence.defaultClass=true`, `persistence.defaultClassReplicaCount=1`) — the chart creates the default `longhorn` StorageClass
+4. (Optional) Add a `longhorn-db` StorageClass in `config/storageclass.yaml` for Postgres/CNPG workloads that don't need Longhorn-level replication
 5. Push — Flux installs
 
 Verify:

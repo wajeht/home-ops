@@ -82,27 +82,30 @@ kubernetes/apps/longhorn-system/longhorn/
 │   └── helmrelease.yaml             # v1.11.1
 └── config/
     ├── kustomization.yaml
-    └── storageclass.yaml            # `longhorn` (default) + `longhorn-db`
+    └── storageclass.yaml            # `longhorn-db` only (default `longhorn` SC is chart-owned)
 ```
 
 ## Notable HelmRelease settings
 
-| Setting                    | Value                     | Why                                            |
-| -------------------------- | ------------------------- | ---------------------------------------------- |
-| `defaultDataPath`          | `/var/mnt/longhorn`       | Matches the Talos UserVolume mount             |
-| `defaultReplicaCount`      | 1                         | Only one disk available                        |
-| `defaultDataLocality`      | `best-effort`             | Schedule replicas near workloads when possible |
-| `priorityClass`            | `system-cluster-critical` | Longhorn going down breaks every stateful app  |
-| `persistence.defaultClass` | `false`                   | We manage our own StorageClass in `config/`    |
+| Setting                                | Value                     | Why                                                                |
+| -------------------------------------- | ------------------------- | ------------------------------------------------------------------ |
+| `defaultDataPath`                      | `/var/mnt/longhorn`       | Matches the Talos UserVolume mount                                 |
+| `defaultReplicaCount`                  | 1                         | Only one disk available                                            |
+| `priorityClass`                        | `system-cluster-critical` | Longhorn going down breaks every stateful app                      |
+| `persistence.defaultClass`             | `true`                    | Chart creates the `longhorn` StorageClass and marks it the default |
+| `persistence.defaultClassReplicaCount` | 1                         | Default-class replica count (bump to 2 when soapwa gets a disk)    |
+| `persistence.defaultDataLocality`      | `best-effort`             | Schedule replicas near workloads when possible                     |
+| `persistence.reclaimPolicy`            | `Delete`                  | PV deleted when PVC is deleted (Volsync handles backup separately) |
 
-## The two StorageClasses
+## StorageClasses
 
-| Name                     | Replicas     | When to use                                                                                 |
-| ------------------------ | ------------ | ------------------------------------------------------------------------------------------- |
-| **`longhorn`** (default) | 1 (target 2) | Any app that wants HA                                                                       |
-| **`longhorn-db`**        | 1            | Postgres/databases — CNPG handles replication itself, no need for Longhorn-level redundancy |
+| Name                     | Source                                  | Replicas     | When to use                                                                                 |
+| ------------------------ | --------------------------------------- | ------------ | ------------------------------------------------------------------------------------------- |
+| **`longhorn`** (default) | Chart (`persistence.defaultClass=true`) | 1 (target 2) | Any app that wants HA — used when a PVC omits `storageClassName`                            |
+| **`longhorn-db`**        | `config/storageclass.yaml`              | 1            | Postgres/databases — CNPG handles replication itself, no need for Longhorn-level redundancy |
+| `longhorn-static`        | Chart (always created)                  | n/a          | For manually-managed PVs; we don't use it                                                   |
 
-The default StorageClass is what gets used when a PVC doesn't specify `storageClassName`. `longhorn-db` is opt-in (CNPG Cluster resources will reference it explicitly).
+`longhorn-db` is opt-in (CNPG `Cluster` resources reference it explicitly).
 
 ## When you add soapwa's second disk later
 
@@ -126,7 +129,7 @@ The default StorageClass is what gets used when a PVC doesn't specify `storageCl
    ```
 3. `make talos-config && make talos-apply` (live update, no reboot)
 4. Verify the volume: `talosctl ... get volumestatus | grep longhorn`
-5. Bump `numberOfReplicas: "1"` → `"2"` in `storageclass.yaml`
+5. Bump `persistence.defaultClassReplicaCount: 1` → `2` in `helmrelease.yaml` (the default `longhorn` SC is chart-owned). Leave `longhorn-db` at 1 — CNPG handles its own replication.
 6. Commit + push — Longhorn picks up the new node disk and rebalances existing PVs
 
 The `!system_disk` selector ensures the OS disk on soapwa is not selected.
