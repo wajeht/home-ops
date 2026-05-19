@@ -191,11 +191,28 @@ You should see:
 - ✅ Cilium agent (`cilium-XXXXX`), operator, envoy all `Running` on every node
 - ✅ Hubble relay + UI `Running`
 
+## Step 14 — Install FluxCD (GitOps)
+
+The second one-time imperative install. After this, every other component is added via git commits. See [flux.md](flux.md) for full details.
+
+```bash
+brew install fluxcd/tap/flux
+
+# Load existing token from apps/gitea/.env.sops (reuse — no new PAT needed)
+export GITHUB_TOKEN=$(sopsd apps/gitea/.env.sops | grep -E '^(GITHUB_TOKEN|GH_TOKEN)=' | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
+
+make flux-bootstrap
+git pull              # pull the new kubernetes/flux/flux-system/ files committed by Flux
+make flux-status      # verify both GitRepository and Kustomization are READY
+```
+
+Flux now watches the `kubernetes/` branch path `kubernetes/flux/` and reconciles every minute.
+
 ## What's next
 
-Bootstrap step 2 (Cilium) is done. Next steps in order:
+Bootstrap steps 2-3 (Cilium + Flux) are done. Remaining stack — all GitOps-managed from this point:
 
-1. **FluxCD** — GitOps from this repo (see future `flux.md`)
+1. ~~FluxCD~~ ✅ done
 2. **metrics-server**
 3. **reloader**
 4. **reflector**
@@ -208,6 +225,8 @@ Bootstrap step 2 (Cilium) is done. Next steps in order:
 11. **node-feature-discovery** + **intel-device-plugin**
 12. **kube-prometheus-stack**
 13. **system-upgrade-controller**
+
+Plus: **convert Cilium to HelmRelease** so Flux owns it going forward (so future Cilium upgrades = git commit, not `helm upgrade`).
 
 See [kubernetes.md](kubernetes.md) for the full stack and per-component purpose.
 

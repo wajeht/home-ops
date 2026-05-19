@@ -5,7 +5,7 @@ TALOSCONFIG := kubernetes/talos/clusterconfig/talosconfig
 CP_NODE := 192.168.4.162
 
 .PHONY: help \
-	talos-config talos-apply talos-apply-insecure talos-bootstrap talos-kubeconfig talos-upgrade talos-upgrade-k8s talos-health talos-dashboard talos-reset talos-lint \
+	talos-config talos-apply talos-apply-insecure talos-bootstrap talos-kubeconfig talos-upgrade talos-upgrade-k8s talos-health talos-dashboard talos-reset talos-lint kustomize-lint \
 	flux-bootstrap flux-reconcile flux-status flux-tree \
 	cluster-status pods nodes \
 	format lint push
@@ -94,11 +94,27 @@ format:
 talos-lint:
 	@cd kubernetes/talos && talhelper validate talconfig
 
-## lint: Validate talconfig + Kubernetes manifests (skipped if tools not installed)
-lint: talos-lint
+## kustomize-lint: Verify every kustomization.yaml assembles (skipped if kustomize not installed)
+kustomize-lint:
+	@if command -v kustomize >/dev/null; then \
+		find kubernetes -name 'kustomization.yaml' -not -path 'kubernetes/talos/*' \
+			-exec dirname {} \; | while read dir; do \
+				echo "building $$dir"; \
+				kustomize build "$$dir" --enable-helm >/dev/null || exit 1; \
+			done; \
+	else \
+		echo "skipping kustomize: install with 'brew install kustomize'"; \
+	fi
+
+## lint: Validate talconfig + Kubernetes manifests + Kustomize builds (skipped if tools not installed)
+lint: talos-lint kustomize-lint
 	@if command -v kubeconform >/dev/null; then \
-		find kubernetes -name '*.yaml' -not -path 'kubernetes/talos/*' \
-			-exec kubeconform -strict -summary -skip CustomResourceDefinition {} +; \
+		find kubernetes -name '*.yaml' -not -path 'kubernetes/talos/*' -not -name 'kustomization.yaml' \
+			-exec kubeconform -strict -summary \
+				-skip CustomResourceDefinition \
+				-schema-location default \
+				-schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+				{} +; \
 	else \
 		echo "skipping kubeconform: install with 'brew install kubeconform'"; \
 	fi
