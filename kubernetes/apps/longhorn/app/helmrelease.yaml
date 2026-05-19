@@ -33,10 +33,11 @@ spec:
       defaultReplicaCount: 1
       priorityClass: system-cluster-critical
       logLevel: Warn
-      # Replica placement is naturally constrained — soapwa has no data disk, so
-      # Longhorn won't put a replica there. Do NOT set
-      # systemManagedComponentsNodeSelector — it gates CSI plugin pods too, and
-      # CSI plugins must run on every node that might mount a Longhorn volume.
+      # Must be explicitly empty: this setting is stored as a Longhorn Setting CR
+      # that persists across upgrades. Removing the line leaves the prior value
+      # in place. Setting it to "" tells Longhorn to clear it. Required so CSI
+      # plugin pods can schedule on every node (the old value was too restrictive).
+      systemManagedComponentsNodeSelector: ""
     persistence:
       defaultClass: true # chart's `longhorn` SC is our default
       defaultClassReplicaCount: 1
