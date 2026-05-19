@@ -28,7 +28,7 @@ GitOps-driven k8s homelab on Talos Linux, modeled after [upstream/home-ops](http
 - **TLS**: Cloudflare edge terminates HTTPS for tunneled traffic. cert-manager is installed and ready (with `letsencrypt-production` + `letsencrypt-staging` ClusterIssuers using Cloudflare DNS-01) for when we need in-cluster TLS (Gateway listeners, mTLS, or post-jaw.dev migration).
 - **DNS**: external-dns auto-syncs Cloudflare records from ingresses
 - **Auth/SSO**: oauth2-proxy with Google as IdP (replaces traefik-forward-auth from docker-cd era)
-- **Storage**: Longhorn (block PVs) + nfs-subdir-external-provisioner (Synology NFS at 192.168.4.243)
+- **Storage**: Longhorn (block PVs, default StorageClass) — yanlon's 1TB SATA mounted at `/var/mnt/longhorn` via Talos UserVolume; `numberOfReplicas: 1` until soapwa gets a data disk. Pair with nfs-subdir-external-provisioner (Synology NFS at 192.168.4.243) when shared bulk storage is needed.
 - **Postgres**: CloudNativePG operator
 - **Cache**: Valkey (Redis fork)
 - **Secrets**: SOPS + age, decrypted in-cluster via Flux (same age key as before: `.sops/age-key.txt`)
@@ -52,6 +52,7 @@ Docs index:
 - `docs/cilium.md` — Cilium install deep dive
 - `docs/flux.md` — FluxCD bootstrap + workflow
 - `docs/cloudflared.md` — Cloudflare Tunnel as cluster's entry point
+- `docs/longhorn.md` — block storage (Talos UserVolume + Longhorn HelmRelease)
 
 ## Repo Layout
 

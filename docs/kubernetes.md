@@ -44,7 +44,8 @@ See [architecture.md](architecture.md) for how each component ties together, req
 | 8   | cert-manager + ClusterIssuers (Cloudflare DNS-01)               | ✅ done   |
 | 9   | cloudflared (Cloudflare Tunnel)                                 | ✅ done   |
 | 10  | Cilium Gateway + LB IPPool                                      | ✅ done   |
-| 11  | **Longhorn** + **nfs-subdir-external-provisioner**              | ⏳ next   |
+| 11  | Longhorn (block storage on yanlon, default StorageClass)        | ✅ done   |
+| 11b | **nfs-subdir-external-provisioner** (Synology NFS for media)    | ⏳ next   |
 | 12  | **Volsync** (before any stateful app)                           | ⏳        |
 | 13  | **CNPG** (Postgres operator)                                    | ⏳        |
 | 14  | **oauth2-proxy** (Google forward-auth)                          | ⏳        |

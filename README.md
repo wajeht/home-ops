@@ -81,6 +81,7 @@ With all equipment connected: ~120W idle @ 120V, ~80 min UPS runtime, 87 kWh/mo 
 - [Cilium](docs/cilium.md) — CNI + Gateway API + LB IPAM install
 - [FluxCD](docs/flux.md) — GitOps controller, bootstrap & workflow
 - [Cloudflared](docs/cloudflared.md) — Cloudflare Tunnel as cluster's external entry point
+- [Longhorn](docs/longhorn.md) — block storage + Talos UserVolume for the data disk
 
 ## License
 

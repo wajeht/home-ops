@@ -297,7 +297,40 @@ kubectl get gateway -A
 # internet  cilium  192.168.4.220  PROGRAMMED=True
 ```
 
-## Step 21 — Validate with an echo app
+## Step 21 — Longhorn (block storage)
+
+Required before any stateful app. See [longhorn.md](longhorn.md) for the full deep dive.
+
+1. Add a Talos **UserVolume** patch to `talconfig.yaml` for the data disk (yanlon's `/dev/sda` 1TB SATA in our case):
+   ```yaml
+   nodes:
+     - hostname: yanlon
+       patches:
+         - |-
+           apiVersion: v1alpha1
+           kind: UserVolumeConfig
+           name: longhorn
+           provisioning:
+             diskSelector:
+               match: disk.transport == "sata"
+             minSize: 100GB
+           filesystem:
+             type: xfs
+   ```
+2. `make talos-config && make talos-apply` (live update, no reboot) — Talos partitions/formats/mounts the disk at `/var/mnt/longhorn`
+3. Add the Longhorn HelmRelease at `kubernetes/apps/longhorn-system/longhorn/` (chart `1.11.1`, `defaultDataPath=/var/mnt/longhorn`, `defaultReplicaCount=1`)
+4. Add a `StorageClass` named `longhorn` with `is-default-class: "true"` annotation
+5. Push — Flux installs
+
+Verify:
+
+```bash
+kubectl get storageclass         # `longhorn` should show (default)
+kubectl -n longhorn-system get pods    # all Running
+kubectl get nodes.longhorn.io -A # yanlon listed with available storage
+```
+
+## Step 22 — Validate with an echo app
 
 Deploy a minimal echo server + HTTPRoute and hit it from the internet:
 
@@ -314,7 +347,7 @@ If it works, every layer in [architecture.md](architecture.md) is proven.
 
 ## What's next
 
-Bootstrap so far ✅: Talos · Cilium · Flux · SOPS decryption · metrics-server · reloader · reflector · cert-manager · cloudflared · Cilium Gateway · echo app
+Bootstrap so far ✅: Talos · Cilium · Flux · SOPS decryption · metrics-server · reloader · reflector · cert-manager · cloudflared · Cilium Gateway · echo app · Longhorn
 
 Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
 
@@ -324,7 +357,7 @@ Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
 4. ~~reflector~~ ✅ done
 5. ~~cert-manager + Cloudflare issuer~~ ✅ done
 6. ~~cloudflared (tunnel) + Cilium Gateway~~ ✅ done
-7. **Longhorn** — block storage for PVCs
+7. ~~Longhorn~~ ✅ done
 8. **nfs-subdir-external-provisioner** — Synology NFS PVs for media
 9. **Volsync** — PVC backups with restore-on-create
 10. **CNPG** — Postgres operator (before any Postgres-backed app)
