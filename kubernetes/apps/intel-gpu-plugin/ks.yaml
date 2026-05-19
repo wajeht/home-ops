@@ -1,0 +1,46 @@
+---
+# Clone the upstream intel-device-plugins-for-kubernetes repo (filtered to the
+# gpu_plugin deployment only — saves bandwidth, keeps the GitRepository tidy).
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: intel-device-plugins
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://github.com/intel/intel-device-plugins-for-kubernetes
+  ref:
+    tag: v0.35.0
+  ignore: |
+    # exclude everything
+    /*
+    # include just the gpu_plugin deployment manifests
+    !/deployments/gpu_plugin
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: intel-gpu-plugin
+  namespace: flux-system
+spec:
+  targetNamespace: intel-gpu-plugin
+  interval: 30m
+  path: ./deployments/gpu_plugin/base
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: intel-device-plugins
+  dependsOn:
+    - name: node-feature-discovery # ensures NFD labels exist before the plugin keys off them
+  wait: true
+  timeout: 5m
+  patches:
+    # Expose each iGPU as 5 device slots so multiple pods (e.g. Plex + Jellyfin
+    # + Tdarr) can claim transcoding concurrently. Mirrors upstream/home-ops.
+    - target:
+        kind: DaemonSet
+        name: intel-gpu-plugin
+      patch: |
+        - op: add
+          path: /spec/template/spec/containers/0/args/-
+          value: -shared-dev-num=5

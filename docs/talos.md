@@ -192,22 +192,48 @@ talosctl --nodes 192.168.4.162,192.168.4.163 get extensions
 
 The upgrade command sequence is per-node and serial. With only one CP (soapwa), upgrading it causes ~2-3min of kube-apiserver downtime — apps already running keep serving traffic if cloudflared replicas are healthy on the other node. Workloads on the upgraded node briefly reschedule.
 
-### Upgrade Talos
+### Upgrade Talos (GitOps via system-upgrade-controller)
 
-Update `talosVersion` in `talconfig.yaml`, then:
+In-cluster `system-upgrade-controller` watches two `Plan` resources at `kubernetes/apps/system-upgrade/plans/` and drives upgrades automatically on bump. The Plans mount a SOPS-encrypted copy of `talosconfig` as a Secret and run `talosctl` from a Job on each matching node — Talos handles drain + reboot internally.
+
+To trigger a Talos OS upgrade:
+
+1. Update `talosVersion` in `talconfig.yaml`
+2. `talhelper genconfig` — this changes the installer URL in `clusterconfig/*.yaml` (new schematic digest if extensions changed, or just a new version tag if not)
+3. Edit `kubernetes/apps/system-upgrade/plans/talos.yaml` to match — bump both:
+   - `upgrade.args[--image=...]` (the full `factory.talos.dev/metal-installer/<schematic>:<version>` URL)
+   - `version:` (the version-tracking string, e.g. `v1.12.7`)
+4. Push. SUC compares `version` against each node's existing label, fires a Job per node (concurrency 1), and the cluster rolls.
+
+Manual fallback (still useful for emergency or first-time setup, or to verify Plans aren't doing anything unwanted):
 
 ```bash
 talhelper genconfig
 talhelper gencommand upgrade | bash
 ```
 
-### Upgrade Kubernetes
+### Upgrade Kubernetes (also via SUC)
 
-Update `kubernetesVersion` in `talconfig.yaml`, then:
+`kubernetes/apps/system-upgrade/plans/kubernetes.yaml` runs `talosctl upgrade-k8s` from the CP node — one Job handles the whole cluster.
+
+1. Update `kubernetesVersion` in `talconfig.yaml`
+2. `talhelper genconfig`
+3. Edit `plans/kubernetes.yaml`: bump `upgrade.args[--to=...]` AND `version:` to the new k8s version (e.g. `v1.36.0`)
+4. Push.
+
+Manual fallback:
 
 ```bash
 talhelper genconfig
 talhelper gencommand upgrade-k8s | bash
+```
+
+### Watch an SUC-driven upgrade in flight
+
+```bash
+kubectl get plans -n system-upgrade -w                 # see version state per Plan
+kubectl get jobs -n system-upgrade -w                  # an upgrade Job spawns per matched node
+kubectl logs -n system-upgrade <job-pod> --follow      # talosctl output during the upgrade
 ```
 
 ### Add a new worker (e.g. apollo)

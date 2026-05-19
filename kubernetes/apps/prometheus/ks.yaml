@@ -1,0 +1,23 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: prometheus
+  namespace: flux-system
+spec:
+  targetNamespace: prometheus
+  interval: 30m
+  path: ./kubernetes/apps/prometheus/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: longhorn # PVCs for Prometheus/Grafana/Alertmanager
+    - name: cilium-gateway # HTTPRoute for Grafana attaches to the internet Gateway
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+  wait: true
+  timeout: 10m

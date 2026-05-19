@@ -1,0 +1,59 @@
+---
+# Talos OS upgrade Plan.
+#
+# How it works:
+#   1. SUC watches `version` below. When it differs from each node's
+#      `plan.upgrade.cattle.io/talos` label, it spins up an upgrade Job on that
+#      node (one at a time — `concurrency: 1`).
+#   2. The Job mounts the `talos` Secret (talosctl client config) and runs
+#      `talosctl upgrade --nodes $NODE_IP --image <factory image>` against the
+#      node's local apid. Talos itself handles drain + reboot internally.
+#   3. After upgrade, SUC labels the node with the new `version` so it doesn't
+#      re-fire.
+#
+# How to trigger an upgrade:
+#   - Bump `talosVersion` in `kubernetes/talos/talconfig.yaml`
+#   - `talhelper genconfig` to update clusterconfig (changes the installer URL)
+#   - Update BOTH `--image=...` AND `version:` strings below to match the new
+#     version (and new schematic if extensions changed)
+#   - Push. SUC handles the rest.
+#
+# `version` is currently pinned to the running version, so this Plan is a NO-OP
+# on install — only future bumps trigger upgrades.
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: talos
+  namespace: system-upgrade
+spec:
+  serviceAccountName: system-upgrade
+  concurrency: 1
+  exclusive: true
+  # Talos drains the node itself during upgrade; let SUC cordon only to mark intent.
+  cordon: true
+  # All nodes in this cluster are Talos, so a plain os=linux selector matches
+  # the right set without depending on NFD's exact label spelling (which has
+  # varied across NFD versions). If a non-Talos node ever joins the cluster,
+  # tighten this to NFD's `feature.node.kubernetes.io/system-os_release.ID=talos`.
+  nodeSelector:
+    matchLabels:
+      kubernetes.io/os: linux
+  tolerations:
+    - operator: Exists
+  secrets:
+    - name: talos
+      path: /var/run/secrets/talos.dev # talosctl's default config search path
+      ignoreUpdates: true
+  upgrade:
+    image: ghcr.io/siderolabs/talosctl:v1.12.6
+    envs:
+      - name: NODE_IP
+        valueFrom:
+          fieldRef:
+            fieldPath: status.hostIP
+    args:
+      - --nodes=$(NODE_IP)
+      - upgrade
+      - --image=factory.talos.dev/metal-installer/249d9135de54962744e917cfe654117000cba369f9152fbab9d055a00aa3664f:v1.12.6
+      - --preserve=true # keep ephemeral data across reboot
+  version: v1.12.6

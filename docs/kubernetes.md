@@ -32,28 +32,28 @@ See [architecture.md](architecture.md) for how each component ties together, req
 
 ## Bootstrap Order (current status)
 
-| #   | Component                                                             | Status   |
-| --- | --------------------------------------------------------------------- | -------- |
-| 1   | Talos cluster up (see [talos.md](talos.md))                           | ✅ done  |
-| 2   | Cilium with CNI + Gateway API + LB IPAM                               | ✅ done  |
-| 3   | FluxCD                                                                | ✅ done  |
-| 4   | SOPS decryption in Flux                                               | ✅ done  |
-| 5   | metrics-server                                                        | ✅ done  |
-| 6   | reloader                                                              | ✅ done  |
-| 7   | reflector                                                             | ✅ done  |
-| 8   | cert-manager + ClusterIssuers (Cloudflare DNS-01)                     | ✅ done  |
-| 9   | cloudflared (Cloudflare Tunnel)                                       | ✅ done  |
-| 10  | Cilium Gateway + LB IPPool                                            | ✅ done  |
-| 11  | Longhorn (block storage on yanlon, default StorageClass)              | ✅ done  |
-| 12  | Volsync (PVC backup operator)                                         | ✅ done  |
-| 13  | nfs-subdir-external-provisioner (`/volume1/backup` → `nfs-backup` SC) | ✅ done  |
-| 13b | nfs-subdir-external-provisioner for **media** (`/volume1/Media`)      | 🔮 later |
-| 14  | CNPG (Postgres operator) — see [cnpg.md](cnpg.md)                     | ✅ done  |
-| 15  | **oauth2-proxy** (Google forward-auth)                                | ⏳ next  |
-| 16  | **node-feature-discovery** + **intel-device-plugin** (for Plex)       | ⏳       |
-| 17  | **kube-prometheus-stack**                                             | ⏳       |
-| 18  | **system-upgrade-controller**                                         | ⏳       |
-| 19  | **external-dns** (only if jaw.dev migrates via direct port-forward)   | 🔮 maybe |
+| #   | Component                                                                              | Status   |
+| --- | -------------------------------------------------------------------------------------- | -------- |
+| 1   | Talos cluster up (see [talos.md](talos.md))                                            | ✅ done  |
+| 2   | Cilium with CNI + Gateway API + LB IPAM                                                | ✅ done  |
+| 3   | FluxCD                                                                                 | ✅ done  |
+| 4   | SOPS decryption in Flux                                                                | ✅ done  |
+| 5   | metrics-server                                                                         | ✅ done  |
+| 6   | reloader                                                                               | ✅ done  |
+| 7   | reflector                                                                              | ✅ done  |
+| 8   | cert-manager + ClusterIssuers (Cloudflare DNS-01)                                      | ✅ done  |
+| 9   | cloudflared (Cloudflare Tunnel)                                                        | ✅ done  |
+| 10  | Cilium Gateway + LB IPPool                                                             | ✅ done  |
+| 11  | Longhorn (block storage on yanlon, default StorageClass)                               | ✅ done  |
+| 12  | Volsync (PVC backup operator)                                                          | ✅ done  |
+| 13  | nfs-subdir-external-provisioner (`/volume1/backup` → `nfs-backup` SC)                  | ✅ done  |
+| 13b | nfs-subdir-external-provisioner for **media** (`/volume1/Media`)                       | 🔮 later |
+| 14  | CNPG (Postgres operator) — see [cnpg.md](cnpg.md)                                      | ✅ done  |
+| 15  | node-feature-discovery + intel-device-plugin (for Plex)                                | ✅ done  |
+| 16  | kube-prometheus-stack (Prometheus + Grafana + Alertmanager)                            | ✅ done  |
+| 17  | system-upgrade-controller (controller + Talos OS + k8s upgrade Plans)                  | ✅ done  |
+| 18  | **oauth2-proxy** (Google forward-auth) — needed before exposing Grafana / Longhorn UIs | ⏳ next  |
+| 19  | **external-dns** (only if jaw.dev migrates via direct port-forward)                    | 🔮 maybe |
 
 ## Repo Layout
 

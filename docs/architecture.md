@@ -259,16 +259,12 @@ We're not deciding this yet — depends on how the cluster proves itself with `*
 
 ## What's NOT installed yet (and why each matters)
 
-| Component                                   | When to add                        | What it unlocks                                                                             |
-| ------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------- |
-| **nfs-subdir-external-provisioner (media)** | When migrating Plex                | Bulk media on `/volume1/Media`                                                              |
-| **oauth2-proxy**                            | Before exposing admin apps         | Google forward-auth replacement                                                             |
-| **node-feature-discovery**                  | When adding GPU/specialty hardware | Labels nodes by features                                                                    |
-| **intel-device-plugin**                     | Before Plex                        | Exposes Intel iGPU for transcoding                                                          |
-| **kube-prometheus-stack**                   | When you want graphs               | Prometheus + Grafana + Alertmanager                                                         |
-| **kromgo**                                  | When you want README badges        | Exposes cluster metrics as shields.io endpoints                                             |
-| **system-upgrade-controller**               | After cluster is stable            | Auto-upgrades Talos via CRDs                                                                |
-| **external-dns**                            | Only if jaw.dev migrates to Path B | Auto-creates Cloudflare records from HTTPRoutes; not needed for the wildcard-tunnel pattern |
+| Component                                   | When to add                        | What it unlocks                                                                                      |
+| ------------------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **nfs-subdir-external-provisioner (media)** | When migrating Plex                | Bulk media on `/volume1/Media`                                                                       |
+| **oauth2-proxy**                            | Before exposing admin apps         | Google forward-auth replacement; Grafana currently sits behind port-forward only because of this gap |
+| **kromgo**                                  | When you want README badges        | Exposes cluster metrics as shields.io endpoints                                                      |
+| **external-dns**                            | Only if jaw.dev migrates to Path B | Auto-creates Cloudflare records from HTTPRoutes; not needed for the wildcard-tunnel pattern          |
 
 ## Files-to-running-state map
 

@@ -6,7 +6,11 @@ resources:
   - cnpg
   - echo
   - hello-world
+  - intel-gpu-plugin
   - kube-system
   - longhorn
   - nfs-backup
+  - node-feature-discovery
+  - prometheus
+  - system-upgrade
   - volsync

@@ -1,0 +1,37 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: node-feature-discovery
+  namespace: node-feature-discovery
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: node-feature-discovery
+      version: 0.18.3
+      sourceRef:
+        kind: HelmRepository
+        name: node-feature-discovery
+        namespace: node-feature-discovery
+  install:
+    crds: Create
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    # Master + worker default settings are fine for a homelab; defaults label
+    # nodes with CPU features, kernel info, PCI devices (incl. Intel iGPU),
+    # which intel-device-plugin keys off via `feature.node.kubernetes.io/pci-0300_8086.present`.
+    master:
+      replicaCount: 1
+    worker:
+      tolerations:
+        # Run on the control-plane node too so it gets labeled
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule

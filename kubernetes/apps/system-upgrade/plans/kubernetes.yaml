@@ -1,0 +1,37 @@
+---
+# Kubernetes (kubelet + control-plane) upgrade Plan.
+#
+# Runs `talosctl upgrade-k8s --to <version>` from one node — Talos handles the
+# whole cluster (CP + workers) in one shot from any node, so `concurrency: 1`
+# + a single match here is enough. Bump `--to` AND `version` together to fire.
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: kubernetes
+  namespace: system-upgrade
+spec:
+  serviceAccountName: system-upgrade
+  concurrency: 1
+  exclusive: true
+  cordon: false # talosctl upgrade-k8s drains as needed
+  nodeSelector:
+    matchExpressions:
+      - { key: node-role.kubernetes.io/control-plane, operator: Exists } # run from the CP only
+  tolerations:
+    - operator: Exists
+  secrets:
+    - name: talos
+      path: /var/run/secrets/talos.dev
+      ignoreUpdates: true
+  upgrade:
+    image: ghcr.io/siderolabs/talosctl:v1.12.6
+    envs:
+      - name: NODE_IP
+        valueFrom:
+          fieldRef:
+            fieldPath: status.hostIP
+    args:
+      - --nodes=$(NODE_IP)
+      - upgrade-k8s
+      - --to=v1.35.2
+  version: v1.35.2
