@@ -48,12 +48,12 @@ See [architecture.md](architecture.md) for how each component ties together, req
 | 12  | Volsync (PVC backup operator)                                         | ✅ done   |
 | 13  | nfs-subdir-external-provisioner (`/volume1/backup` → `nfs-backup` SC) | ✅ done   |
 | 13b | nfs-subdir-external-provisioner for **media** (`/volume1/Media`)      | 🔮 later  |
-| 14  | **CNPG** (Postgres operator)                                          | ⏳ next   |
-| 14  | **oauth2-proxy** (Google forward-auth)                                | ⏳        |
-| 15  | **node-feature-discovery** + **intel-device-plugin** (for Plex)       | ⏳        |
-| 16  | **kube-prometheus-stack**                                             | ⏳        |
-| 17  | **system-upgrade-controller**                                         | ⏳        |
-| 18  | **external-dns** (only when migrating jaw.dev)                        | 🔮 future |
+| 14  | CNPG (Postgres operator) — see [cnpg.md](cnpg.md)                     | ✅ done   |
+| 15  | **oauth2-proxy** (Google forward-auth)                                | ⏳ next   |
+| 16  | **node-feature-discovery** + **intel-device-plugin** (for Plex)       | ⏳        |
+| 17  | **kube-prometheus-stack**                                             | ⏳        |
+| 18  | **system-upgrade-controller**                                         | ⏳        |
+| 19  | **external-dns** (only when migrating jaw.dev)                        | 🔮 future |
 
 ## Repo Layout (planned)
 

@@ -373,7 +373,33 @@ kubectl get storageclass            # `nfs-backup` should appear (not default �
 kubectl -n storage get pods         # nfs-backup-... Running
 ```
 
-## Step 24 — Validate with an echo app
+> ⚠️ Synology side: the NFS export rule for `/volume1/backup` must allow the cluster node IPs (`192.168.4.162`, `192.168.4.163`) with squash → Map all users to admin. Without it the pod sits in `ContainerCreating` with `mount.nfs: access denied by server`. See [nfs-storage.md](nfs-storage.md#synology-side-what-needs-to-exist).
+
+## Step 24 — CNPG (Postgres operator)
+
+Postgres-as-CRD. Each app that needs Postgres gets its own `Cluster` resource on the `longhorn-db` StorageClass. See [cnpg.md](cnpg.md) for the full deep dive.
+
+```bash
+# Add HelmRelease at kubernetes/apps/cnpg-system/cnpg/
+#   - chart: cloudnative-pg/cloudnative-pg v0.28.2 (operator v1.29.1)
+#   - crds.create=true, install.crds=Create, upgrade.crds=CreateReplace
+#   - monitoring.podMonitorEnabled=false (flip on after kube-prometheus-stack)
+git add kubernetes/apps/cnpg-system kubernetes/apps/kustomization.yaml
+git commit -m "feat(cnpg): add CloudNativePG operator"
+git push
+```
+
+Verify after Flux reconciles:
+
+```bash
+kubectl -n cnpg-system get pods           # cnpg-... Running
+kubectl get crd | grep cnpg               # clusters/backups/poolers/scheduledbackups.postgresql.cnpg.io
+flux get hr -n cnpg-system                # cnpg READY=True
+```
+
+`Cluster` resources land per-app, not here. The operator just watches.
+
+## Step 25 — Validate with an echo app
 
 Deploy a minimal echo server + HTTPRoute and hit it from the internet:
 
@@ -390,7 +416,7 @@ If it works, every layer in [architecture.md](architecture.md) is proven.
 
 ## What's next
 
-Bootstrap so far ✅: Talos · Cilium · Flux · SOPS decryption · metrics-server · reloader · reflector · cert-manager · cloudflared · Cilium Gateway · echo app · Longhorn · Volsync · nfs-backup
+Bootstrap so far ✅: Talos · Cilium · Flux · SOPS decryption · metrics-server · reloader · reflector · cert-manager · cloudflared · Cilium Gateway · echo app · Longhorn · Volsync · nfs-backup · CNPG
 
 Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
 
@@ -403,7 +429,7 @@ Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
 7. ~~Longhorn~~ ✅ done
 8. ~~Volsync~~ ✅ done
 9. ~~nfs-subdir-external-provisioner~~ ✅ done (backup share; media share added when Plex migrates)
-10. **CNPG** — Postgres operator (before any Postgres-backed app)
+10. ~~CNPG~~ ✅ done — Postgres operator (see [cnpg.md](cnpg.md))
 11. **oauth2-proxy** — Google forward-auth replacement
 12. **node-feature-discovery** + **intel-device-plugin** — for Plex transcoding
 13. **kube-prometheus-stack** — Prometheus + Grafana + Alertmanager

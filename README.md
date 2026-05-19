@@ -84,6 +84,7 @@ With all equipment connected: ~120W idle @ 120V, ~80 min UPS runtime, 87 kWh/mo 
 - [Longhorn](docs/longhorn.md) — block storage + Talos UserVolume for the data disk
 - [Volsync](docs/volsync.md) — PVC backups with restore-on-create
 - [NFS Storage](docs/nfs-storage.md) — Synology-backed dynamic PVCs (Volsync's backup target)
+- [CNPG](docs/cnpg.md) — CloudNativePG operator + per-app `Cluster` pattern
 
 ## License
 

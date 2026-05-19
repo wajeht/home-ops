@@ -262,7 +262,6 @@ We're not deciding this yet — depends on how the cluster proves itself with `*
 | Component                                   | When to add                        | What it unlocks                                 |
 | ------------------------------------------- | ---------------------------------- | ----------------------------------------------- |
 | **nfs-subdir-external-provisioner (media)** | When migrating Plex                | Bulk media on `/volume1/Media`                  |
-| **CloudNativePG**                           | Before any Postgres-backed app     | Postgres clusters as a CRD (no per-app DB ops)  |
 | **oauth2-proxy**                            | Before exposing admin apps         | Google forward-auth replacement                 |
 | **node-feature-discovery**                  | When adding GPU/specialty hardware | Labels nodes by features                        |
 | **intel-device-plugin**                     | Before Plex                        | Exposes Intel iGPU for transcoding              |
@@ -307,8 +306,9 @@ If you ever do a full cluster rebuild, this is the order things must come up in:
 11. cloudflared (before exposing apps)
 12. Longhorn (UserVolume must exist on the node first)
 13. Volsync (operator + nfs-backup StorageClass for restic repos)
-14. (Future: CNPG before any Postgres-backed app; second nfs-subdir-external-provisioner for media when Plex migrates)
-13. Apps
+14. CNPG (before any Postgres-backed app)
+15. (Future: second nfs-subdir-external-provisioner for media when Plex migrates)
+16. Apps
 ```
 
 Most of this is automated via `dependsOn` in Flux Kustomizations. The only manual steps are #1, #5, and #6.

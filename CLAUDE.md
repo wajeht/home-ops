@@ -56,6 +56,7 @@ Docs index:
 - `docs/longhorn.md` — block storage (Talos UserVolume + Longhorn HelmRelease)
 - `docs/volsync.md` — PVC backup operator + per-app `ReplicationSource` pattern
 - `docs/nfs-storage.md` — Synology NFS-backed PVCs via nfs-subdir-external-provisioner
+- `docs/cnpg.md` — CloudNativePG operator + per-app `Cluster` pattern
 
 ## Repo Layout
 
