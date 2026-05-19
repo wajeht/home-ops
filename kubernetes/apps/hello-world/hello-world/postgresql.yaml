@@ -1,0 +1,28 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgresql
+  namespace: hello-world
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.5-minimal-bookworm@sha256:17697898a5150b9cb32061e3ac46776c7c912edf7b0775c6afd83ba098eaf734
+  enableSuperuserAccess: false
+  primaryUpdateStrategy: unsupervised
+  storage:
+    storageClass: longhorn-db
+    size: 2Gi
+  monitoring:
+    enablePodMonitor: false
+  bootstrap:
+    initdb:
+      database: hello
+      owner: hello
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+  smartShutdownTimeout: 1
+  stopDelay: 300

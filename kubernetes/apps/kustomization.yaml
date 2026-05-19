@@ -4,6 +4,7 @@ resources:
   - cert-manager
   - cnpg-system
   - default
+  - hello-world
   - kube-system
   - longhorn-system
   - network
