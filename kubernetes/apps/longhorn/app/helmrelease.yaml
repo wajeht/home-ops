@@ -33,8 +33,10 @@ spec:
       defaultReplicaCount: 1
       priorityClass: system-cluster-critical
       logLevel: Warn
-      # Avoid scheduling Longhorn replicas on the CP (it has no extra disk)
-      systemManagedComponentsNodeSelector: "node.longhorn.io/create-default-disk:true"
+      # Replica placement is naturally constrained — soapwa has no data disk, so
+      # Longhorn won't put a replica there. Do NOT set
+      # systemManagedComponentsNodeSelector — it gates CSI plugin pods too, and
+      # CSI plugins must run on every node that might mount a Longhorn volume.
     persistence:
       defaultClass: true # chart's `longhorn` SC is our default
       defaultClassReplicaCount: 1
