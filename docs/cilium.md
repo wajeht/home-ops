@@ -94,7 +94,7 @@ So we copy his structure but adapt ports + IPAM + Talos hardening flags.
 
 ## Upgrading Cilium
 
-Don't `helm upgrade` manually — once Flux is bootstrapped, it manages Cilium via `kubernetes/apps/kube-system/cilium/app/helmrelease.yaml`. Edit the version there, commit, push, Flux reconciles.
+Don't `helm upgrade` manually — once Flux is bootstrapped, it manages Cilium via `kubernetes/apps/cilium/app/helmrelease.yaml` (flat layout, even though the workload runs in `kube-system`). Edit the version there, commit, push, Flux reconciles.
 
 ## Convert to HelmRelease (after Flux bootstrap)
 

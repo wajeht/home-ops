@@ -82,43 +82,55 @@ Flux uses Kustomize as its primary engine. The directory structure mirrors upstr
 ```
 kubernetes/
 ├── flux/
-│   └── flux-system/              # Flux self-management (auto-generated, don't edit)
-│       ├── gotk-components.yaml
-│       ├── gotk-sync.yaml
-│       └── kustomization.yaml
+│   ├── flux-system/              # Flux self-management (auto-generated, don't edit)
+│   │   ├── gotk-components.yaml
+│   │   ├── gotk-sync.yaml
+│   │   └── kustomization.yaml
+│   └── repositories/helm/        # shared HelmRepositories (bjw-s, etc.)
 ├── apps/                          # workloads (you add these)
-│   └── <namespace>/
+│   ├── <app>/                    # FLAT — for apps with their own namespace
+│   │   ├── kustomization.yaml
+│   │   ├── namespace.yaml
+│   │   ├── ks.yaml
+│   │   └── app/
+│   └── <namespace>/              # NESTED — only for multi-app namespaces (kube-system)
 │       └── <app>/
-│           ├── ks.yaml            # Flux Kustomization pointing to app/
-│           └── app/
-│               ├── helmrelease.yaml
-│               └── kustomization.yaml
 └── talos/                         # Talos config (managed separately via talhelper)
 ```
 
 ### Per-app pattern
 
-Every app gets a folder like this:
+Flat layout — most apps:
 
 ```
-kubernetes/apps/kube-system/cilium/
-├── ks.yaml                          # Flux Kustomization
+kubernetes/apps/cnpg/
+├── kustomization.yaml              # root, lists [ks.yaml] (+ namespace.yaml etc.)
+├── namespace.yaml                  # the app's namespace (e.g. cnpg-system)
+├── ks.yaml                         # Flux Kustomization pointing to app/
 └── app/
-    ├── helmrelease.yaml             # the Helm install
-    ├── kustomization.yaml           # kustomize entrypoint
-    └── helmrepository.yaml          # the Helm chart source
+    ├── helmrelease.yaml            # the Helm install
+    ├── helmrepository.yaml         # the chart source
+    └── kustomization.yaml          # kustomize entrypoint
+```
+
+Nested layout — only when multiple apps share a namespace (kube-system):
+
+```
+kubernetes/apps/kube-system/
+├── kustomization.yaml              # lists each app's ks.yaml
+└── cilium-gateway/
+    ├── ks.yaml
+    └── app/{helmrelease.yaml, kustomization.yaml}
 ```
 
 ## How to add a new app (the daily workflow)
 
-1. Create `kubernetes/apps/<namespace>/<app>/app/helmrelease.yaml`
-2. Create `kubernetes/apps/<namespace>/<app>/app/kustomization.yaml` listing the files in `app/`
-3. Create `kubernetes/apps/<namespace>/<app>/ks.yaml` — a Flux Kustomization pointing to `./app`
-4. Reference the new Kustomization from a parent (often `kubernetes/apps/<namespace>/kustomization.yaml`)
-5. `git commit` + `git push`
-6. Flux reconciles within ~1 minute, or force it with `make flux-reconcile`
+See [adding-apps.md](adding-apps.md) for the canonical worked example. TL;DR:
 
-See upstream's apps directory for the canonical pattern: [upstream/home-ops/kubernetes/kubernetes/apps](https://github.com/upstream/home-ops/tree/main/kubernetes/kubernetes/apps).
+1. Create `kubernetes/apps/<app>/{kustomization,namespace,ks}.yaml` + `app/{kustomization,helmrelease}.yaml`
+2. Add `<app>` to `kubernetes/apps/kustomization.yaml`
+3. `git commit` + `git push`
+4. Flux reconciles within ~1 minute, or force with `make flux-reconcile`
 
 ## Useful commands
 
@@ -138,7 +150,7 @@ flux resume kustomization <name>       # resume
 
 Cilium was installed with `helm install` during bootstrap. To put it under Flux management:
 
-1. Write `kubernetes/apps/kube-system/cilium/app/helmrelease.yaml` with the same values we used in the imperative install (see [cilium.md](cilium.md))
+1. Write `kubernetes/apps/cilium/app/helmrelease.yaml` (flat layout — Cilium owns its own namespace handling) with the same values we used in the imperative install (see [cilium.md](cilium.md))
 2. Commit + push
 3. Flux detects an existing release with the same name + namespace, adopts it (no reinstall)
 4. From now on, Cilium upgrades = bump `chart.spec.version` in the HelmRelease, commit, push

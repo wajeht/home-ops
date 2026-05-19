@@ -210,12 +210,13 @@ Flux now watches the `kubernetes/` branch path `kubernetes/flux/` and reconciles
 
 ## Step 15 — Set up the apps scaffold
 
-Create the directory Flux will watch for app HelmReleases. Three files:
+Create the directory Flux will watch for app HelmReleases. Four files:
 
 ```bash
-# kubernetes/flux/kustomization.yaml      — parent listing flux-system + apps.yaml
-# kubernetes/flux/apps.yaml               — Flux Kustomization watching kubernetes/apps/
-# kubernetes/apps/kustomization.yaml      — empty stub for now
+# kubernetes/flux/kustomization.yaml         — parent listing flux-system + repositories + apps.yaml
+# kubernetes/flux/apps.yaml                  — Flux Kustomization watching kubernetes/apps/
+# kubernetes/flux/repositories/helm/         — shared HelmRepositories (bjw-s, etc.) added as needed
+# kubernetes/apps/kustomization.yaml         — empty stub for now
 ```
 
 See [adding-apps.md](adding-apps.md) for the canonical per-app pattern. After committing, verify Flux picks it up:
