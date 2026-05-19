@@ -6,11 +6,9 @@ metadata:
   namespace: kube-system
 spec:
   gatewayClassName: cilium
-  infrastructure:
-    annotations:
-      # ClusterIP is enough — cloudflared reaches this Service via cluster DNS,
-      # no external LB IP needed (the tunnel is the external entry point).
-      io.cilium/gateway-class-type: ClusterIP
+  # Gateway gets a LoadBalancer Service with an IP from CiliumLoadBalancerIPPool "lan-pool".
+  # Cloudflared reaches it via cluster DNS (cilium-gateway-internet.kube-system.svc),
+  # so the LB IP itself doesn't need to be externally routable.
   listeners:
     - name: http
       protocol: HTTP

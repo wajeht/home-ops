@@ -1,0 +1,11 @@
+---
+apiVersion: cilium.io/v2
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: lan-pool
+  namespace: kube-system
+spec:
+  blocks:
+    # Small range outside UniFi DHCP scope; only consumed by LoadBalancer Services.
+    - start: 192.168.4.220
+      stop: 192.168.4.229
