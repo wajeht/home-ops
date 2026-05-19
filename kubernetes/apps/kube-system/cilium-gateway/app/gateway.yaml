@@ -1,0 +1,20 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: internet
+  namespace: kube-system
+spec:
+  gatewayClassName: cilium
+  infrastructure:
+    annotations:
+      # ClusterIP is enough — cloudflared reaches this Service via cluster DNS,
+      # no external LB IP needed (the tunnel is the external entry point).
+      io.cilium/gateway-class-type: ClusterIP
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
