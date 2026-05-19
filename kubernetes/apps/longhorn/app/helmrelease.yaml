@@ -46,4 +46,10 @@ spec:
       priorityClass: system-cluster-critical
     longhornUI:
       replicas: 1
-    # Talos uses /var/lib/kubelet (not /var/lib/rancher/k3s) — Longhorn default works
+    # Talos: must set kubeletRootDir explicitly. Auto-discovery via the
+    # `discover-proc-kubelet-cmdline` pod hangs because Talos doesn't expose
+    # kubelet's cmdline through /proc the way Longhorn expects. Without this,
+    # `longhorn-driver-deployer` CrashLoopBackOffs and no PVCs can bind.
+    # https://longhorn.io/docs/1.11.1/advanced-resources/os-distro-specific/talos-linux-support/
+    csi:
+      kubeletRootDir: /var/lib/kubelet
