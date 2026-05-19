@@ -1,0 +1,36 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: volsync
+  namespace: volsync-system
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: volsync
+      version: 0.15.0
+      sourceRef:
+        kind: HelmRepository
+        name: backube
+        namespace: volsync-system
+  install:
+    crds: Create
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    manageCRDs: true
+    metrics:
+      disableAuth: true
+    # Use Longhorn for the temporary mover PVCs Volsync spins up during backup/restore.
+    rclone:
+      moverSecurityContext:
+        runAsUser: 0
+    restic:
+      moverSecurityContext:
+        runAsUser: 0

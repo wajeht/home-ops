@@ -330,7 +330,30 @@ kubectl -n longhorn-system get pods    # all Running
 kubectl get nodes.longhorn.io -A # yanlon listed with available storage
 ```
 
-## Step 22 — Validate with an echo app
+## Step 22 — Volsync (PVC backups)
+
+Install the Volsync operator. Per-app backup config (ReplicationSource + destination secret) gets added when each stateful app is migrated. See [volsync.md](volsync.md) for the per-app pattern.
+
+```bash
+# Add HelmRelease at kubernetes/apps/volsync-system/volsync/
+#   - chart: backube/volsync v0.15.0
+#   - manageCRDs: true
+git add kubernetes/apps/volsync-system
+git commit -m "feat(volsync-system): add volsync operator"
+git push
+```
+
+Verify after push:
+
+```bash
+kubectl -n volsync-system get pods
+kubectl get crd | grep volsync
+# Should list replicationsources, replicationdestinations, etc.
+```
+
+Backup destination not configured yet — that happens with nfs-subdir-external-provisioner next.
+
+## Step 23 — Validate with an echo app
 
 Deploy a minimal echo server + HTTPRoute and hit it from the internet:
 
@@ -347,7 +370,7 @@ If it works, every layer in [architecture.md](architecture.md) is proven.
 
 ## What's next
 
-Bootstrap so far ✅: Talos · Cilium · Flux · SOPS decryption · metrics-server · reloader · reflector · cert-manager · cloudflared · Cilium Gateway · echo app · Longhorn
+Bootstrap so far ✅: Talos · Cilium · Flux · SOPS decryption · metrics-server · reloader · reflector · cert-manager · cloudflared · Cilium Gateway · echo app · Longhorn · Volsync
 
 Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
 
@@ -358,8 +381,8 @@ Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
 5. ~~cert-manager + Cloudflare issuer~~ ✅ done
 6. ~~cloudflared (tunnel) + Cilium Gateway~~ ✅ done
 7. ~~Longhorn~~ ✅ done
-8. **nfs-subdir-external-provisioner** — Synology NFS PVs for media
-9. **Volsync** — PVC backups with restore-on-create
+8. ~~Volsync~~ ✅ done (operator only; backup destination configured next)
+9. **nfs-subdir-external-provisioner** — Synology NFS PVs for backup repo + bulk media
 10. **CNPG** — Postgres operator (before any Postgres-backed app)
 11. **oauth2-proxy** — Google forward-auth replacement
 12. **node-feature-discovery** + **intel-device-plugin** — for Plex transcoding

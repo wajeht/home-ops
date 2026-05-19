@@ -6,3 +6,4 @@ resources:
   - kube-system
   - longhorn-system
   - network
+  - volsync-system

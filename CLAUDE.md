@@ -32,7 +32,7 @@ GitOps-driven k8s homelab on Talos Linux, modeled after [upstream/home-ops](http
 - **Postgres**: CloudNativePG operator
 - **Cache**: Valkey (Redis fork)
 - **Secrets**: SOPS + age, decrypted in-cluster via Flux (same age key as before: `.sops/age-key.txt`)
-- **Backups**: Volsync (Restic under the hood) — PVC backup operator, restore-on-PVC-create, replaces borgmatic
+- **Backups**: Volsync operator installed (Restic under the hood). Per-app `ReplicationSource` resources added when migrating each stateful app. Backup destination TBD until nfs-subdir-external-provisioner is in (NFS PVC on Synology as the Restic repo target).
 - **Node labels**: node-feature-discovery auto-labels nodes by hardware (pairs with intel-device-plugin)
 - **GPU**: intel-device-plugin exposes iGPU for Plex transcoding
 - **Reloader**: stakater/reloader auto-restarts pods on ConfigMap/Secret changes
@@ -53,6 +53,7 @@ Docs index:
 - `docs/flux.md` — FluxCD bootstrap + workflow
 - `docs/cloudflared.md` — Cloudflare Tunnel as cluster's entry point
 - `docs/longhorn.md` — block storage (Talos UserVolume + Longhorn HelmRelease)
+- `docs/volsync.md` — PVC backup operator + per-app `ReplicationSource` pattern
 
 ## Repo Layout
 
