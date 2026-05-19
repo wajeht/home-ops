@@ -3,3 +3,6 @@ creation_rules:
     age: age1jcnrthtt049n6e2w2hpyq8r342q97r3ws44m0maty4dx527yvd7qyucfnp
   - path_regex: talsecret(\.sops)?\.yaml$
     age: age1jcnrthtt049n6e2w2hpyq8r342q97r3ws44m0maty4dx527yvd7qyucfnp
+  - path_regex: kubernetes/.*\.sops\.yaml$
+    encrypted_regex: ^(data|stringData)$
+    age: age1jcnrthtt049n6e2w2hpyq8r342q97r3ws44m0maty4dx527yvd7qyucfnp

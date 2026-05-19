@@ -24,7 +24,7 @@ GitOps-driven k8s homelab on Talos Linux, modeled after [upstream/home-ops](http
 - **GitOps**: FluxCD watches this repo, reconciles `kubernetes/apps/`
 - **App chart**: bjw-s/app-template — universal Helm chart used by ~80% of apps
 - **CNI / Ingress / LB**: Cilium handles all three — CNI (replaces default Flannel), Gateway API (replaces ingress-nginx after its [March 2026 retirement](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/)), and LB IPAM for LAN VIPs (no MetalLB needed)
-- **TLS**: cert-manager with Cloudflare DNS challenge (`*.jaw.dev` wildcard)
+- **TLS**: cert-manager with Cloudflare DNS challenge (`*.wajeht.com` wildcard — k8s cluster uses a different domain than docker-cd's `*.jaw.dev` to allow parallel operation during migration)
 - **DNS**: external-dns auto-syncs Cloudflare records from ingresses
 - **Auth/SSO**: oauth2-proxy with Google as IdP (replaces traefik-forward-auth from docker-cd era)
 - **Storage**: Longhorn (block PVs) + nfs-subdir-external-provisioner (Synology NFS at 192.168.4.243)

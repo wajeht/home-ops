@@ -109,7 +109,7 @@ kustomize-lint:
 ## lint: Validate talconfig + Kubernetes manifests + Kustomize builds (skipped if tools not installed)
 lint: talos-lint kustomize-lint
 	@if command -v kubeconform >/dev/null; then \
-		find kubernetes -name '*.yaml' -not -path 'kubernetes/talos/*' -not -name 'kustomization.yaml' \
+		find kubernetes -name '*.yaml' -not -path 'kubernetes/talos/*' -not -name 'kustomization.yaml' -not -name '*.sops.yaml' \
 			-exec kubeconform -strict -summary \
 				-skip CustomResourceDefinition \
 				-schema-location default \
