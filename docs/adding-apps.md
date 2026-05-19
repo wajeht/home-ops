@@ -247,9 +247,16 @@ resources:
   - ...
 ```
 
-### 9. Wire up the public hostname (manual, one-time per app)
+### 9. Add the hostname to cloudflared's ingress rules
 
-In **Cloudflare Zero Trust → Networks → Tunnels → home-ops → Configure → Public Hostname**: add `hello-world.wajeht.com → cilium-gateway-internet.kube-system.svc.cluster.local:80`. See [cloudflared.md](cloudflared.md) for full details.
+Edit `kubernetes/apps/cloudflared/app/configmap.yaml` and add 2 lines under `ingress:` (above the `http_status:404` fallback):
+
+```yaml
+- hostname: hello-world.wajeht.com
+  service: http://cilium-gateway-internet.kube-system.svc.cluster.local:80
+```
+
+Push. Reloader restarts cloudflared (~30s) and Cloudflare auto-creates the CNAME. See [cloudflared.md](cloudflared.md) for full details.
 
 ## Daily workflow
 

@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-config
+  namespace: network
+  annotations:
+    # cloudflared restarts on config change (reloader watches this annotation)
+    reloader.stakater.com/match: "true"
+data:
+  config.yml: |
+    tunnel: 5334a636-232c-44a8-b720-5c10d5626a07
+    credentials-file: /etc/cloudflared/creds/credentials.json
+    metrics: 0.0.0.0:2000
+    no-autoupdate: true
+    # Ingress rules — every public hostname routed through this tunnel.
+    # Each rule maps `hostname` → an in-cluster Service. Adding a new app =
+    # add another `- hostname: ... service: ...` block here + commit.
+    # cloudflared restarts via reloader when this ConfigMap changes.
+    ingress:
+      - hostname: echo.wajeht.com
+        service: http://cilium-gateway-internet.kube-system.svc.cluster.local:80
+      - hostname: hello-world.wajeht.com
+        service: http://cilium-gateway-internet.kube-system.svc.cluster.local:80
+      # Default fallback — anything not listed above gets a 404.
+      - service: http_status:404

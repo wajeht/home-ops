@@ -20,23 +20,48 @@ For the k8s cluster we picked Tunnel because the docker-cd box is already using 
 
 - Cluster bootstrapped through cilium (so the in-cluster DNS + networking work)
 - Flux running (so the Deployment lands via GitOps)
-- SOPS decryption enabled in Flux (the tunnel token is a SOPS-encrypted secret)
+- SOPS decryption enabled in Flux (the tunnel credentials are a SOPS-encrypted secret)
 
-## Setup
+## Setup (config-file mode — GitOps native)
+
+We run cloudflared with a **credentials JSON** + **`config.yml` ingress rules** rather than the token-based mode. Public hostname routes live in git (`configmap.yaml`), not in the Cloudflare dashboard. Adding a new app = 2-line PR; no dashboard clicks per app.
 
 ### 1. Create the tunnel in the Cloudflare dashboard
 
 1. **Cloudflare Zero Trust → Networks → Tunnels** → **Create a tunnel**
 2. Choose **Cloudflared** as the connector type
-3. Name it (e.g. `home-ops` or `k8s`)
-4. **Copy the token** (long string starting with `eyJ...`) — only shown once
+3. Name it (e.g. `home-ops`)
+4. **Copy the token** (long string starting with `eyJ...`) — we'll only use it once, to extract credentials
 5. Skip the "Install connector" page (we deploy in-cluster)
-6. Skip the "Public hostnames" page (we'll add routes later via the dashboard)
+6. Skip the "Public hostnames" page (we declare them in git)
 
-### 2. Commit the tunnel token (SOPS-encrypted) to the repo
+### 2. Extract credentials from the token
+
+The token is base64-encoded JSON wrapping the tunnel ID, account tag, and secret. Decode it locally:
 
 ```bash
-# kubernetes/apps/cloudflared/app/secret.sops.yaml
+echo '<the-token>' | base64 -d | jq
+# {
+#   "a": "<account-tag>",
+#   "t": "<tunnel-id-uuid>",
+#   "s": "<base64-tunnel-secret>"
+# }
+```
+
+Cloudflared expects `credentials.json` with renamed keys:
+
+```json
+{
+  "AccountTag": "<a>",
+  "TunnelID": "<t>",
+  "TunnelSecret": "<s>"
+}
+```
+
+### 3. Commit the credentials (SOPS-encrypted) to the repo
+
+```bash
+# kubernetes/apps/cloudflared/app/secret.sops.yaml — stringData holds creds.json
 cat > /tmp/secret.yaml <<EOF
 ---
 apiVersion: v1
@@ -46,15 +71,36 @@ metadata:
   namespace: network
 type: Opaque
 stringData:
-  token: eyJ...your-tunnel-token...
+  credentials.json: '{"AccountTag":"...","TunnelID":"...","TunnelSecret":"..."}'
 EOF
 SOPS_AGE_KEY_FILE=./.sops/age-key.txt sops -e /tmp/secret.yaml > kubernetes/apps/cloudflared/app/secret.sops.yaml
 rm /tmp/secret.yaml
 ```
 
-### 3. Deploy via Flux
+### 4. Declare ingress rules in `configmap.yaml`
 
-The Deployment, Service-less (cloudflared doesn't need to receive inbound traffic), 2-replica with anti-affinity, lives in `kubernetes/apps/cloudflared/app/deployment.yaml`. Push it and Flux applies it.
+`kubernetes/apps/cloudflared/app/configmap.yaml` holds the cloudflared `config.yml`:
+
+```yaml
+data:
+  config.yml: |
+    tunnel: <tunnel-id-uuid>
+    credentials-file: /etc/cloudflared/creds/credentials.json
+    metrics: 0.0.0.0:2000
+    no-autoupdate: true
+    ingress:
+      - hostname: echo.wajeht.com
+        service: http://cilium-gateway-internet.kube-system.svc.cluster.local:80
+      - hostname: hello-world.wajeht.com
+        service: http://cilium-gateway-internet.kube-system.svc.cluster.local:80
+      - service: http_status:404   # default fallback
+```
+
+Adding a new app = add 2 lines (a new `- hostname: ... service: ...` block) and push. Reloader watches the ConfigMap and restarts cloudflared automatically (~30s tunnel reconnect).
+
+### 5. Deploy via Flux
+
+The Deployment is Service-less (cloudflared only initiates outbound connections), 2 replicas with anti-affinity, mounts both the creds Secret and config ConfigMap.
 
 ```bash
 git add kubernetes/apps/cloudflared
@@ -62,21 +108,9 @@ git commit -m "feat(cloudflared): add cloudflared tunnel"
 git push
 ```
 
-### 4. Add Public Hostname routes in the dashboard
+### 6. Cloudflare auto-creates DNS
 
-Back in **Cloudflare Zero Trust → Networks → Tunnels → home-ops → Configure → Public Hostname**:
-
-For each app you want exposed, click **Add a public hostname**:
-
-| Field        | Value                                                      | Why                                      |
-| ------------ | ---------------------------------------------------------- | ---------------------------------------- |
-| Subdomain    | `<app>` (e.g. `echo`, `plex`)                              | The hostname users hit                   |
-| Domain       | `wajeht.com`                                               | Your Cloudflare zone                     |
-| Path         | leave empty                                                | Unless you want path-based routing       |
-| Service Type | `HTTP`                                                     | TLS is at the edge; inside is plain HTTP |
-| Service URL  | `cilium-gateway-internet.kube-system.svc.cluster.local:80` | Where to send traffic in-cluster         |
-
-**Cloudflare auto-creates** a CNAME `<app>.wajeht.com → <tunnel-id>.cfargotunnel.com`. No manual DNS edits.
+For each hostname listed in `config.yml`, Cloudflare automatically creates a CNAME `<host>.wajeht.com → <tunnel-id>.cfargotunnel.com`. No manual DNS edits. Note: if you previously had public hostnames configured in the dashboard, the `config.yml` ingress rules take precedence — but it's still cleanest to remove the old dashboard entries to avoid confusion.
 
 After this, the request flow is:
 
@@ -101,34 +135,30 @@ cloudflared maintains multiple persistent connections to Cloudflare edge POPs. I
 
 The `podAntiAffinity` rule prefers spreading pods across nodes, so it survives a node loss too.
 
-## Tunnel token vs credentials file
+## Token vs credentials-file mode
 
-Cloudflare offers two ways to authenticate cloudflared:
+Cloudflare offers two ways to run cloudflared:
 
-| Method                  | What you store                             | When to use                                                   |
-| ----------------------- | ------------------------------------------ | ------------------------------------------------------------- |
-| **Token** (what we use) | A single base64-encoded JWT                | Simpler, all config in CF dashboard                           |
-| **Credentials file**    | `<tunnel-id>.json` with tunnel ID + secret | Config-as-code (`config.yml` defines hostname routes locally) |
+| Mode                               | Where ingress lives  | Add a new hostname                 |
+| ---------------------------------- | -------------------- | ---------------------------------- |
+| **Token** (single base64 JWT)      | Cloudflare dashboard | 1 click per hostname in the CF UI  |
+| **Credentials file** (what we use) | `config.yml` in git  | 1 PR (2 lines in `configmap.yaml`) |
 
-Token is the modern recommended path. All hostname routes live in the CF dashboard, which means changes to routing don't need a git commit — useful for quick testing but less GitOps-pure.
+We picked credentials-file mode for GitOps purity — every public hostname mapping is auditable in git history. Trade-off: cloudflared restarts (~30s tunnel reconnect) when the ConfigMap changes, vs. token mode which only restarts on token rotation.
 
-If you ever want config-as-code, switch to the credentials file approach and commit `config.yml` to the repo. Trade-off is more YAML for stricter audit.
+## Rotating the tunnel credentials
 
-## Rotating the tunnel token
+If the credentials leak (e.g. age key compromise):
 
-If the token leaks (e.g., gets pasted in a chat 😅):
-
-1. **CF Zero Trust → Networks → Tunnels → home-ops → Configure → Token tab → Refresh**
-2. Copy the new token
-3. SOPS-encrypt + commit:
+1. **CF Zero Trust → Networks → Tunnels → home-ops → Configure** → delete the tunnel
+2. Re-create the tunnel — copy the new token
+3. Decode the token to extract creds (see Step 2 of Setup), build new `credentials.json`
+4. Re-encrypt:
    ```bash
-   sopsd kubernetes/apps/cloudflared/app/secret.sops.yaml  # decrypt to check current value
-   # Edit the file, replace the token, re-encrypt
    sops kubernetes/apps/cloudflared/app/secret.sops.yaml  # interactive edit
    ```
-4. Push. reloader sees the Secret change and rolls the cloudflared pods automatically.
-
-Total downtime: ~30 seconds (the gap between old pods terminating and new pods establishing tunnel connections).
+5. Update the `tunnel:` UUID in `configmap.yaml` to match the new tunnel ID
+6. Push. Reloader rolls the cloudflared pods automatically (~30s downtime).
 
 ## Troubleshooting
 
@@ -154,7 +184,8 @@ kubectl -n network logs -l app=cloudflared --tail=50
 
 Common causes:
 
-- Invalid token (TUNNEL_TOKEN env wrong) — re-encrypt secret
+- Invalid credentials (e.g. wrong `AccountTag`/`TunnelID`/`TunnelSecret` in the SOPS secret) — re-extract from the dashboard token (see Setup → Step 2) and re-encrypt
+- `tunnel:` UUID in `configmap.yaml` doesn't match the credentials' `TunnelID`
 - Network egress blocked — Talos default allows it, but check NetworkPolicies if you added any
 - DNS issues — cluster CoreDNS broken
 
@@ -172,11 +203,15 @@ kubectl -n network logs -l app=cloudflared --tail=20 | grep -E "GET|POST"
 For every new app you add:
 
 1. Write the HTTPRoute + Deployment + Service as normal (see [adding-apps.md](adding-apps.md))
-2. Push
-3. Add the Public Hostname route in CF dashboard (`<app>.wajeht.com → cilium-gateway-internet.kube-system.svc.cluster.local:80`)
-4. Done — works in <30s
+2. Add a 2-line ingress block to `kubernetes/apps/cloudflared/app/configmap.yaml`:
+   ```yaml
+   - hostname: <app>.wajeht.com
+     service: http://cilium-gateway-internet.kube-system.svc.cluster.local:80
+   ```
+   Keep the `- service: http_status:404` default fallback at the bottom.
+3. Push. Flux reconciles, reloader sees the ConfigMap change, cloudflared restarts (~30s tunnel reconnect), Cloudflare auto-creates the CNAME.
 
-Step 3 is the only manual bit. Future: external-dns + Cloudflare Tunnel ingress operator can automate it, but for a handful of apps it's not worth the complexity.
+No dashboard clicks. Every public hostname mapping lives in git.
 
 ## References
 

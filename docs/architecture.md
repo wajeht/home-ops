@@ -177,7 +177,7 @@ flowchart LR
 Cloudflare Tunnel solves the "homelab without exposing your IP" problem. The architecture:
 
 - **No port forwards.** cloudflared makes an **outbound** QUIC connection to Cloudflare's edge. Nothing on your LAN listens externally.
-- **DNS is automatic.** When you add a Public Hostname route (`echo.wajeht.com → cilium-gateway-internet.kube-system.svc:80`), Cloudflare creates a CNAME for you.
+- **DNS is automatic.** When you add a hostname to `cloudflared`'s `configmap.yaml` ingress rules (`<host>.wajeht.com → cilium-gateway-internet.kube-system.svc:80`) and push, Cloudflare creates a CNAME for you automatically.
 - **TLS is at the edge.** Cloudflare terminates HTTPS. Inside the tunnel/cluster, traffic is plain HTTP. No need for in-cluster certs (cert-manager is for other use cases — see below).
 - **Failover.** Two `cloudflared` replicas, anti-affinity to spread across nodes. Either pod going down still leaves the tunnel up via the other.
 

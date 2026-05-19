@@ -277,9 +277,10 @@ kubectl get clusterissuers
 Cluster's external entry point. No port forward, no exposed home IP. See [cloudflared.md](cloudflared.md) for the full setup.
 
 1. Create a tunnel in Cloudflare Zero Trust dashboard, copy the token
-2. SOPS-encrypt the token into `kubernetes/apps/cloudflared/app/secret.sops.yaml`
-3. Push — Flux deploys 2 replicas of cloudflared with anti-affinity
-4. In CF dashboard, add Public Hostname routes (`<app>.wajeht.com → cilium-gateway-internet.kube-system.svc.cluster.local:80`)
+2. Decode the token (`echo <token> | base64 -d | jq`) and build a `credentials.json` (`AccountTag`/`TunnelID`/`TunnelSecret`)
+3. SOPS-encrypt as `kubernetes/apps/cloudflared/app/secret.sops.yaml` (key: `credentials.json`)
+4. Add ingress rules in `kubernetes/apps/cloudflared/app/configmap.yaml` (tunnel UUID + per-hostname routes)
+5. Push — Flux deploys 2 replicas of cloudflared with anti-affinity. Cloudflare auto-creates the DNS CNAMEs for each hostname listed in the config
 
 ## Step 20 — Cilium Gateway + LB IPPool
 
