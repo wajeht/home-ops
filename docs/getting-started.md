@@ -41,12 +41,12 @@ See current [talconfig.yaml](../kubernetes/talos/talconfig.yaml) for the canonic
 
 ```bash
 # Download the custom Talos ISO (has system extensions baked in)
-curl -LO https://factory.talos.dev/image/cd0648ed93c7bcf5c362fa0dc72ca43e9e0c0eccf8d46413b6aa35ee71c6c55c/v1.12.6/metal-amd64.iso
+curl -LO https://factory.talos.dev/image/249d9135de54962744e917cfe654117000cba369f9152fbab9d055a00aa3664f/v1.12.6/metal-amd64.iso
 ```
 
 Flash to USB with [Balena Etcher](https://etcher.balena.io/).
 
-**Why a custom image, not vanilla Talos?** The image embeds system extensions (`i915` for Intel GPU, `iscsi-tools` for Longhorn, `nut-client` for UPS, etc.). The schematic ID is in [talos.md](talos.md).
+**Why a custom image, not vanilla Talos?** The image embeds system extensions (`i915` for Intel GPU, `iscsi-tools` + `util-linux-tools` for Longhorn / NFS). The schematic ID is in [talos.md](talos.md) — keep it in sync with the URL above whenever you change extensions, and remember extension changes require a Talos upgrade not just `apply` (see [Changing extensions requires upgrade, not apply](talos.md#changing-extensions-requires-upgrade-not-apply)).
 
 ## Step 4 — Boot each node from USB
 

@@ -107,7 +107,8 @@ Per-app pattern: the app, its DB (if any), and its Volsync `ReplicationSource` â
 # Talos cluster management
 cd kubernetes/talos
 talhelper genconfig                    # regen machine configs
-talhelper gencommand apply | bash      # apply to all nodes
+talhelper gencommand apply | bash      # apply config to running nodes (non-extension changes)
+talhelper gencommand upgrade | bash    # required when systemExtensions changed (schematic ID differs â†’ new image, apply alone won't switch images)
 talhelper gencommand bootstrap | bash  # bootstrap etcd (once)
 talosctl --talosconfig clusterconfig/talosconfig <cmd>
 

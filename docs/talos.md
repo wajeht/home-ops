@@ -4,22 +4,24 @@
 
 Custom Talos images built via [Image Factory](https://factory.talos.dev/).
 
-**Schematic ID:** `cd0648ed93c7bcf5c362fa0dc72ca43e9e0c0eccf8d46413b6aa35ee71c6c55c`
+**Schematic ID:** `249d9135de54962744e917cfe654117000cba369f9152fbab9d055a00aa3664f`
 
 **Version:** v1.12.6
+
+> The schematic ID is derived from the extension list (and any extra kernel args). Any edit to `talconfig.yaml`'s `systemExtensions` produces a _different_ schematic — see [Changing extensions requires upgrade, not apply](#changing-extensions-requires-upgrade-not-apply).
 
 ### Extensions
 
 - `siderolabs/i915` — Intel GPU microcode + kernel modules
 - `siderolabs/intel-ucode` — Intel CPU microcode
 - `siderolabs/iscsi-tools` — required for Longhorn
-- `siderolabs/util-linux-tools` — required for Longhorn
-- `siderolabs/nut-client` — UPS monitoring (CyberPower 1500VA)
+- `siderolabs/util-linux-tools` — required for Longhorn / NFS clients
+- ~~`siderolabs/nut-client`~~ — **commented out** in talconfig.yaml. UPS monitoring against CyberPower 1500VA. See [Known issues](#known-issues--gotchas) for why and how to re-enable safely.
 
 ### Flash USB
 
 ```bash
-curl -LO https://factory.talos.dev/image/cd0648ed93c7bcf5c362fa0dc72ca43e9e0c0eccf8d46413b6aa35ee71c6c55c/v1.12.6/metal-amd64.iso
+curl -LO https://factory.talos.dev/image/249d9135de54962744e917cfe654117000cba369f9152fbab9d055a00aa3664f/v1.12.6/metal-amd64.iso
 ```
 
 Flash with Balena Etcher or `dd`. Boot target machine from USB via F12.
@@ -163,6 +165,33 @@ talhelper genconfig
 talhelper gencommand apply | bash
 ```
 
+> **Exception:** if your edit changed the `systemExtensions` list (or anything else baked into the image — kernel args, custom installer args), see [Changing extensions requires upgrade, not apply](#changing-extensions-requires-upgrade-not-apply) below. `apply` won't switch images.
+
+### Changing extensions requires `upgrade`, not `apply`
+
+`apply` writes a new machine config to a running node. It does **not** swap the Talos installer image. The image is locked to a schematic ID, and the schematic ID is a hash of the extension list (+ extra kernel args). When you edit `systemExtensions` and run `talhelper genconfig`, the resulting machineconfig points at a _new_ installer image URL — but the node is still booted off the old one. A bare `apply` will succeed but the actual extensions don't change until reboot, and the new image is never pulled.
+
+Correct flow:
+
+```bash
+# 1. Edit talconfig.yaml (add/remove an extension)
+$EDITOR talconfig.yaml
+
+# 2. Regenerate configs — talhelper computes the new schematic ID + installer URL
+talhelper genconfig
+
+# 3. Compare old vs new installer URL — should differ
+grep "image: factory.talos.dev" clusterconfig/*.yaml | head -2
+
+# 4. Run the upgrade (downloads new image, reboots each node into it)
+talhelper gencommand upgrade | bash
+
+# 5. After both nodes are Ready again, verify extensions
+talosctl --nodes 192.168.4.162,192.168.4.163 get extensions
+```
+
+The upgrade command sequence is per-node and serial. With only one CP (soapwa), upgrading it causes ~2-3min of kube-apiserver downtime — apps already running keep serving traffic if cloudflared replicas are healthy on the other node. Workloads on the upgraded node briefly reschedule.
+
 ### Upgrade Talos
 
 Update `talosVersion` in `talconfig.yaml`, then:
@@ -228,3 +257,36 @@ talosctl get disks --nodes <IP>               # after config applied
 - **SATA Operation** must be set to **AHCI** (not RAID On) for NVMe drives to be detected
 - Boot from USB via **F12** at Dell splash
 - BIOS setup via **F2**
+
+## Known issues / gotchas
+
+### Extension without an `ExtensionServiceConfig` → ~72-minute reboot loop
+
+An _officialExtension_ that ships its own service (e.g. `siderolabs/nut-client`) sits in `Waiting for extension service config` until you give it one via an `ExtensionServiceConfig` resource. Talos's boot sequence has a global deadline (~70min by default) and will not declare `RUNNING` until all configured services are `up`. When the deadline expires, Talos logs `boot sequence: failed` and reboots — and the cycle repeats indefinitely.
+
+**Symptoms:**
+
+- Both nodes reboot at near-exact ~71–72min intervals (different start times per node, but identical period within a node)
+- `talosctl service ext-nut-client` (or similar) shows `STATE Waiting   EVENT [Waiting]: Waiting for extension service config`
+- `talosctl read /var/log/machined.log | grep -i "boot sequence"` shows `boot sequence: failed`
+- `/proc/uptime` is always < ~72 min when you check
+
+**How to confirm a node is in the loop:**
+
+```bash
+# Find every boot in this Talos install's history (kernel.log is persistent)
+talosctl --nodes <IP> read /var/log/kernel.log | grep "Booting paravirtualized kernel" | tail -10
+# Look for ~72min intervals between consecutive boot timestamps
+```
+
+**Fix:** either remove the extension from `talconfig.yaml`'s `systemExtensions`, or commit an `ExtensionServiceConfig` that satisfies it. Then follow [Changing extensions requires upgrade, not apply](#changing-extensions-requires-upgrade-not-apply) — `apply` alone won't help because the offending extension is baked into the running image.
+
+For `nut-client` specifically, the config needs the NUT server hostname + UPS name + credentials; the NUT server can be the Synology DSM "UPS Service" (Settings → Hardware & Power → UPS → enable network UPS server). Wire that up first, _then_ uncomment the extension in `talconfig.yaml` and `talhelper gencommand upgrade | bash`.
+
+### Reset defaults to _shutdown_, not reboot
+
+`talosctl reset --graceful=false` without `--reboot` powers the node off and you wonder why it's not coming back. Always pass `--reboot` unless you actually want a power-off.
+
+### Reset's default `--wipe-mode all` nukes the OS install
+
+Without `--system-labels-to-wipe EPHEMERAL,STATE`, the reset wipes the Talos installer too and the node needs a USB reinstall. Use the targeted wipe (EPHEMERAL = container data, STATE = machine config) for routine resets.
