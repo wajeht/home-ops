@@ -56,8 +56,10 @@ flowchart TB
 
     subgraph STORAGE["💾 Storage & Backups"]
         longhorn["Longhorn<br/>(yanlon /dev/sda → /var/mnt/longhorn)"]
-        sc["StorageClasses<br/>longhorn (default) + longhorn-db"]
+        sc["StorageClasses<br/>longhorn (default) + longhorn-db + nfs-backup"]
+        nfsprov["nfs-subdir-external-provisioner<br/>(Synology /volume1/backup)"]
         volsync["Volsync<br/>(PVC backup operator)"]
+        volsync -.->|writes restic repo to| nfsprov
     end
 
     OS --> NET
@@ -78,25 +80,26 @@ flowchart TB
 
 ## Why each piece exists
 
-| Layer          | Component          | Job                                                  | What happens without it                                |
-| -------------- | ------------------ | ---------------------------------------------------- | ------------------------------------------------------ |
-| **OS**         | Talos              | Immutable, k8s-only OS                               | Manual OS patching, drift, ssh-induced bugs            |
-| **OS**         | talhelper          | Declarative Talos config                             | Hand-editing machine configs per node                  |
-| **Networking** | Cilium CNI         | Pod-to-pod routing                                   | Pods can't talk; nothing works                         |
-| **Networking** | Cilium LB IPAM     | Assigns IPs to LoadBalancer services                 | Services stuck Pending external IP                     |
-| **Networking** | Cilium Gateway API | HTTP/HTTPS routing into the cluster                  | Need ingress-nginx (EOL'd March 2026) + MetalLB        |
-| **Networking** | Hubble             | Observe pod flows                                    | Blind to network problems                              |
-| **GitOps**     | FluxCD             | Reconciles cluster from git                          | Back to `kubectl apply` for everything                 |
-| **Edge**       | Cloudflare Tunnel  | Outbound-only entry to cluster                       | Expose home IP, manage port forwards, dynamic DNS      |
-| **Edge**       | cloudflared        | The tunnel client in-cluster                         | Tunnel has nowhere to land                             |
-| **Security**   | cert-manager       | Issues TLS certs from Let's Encrypt                  | Manually request/renew certs                           |
-| **Security**   | SOPS + age         | Encrypts secrets in git                              | Either secrets in plaintext or out-of-band secret mgmt |
-| **System**     | metrics-server     | `kubectl top` + HPA                                  | No CPU/memory visibility                               |
-| **System**     | reloader           | Restart pods on Secret/ConfigMap change              | Manually bounce pods after edits                       |
-| **System**     | reflector          | Copy Secrets across namespaces                       | Re-encrypt the same secret per namespace               |
-| **Storage**    | Longhorn           | Block storage for PVCs                               | Stateful apps can't persist data                       |
-| **Storage**    | Talos UserVolume   | Mounts data disk into Talos's immutable FS           | Longhorn has no path to write to                       |
-| **Backups**    | Volsync            | Snapshots PVCs to Restic; auto-restore on PVC create | Data lost on cluster rebuild; no DR path               |
+| Layer          | Component                       | Job                                                     | What happens without it                                |
+| -------------- | ------------------------------- | ------------------------------------------------------- | ------------------------------------------------------ |
+| **OS**         | Talos                           | Immutable, k8s-only OS                                  | Manual OS patching, drift, ssh-induced bugs            |
+| **OS**         | talhelper                       | Declarative Talos config                                | Hand-editing machine configs per node                  |
+| **Networking** | Cilium CNI                      | Pod-to-pod routing                                      | Pods can't talk; nothing works                         |
+| **Networking** | Cilium LB IPAM                  | Assigns IPs to LoadBalancer services                    | Services stuck Pending external IP                     |
+| **Networking** | Cilium Gateway API              | HTTP/HTTPS routing into the cluster                     | Need ingress-nginx (EOL'd March 2026) + MetalLB        |
+| **Networking** | Hubble                          | Observe pod flows                                       | Blind to network problems                              |
+| **GitOps**     | FluxCD                          | Reconciles cluster from git                             | Back to `kubectl apply` for everything                 |
+| **Edge**       | Cloudflare Tunnel               | Outbound-only entry to cluster                          | Expose home IP, manage port forwards, dynamic DNS      |
+| **Edge**       | cloudflared                     | The tunnel client in-cluster                            | Tunnel has nowhere to land                             |
+| **Security**   | cert-manager                    | Issues TLS certs from Let's Encrypt                     | Manually request/renew certs                           |
+| **Security**   | SOPS + age                      | Encrypts secrets in git                                 | Either secrets in plaintext or out-of-band secret mgmt |
+| **System**     | metrics-server                  | `kubectl top` + HPA                                     | No CPU/memory visibility                               |
+| **System**     | reloader                        | Restart pods on Secret/ConfigMap change                 | Manually bounce pods after edits                       |
+| **System**     | reflector                       | Copy Secrets across namespaces                          | Re-encrypt the same secret per namespace               |
+| **Storage**    | Longhorn                        | Block storage for PVCs                                  | Stateful apps can't persist data                       |
+| **Storage**    | Talos UserVolume                | Mounts data disk into Talos's immutable FS              | Longhorn has no path to write to                       |
+| **Backups**    | Volsync                         | Snapshots PVCs to Restic; auto-restore on PVC create    | Data lost on cluster rebuild; no DR path               |
+| **Backups**    | nfs-subdir-external-provisioner | Dynamic NFS PVCs on Synology; backup target for Volsync | Volsync has nowhere off-cluster to write               |
 
 ## How a request reaches an app (the 8-hop traceable chain)
 
@@ -256,17 +259,17 @@ We're not deciding this yet — depends on how the cluster proves itself with `*
 
 ## What's NOT installed yet (and why each matters)
 
-| Component                           | When to add                        | What it unlocks                                 |
-| ----------------------------------- | ---------------------------------- | ----------------------------------------------- |
-| **nfs-subdir-external-provisioner** | When apps need big shared storage  | Bulk media on Synology NAS                      |
-| **CloudNativePG**                   | Before any Postgres-backed app     | Postgres clusters as a CRD (no per-app DB ops)  |
-| **oauth2-proxy**                    | Before exposing admin apps         | Google forward-auth replacement                 |
-| **node-feature-discovery**          | When adding GPU/specialty hardware | Labels nodes by features                        |
-| **intel-device-plugin**             | Before Plex                        | Exposes Intel iGPU for transcoding              |
-| **kube-prometheus-stack**           | When you want graphs               | Prometheus + Grafana + Alertmanager             |
-| **kromgo**                          | When you want README badges        | Exposes cluster metrics as shields.io endpoints |
-| **system-upgrade-controller**       | After cluster is stable            | Auto-upgrades Talos via CRDs                    |
-| **external-dns**                    | When migrating jaw.dev (see above) | Auto-creates Cloudflare records from HTTPRoutes |
+| Component                                   | When to add                        | What it unlocks                                 |
+| ------------------------------------------- | ---------------------------------- | ----------------------------------------------- |
+| **nfs-subdir-external-provisioner (media)** | When migrating Plex                | Bulk media on `/volume1/Media`                  |
+| **CloudNativePG**                           | Before any Postgres-backed app     | Postgres clusters as a CRD (no per-app DB ops)  |
+| **oauth2-proxy**                            | Before exposing admin apps         | Google forward-auth replacement                 |
+| **node-feature-discovery**                  | When adding GPU/specialty hardware | Labels nodes by features                        |
+| **intel-device-plugin**                     | Before Plex                        | Exposes Intel iGPU for transcoding              |
+| **kube-prometheus-stack**                   | When you want graphs               | Prometheus + Grafana + Alertmanager             |
+| **kromgo**                                  | When you want README badges        | Exposes cluster metrics as shields.io endpoints |
+| **system-upgrade-controller**               | After cluster is stable            | Auto-upgrades Talos via CRDs                    |
+| **external-dns**                            | When migrating jaw.dev (see above) | Auto-creates Cloudflare records from HTTPRoutes |
 
 ## Files-to-running-state map
 
@@ -303,8 +306,8 @@ If you ever do a full cluster rebuild, this is the order things must come up in:
 10. Cilium Gateway + LB IPPool (before routing anything)
 11. cloudflared (before exposing apps)
 12. Longhorn (UserVolume must exist on the node first)
-13. Volsync (operator only — backup destination configured per-app)
-14. (Future: nfs-subdir-external-provisioner, CNPG — before stateful apps with data)
+13. Volsync (operator + nfs-backup StorageClass for restic repos)
+14. (Future: CNPG before any Postgres-backed app; second nfs-subdir-external-provisioner for media when Plex migrates)
 13. Apps
 ```
 

@@ -83,6 +83,7 @@ With all equipment connected: ~120W idle @ 120V, ~80 min UPS runtime, 87 kWh/mo 
 - [Cloudflared](docs/cloudflared.md) — Cloudflare Tunnel as cluster's external entry point
 - [Longhorn](docs/longhorn.md) — block storage + Talos UserVolume for the data disk
 - [Volsync](docs/volsync.md) — PVC backups with restore-on-create
+- [NFS Storage](docs/nfs-storage.md) — Synology-backed dynamic PVCs (Volsync's backup target)
 
 ## License
 

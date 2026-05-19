@@ -28,11 +28,12 @@ GitOps-driven k8s homelab on Talos Linux, modeled after [upstream/home-ops](http
 - **TLS**: Cloudflare edge terminates HTTPS for tunneled traffic. cert-manager is installed and ready (with `letsencrypt-production` + `letsencrypt-staging` ClusterIssuers using Cloudflare DNS-01) for when we need in-cluster TLS (Gateway listeners, mTLS, or post-jaw.dev migration).
 - **DNS**: external-dns auto-syncs Cloudflare records from ingresses
 - **Auth/SSO**: oauth2-proxy with Google as IdP (replaces traefik-forward-auth from docker-cd era)
-- **Storage**: Longhorn (block PVs, default StorageClass) — yanlon's 1TB SATA mounted at `/var/mnt/longhorn` via Talos UserVolume; `numberOfReplicas: 1` until soapwa gets a data disk. Pair with nfs-subdir-external-provisioner (Synology NFS at 192.168.4.243) when shared bulk storage is needed.
+- **Storage**: Longhorn (block PVs, default StorageClass) — yanlon's 1TB SATA mounted at `/var/mnt/longhorn` via Talos UserVolume; `numberOfReplicas: 1` until soapwa gets a data disk.
+- **NFS storage**: nfs-subdir-external-provisioner → Synology `/volume1/backup` exposed as the `nfs-backup` StorageClass with `pathPattern: k8s/${.PVC.namespace}-${.PVC.name}-${.PVC.uid}` (keeps k8s data separate from docker-cd's borgmatic dirs). Used by Volsync as the Restic repo target. A second provisioner for `/volume1/Media` will be added when Plex migrates.
 - **Postgres**: CloudNativePG operator
 - **Cache**: Valkey (Redis fork)
 - **Secrets**: SOPS + age, decrypted in-cluster via Flux (same age key as before: `.sops/age-key.txt`)
-- **Backups**: Volsync operator installed (Restic under the hood). Per-app `ReplicationSource` resources added when migrating each stateful app. Backup destination TBD until nfs-subdir-external-provisioner is in (NFS PVC on Synology as the Restic repo target).
+- **Backups**: Volsync operator + `nfs-backup` StorageClass wired up. Per-app pattern: small PVC on `nfs-backup` (auto-creates `/volume1/backup/k8s/<ns>-<pvc>/` on Synology) + Restic Secret + `ReplicationSource` writing to `/repo`. Auto-restore on PVC create via annotations.
 - **Node labels**: node-feature-discovery auto-labels nodes by hardware (pairs with intel-device-plugin)
 - **GPU**: intel-device-plugin exposes iGPU for Plex transcoding
 - **Reloader**: stakater/reloader auto-restarts pods on ConfigMap/Secret changes
@@ -54,6 +55,7 @@ Docs index:
 - `docs/cloudflared.md` — Cloudflare Tunnel as cluster's entry point
 - `docs/longhorn.md` — block storage (Talos UserVolume + Longhorn HelmRelease)
 - `docs/volsync.md` — PVC backup operator + per-app `ReplicationSource` pattern
+- `docs/nfs-storage.md` — Synology NFS-backed PVCs via nfs-subdir-external-provisioner
 
 ## Repo Layout
 

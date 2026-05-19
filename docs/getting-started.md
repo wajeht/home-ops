@@ -353,7 +353,27 @@ kubectl get crd | grep volsync
 
 Backup destination not configured yet — that happens with nfs-subdir-external-provisioner next.
 
-## Step 23 — Validate with an echo app
+## Step 23 — NFS storage for backups (nfs-subdir-external-provisioner)
+
+Gives Volsync a place to write restic repos. Points at the existing Synology `/volume1/backup` share (the same one docker-cd uses) but keeps k8s data under a `k8s/` subdir to avoid clobbering existing borgmatic data. See [nfs-storage.md](nfs-storage.md) for the full deep dive.
+
+```bash
+# Add HelmRelease at kubernetes/apps/storage/nfs-backup/
+# Values: nfs.server=192.168.4.243, nfs.path=/volume1/backup
+#         storageClass.pathPattern=k8s/${.PVC.namespace}-${.PVC.name}-${.PVC.uid}
+git add kubernetes/apps/storage
+git commit -m "feat(storage): add nfs-backup provisioner"
+git push
+```
+
+Verify after push:
+
+```bash
+kubectl get storageclass            # `nfs-backup` should appear (not default — Longhorn stays default)
+kubectl -n storage get pods         # nfs-backup-... Running
+```
+
+## Step 24 — Validate with an echo app
 
 Deploy a minimal echo server + HTTPRoute and hit it from the internet:
 
@@ -370,7 +390,7 @@ If it works, every layer in [architecture.md](architecture.md) is proven.
 
 ## What's next
 
-Bootstrap so far ✅: Talos · Cilium · Flux · SOPS decryption · metrics-server · reloader · reflector · cert-manager · cloudflared · Cilium Gateway · echo app · Longhorn · Volsync
+Bootstrap so far ✅: Talos · Cilium · Flux · SOPS decryption · metrics-server · reloader · reflector · cert-manager · cloudflared · Cilium Gateway · echo app · Longhorn · Volsync · nfs-backup
 
 Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
 
@@ -381,8 +401,8 @@ Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
 5. ~~cert-manager + Cloudflare issuer~~ ✅ done
 6. ~~cloudflared (tunnel) + Cilium Gateway~~ ✅ done
 7. ~~Longhorn~~ ✅ done
-8. ~~Volsync~~ ✅ done (operator only; backup destination configured next)
-9. **nfs-subdir-external-provisioner** — Synology NFS PVs for backup repo + bulk media
+8. ~~Volsync~~ ✅ done
+9. ~~nfs-subdir-external-provisioner~~ ✅ done (backup share; media share added when Plex migrates)
 10. **CNPG** — Postgres operator (before any Postgres-backed app)
 11. **oauth2-proxy** — Google forward-auth replacement
 12. **node-feature-discovery** + **intel-device-plugin** — for Plex transcoding

@@ -44,7 +44,7 @@ Volsync's Restic mover can write to:
 | **Backblaze B2**                         | `b2:bucket:path`             | Sign up for B2 (10GB free)           | Off-site, automatic                    |
 | **S3 / Cloudflare R2**                   | `s3:url/bucket`              | S3 API credentials                   | If you already have an S3              |
 
-Plan: use **NFS PVC** when we install `nfs-subdir-external-provisioner` next. Until then, no app gets backed up (we haven't migrated stateful apps yet anyway).
+**We use NFS PVC** via the `nfs-backup` StorageClass — see [nfs-storage.md](nfs-storage.md). Each app gets a small Restic-repo PVC on `/volume1/backup/k8s/<ns>-<pvc>/`, and Volsync writes there with `RESTIC_REPOSITORY=/repo`.
 
 ## Layout
 
@@ -130,14 +130,12 @@ sequenceDiagram
     Pod-->>Pod: starts with data intact
 ```
 
-## What's NOT set up yet
+## What's set up vs not
 
 - ✅ Volsync operator installed
-- ❌ Backup destination not configured (waiting on nfs-subdir-external-provisioner)
-- ❌ No `ReplicationSource` resources yet (added per stateful app)
-- ❌ No `RESTIC_PASSWORD` secret (generated per app)
-
-When we install nfs-subdir-external-provisioner next, we'll create a single NFS PVC for all restic repos and configure Volsync to use it.
+- ✅ Backup destination: `nfs-backup` StorageClass (Synology `/volume1/backup/k8s/`)
+- ❌ No `ReplicationSource` resources yet (added per stateful app — see [nfs-storage.md](nfs-storage.md) for the per-app pattern)
+- ❌ No `RESTIC_PASSWORD` secrets yet (generated per app, SOPS-encrypted)
 
 ## Useful commands
 
