@@ -59,7 +59,7 @@ controlPlane:
           - siderolabs/intel-ucode
           - siderolabs/iscsi-tools
           - siderolabs/util-linux-tools
-          - siderolabs/nut-client
+          # - siderolabs/nut-client  # disabled: needs ExtensionServiceConfig (NUT server on Synology) — without it, Talos boot times out at ~70min and reboots in a loop. Re-enable after wiring up the Synology UPS service + ExtensionServiceConfig.
 
 worker:
   schematic:
@@ -70,4 +70,4 @@ worker:
           - siderolabs/intel-ucode
           - siderolabs/iscsi-tools
           - siderolabs/util-linux-tools
-          - siderolabs/nut-client
+          # - siderolabs/nut-client  # disabled: needs ExtensionServiceConfig (NUT server on Synology) — without it, Talos boot times out at ~70min and reboots in a loop. Re-enable after wiring up the Synology UPS service + ExtensionServiceConfig.
