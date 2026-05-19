@@ -74,10 +74,11 @@ With all equipment connected: ~120W idle @ 120V, ~80 min UPS runtime, 87 kWh/mo 
 ## Docs
 
 - [Getting Started](docs/getting-started.md) — zero-to-working-cluster playbook
+- [Adding Apps](docs/adding-apps.md) — per-app pattern with worked example
 - [Kubernetes](docs/kubernetes.md) — stack, bootstrap order, migration plan
 - [Talos](docs/talos.md) — cluster setup, talhelper cheatsheet, day-2 ops
 - [Cilium](docs/cilium.md) — CNI + Gateway API + LB IPAM install
-- [FluxCD](docs/flux.md) — GitOps controller, per-app pattern
+- [FluxCD](docs/flux.md) — GitOps controller, bootstrap & workflow
 
 ## License
 

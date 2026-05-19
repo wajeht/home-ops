@@ -208,12 +208,42 @@ make flux-status      # verify both GitRepository and Kustomization are READY
 
 Flux now watches the `kubernetes/` branch path `kubernetes/flux/` and reconciles every minute.
 
+## Step 15 — Set up the apps scaffold
+
+Create the directory Flux will watch for app HelmReleases. Three files:
+
+```bash
+# kubernetes/flux/kustomization.yaml      — parent listing flux-system + apps.yaml
+# kubernetes/flux/apps.yaml               — Flux Kustomization watching kubernetes/apps/
+# kubernetes/apps/kustomization.yaml      — empty stub for now
+```
+
+See [adding-apps.md](adding-apps.md) for the canonical per-app pattern. After committing, verify Flux picks it up:
+
+```bash
+flux get kustomizations -A     # should now show: flux-system + apps
+```
+
+## Step 16 — First app: metrics-server
+
+The canonical "first GitOps-managed app" — small, dependency-free, validates the scaffold.
+
+See [adding-apps.md](adding-apps.md) for the full pattern. Once committed:
+
+```bash
+flux reconcile source git flux-system
+flux get helmreleases -A       # metrics-server: Ready
+kubectl top nodes              # confirms metrics-server is working
+```
+
+**Talos quirk:** metrics-server needs `--kubelet-insecure-tls` in its args (Talos kubelet cert is self-signed). Already baked into our `helmrelease.yaml`.
+
 ## What's next
 
-Bootstrap steps 2-3 (Cilium + Flux) are done. Remaining stack — all GitOps-managed from this point:
+Bootstrap steps 2-3 (Cilium + Flux) and the apps scaffold + first app (metrics-server) are done. Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
 
 1. ~~FluxCD~~ ✅ done
-2. **metrics-server**
+2. ~~metrics-server~~ ✅ done
 3. **reloader**
 4. **reflector**
 5. **cert-manager** + Cloudflare issuer
