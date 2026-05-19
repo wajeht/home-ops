@@ -1,22 +1,4 @@
 ---
-# Default storage class — used by any PVC that doesn't specify storageClassName.
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: longhorn
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "true"
-provisioner: driver.longhorn.io
-allowVolumeExpansion: true
-reclaimPolicy: Delete
-volumeBindingMode: Immediate
-parameters:
-  numberOfReplicas: "1" # bump to "2" when soapwa gets a data disk
-  staleReplicaTimeout: "30"
-  fromBackup: ""
-  fsType: ext4
-  dataLocality: best-effort
----
 # Single-replica class for Postgres/DB workloads (CNPG handles replication itself).
 apiVersion: storage.k8s.io/v1
 kind: StorageClass

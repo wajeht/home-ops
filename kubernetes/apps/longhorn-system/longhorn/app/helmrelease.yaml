@@ -36,8 +36,10 @@ spec:
       # Avoid scheduling Longhorn replicas on the CP (it has no extra disk)
       systemManagedComponentsNodeSelector: "node.longhorn.io/create-default-disk:true"
     persistence:
-      defaultClass: false # we define our own StorageClass in config/
+      defaultClass: true # chart's `longhorn` SC is our default
       defaultClassReplicaCount: 1
+      defaultDataLocality: best-effort
+      reclaimPolicy: Delete
     longhornManager:
       priorityClass: system-cluster-critical
     longhornDriver:
