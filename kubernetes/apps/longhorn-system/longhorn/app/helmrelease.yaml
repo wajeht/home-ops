@@ -1,0 +1,47 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: longhorn
+      version: 1.11.1
+      sourceRef:
+        kind: HelmRepository
+        name: longhorn
+        namespace: longhorn-system
+  install:
+    crds: Create
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    # Talos: data path must point at the UserVolume mounted at /var/mnt/longhorn
+    defaultSettings:
+      defaultDataPath: /var/mnt/longhorn
+      defaultDataLocality: best-effort
+      # 1 replica — we only have one disk (yanlon's SATA). Bump to 2 when soapwa
+      # gets its own data disk; until then Volsync backs us up.
+      defaultReplicaCount: 1
+      priorityClass: system-cluster-critical
+      logLevel: Warn
+      # Avoid scheduling Longhorn replicas on the CP (it has no extra disk)
+      systemManagedComponentsNodeSelector: "node.longhorn.io/create-default-disk:true"
+    persistence:
+      defaultClass: false # we define our own StorageClass in config/
+      defaultClassReplicaCount: 1
+    longhornManager:
+      priorityClass: system-cluster-critical
+    longhornDriver:
+      priorityClass: system-cluster-critical
+    longhornUI:
+      replicas: 1
+    # Talos uses /var/lib/kubelet (not /var/lib/rancher/k3s) — Longhorn default works

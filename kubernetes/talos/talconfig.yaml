@@ -20,6 +20,19 @@ nodes:
     ipAddress: 192.168.4.163
     controlPlane: false
     installDisk: /dev/nvme0n1
+    # Mount the 1TB SATA SanDisk at /var/mnt/longhorn for Longhorn storage.
+    # Talos auto-mounts UserVolumes at /var/mnt/<name>.
+    patches:
+      - |-
+        apiVersion: v1alpha1
+        kind: UserVolumeConfig
+        name: longhorn
+        provisioning:
+          diskSelector:
+            match: disk.transport == "sata"
+          minSize: 100GB
+        filesystem:
+          type: xfs
 
   # - hostname: apollo
   #   ipAddress: 192.168.4.161
