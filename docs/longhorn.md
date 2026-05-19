@@ -73,7 +73,7 @@ You should see `u-longhorn  partition  ready  /dev/sda1  1.0 TB`.
 ## Layout
 
 ```
-kubernetes/apps/longhorn-system/longhorn/
+kubernetes/apps/longhorn/
 ├── ks.yaml                          # 2 Flux Kustomizations: app + config (config dependsOn app)
 ├── app/
 │   ├── kustomization.yaml

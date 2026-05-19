@@ -16,7 +16,7 @@ For a homelab where each app has its own DB, CNPG is the dominant choice (upstre
 ## What's installed
 
 ```
-kubernetes/apps/cnpg-system/cnpg/
+kubernetes/apps/cnpg/
 ├── ks.yaml                        # Flux Kustomization (wait=true, 30m interval)
 └── app/
     ├── kustomization.yaml
@@ -141,4 +141,4 @@ CNPG's `Cluster` has an `externalClusters` import path for live migrations, but 
 
 - [CNPG docs](https://cloudnative-pg.io/documentation/)
 - [Cluster CRD reference](https://cloudnative-pg.io/documentation/current/cloudnative-pg.v1/)
-- [upstream's CNPG HelmRelease](https://github.com/upstream/home-ops/blob/main/kubernetes/kubernetes/apps/cnpg-system/cnpg/app/helmrelease.yaml)
+- [upstream's CNPG HelmRelease](https://github.com/upstream/home-ops/blob/main/kubernetes/kubernetes/apps/cnpg/app/helmrelease.yaml)

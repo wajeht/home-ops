@@ -262,7 +262,7 @@ After this, every `*.sops.yaml` you commit gets decrypted inside the cluster aut
 
 Issues Let's Encrypt certificates using your Cloudflare API token. Two `ClusterIssuer` resources: `letsencrypt-production` (real certs) and `letsencrypt-staging` (testing).
 
-The Cloudflare API token is committed SOPS-encrypted at `kubernetes/apps/cert-manager/cert-manager/issuers/secret.sops.yaml`. The `cert-manager-issuers` Flux Kustomization `dependsOn: cert-manager` so it doesn't try to apply CRDs before they exist.
+The Cloudflare API token is committed SOPS-encrypted at `kubernetes/apps/cert-manager/issuers/secret.sops.yaml`. The `cert-manager-issuers` Flux Kustomization `dependsOn: cert-manager` so it doesn't try to apply CRDs before they exist.
 
 After push:
 
@@ -276,7 +276,7 @@ kubectl get clusterissuers
 Cluster's external entry point. No port forward, no exposed home IP. See [cloudflared.md](cloudflared.md) for the full setup.
 
 1. Create a tunnel in Cloudflare Zero Trust dashboard, copy the token
-2. SOPS-encrypt the token into `kubernetes/apps/network/cloudflared/app/secret.sops.yaml`
+2. SOPS-encrypt the token into `kubernetes/apps/cloudflared/app/secret.sops.yaml`
 3. Push — Flux deploys 2 replicas of cloudflared with anti-affinity
 4. In CF dashboard, add Public Hostname routes (`<app>.wajeht.com → cilium-gateway-internet.kube-system.svc.cluster.local:80`)
 
@@ -318,7 +318,7 @@ Required before any stateful app. See [longhorn.md](longhorn.md) for the full de
              type: xfs
    ```
 2. `make talos-config && make talos-apply` (live update, no reboot) — Talos partitions/formats/mounts the disk at `/var/mnt/longhorn`
-3. Add the Longhorn HelmRelease at `kubernetes/apps/longhorn-system/longhorn/` (chart `1.11.1`, `defaultDataPath=/var/mnt/longhorn`, `defaultReplicaCount=1`, `persistence.defaultClass=true`, `persistence.defaultClassReplicaCount=1`) — the chart creates the default `longhorn` StorageClass
+3. Add the Longhorn HelmRelease at `kubernetes/apps/longhorn/` (chart `1.11.1`, `defaultDataPath=/var/mnt/longhorn`, `defaultReplicaCount=1`, `persistence.defaultClass=true`, `persistence.defaultClassReplicaCount=1`) — the chart creates the default `longhorn` StorageClass
 4. (Optional) Add a `longhorn-db` StorageClass in `config/storageclass.yaml` for Postgres/CNPG workloads that don't need Longhorn-level replication
 5. Push — Flux installs
 
@@ -335,10 +335,10 @@ kubectl get nodes.longhorn.io -A # yanlon listed with available storage
 Install the Volsync operator. Per-app backup config (ReplicationSource + destination secret) gets added when each stateful app is migrated. See [volsync.md](volsync.md) for the per-app pattern.
 
 ```bash
-# Add HelmRelease at kubernetes/apps/volsync-system/volsync/
+# Add HelmRelease at kubernetes/apps/volsync/
 #   - chart: backube/volsync v0.15.0
 #   - manageCRDs: true
-git add kubernetes/apps/volsync-system
+git add kubernetes/apps/volsync kubernetes/apps/kustomization.yaml
 git commit -m "feat(volsync-system): add volsync operator"
 git push
 ```
@@ -358,10 +358,10 @@ Backup destination not configured yet — that happens with nfs-subdir-external-
 Gives Volsync a place to write restic repos. Points at the existing Synology `/volume1/backup` share (the same one docker-cd uses) but keeps k8s data under a `k8s/` subdir to avoid clobbering existing borgmatic data. See [nfs-storage.md](nfs-storage.md) for the full deep dive.
 
 ```bash
-# Add HelmRelease at kubernetes/apps/storage/nfs-backup/
+# Add HelmRelease at kubernetes/apps/nfs-backup/
 # Values: nfs.server=192.168.4.243, nfs.path=/volume1/backup
 #         storageClass.pathPattern=k8s/${.PVC.namespace}-${.PVC.name}-${.PVC.uid}
-git add kubernetes/apps/storage
+git add kubernetes/apps/nfs-backup kubernetes/apps/kustomization.yaml
 git commit -m "feat(storage): add nfs-backup provisioner"
 git push
 ```
@@ -380,11 +380,11 @@ kubectl -n storage get pods         # nfs-backup-... Running
 Postgres-as-CRD. Each app that needs Postgres gets its own `Cluster` resource on the `longhorn-db` StorageClass. See [cnpg.md](cnpg.md) for the full deep dive.
 
 ```bash
-# Add HelmRelease at kubernetes/apps/cnpg-system/cnpg/
+# Add HelmRelease at kubernetes/apps/cnpg/
 #   - chart: cloudnative-pg/cloudnative-pg v0.28.2 (operator v1.29.1)
 #   - crds.create=true, install.crds=Create, upgrade.crds=CreateReplace
 #   - monitoring.podMonitorEnabled=false (flip on after kube-prometheus-stack)
-git add kubernetes/apps/cnpg-system kubernetes/apps/kustomization.yaml
+git add kubernetes/apps/cnpg kubernetes/apps/kustomization.yaml
 git commit -m "feat(cnpg): add CloudNativePG operator"
 git push
 ```

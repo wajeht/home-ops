@@ -2,15 +2,18 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: nfs-backup
+  name: hello-world
   namespace: flux-system
 spec:
-  targetNamespace: storage
+  targetNamespace: hello-world
   interval: 30m
-  path: ./kubernetes/apps/storage/nfs-backup/app
+  path: ./kubernetes/apps/hello-world/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
+  dependsOn:
+    - name: cnpg
+    - name: cilium-gateway
   wait: true
   timeout: 5m

@@ -2,18 +2,19 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: hello-world
+  name: cloudflared
   namespace: flux-system
 spec:
-  targetNamespace: hello-world
+  targetNamespace: network
   interval: 30m
-  path: ./kubernetes/apps/hello-world/hello-world/app
+  path: ./kubernetes/apps/cloudflared/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  dependsOn:
-    - name: cnpg
-    - name: cilium-gateway
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
   wait: true
   timeout: 5m

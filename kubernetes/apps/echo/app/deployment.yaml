@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: echo
-  namespace: default
+  namespace: echo
   labels:
     app: echo
 spec:

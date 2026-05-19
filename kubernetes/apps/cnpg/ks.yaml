@@ -2,17 +2,15 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: echo
+  name: cnpg
   namespace: flux-system
 spec:
-  targetNamespace: default
+  targetNamespace: cnpg-system
   interval: 30m
-  path: ./kubernetes/apps/default/echo/app
+  path: ./kubernetes/apps/cnpg/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  dependsOn:
-    - name: cilium-gateway
   wait: true
   timeout: 5m

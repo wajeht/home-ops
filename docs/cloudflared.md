@@ -36,7 +36,7 @@ For the k8s cluster we picked Tunnel because the docker-cd box is already using 
 ### 2. Commit the tunnel token (SOPS-encrypted) to the repo
 
 ```bash
-# kubernetes/apps/network/cloudflared/app/secret.sops.yaml
+# kubernetes/apps/cloudflared/app/secret.sops.yaml
 cat > /tmp/secret.yaml <<EOF
 ---
 apiVersion: v1
@@ -48,17 +48,17 @@ type: Opaque
 stringData:
   token: eyJ...your-tunnel-token...
 EOF
-SOPS_AGE_KEY_FILE=./.sops/age-key.txt sops -e /tmp/secret.yaml > kubernetes/apps/network/cloudflared/app/secret.sops.yaml
+SOPS_AGE_KEY_FILE=./.sops/age-key.txt sops -e /tmp/secret.yaml > kubernetes/apps/cloudflared/app/secret.sops.yaml
 rm /tmp/secret.yaml
 ```
 
 ### 3. Deploy via Flux
 
-The Deployment, Service-less (cloudflared doesn't need to receive inbound traffic), 2-replica with anti-affinity, lives in `kubernetes/apps/network/cloudflared/app/deployment.yaml`. Push it and Flux applies it.
+The Deployment, Service-less (cloudflared doesn't need to receive inbound traffic), 2-replica with anti-affinity, lives in `kubernetes/apps/cloudflared/app/deployment.yaml`. Push it and Flux applies it.
 
 ```bash
-git add kubernetes/apps/network
-git commit -m "feat(network): add cloudflared"
+git add kubernetes/apps/cloudflared
+git commit -m "feat(cloudflared): add cloudflared tunnel"
 git push
 ```
 
@@ -122,9 +122,9 @@ If the token leaks (e.g., gets pasted in a chat 😅):
 2. Copy the new token
 3. SOPS-encrypt + commit:
    ```bash
-   sopsd kubernetes/apps/network/cloudflared/app/secret.sops.yaml  # decrypt to check current value
+   sopsd kubernetes/apps/cloudflared/app/secret.sops.yaml  # decrypt to check current value
    # Edit the file, replace the token, re-encrypt
-   sops kubernetes/apps/network/cloudflared/app/secret.sops.yaml  # interactive edit
+   sops kubernetes/apps/cloudflared/app/secret.sops.yaml  # interactive edit
    ```
 4. Push. reloader sees the Secret change and rolls the cloudflared pods automatically.
 

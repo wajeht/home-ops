@@ -15,7 +15,7 @@ Every homelab with a NAS uses the dynamic provisioner. It's a tiny controller �
 ## What's installed
 
 ```
-kubernetes/apps/storage/nfs-backup/
+kubernetes/apps/nfs-backup/
 ├── ks.yaml
 └── app/
     ├── kustomization.yaml

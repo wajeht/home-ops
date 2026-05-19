@@ -1,238 +1,360 @@
 # Adding Apps
 
-How to add a new application to the cluster via GitOps. Every app — from `metrics-server` to `plex` — follows the same 5-file pattern.
+How to add a new application to the cluster via GitOps. Every app — from `metrics-server` to `plex` — follows one of two layouts depending on whether its namespace will be shared.
 
-## The Pattern
+## The Pattern (Rule of Thumb)
+
+**Flat layout** when an app has its own namespace (1 app == 1 namespace). This is the default for ~95% of apps.
 
 ```
-kubernetes/apps/<namespace>/<app>/
-├── ks.yaml                          # Flux Kustomization (entrypoint from parent)
-└── app/
-    ├── kustomization.yaml           # kustomize entrypoint (lists files in app/)
-    ├── helmrepository.yaml          # where to fetch the chart from
-    └── helmrelease.yaml             # the install spec + values
+kubernetes/apps/<app>/
+├── kustomization.yaml           # lists [namespace, ks, postgresql, ...]
+├── namespace.yaml               # the app's namespace
+├── ks.yaml                      # Flux Kustomization(s)
+├── postgresql.yaml              # CNPG Cluster (if app uses Postgres)
+├── app/                         # app manifests
+│   ├── kustomization.yaml
+│   ├── helmrelease.yaml
+│   └── httproute.yaml
+└── restic/                      # Volsync ReplicationSource (if app needs backups)
+    ├── kustomization.yaml
+    ├── pvc.yaml
+    ├── replicationsource.yaml
+    └── secret.sops.yaml
 ```
 
-Plus one line added to `kubernetes/apps/<namespace>/kustomization.yaml`.
+Examples: `apps/longhorn/` (ns=`longhorn-system`), `apps/cnpg/` (ns=`cnpg-system`), `apps/hello-world/`.
 
-## Worked Example: metrics-server
+**Namespace-grouped layout** when multiple apps share a namespace.
 
-Below is the complete metrics-server setup we just deployed. Copy this and adjust for any future app.
+```
+kubernetes/apps/<namespace>/
+├── kustomization.yaml           # lists each app's ks.yaml
+├── <app1>/
+│   ├── ks.yaml
+│   └── app/...
+└── <app2>/
+    ├── ks.yaml
+    └── app/...
+```
 
-### 1. The Flux Kustomization (`ks.yaml`)
+Example today: `apps/kube-system/` (hosts cilium-gateway, metrics-server, reflector, reloader). The `default` namespace is intentionally unused — every app gets its own.
 
-This is what gets picked up by Flux's `apps` Kustomization when it scans `kubernetes/apps/`.
+Rule of thumb: if you'd ever add a second app to this namespace, use the namespace-grouped layout. Otherwise stay flat.
+
+## Worked Example: hello-world (flat, Postgres-backed)
+
+The full hello-world app — bjw-s app-template, CNPG `Cluster`, HTTPRoute through the Cilium Gateway. Copy this for any Postgres-backed app.
+
+### 1. Root kustomization (`kustomization.yaml`)
+
+What the parent `apps/` build picks up.
 
 ```yaml
-# kubernetes/apps/kube-system/metrics-server/ks.yaml
+# kubernetes/apps/hello-world/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - postgresql.yaml
+  - ks.yaml
+```
+
+### 2. Namespace (`namespace.yaml`)
+
+```yaml
+# kubernetes/apps/hello-world/namespace.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hello-world
+```
+
+### 3. The Flux Kustomization (`ks.yaml`)
+
+```yaml
+# kubernetes/apps/hello-world/ks.yaml
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: metrics-server
+  name: hello-world
   namespace: flux-system
 spec:
-  targetNamespace: kube-system # where the app will be deployed
-  interval: 30m # how often Flux re-checks
-  path: ./kubernetes/apps/kube-system/metrics-server/app
-  prune: true # delete resources when removed from git
+  targetNamespace: hello-world
+  interval: 30m
+  path: ./kubernetes/apps/hello-world/app
+  prune: true
   sourceRef:
     kind: GitRepository
-    name: flux-system # the GitRepository created at bootstrap
-  wait: true # wait for app to be ready
+    name: flux-system
+  dependsOn:
+    - name: cnpg # block until CNPG operator is ready
+    - name: cilium-gateway # block until Gateway exists
+  wait: true
   timeout: 5m
 ```
 
 Key fields:
 
-- `targetNamespace` — where the app runs (NOT where the Flux resource lives, which is always `flux-system`)
-- `path` — points to the `app/` subdirectory containing kustomize-buildable resources
-- `prune: true` — Flux deletes resources when you remove them from git (essential for cleanup)
-- `wait: true` — Flux blocks reconcile until the app is healthy (good for dependency ordering)
+- `targetNamespace` — where the app's resources land (NOT where the Flux resource lives, which is always `flux-system`)
+- `path` — points to the `app/` subdirectory; everything under it gets kustomize-built and applied
+- `prune: true` — Flux deletes resources you remove from git
+- `wait: true` — blocks reconcile until the app reports Ready (good for downstream `dependsOn`)
+- `dependsOn` — Flux orders this Kustomization after the listed ones; use to express things like "wait for CNPG operator before creating a Postgres-backed app"
 
-### 2. The kustomize entrypoint (`app/kustomization.yaml`)
+### 4. The Postgres `Cluster` (`postgresql.yaml`)
 
-Tells kustomize which files to include when building the app.
+Sits at the app root (not under `app/`) so it's applied **before** the app's HelmRelease — that way the auto-created `postgresql-app` Secret with credentials exists when the app pod tries to consume it.
 
 ```yaml
-# kubernetes/apps/kube-system/metrics-server/app/kustomization.yaml
+# kubernetes/apps/hello-world/postgresql.yaml
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgresql
+  namespace: hello-world
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.5-minimal-bookworm@sha256:...
+  enableSuperuserAccess: false
+  storage:
+    storageClass: longhorn-db
+    size: 2Gi
+  bootstrap:
+    initdb:
+      database: hello
+      owner: hello # CNPG auto-creates Secret `postgresql-app` with username/password/uri
+```
+
+### 5. App `kustomization.yaml` (`app/kustomization.yaml`)
+
+```yaml
+# kubernetes/apps/hello-world/app/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - helmrepository.yaml
   - helmrelease.yaml
+  - httproute.yaml
 ```
 
-### 3. The Helm chart source (`app/helmrepository.yaml`)
+### 6. The HelmRelease (`app/helmrelease.yaml`)
 
-Where Flux's source-controller fetches the chart from.
-
-```yaml
-# kubernetes/apps/kube-system/metrics-server/app/helmrepository.yaml
----
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
-  name: metrics-server
-  namespace: kube-system
-spec:
-  interval: 1h
-  url: https://kubernetes-sigs.github.io/metrics-server/
-```
-
-> Tip: many apps use shared `HelmRepository` resources (e.g. `bjw-s` for app-template, `cilium` for cilium charts) so you don't repeat them per app. We'll factor those out into `kubernetes/templates/` later.
-
-### 4. The HelmRelease (`app/helmrelease.yaml`)
-
-The actual install — version, values, the works.
+Uses bjw-s app-template (universal chart for ~80% of apps in this repo).
 
 ```yaml
-# kubernetes/apps/kube-system/metrics-server/app/helmrelease.yaml
----
+# kubernetes/apps/hello-world/app/helmrelease.yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/app-template-5.0.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: metrics-server
-  namespace: kube-system
+  name: hello-world
+  namespace: hello-world
 spec:
-  interval: 1h
   chart:
     spec:
-      chart: metrics-server # chart name in the repo
-      version: 3.13.0 # pin a specific version (Renovate bumps this)
+      chart: app-template
+      version: 5.0.0
+      reconcileStrategy: ChartVersion
       sourceRef:
         kind: HelmRepository
-        name: metrics-server
-        namespace: kube-system
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
+        namespace: flux-system
+        name: bjw-s # shared HelmRepository at kubernetes/flux/repositories/helm/bjw-s.yaml
+  interval: 1h
+  driftDetection: { mode: enabled }
   values:
-    args:
-      # Talos kubelet uses a self-signed cert; metrics-server must skip TLS verification.
-      - --kubelet-insecure-tls
-      - --kubelet-preferred-address-types=InternalIP
-      - --metric-resolution=30s
-    metrics:
-      enabled: false # enable once kube-prometheus-stack is installed
+    controllers:
+      hello-world:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/wajeht/hello-world
+              tag: 01a97c3@sha256:... # pin every image with @sha256:
+              pullPolicy: IfNotPresent
+            env:
+              PORT: "3000"
+              DATABASE_URL:
+                secretKeyRef:
+                  name: postgresql-app # auto-created by CNPG
+                  key: uri
+            probes:
+              liveness: &probe
+                enabled: true
+                type: HTTP
+                path: /healthz
+                port: 3000
+              readiness: *probe
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ALL] }
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            fsGroup: 65532
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: hello-world
+        ports:
+          http:
+            port: 3000
 ```
 
-### 5. Add the app to its namespace's kustomization
+### 7. The HTTPRoute (`app/httproute.yaml`)
+
+Attaches the Service to the Cilium `internet` Gateway.
 
 ```yaml
-# kubernetes/apps/kube-system/kustomization.yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - metrics-server/ks.yaml
-  # - <next-app>/ks.yaml
+# kubernetes/apps/hello-world/app/httproute.yaml
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: hello-world
+  namespace: hello-world
+spec:
+  parentRefs:
+    - name: internet
+      namespace: kube-system
+      sectionName: http
+  hostnames:
+    - hello-world.wajeht.com
+  rules:
+    - matches:
+        - path: { type: PathPrefix, value: / }
+      backendRefs:
+        - name: hello-world
+          port: 3000
 ```
 
-### 6. Add the namespace dir to apps/
-
-Already done once when you first added the namespace; reuse for subsequent apps in the same namespace.
+### 8. Register the new dir in `apps/kustomization.yaml`
 
 ```yaml
 # kubernetes/apps/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - cert-manager
+  - cnpg
+  - hello-world # ← new
   - kube-system
-  # - cert-manager
-  # - longhorn-system
+  - longhorn
+  - ...
 ```
+
+### 9. Wire up the public hostname (manual, one-time per app)
+
+In **Cloudflare Zero Trust → Networks → Tunnels → home-ops → Configure → Public Hostname**: add `hello-world.wajeht.com → cilium-gateway-internet.kube-system.svc.cluster.local:80`. See [cloudflared.md](cloudflared.md) for full details.
 
 ## Daily workflow
 
 ```bash
-# 1. Create the 4 app files
-mkdir -p kubernetes/apps/<namespace>/<app>/app
-$EDITOR kubernetes/apps/<namespace>/<app>/ks.yaml
-$EDITOR kubernetes/apps/<namespace>/<app>/app/{kustomization,helmrepository,helmrelease}.yaml
+# 1. Scaffold the app dir (flat layout — for 1:1 namespace apps)
+mkdir -p kubernetes/apps/<app>/app
+$EDITOR kubernetes/apps/<app>/{kustomization,namespace,ks}.yaml
+$EDITOR kubernetes/apps/<app>/app/{kustomization,helmrelease}.yaml
 
-# 2. Update the parent kustomization to list the new ks.yaml
-$EDITOR kubernetes/apps/<namespace>/kustomization.yaml
+# 2. Add the app dir to apps/kustomization.yaml
+$EDITOR kubernetes/apps/kustomization.yaml
 
 # 3. Lint locally before pushing
-make lint
+make kustomize-lint
 
 # 4. Commit & push — Flux reconciles within ~1 min
-git add kubernetes/apps/
-git commit -m "feat(<namespace>): add <app>"
+git add kubernetes/apps/<app> kubernetes/apps/kustomization.yaml
+git commit -m "feat(<app>): add <app>"
 git push
 
-# 5. Watch Flux pick it up (optional — auto-reconciles)
-make flux-reconcile
+# 5. Watch Flux pick it up
+flux get kustomizations -A
 flux get helmreleases -A
 ```
 
 ## Where to find values
 
-For each app, write the `values:` block based on:
+For each app's HelmRelease `values:`, write the block based on:
 
 1. **Reference repos** — copy from upstream / onedr0p / bjw-s. Usually 90% of values match.
-2. **The chart's own README** — read it before customizing
-3. **Talos-specific gotchas** — anything that needs `--kubelet-insecure-tls`, hostPath workarounds, or capabilities
+2. **The chart's own README** — read it before customizing.
+3. **Talos-specific gotchas** — anything that needs `--kubelet-insecure-tls`, hostPath workarounds, or capabilities.
 
-When in doubt, **search upstream's repo first**:
+When in doubt, search upstream's repo first:
 
 ```bash
-grep -rl "chart: <app-name>" ~/Dev/gabe-home-ops/kubernetes
+gh search code "chart: <app-name>" --repo upstream/home-ops --extension yaml
 ```
 
-## Common patterns to copy
+## Common shapes
 
-### Stateless app with no DB
+### Stateless app, no DB, no backup
 
 ```
 <app>/
+├── kustomization.yaml          # [namespace, ks]
+├── namespace.yaml
 ├── ks.yaml
 └── app/
     ├── kustomization.yaml
-    ├── helmrepository.yaml
-    └── helmrelease.yaml
+    ├── helmrelease.yaml
+    └── httproute.yaml          # if it serves HTTP
 ```
 
-(Same as metrics-server)
-
-### App with Postgres
+### App with Postgres (via CNPG)
 
 ```
 <app>/
-├── ks.yaml                       # depends on cnpg
-├── app/
-│   └── ...                       # app's HelmRelease
-└── postgresql.yaml               # CNPG Cluster resource
+├── kustomization.yaml          # [namespace, postgresql, ks]
+├── namespace.yaml
+├── postgresql.yaml             # CNPG Cluster — applied BEFORE the app/
+├── ks.yaml                     # dependsOn: cnpg
+└── app/
+    └── ...                     # consumes postgresql-app Secret (uri key)
 ```
 
 ### App with Volsync backup
 
+Add `dependsOn: volsync` to `ks.yaml`, plus a `restic/` sibling:
+
 ```
 <app>/
-├── ks.yaml
-├── app/
-│   └── ...
-└── volsync.yaml                  # ReplicationSource for PVC backup
+├── kustomization.yaml          # [namespace, ks]
+├── namespace.yaml
+├── ks.yaml                     # 2 Flux Kustomizations: app + restic
+├── app/...
+└── restic/
+    ├── kustomization.yaml
+    ├── pvc.yaml                # tiny PVC on `nfs-backup` SC for restic repo
+    ├── replicationsource.yaml  # snapshots app PVC → restic push
+    └── secret.sops.yaml        # RESTIC_PASSWORD (SOPS-encrypted)
 ```
 
 ## Dependency ordering
 
-Some apps depend on others (e.g. cert-manager must exist before an app requests TLS). Flux handles this via `dependsOn` in the `Kustomization`:
+Some apps depend on others (e.g. cert-manager must exist before an app requests TLS). Express via `dependsOn` in the Flux `Kustomization`:
 
 ```yaml
 spec:
   dependsOn:
-    - name: cert-manager # block this until cert-manager Kustomization is Ready
+    - name: cert-manager # waits until this Kustomization is Ready
       namespace: flux-system
 ```
 
+Common dependencies:
+
+- `cnpg` — for any Postgres-backed app
+- `cilium-gateway` — for any app with an HTTPRoute
+- `cert-manager` + `cert-manager-issuers` — for any app needing in-cluster TLS
+- `volsync` — for any app with a `ReplicationSource`
+
 ## References
 
-- [upstream's apps directory](https://github.com/upstream/home-ops/tree/main/kubernetes/kubernetes/apps) — primary reference
-- [onedr0p/cluster-template apps](https://github.com/onedr0p/cluster-template/tree/main/templates/cluster/kubernetes/apps) — pattern source
+- [upstream's apps directory](https://github.com/upstream/home-ops/tree/main/kubernetes/kubernetes/apps) — primary reference (uses the flat layout for all apps)
+- [onedr0p/cluster-template apps](https://github.com/onedr0p/cluster-template/tree/main/templates/cluster/kubernetes/apps) — pattern source (uses namespace-grouped throughout)
 - [Flux Kustomization API](https://fluxcd.io/flux/components/kustomize/kustomizations/)
 - [Flux HelmRelease API](https://fluxcd.io/flux/components/helm/helmreleases/)
+- [bjw-s app-template](https://bjw-s-labs.github.io/helm-charts/docs/app-template/) — universal chart we use for ~80% of apps

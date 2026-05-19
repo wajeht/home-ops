@@ -49,7 +49,7 @@ Volsync's Restic mover can write to:
 ## Layout
 
 ```
-kubernetes/apps/volsync-system/volsync/
+kubernetes/apps/volsync/
 ├── ks.yaml                          # Flux Kustomization
 └── app/
     ├── kustomization.yaml
