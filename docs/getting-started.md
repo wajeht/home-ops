@@ -238,27 +238,105 @@ kubectl top nodes              # confirms metrics-server is working
 
 **Talos quirk:** metrics-server needs `--kubelet-insecure-tls` in its args (Talos kubelet cert is self-signed). Already baked into our `helmrelease.yaml`.
 
+## Step 17 — Enable SOPS decryption in Flux (one-time)
+
+Required before deploying anything that needs a Secret (cert-manager, cloudflared, future apps).
+
+```bash
+# Create the sops-age Secret manually — Flux can't decrypt the secret that decrypts secrets
+kubectl -n flux-system create secret generic sops-age \
+  --from-file=age.agekey=.sops/age-key.txt
+
+# Update kubernetes/flux/apps.yaml to add:
+#   spec.decryption: { provider: sops, secretRef: { name: sops-age } }
+
+# Also add a SOPS rule for k8s Secrets in .sops.yaml:
+#   - path_regex: kubernetes/.*\.sops\.yaml$
+#     encrypted_regex: ^(data|stringData)$
+#     age: <your-age-recipient>
+```
+
+After this, every `*.sops.yaml` you commit gets decrypted inside the cluster automatically.
+
+## Step 18 — cert-manager + ClusterIssuers (Cloudflare DNS-01)
+
+Issues Let's Encrypt certificates using your Cloudflare API token. Two `ClusterIssuer` resources: `letsencrypt-production` (real certs) and `letsencrypt-staging` (testing).
+
+The Cloudflare API token is committed SOPS-encrypted at `kubernetes/apps/cert-manager/cert-manager/issuers/secret.sops.yaml`. The `cert-manager-issuers` Flux Kustomization `dependsOn: cert-manager` so it doesn't try to apply CRDs before they exist.
+
+After push:
+
+```bash
+kubectl get clusterissuers
+# Both should show READY: True
+```
+
+## Step 19 — Cloudflare Tunnel (cloudflared)
+
+Cluster's external entry point. No port forward, no exposed home IP. See [cloudflared.md](cloudflared.md) for the full setup.
+
+1. Create a tunnel in Cloudflare Zero Trust dashboard, copy the token
+2. SOPS-encrypt the token into `kubernetes/apps/network/cloudflared/app/secret.sops.yaml`
+3. Push — Flux deploys 2 replicas of cloudflared with anti-affinity
+4. In CF dashboard, add Public Hostname routes (`<app>.wajeht.com → cilium-gateway-internet.kube-system.svc.cluster.local:80`)
+
+## Step 20 — Cilium Gateway + LB IPPool
+
+```
+kubernetes/apps/kube-system/cilium-gateway/app/
+├── ippool.yaml        # CiliumLoadBalancerIPPool (192.168.4.220-229)
+└── gateway.yaml       # Gateway "internet" with HTTP listener on :80
+```
+
+The Gateway gets a LoadBalancer Service named `cilium-gateway-internet`. The IP is from our pool but cloudflared talks to it via cluster DNS (`cilium-gateway-internet.kube-system.svc.cluster.local`), so the LB IP doesn't need to be externally routable.
+
+Verify:
+
+```bash
+kubectl get gateway -A
+# internet  cilium  192.168.4.220  PROGRAMMED=True
+```
+
+## Step 21 — Validate with an echo app
+
+Deploy a minimal echo server + HTTPRoute and hit it from the internet:
+
+- Deployment: `ealen/echo-server` returning JSON of the request
+- Service: ClusterIP :80
+- HTTPRoute: `echo.wajeht.com` → echo Service, attached to the `internet` Gateway
+
+```bash
+curl https://echo.wajeht.com/
+# Should return JSON with your CF-Ray, real IP, and pod hostname
+```
+
+If it works, every layer in [architecture.md](architecture.md) is proven.
+
 ## What's next
 
-Bootstrap steps 2-3 (Cilium + Flux) and the apps scaffold + first app (metrics-server) are done. Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
+Bootstrap so far ✅: Talos · Cilium · Flux · SOPS decryption · metrics-server · reloader · reflector · cert-manager · cloudflared · Cilium Gateway · echo app
+
+Remaining stack — same pattern via [adding-apps.md](adding-apps.md):
 
 1. ~~FluxCD~~ ✅ done
 2. ~~metrics-server~~ ✅ done
-3. **reloader**
-4. **reflector**
-5. **cert-manager** + Cloudflare issuer
-6. **external-dns**
-7. **oauth2-proxy**
-8. **Longhorn** + **nfs-subdir-external-provisioner**
-9. **Volsync**
-10. **CNPG**
-11. **node-feature-discovery** + **intel-device-plugin**
-12. **kube-prometheus-stack**
-13. **system-upgrade-controller**
+3. ~~reloader~~ ✅ done
+4. ~~reflector~~ ✅ done
+5. ~~cert-manager + Cloudflare issuer~~ ✅ done
+6. ~~cloudflared (tunnel) + Cilium Gateway~~ ✅ done
+7. **Longhorn** — block storage for PVCs
+8. **nfs-subdir-external-provisioner** — Synology NFS PVs for media
+9. **Volsync** — PVC backups with restore-on-create
+10. **CNPG** — Postgres operator (before any Postgres-backed app)
+11. **oauth2-proxy** — Google forward-auth replacement
+12. **node-feature-discovery** + **intel-device-plugin** — for Plex transcoding
+13. **kube-prometheus-stack** — Prometheus + Grafana + Alertmanager
+14. **system-upgrade-controller** — auto Talos/k8s upgrades
+15. **external-dns** — only needed when migrating jaw.dev to the cluster (see [architecture.md](architecture.md) for the migration plan)
 
 Plus: **convert Cilium to HelmRelease** so Flux owns it going forward (so future Cilium upgrades = git commit, not `helm upgrade`).
 
-See [kubernetes.md](kubernetes.md) for the full stack and per-component purpose.
+See [kubernetes.md](kubernetes.md) for the full stack and [architecture.md](architecture.md) for how everything ties together.
 
 ## Gotchas we learned the hard way
 

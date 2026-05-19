@@ -1,6 +1,8 @@
 # Kubernetes
 
-Planned k8s stack running on top of [Talos](talos.md). Modeled after [upstream/home-ops](https://github.com/upstream/home-ops) — the canonical homelab pattern.
+The k8s stack running on top of [Talos](talos.md). Modeled after [upstream/home-ops](https://github.com/upstream/home-ops) and [onedr0p/cluster-template](https://github.com/onedr0p/cluster-template).
+
+See [architecture.md](architecture.md) for how each component ties together, request flow diagrams, and the migration plan for moving jaw.dev to the cluster.
 
 ## Stack
 
@@ -28,23 +30,28 @@ Planned k8s stack running on top of [Talos](talos.md). Modeled after [upstream/h
 | Badges             | [kromgo](https://github.com/kashalls/kromgo)                                                          | Cluster metrics as shields.io badges                                                                                                                       |
 | Updates            | Renovate + GitHub Actions                                                                             | Same as docker-cd setup                                                                                                                                    |
 
-## Bootstrap Order
+## Bootstrap Order (current status)
 
-1. Talos cluster up (see [talos.md](talos.md))
-2. **Cilium** with CNI + Gateway API + LB IPAM all enabled (one chart, three jobs)
-3. **FluxCD** (GitOps from this repo)
-4. **metrics-server** (so `kubectl top` and HPA-aware charts work)
-5. **reloader** (so subsequent config edits roll pods automatically)
-6. **reflector** (so wildcard TLS cert + shared secrets can be reflected into other namespaces)
-7. **cert-manager** + Cloudflare issuer (wildcard cert lives in `cert-manager` ns, reflector copies it everywhere)
-8. **external-dns**
-9. **oauth2-proxy** (Google forward-auth before exposing admin apps)
-10. **Longhorn** + **nfs-subdir-external-provisioner**
-11. **Volsync** (before any stateful app, so PVCs can be restored on first deploy)
-12. **CNPG** (when first Postgres app needed)
-13. **node-feature-discovery** + **intel-device-plugin** (before deploying Plex/transcoders)
-14. **kube-prometheus-stack**
-15. **system-upgrade-controller** (add once cluster is stable; automates Talos upgrades via CRD)
+| #   | Component                                                       | Status    |
+| --- | --------------------------------------------------------------- | --------- |
+| 1   | Talos cluster up (see [talos.md](talos.md))                     | ✅ done   |
+| 2   | Cilium with CNI + Gateway API + LB IPAM                         | ✅ done   |
+| 3   | FluxCD                                                          | ✅ done   |
+| 4   | SOPS decryption in Flux                                         | ✅ done   |
+| 5   | metrics-server                                                  | ✅ done   |
+| 6   | reloader                                                        | ✅ done   |
+| 7   | reflector                                                       | ✅ done   |
+| 8   | cert-manager + ClusterIssuers (Cloudflare DNS-01)               | ✅ done   |
+| 9   | cloudflared (Cloudflare Tunnel)                                 | ✅ done   |
+| 10  | Cilium Gateway + LB IPPool                                      | ✅ done   |
+| 11  | **Longhorn** + **nfs-subdir-external-provisioner**              | ⏳ next   |
+| 12  | **Volsync** (before any stateful app)                           | ⏳        |
+| 13  | **CNPG** (Postgres operator)                                    | ⏳        |
+| 14  | **oauth2-proxy** (Google forward-auth)                          | ⏳        |
+| 15  | **node-feature-discovery** + **intel-device-plugin** (for Plex) | ⏳        |
+| 16  | **kube-prometheus-stack**                                       | ⏳        |
+| 17  | **system-upgrade-controller**                                   | ⏳        |
+| 18  | **external-dns** (only when migrating jaw.dev)                  | 🔮 future |
 
 ## Repo Layout (planned)
 

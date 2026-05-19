@@ -24,7 +24,8 @@ GitOps-driven k8s homelab on Talos Linux, modeled after [upstream/home-ops](http
 - **GitOps**: FluxCD watches this repo, reconciles `kubernetes/apps/`
 - **App chart**: bjw-s/app-template — universal Helm chart used by ~80% of apps
 - **CNI / Ingress / LB**: Cilium handles all three — CNI (replaces default Flannel), Gateway API (replaces ingress-nginx after its [March 2026 retirement](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/)), and LB IPAM for LAN VIPs (no MetalLB needed)
-- **TLS**: cert-manager with Cloudflare DNS challenge (`*.wajeht.com` wildcard — k8s cluster uses a different domain than docker-cd's `*.jaw.dev` to allow parallel operation during migration)
+- **External entry**: Cloudflare Tunnel (`cloudflared` in cluster) — outbound only, no port forward, no exposed home IP. The 7050 (docker-cd) still owns port 443 for `*.jaw.dev`, so the cluster uses `*.wajeht.com` via tunnel.
+- **TLS**: Cloudflare edge terminates HTTPS for tunneled traffic. cert-manager is installed and ready (with `letsencrypt-production` + `letsencrypt-staging` ClusterIssuers using Cloudflare DNS-01) for when we need in-cluster TLS (Gateway listeners, mTLS, or post-jaw.dev migration).
 - **DNS**: external-dns auto-syncs Cloudflare records from ingresses
 - **Auth/SSO**: oauth2-proxy with Google as IdP (replaces traefik-forward-auth from docker-cd era)
 - **Storage**: Longhorn (block PVs) + nfs-subdir-external-provisioner (Synology NFS at 192.168.4.243)
@@ -43,11 +44,14 @@ GitOps-driven k8s homelab on Talos Linux, modeled after [upstream/home-ops](http
 
 Docs index:
 
-- `docs/getting-started.md` — zero-to-working-cluster bootstrap playbook (run this for a fresh build)
-- `docs/kubernetes.md` — full stack table + bootstrap order + migration plan
+- `docs/architecture.md` — **start here** — how everything ties together (request flow, GitOps loop, secrets flow, jaw.dev migration plan)
+- `docs/getting-started.md` — zero-to-working-cluster bootstrap playbook
+- `docs/adding-apps.md` — canonical per-app GitOps pattern
+- `docs/kubernetes.md` — stack table + bootstrap status checklist
 - `docs/talos.md` — Talos cluster setup, talhelper cheatsheet, day-2 ops
-- `docs/cilium.md` — Cilium install deep dive, Talos-specific values
-- `docs/flux.md` — FluxCD bootstrap + GitOps workflow
+- `docs/cilium.md` — Cilium install deep dive
+- `docs/flux.md` — FluxCD bootstrap + workflow
+- `docs/cloudflared.md` — Cloudflare Tunnel as cluster's entry point
 
 ## Repo Layout
 
