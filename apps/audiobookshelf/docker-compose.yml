@@ -46,49 +46,6 @@ services:
       - "traefik.http.routers.audiobookshelf.middlewares=google-auth@file"
       - "traefik.http.services.audiobookshelf.loadbalancer.server.port=80"
 
-  audiobookshelf-borgmatic:
-    container_name: audiobookshelf-borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.3@sha256:529ef5f19838b650e07de2cdf91e0f403d849cf83636baacc6ec8a55e2a76f79
-    env_file:
-      - .env
-    environment:
-      - TZ=America/Chicago
-    volumes:
-      - /home/jaw/data/audiobookshelf:/source/data
-      - /home/jaw/backup/audiobookshelf:/repository
-      - /home/jaw/data/audiobookshelf/borgmatic:/borgmatic/state
-      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
-      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    networks:
-      - backup
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-
 networks:
   traefik:
-    external: true
-  backup:
     external: true

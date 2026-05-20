@@ -298,6 +298,62 @@
         "schedule": { "cron": "0 5 * * 0" },
         "structureOnly": true
       }
+    },
+    {
+      "id": "prowlarr",
+      "uri": "/repos/prowlarr",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "tautulli",
+      "uri": "/repos/tautulli",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "audiobookshelf",
+      "uri": "/repos/audiobookshelf",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "changedetection",
+      "uri": "/repos/changedetection",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
     }
   ],
   "plans": [
@@ -1237,6 +1293,182 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plex+backup+FAILED&priority=Max&tags=skull",
             "template": "plex backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "prowlarr",
+      "repo": "prowlarr",
+      "paths": ["/source/prowlarr"],
+      "excludes": [
+        "**/prowlarr/prowlarr.db",
+        "**/prowlarr/prowlarr.db-wal",
+        "**/prowlarr/prowlarr.db-shm",
+        "**/prowlarr/logs.db",
+        "**/prowlarr/logs.db-wal",
+        "**/prowlarr/logs.db-shm",
+        "**/prowlarr/asp",
+        "**/prowlarr/logs",
+        "**/prowlarr/Sentry",
+        "**/prowlarr/*.pid",
+        "**/prowlarr/borgmatic"
+      ],
+      "schedule": { "cron": "0 1 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/prowlarr/prowlarr.db -cmd \".timeout 30000\" \".backup /source/prowlarr/.prowlarr.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/prowlarr/.prowlarr.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=prowlarr+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "prowlarr backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=prowlarr+backup+FAILED&priority=Max&tags=skull",
+            "template": "prowlarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tautulli",
+      "repo": "tautulli",
+      "paths": ["/source/tautulli"],
+      "excludes": [
+        "**/tautulli/tautulli.db",
+        "**/tautulli/tautulli.db-wal",
+        "**/tautulli/tautulli.db-shm",
+        "**/tautulli/cache",
+        "**/tautulli/logs",
+        "**/tautulli/*.lock",
+        "**/tautulli/borgmatic"
+      ],
+      "schedule": { "cron": "5 1 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/tautulli/tautulli.db -cmd \".timeout 30000\" \".backup /source/tautulli/.tautulli.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/tautulli/.tautulli.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=tautulli+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "tautulli backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=tautulli+backup+FAILED&priority=Max&tags=skull",
+            "template": "tautulli backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "audiobookshelf",
+      "repo": "audiobookshelf",
+      "paths": ["/source/audiobookshelf"],
+      "excludes": [
+        "**/audiobookshelf/config/absdatabase.sqlite",
+        "**/audiobookshelf/config/absdatabase.sqlite-wal",
+        "**/audiobookshelf/config/absdatabase.sqlite-shm",
+        "**/audiobookshelf/borgmatic"
+      ],
+      "schedule": { "cron": "10 1 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/audiobookshelf/config/absdatabase.sqlite -cmd \".timeout 30000\" \".backup /source/audiobookshelf/.audiobookshelf.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/audiobookshelf/.audiobookshelf.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=audiobookshelf+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "audiobookshelf backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=audiobookshelf+backup+FAILED&priority=Max&tags=skull",
+            "template": "audiobookshelf backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "changedetection",
+      "repo": "changedetection",
+      "paths": ["/source/changedetection"],
+      "excludes": ["**/changedetection/borgmatic"],
+      "schedule": { "cron": "15 1 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=changedetection+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "changedetection backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=changedetection+backup+FAILED&priority=Max&tags=skull",
+            "template": "changedetection backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
