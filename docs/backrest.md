@@ -291,7 +291,8 @@ Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 - ✅ ntfy
 - ✅ mm2us
 - ✅ uptime-kuma
-- ⏳ remaining 35 apps
+- ✅ dbgate
+- ⏳ remaining 34 apps
 
 When all apps are migrated:
 

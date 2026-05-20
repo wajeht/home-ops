@@ -130,6 +130,20 @@
         "schedule": { "cron": "0 5 * * 0" },
         "structureOnly": true
       }
+    },
+    {
+      "id": "dbgate",
+      "uri": "/repos/dbgate",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
     }
   ],
   "plans": [
@@ -522,6 +536,34 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=uptime-kuma+backup+FAILED&priority=Max&tags=skull",
             "template": "uptime-kuma backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dbgate",
+      "repo": "dbgate",
+      "paths": ["/source/dbgate"],
+      "excludes": ["**/dbgate/borgmatic"],
+      "schedule": { "cron": "15 2 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dbgate+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "dbgate backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dbgate+backup+FAILED&priority=Max&tags=skull",
+            "template": "dbgate backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
