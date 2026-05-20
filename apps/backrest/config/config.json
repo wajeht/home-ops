@@ -354,6 +354,62 @@
         "schedule": { "cron": "0 5 * * 0" },
         "structureOnly": true
       }
+    },
+    {
+      "id": "plausible",
+      "uri": "/repos/plausible",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "zipline",
+      "uri": "/repos/zipline",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "glitchtip",
+      "uri": "/repos/glitchtip",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "hello-world",
+      "uri": "/repos/hello-world",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
     }
   ],
   "plans": [
@@ -1469,6 +1525,169 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=changedetection+backup+FAILED&priority=Max&tags=skull",
             "template": "changedetection backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "plausible",
+      "repo": "plausible",
+      "paths": ["/source/plausible"],
+      "excludes": ["**/plausible/db", "**/plausible/borgmatic"],
+      "schedule": { "cron": "5 0 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec plausible-db pg_dump -U plausible -d plausible -F custom -f /tmp/plausible.dump && docker cp plausible-db:/tmp/plausible.dump /source/plausible/.plausible.dump && docker exec plausible-db rm -f /tmp/plausible.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/plausible/.plausible.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plausible+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "plausible backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plausible+backup+FAILED&priority=Max&tags=skull",
+            "template": "plausible backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "zipline",
+      "repo": "zipline",
+      "paths": ["/source/zipline"],
+      "excludes": ["**/zipline/db", "**/zipline/borgmatic"],
+      "schedule": { "cron": "10 0 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec zipline-db pg_dump -U zipline -d zipline -F custom -f /tmp/zipline.dump && docker cp zipline-db:/tmp/zipline.dump /source/zipline/.zipline.dump && docker exec zipline-db rm -f /tmp/zipline.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/zipline/.zipline.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zipline+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "zipline backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zipline+backup+FAILED&priority=Max&tags=skull",
+            "template": "zipline backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "glitchtip",
+      "repo": "glitchtip",
+      "paths": ["/source/glitchtip"],
+      "excludes": ["**/glitchtip/db", "**/glitchtip/borgmatic"],
+      "schedule": { "cron": "15 0 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec glitchtip-db pg_dump -U glitchtip -d glitchtip -F custom -f /tmp/glitchtip.dump && docker cp glitchtip-db:/tmp/glitchtip.dump /source/glitchtip/.glitchtip.dump && docker exec glitchtip-db rm -f /tmp/glitchtip.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/glitchtip/.glitchtip.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=glitchtip+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "glitchtip backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=glitchtip+backup+FAILED&priority=Max&tags=skull",
+            "template": "glitchtip backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hello-world",
+      "repo": "hello-world",
+      "paths": ["/source/hello-world/.hello-world.dump"],
+      "schedule": { "cron": "25 0 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec hello-world-db pg_dump -U hello -d hello -F custom -f /tmp/hello-world.dump && docker cp hello-world-db:/tmp/hello-world.dump /source/hello-world/.hello-world.dump && docker exec hello-world-db rm -f /tmp/hello-world.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/hello-world/.hello-world.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=hello-world+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "hello-world backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=hello-world+backup+FAILED&priority=Max&tags=skull",
+            "template": "hello-world backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

@@ -99,57 +99,8 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  glitchtip-borgmatic:
-    container_name: glitchtip-borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.3@sha256:529ef5f19838b650e07de2cdf91e0f403d849cf83636baacc6ec8a55e2a76f79
-    env_file:
-      - .env
-    environment:
-      - TZ=America/Chicago
-      - EXTRA_PKGS=postgresql18-client
-      - PGPASSWORD=${POSTGRES_PASSWORD}
-    volumes:
-      - /home/jaw/data/glitchtip:/source/data:ro
-      - /home/jaw/backup/glitchtip:/repository
-      - /home/jaw/data/glitchtip/borgmatic:/borgmatic/state
-      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
-      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    networks:
-      - backup
-      - glitchtip-internal
-    depends_on:
-      glitchtip-db:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   traefik:
-    external: true
-  backup:
     external: true
   glitchtip-internal:
     internal: true

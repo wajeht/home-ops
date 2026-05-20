@@ -83,55 +83,8 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  hello-world-borgmatic:
-    container_name: hello-world-borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.5@sha256:f6b0a640d72bf7bb628479246e7c919404917cc58ddc6cdfb8d2d40d786d3a26
-    env_file:
-      - .env
-    environment:
-      - TZ=America/Chicago
-      - PGPASSWORD=${POSTGRES_PASSWORD}
-    volumes:
-      - /home/jaw/backup/hello-world:/repository
-      - /home/jaw/data/hello-world/borgmatic:/borgmatic/state
-      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
-      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    networks:
-      - backup
-      - internal
-    depends_on:
-      hello-world-db:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   traefik:
-    external: true
-  backup:
     external: true
   internal:
     internal: true

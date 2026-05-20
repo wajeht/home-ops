@@ -307,7 +307,11 @@ Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 - ✅ tautulli
 - ✅ audiobookshelf
 - ✅ changedetection
-- ⏳ remaining 19 apps
+- ✅ plausible
+- ✅ zipline
+- ✅ glitchtip
+- ✅ hello-world
+- ⏳ remaining 15 apps
 
 When all apps are migrated:
 
