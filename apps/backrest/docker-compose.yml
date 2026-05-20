@@ -15,6 +15,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/jaw/data:/source
+      - /home/jaw/.sops:/sops:ro
       - /home/jaw/backup/restic:/repos
       - /home/jaw/data/backrest:/data
       - ./config:/config
