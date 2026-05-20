@@ -167,21 +167,30 @@ Prune (`maxUnusedPercent: 10`) and check (`structureOnly`) run weekly per the re
 
 ### Notifications
 
-Not configured yet. Backrest supports Discord/Slack/Gotify/Healthchecks/Shoutrrr/Webhook actions. To wire up ntfy (matching the existing borgmatic notifications), add a Webhook hook at the repo level:
+ntfy notifications use Backrest's Shoutrrr action (per [issue #575](https://github.com/garethgeorge/backrest/issues/575)). Two hooks per plan — success and error — matching the original borgmatic priority/tags.
+
+ntfy is on the `traefik` network (alongside `backup`), so Backrest already has reach via its existing `traefik` membership — no extra network needed.
 
 ```json
-"hooks": [
-  {
-    "conditions": ["CONDITION_SNAPSHOT_SUCCESS", "CONDITION_SNAPSHOT_ERROR"],
-    "actionWebhook": {
-      "webhookUrl": "http://ntfy:80/borgmatic",
-      "method": "POST"
-    }
+{
+  "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+  "onError": "ON_ERROR_IGNORE",
+  "actionShoutrrr": {
+    "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=<app>%20backup%20complete&priority=Min&tags=white_check_mark",
+    "template": "<app> backup finished"
   }
-]
+},
+{
+  "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+  "onError": "ON_ERROR_IGNORE",
+  "actionShoutrrr": {
+    "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=<app>%20backup%20FAILED&priority=Max&tags=skull",
+    "template": "<app> backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+  }
+}
 ```
 
-Requires Backrest to join the `backup` network.
+URL params: `scheme=http` (internal HTTP), `title=` URL-encoded, `priority=Min|Low|Default|High|Max`, `tags=` comma-separated ntfy tag names. The `template` field is the message body (supports [Go template variables](https://github.com/garethgeorge/backrest/blob/main/docs/src/docs/hooks.md#template-system)). Reference: [Shoutrrr ntfy docs](https://containrrr.dev/shoutrrr/v0.8/services/ntfy/).
 
 ## Restore
 
