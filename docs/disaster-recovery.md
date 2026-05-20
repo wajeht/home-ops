@@ -77,7 +77,6 @@ Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 | dbgate             | 2:15 AM  | Files only    | `~/backup/dbgate/`             |
 | frigate            | 2:20 AM  | SQLite+files  | `~/backup/frigate/`            |
 | listenarr          | 2:25 AM  | SQLite+files  | `~/backup/listenarr/`          |
-| beszel             | 2:35 AM  | SQLite+files  | `~/backup/beszel/`             |
 | traefik            | 2:40 AM  | Files only    | `~/backup/traefik/`            |
 | plex               | 2:45 AM  | SQLite+files  | `~/backup/plex/`               |
 | seerr              | 2:50 AM  | SQLite+files  | `~/backup/seerr/`              |
