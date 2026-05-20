@@ -84,6 +84,22 @@
           "actionCommand": {
             "command": "rm -f /source/bang/.bang.bak"
           }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bang%20backup%20complete&priority=Min&tags=white_check_mark",
+            "template": "bang backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bang%20backup%20FAILED&priority=Max&tags=skull",
+            "template": "bang backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
         }
       ]
     },
@@ -114,6 +130,22 @@
           "actionCommand": {
             "command": "rm -f /source/favicon/.favicon.bak"
           }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=favicon%20backup%20complete&priority=Min&tags=white_check_mark",
+            "template": "favicon backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=favicon%20backup%20FAILED&priority=Max&tags=skull",
+            "template": "favicon backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
         }
       ]
     },
@@ -137,6 +169,22 @@
           "conditions": ["CONDITION_SNAPSHOT_END"],
           "actionCommand": {
             "command": "rm -f /source/calendar/.calendar.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=calendar%20backup%20complete&priority=Min&tags=white_check_mark",
+            "template": "calendar backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=calendar%20backup%20FAILED&priority=Max&tags=skull",
+            "template": "calendar backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
@@ -167,6 +215,22 @@
           "conditions": ["CONDITION_SNAPSHOT_END"],
           "actionCommand": {
             "command": "rm -f /source/screenshot/.screenshot.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=screenshot%20backup%20complete&priority=Min&tags=white_check_mark",
+            "template": "screenshot backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=screenshot%20backup%20FAILED&priority=Max&tags=skull",
+            "template": "screenshot backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
