@@ -158,6 +158,34 @@
         "schedule": { "cron": "0 5 * * 0" },
         "structureOnly": true
       }
+    },
+    {
+      "id": "gitea",
+      "uri": "/repos/gitea",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "garage",
+      "uri": "/repos/garage",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
     }
   ],
   "plans": [
@@ -618,6 +646,80 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=notify+backup+FAILED&priority=Max&tags=skull",
             "template": "notify backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gitea",
+      "repo": "gitea",
+      "paths": ["/source/gitea"],
+      "excludes": [
+        "**/gitea/gitea/gitea.db",
+        "**/gitea/gitea/gitea.db-wal",
+        "**/gitea/gitea/gitea.db-shm",
+        "**/gitea/borgmatic"
+      ],
+      "schedule": { "cron": "20 3 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/gitea/gitea/gitea.db -cmd \".timeout 30000\" \".backup /source/gitea/.gitea.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/gitea/.gitea.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gitea+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "gitea backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gitea+backup+FAILED&priority=Max&tags=skull",
+            "template": "gitea backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "garage",
+      "repo": "garage",
+      "paths": ["/source/garage"],
+      "excludes": ["**/garage/borgmatic"],
+      "schedule": { "cron": "30 2 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=garage+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "garage backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=garage+backup+FAILED&priority=Max&tags=skull",
+            "template": "garage backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
