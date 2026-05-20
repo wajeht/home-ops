@@ -68,7 +68,6 @@ Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 | changedetection | 1:15 AM  | Files only    | `~/backup/changedetection/` |
 | homeassistant   | 2:05 AM  | SQLite+files  | `~/backup/homeassistant/`   |
 | zigbee2mqtt     | 2:10 AM  | Files only    | `~/backup/zigbee2mqtt/`     |
-| garage          | 2:30 AM  | Files only    | `~/backup/garage/`          |
 | frigate         | 2:20 AM  | SQLite+files  | `~/backup/frigate/`         |
 | listenarr       | 2:25 AM  | SQLite+files  | `~/backup/listenarr/`       |
 | traefik         | 2:40 AM  | Files only    | `~/backup/traefik/`         |
@@ -79,7 +78,6 @@ Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 | vpn-qbit        | 3:05 AM  | Files only    | `~/backup/vpn-qbit/`        |
 | nut             | 3:10 AM  | Files only    | `~/backup/nut/`             |
 | vaultwarden     | 3:15 AM  | SQLite+files  | `~/backup/vaultwarden/`     |
-| gitea           | 3:20 AM  | SQLite+files  | `~/backup/gitea/`           |
 | **global**      | 3:45 AM  | All ~/data/   | `~/backup/borg/`            |
 
 ### Borgmatic Commands

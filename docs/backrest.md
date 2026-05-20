@@ -293,7 +293,9 @@ Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 - ✅ uptime-kuma
 - ✅ dbgate
 - ✅ notify
-- ⏳ remaining 33 apps
+- ✅ gitea
+- ✅ garage
+- ⏳ remaining 31 apps
 
 When all apps are migrated:
 
