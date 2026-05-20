@@ -1,6 +1,6 @@
 {
   "instance": "homeops",
-  "version": 4,
+  "version": 6,
   "auth": {
     "disabled": true
   },
