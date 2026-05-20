@@ -10,15 +10,16 @@ services:
       - BACKREST_CONFIG=/config/config.json
       - BACKREST_DATA=/data
       - XDG_CACHE_HOME=/cache
-      - TMPDIR=/tmp/dumps
+      - TMPDIR=/tmp
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/jaw/data:/source:ro
       - /home/jaw/backup/restic:/repos
       - /home/jaw/data/backrest:/data
-      - /home/jaw/data/backrest/cache:/cache
-      - /home/jaw/data/backrest/dumps:/tmp/dumps
-      - ./config.json:/config/config.json:ro
+      - ./config:/config
+    tmpfs:
+      - /cache
+      - /tmp
     networks:
       - traefik
     labels:
@@ -33,11 +34,11 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
-    init: true
     cap_drop:
       - ALL
     cap_add:
-      - DAC_READ_SEARCH
+      - CHOWN
+      - DAC_OVERRIDE
       - FOWNER
       - SETGID
       - SETUID
