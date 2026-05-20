@@ -267,7 +267,7 @@ The server has docker login configured for ghcr.io.
 
 ## With Postgres
 
-> **New apps should use [Backrest](backrest.md) instead of a per-app borgmatic sidecar.** Backrest is one centralized container that handles all backups — no per-app sidecar, no client-version pinning. The borgmatic patterns below remain documented for apps not yet migrated. See [backrest.md → Adding an App](backrest.md#adding-an-app) for the modern pattern.
+> **All apps use [Backrest](disaster-recovery.md) for backups.** One centralized container handles all backups via per-app restic repos — no per-app sidecar, no client-version pinning. See [disaster-recovery.md → Adding an App](disaster-recovery.md#adding-an-app) for the current pattern. The borgmatic patterns below are kept here as historical reference only.
 
 Apps with Postgres get a per-app borgmatic sidecar that backs up both the database (via `postgresql_databases` hook) and app files (via `source_directories`) to its own borg repo. Use `EXTRA_PKGS` to install the matching pg_dump version (e.g., `postgresql18-client` for Postgres 18).
 
