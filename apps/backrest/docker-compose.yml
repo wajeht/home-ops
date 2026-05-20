@@ -1,7 +1,7 @@
 services:
   backrest:
     container_name: backrest
-    image: ghcr.io/garethgeorge/backrest:v1.13.0@sha256:9c9966b5c285ec791a6b06cb4545fa0247424d05442e12f9558b4322d9f8a15f
+    image: ghcr.io/wajeht/backrest:sha-6555d5b@sha256:8a00d9b4b03b7406f9dcc0657379c0d83434c54e9c28ff0957ea8a2635950231
     env_file:
       - .env
     environment:
@@ -13,7 +13,7 @@ services:
       - TMPDIR=/tmp
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/jaw/data:/source:ro
+      - /home/jaw/data:/source
       - /home/jaw/backup/restic:/repos
       - /home/jaw/data/backrest:/data
       - ./config:/config
