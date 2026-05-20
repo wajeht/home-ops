@@ -3,3 +3,11 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: prometheus
+  labels:
+    # prometheus-node-exporter DaemonSet needs hostNetwork + hostPID + hostPath
+    # mounts (/proc, /sys, /) + hostPort 9100. All require privileged PSA.
+    # The non-DaemonSet workloads (Prometheus/Alertmanager/Grafana) don't need
+    # this; PSA enforce applies per-pod so the strict ones still satisfy baseline.
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged

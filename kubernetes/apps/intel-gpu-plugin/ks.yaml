@@ -37,10 +37,13 @@ spec:
   patches:
     # Expose each iGPU as 5 device slots so multiple pods (e.g. Plex + Jellyfin
     # + Tdarr) can claim transcoding concurrently. Mirrors upstream/home-ops.
+    # NB: upstream DaemonSet has no `args` field at all, so we set the whole
+    # array instead of appending (`/args/-` would fail with "missing path").
     - target:
         kind: DaemonSet
         name: intel-gpu-plugin
       patch: |
         - op: add
-          path: /spec/template/spec/containers/0/args/-
-          value: -shared-dev-num=5
+          path: /spec/template/spec/containers/0/args
+          value:
+            - -shared-dev-num=5
