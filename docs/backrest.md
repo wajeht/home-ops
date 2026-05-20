@@ -290,7 +290,8 @@ Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 - ✅ beszel
 - ✅ ntfy
 - ✅ mm2us
-- ⏳ remaining 36 apps
+- ✅ uptime-kuma
+- ⏳ remaining 35 apps
 
 When all apps are migrated:
 
