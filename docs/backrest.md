@@ -274,7 +274,9 @@ If `.tables` lists bang's tables, the whole pipeline (backup + restore) works en
 Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 
 - ✅ bang
-- ⏳ remaining 43 apps
+- ✅ favicon
+- ✅ calendar
+- ⏳ remaining 41 apps
 
 When all apps are migrated:
 

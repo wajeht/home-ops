@@ -18,6 +18,34 @@
         "schedule": { "cron": "0 5 * * 0" },
         "structureOnly": true
       }
+    },
+    {
+      "id": "favicon",
+      "uri": "/repos/favicon",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "calendar",
+      "uri": "/repos/calendar",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
     }
   ],
   "plans": [
@@ -25,16 +53,9 @@
       "id": "bang",
       "repo": "bang",
       "paths": ["/source/bang/.bang.bak"],
-      "schedule": {
-        "cron": "30 1 * * *",
-        "clock": "CLOCK_LOCAL"
-      },
+      "schedule": { "cron": "30 1 * * *", "clock": "CLOCK_LOCAL" },
       "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
       },
       "hooks": [
         {
@@ -48,6 +69,60 @@
           "conditions": ["CONDITION_SNAPSHOT_END"],
           "actionCommand": {
             "command": "rm -f /source/bang/.bang.bak"
+          }
+        }
+      ]
+    },
+    {
+      "id": "favicon",
+      "repo": "favicon",
+      "paths": ["/source/favicon"],
+      "excludes": [
+        "**/favicon/db.sqlite",
+        "**/favicon/db.sqlite-wal",
+        "**/favicon/db.sqlite-shm",
+        "**/favicon/borgmatic"
+      ],
+      "schedule": { "cron": "35 1 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/favicon/db.sqlite -cmd \".timeout 30000\" \".backup /source/favicon/.favicon.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/favicon/.favicon.bak"
+          }
+        }
+      ]
+    },
+    {
+      "id": "calendar",
+      "repo": "calendar",
+      "paths": ["/source/calendar/.calendar.bak"],
+      "schedule": { "cron": "50 1 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/calendar/db.sqlite -cmd \".timeout 30000\" \".backup /source/calendar/.calendar.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/calendar/.calendar.bak"
           }
         }
       ]
