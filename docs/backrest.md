@@ -303,7 +303,11 @@ Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 - ✅ sonarr
 - ✅ radarr
 - ✅ plex
-- ⏳ remaining 23 apps
+- ✅ prowlarr
+- ✅ tautulli
+- ✅ audiobookshelf
+- ✅ changedetection
+- ⏳ remaining 19 apps
 
 When all apps are migrated:
 
