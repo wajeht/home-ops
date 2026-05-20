@@ -288,7 +288,8 @@ Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 - ✅ screenshot
 - ✅ gains
 - ✅ beszel
-- ⏳ remaining 38 apps
+- ✅ ntfy
+- ⏳ remaining 37 apps
 
 When all apps are migrated:
 
