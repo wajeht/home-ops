@@ -41,7 +41,7 @@
           "conditions": ["CONDITION_SNAPSHOT_START"],
           "onError": "ON_ERROR_CANCEL",
           "actionCommand": {
-            "command": "sqlite3 /source/bang/db.sqlite \".backup /source/bang/.bang.bak\""
+            "command": "sqlite3 /source/bang/db.sqlite -cmd \".timeout 30000\" \".backup /source/bang/.bang.bak\""
           }
         },
         {
