@@ -49,44 +49,43 @@ Each per-app borgmatic backs up to:
 
 Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 
-| App                | Schedule | Type          | Repo                           |
-| ------------------ | -------- | ------------- | ------------------------------ |
-| miniflux           | 12:00 AM | Postgres (DB) | `~/backup/miniflux/`           |
-| plausible          | 12:05 AM | PG + files    | `~/backup/plausible/`          |
-| zipline            | 12:10 AM | PG + files    | `~/backup/zipline/`            |
-| glitchtip          | 12:15 AM | PG + files    | `~/backup/glitchtip/`          |
-| bitmagnet          | 12:20 AM | Postgres (DB) | `~/backup/bitmagnet/`          |
-| hello-world        | 12:25 AM | Postgres (DB) | `~/backup/hello-world/`        |
-| paperless          | 12:30 AM | PG + files    | `~/backup/paperless/`          |
-| immich             | 12:35 AM | Postgres (DB) | `~/backup/immich/`             |
-| uptime-kuma        | 12:40 AM | SQLite+files  | `~/backup/uptime-kuma/`        |
-| authelia           | 12:45 AM | SQLite+files  | `~/backup/authelia/`           |
-| sonarr             | 12:50 AM | SQLite+files  | `~/backup/sonarr/`             |
-| radarr             | 12:55 AM | SQLite+files  | `~/backup/radarr/`             |
-| prowlarr           | 1:00 AM  | SQLite+files  | `~/backup/prowlarr/`           |
-| tautulli           | 1:05 AM  | SQLite+files  | `~/backup/tautulli/`           |
-| audiobookshelf     | 1:10 AM  | SQLite+files  | `~/backup/audiobookshelf/`     |
-| changedetection    | 1:15 AM  | Files only    | `~/backup/changedetection/`    |
-| ntfy               | 1:20 AM  | SQLite+files  | `~/backup/ntfy/`               |
-| close-powerlifting | 1:25 AM  | SQLite (DB)   | `~/backup/close-powerlifting/` |
-| mm2us              | 1:40 AM  | SQLite (DB)   | `~/backup/mm2us/`              |
-| notify             | 1:45 AM  | SQLite (DB)   | `~/backup/notify/`             |
-| homeassistant      | 2:05 AM  | SQLite+files  | `~/backup/homeassistant/`      |
-| zigbee2mqtt        | 2:10 AM  | Files only    | `~/backup/zigbee2mqtt/`        |
-| garage             | 2:30 AM  | Files only    | `~/backup/garage/`             |
-| dbgate             | 2:15 AM  | Files only    | `~/backup/dbgate/`             |
-| frigate            | 2:20 AM  | SQLite+files  | `~/backup/frigate/`            |
-| listenarr          | 2:25 AM  | SQLite+files  | `~/backup/listenarr/`          |
-| traefik            | 2:40 AM  | Files only    | `~/backup/traefik/`            |
-| plex               | 2:45 AM  | SQLite+files  | `~/backup/plex/`               |
-| seerr              | 2:50 AM  | SQLite+files  | `~/backup/seerr/`              |
-| bazarr             | 2:55 AM  | SQLite+files  | `~/backup/bazarr/`             |
-| sabnzbd            | 3:00 AM  | SQLite+files  | `~/backup/sabnzbd/`            |
-| vpn-qbit           | 3:05 AM  | Files only    | `~/backup/vpn-qbit/`           |
-| nut                | 3:10 AM  | Files only    | `~/backup/nut/`                |
-| vaultwarden        | 3:15 AM  | SQLite+files  | `~/backup/vaultwarden/`        |
-| gitea              | 3:20 AM  | SQLite+files  | `~/backup/gitea/`              |
-| **global**         | 3:45 AM  | All ~/data/   | `~/backup/borg/`               |
+| App             | Schedule | Type          | Repo                        |
+| --------------- | -------- | ------------- | --------------------------- |
+| miniflux        | 12:00 AM | Postgres (DB) | `~/backup/miniflux/`        |
+| plausible       | 12:05 AM | PG + files    | `~/backup/plausible/`       |
+| zipline         | 12:10 AM | PG + files    | `~/backup/zipline/`         |
+| glitchtip       | 12:15 AM | PG + files    | `~/backup/glitchtip/`       |
+| bitmagnet       | 12:20 AM | Postgres (DB) | `~/backup/bitmagnet/`       |
+| hello-world     | 12:25 AM | Postgres (DB) | `~/backup/hello-world/`     |
+| paperless       | 12:30 AM | PG + files    | `~/backup/paperless/`       |
+| immich          | 12:35 AM | Postgres (DB) | `~/backup/immich/`          |
+| uptime-kuma     | 12:40 AM | SQLite+files  | `~/backup/uptime-kuma/`     |
+| authelia        | 12:45 AM | SQLite+files  | `~/backup/authelia/`        |
+| sonarr          | 12:50 AM | SQLite+files  | `~/backup/sonarr/`          |
+| radarr          | 12:55 AM | SQLite+files  | `~/backup/radarr/`          |
+| prowlarr        | 1:00 AM  | SQLite+files  | `~/backup/prowlarr/`        |
+| tautulli        | 1:05 AM  | SQLite+files  | `~/backup/tautulli/`        |
+| audiobookshelf  | 1:10 AM  | SQLite+files  | `~/backup/audiobookshelf/`  |
+| changedetection | 1:15 AM  | Files only    | `~/backup/changedetection/` |
+| ntfy            | 1:20 AM  | SQLite+files  | `~/backup/ntfy/`            |
+| mm2us           | 1:40 AM  | SQLite (DB)   | `~/backup/mm2us/`           |
+| notify          | 1:45 AM  | SQLite (DB)   | `~/backup/notify/`          |
+| homeassistant   | 2:05 AM  | SQLite+files  | `~/backup/homeassistant/`   |
+| zigbee2mqtt     | 2:10 AM  | Files only    | `~/backup/zigbee2mqtt/`     |
+| garage          | 2:30 AM  | Files only    | `~/backup/garage/`          |
+| dbgate          | 2:15 AM  | Files only    | `~/backup/dbgate/`          |
+| frigate         | 2:20 AM  | SQLite+files  | `~/backup/frigate/`         |
+| listenarr       | 2:25 AM  | SQLite+files  | `~/backup/listenarr/`       |
+| traefik         | 2:40 AM  | Files only    | `~/backup/traefik/`         |
+| plex            | 2:45 AM  | SQLite+files  | `~/backup/plex/`            |
+| seerr           | 2:50 AM  | SQLite+files  | `~/backup/seerr/`           |
+| bazarr          | 2:55 AM  | SQLite+files  | `~/backup/bazarr/`          |
+| sabnzbd         | 3:00 AM  | SQLite+files  | `~/backup/sabnzbd/`         |
+| vpn-qbit        | 3:05 AM  | Files only    | `~/backup/vpn-qbit/`        |
+| nut             | 3:10 AM  | Files only    | `~/backup/nut/`             |
+| vaultwarden     | 3:15 AM  | SQLite+files  | `~/backup/vaultwarden/`     |
+| gitea           | 3:20 AM  | SQLite+files  | `~/backup/gitea/`           |
+| **global**      | 3:45 AM  | All ~/data/   | `~/backup/borg/`            |
 
 ### Borgmatic Commands
 
