@@ -280,55 +280,25 @@ If `.tables` lists bang's tables, the whole pipeline (backup + restore) works en
 
 ## Migration Status
 
-Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
+**✅ Complete.** All 40 apps that previously had per-app borgmatic sidecars are now on Backrest. The global `apps/borgmatic/` stack is intentionally left in place as belt-and-suspenders file-level backup.
 
-- ✅ bang
-- ✅ favicon
-- ✅ calendar
-- ✅ screenshot
-- ✅ gains
-- ✅ beszel
-- ✅ ntfy
-- ✅ mm2us
-- ✅ uptime-kuma
-- ✅ dbgate
-- ✅ notify
-- ✅ gitea
-- ✅ garage
-- ✅ homeassistant
-- ✅ seerr
-- ✅ bazarr
-- ✅ sabnzbd
-- ✅ listenarr
-- ✅ sonarr
-- ✅ radarr
-- ✅ plex
-- ✅ prowlarr
-- ✅ tautulli
-- ✅ audiobookshelf
-- ✅ changedetection
-- ✅ plausible
-- ✅ zipline
-- ✅ glitchtip
-- ✅ hello-world
-- ✅ miniflux
-- ✅ bitmagnet
-- ✅ paperless-ngx
-- ✅ authelia
-- ✅ frigate
-- ✅ nut
-- ✅ vaultwarden
-- ✅ vpn-qbit
-- ✅ traefik
-- ✅ zigbee2mqtt
-- ✅ immich
-- ⏳ remaining 4 apps
+Apps on Backrest (40):
 
-When all apps are migrated:
+`audiobookshelf` · `authelia` · `bang` · `bazarr` · `beszel` · `bitmagnet` · `calendar` · `changedetection` · `dbgate` · `favicon` · `frigate` · `gains` · `garage` · `gitea` · `glitchtip` · `hello-world` · `homeassistant` · `immich` · `listenarr` · `miniflux` · `mm2us` · `notify` · `ntfy` · `nut` · `paperless-ngx` · `plausible` · `plex` · `prowlarr` · `radarr` · `sabnzbd` · `screenshot` · `seerr` · `sonarr` · `tautulli` · `traefik` · `uptime-kuma` · `vaultwarden` · `vpn-qbit` · `zigbee2mqtt` · `zipline`
 
-1. Delete each app's `*-borgmatic` service + `borgmatic-config.yml` + `borgmatic-crontab.txt`
-2. Delete `apps/borgmatic/` (the global file-level backup)
-3. Drop the borgmatic sections from [disaster-recovery.md](disaster-recovery.md)
+Apps **not** backed up (intentional — never had borgmatic, no persistent state worth backing up, or content recoverable from elsewhere):
+
+- **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
+- **Cache-only or tiny**: `huntarr`, `hindsight`, `recyclarr`, `renovate`, `ddns-updater`, `searxng`, `linx`, `walker`, `zepp`, `code-server`, `hydra-server`, `readmeabook`, `stirling-pdf`, `flaresolverr`, `byparr`, `dozzle`, `crowdsec`, `convertx`, `excalidraw`, `git`, `it-tools`, `jaw-dev`, `jellyfin`, `overseerr`, `portainer`, `scrypted`, `autobrr`, `cleanuparr`, `speedtest`, `power-badge`, `adguard`
+- **Infra (config in git)**: `backrest`, `google-auth`, `google-auth-user`
+- **Global file-level backup (kept for now)**: `borgmatic`
+
+Cleanup remaining (optional, low priority):
+
+- Delete `apps/borgmatic/` (the global file-level backup) — kept for now as belt-and-suspenders
+- Drop remaining borgmatic restore commands from [disaster-recovery.md](disaster-recovery.md) — per-app rows already removed
+- After ~30 days of clean Backrest runs, `rm -rf /home/jaw/backup/<app>` on the NAS for each migrated app (old borg repos taking space)
+- Drop `BORG_PASSPHRASE` from each app's `.env.sops` (unused now)
 
 ## Operations
 
