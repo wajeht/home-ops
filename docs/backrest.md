@@ -311,7 +311,11 @@ Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 - ✅ zipline
 - ✅ glitchtip
 - ✅ hello-world
-- ⏳ remaining 15 apps
+- ✅ miniflux
+- ✅ bitmagnet
+- ✅ paperless-ngx
+- ✅ authelia
+- ⏳ remaining 11 apps
 
 When all apps are migrated:
 

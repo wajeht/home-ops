@@ -51,11 +51,7 @@ Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 
 | App         | Schedule | Type          | Repo                    |
 | ----------- | -------- | ------------- | ----------------------- |
-| miniflux    | 12:00 AM | Postgres (DB) | `~/backup/miniflux/`    |
-| bitmagnet   | 12:20 AM | Postgres (DB) | `~/backup/bitmagnet/`   |
-| paperless   | 12:30 AM | PG + files    | `~/backup/paperless/`   |
 | immich      | 12:35 AM | Postgres (DB) | `~/backup/immich/`      |
-| authelia    | 12:45 AM | SQLite+files  | `~/backup/authelia/`    |
 | zigbee2mqtt | 2:10 AM  | Files only    | `~/backup/zigbee2mqtt/` |
 | frigate     | 2:20 AM  | SQLite+files  | `~/backup/frigate/`     |
 | traefik     | 2:40 AM  | Files only    | `~/backup/traefik/`     |
