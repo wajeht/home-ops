@@ -156,7 +156,7 @@ GitOps-driven homelab running on Docker Compose.
 
 Push to git, [docker-cd](https://github.com/wajeht/docker-cd) handles the rest — auto-discovers `apps/*/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, rolling deploys. [Traefik](https://traefik.io/traefik/) routes via Docker labels with wildcard SSL. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh; own images deploy in ~1 min via [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow).
 
-All containers [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, and health checks. [Borgmatic](https://torsion.org/borgmatic/) backs up nightly — 8 Postgres + 24 SQLite dumps + files to NAS — with integrity checks and ntfy alerts.
+All containers [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, and health checks. Nightly backups to NAS with integrity checks — migrating from per-app [Borgmatic](https://torsion.org/borgmatic/) sidecars to centralized [Backrest](docs/backrest.md) (restic web UI). See [Backrest migration status](docs/backrest.md#migration-status) for progress.
 
 ## Hardware
 
@@ -184,6 +184,7 @@ With all equipment connected: ~120W idle @ 120V, ~80 min UPS runtime, 87 kWh/mo 
 - [SSL Setup](docs/ssl.md)
 - [Renovate](docs/renovate.md)
 - [Instant Deploy](docs/instant-deploy.md)
+- [Backrest](docs/backrest.md)
 - [Disaster Recovery](docs/disaster-recovery.md)
 
 ## License

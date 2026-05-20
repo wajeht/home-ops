@@ -77,7 +77,7 @@ For each app, add **one repo + one plan** to `apps/backrest/config/config.json`.
       "conditions": ["CONDITION_SNAPSHOT_START"],
       "onError": "ON_ERROR_CANCEL",
       "actionCommand": {
-        "command": "sqlite3 /source/<app>/<path-to-db>.sqlite \".backup /source/<app>/.<app>.bak\""
+        "command": "sqlite3 /source/<app>/<path-to-db>.sqlite -cmd \".timeout 30000\" \".backup /source/<app>/.<app>.bak\""
       }
     },
     {
