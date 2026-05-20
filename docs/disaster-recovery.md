@@ -60,20 +60,13 @@ Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 | paperless       | 12:30 AM | PG + files    | `~/backup/paperless/`       |
 | immich          | 12:35 AM | Postgres (DB) | `~/backup/immich/`          |
 | authelia        | 12:45 AM | SQLite+files  | `~/backup/authelia/`        |
-| sonarr          | 12:50 AM | SQLite+files  | `~/backup/sonarr/`          |
-| radarr          | 12:55 AM | SQLite+files  | `~/backup/radarr/`          |
 | prowlarr        | 1:00 AM  | SQLite+files  | `~/backup/prowlarr/`        |
 | tautulli        | 1:05 AM  | SQLite+files  | `~/backup/tautulli/`        |
 | audiobookshelf  | 1:10 AM  | SQLite+files  | `~/backup/audiobookshelf/`  |
 | changedetection | 1:15 AM  | Files only    | `~/backup/changedetection/` |
 | zigbee2mqtt     | 2:10 AM  | Files only    | `~/backup/zigbee2mqtt/`     |
 | frigate         | 2:20 AM  | SQLite+files  | `~/backup/frigate/`         |
-| listenarr       | 2:25 AM  | SQLite+files  | `~/backup/listenarr/`       |
 | traefik         | 2:40 AM  | Files only    | `~/backup/traefik/`         |
-| plex            | 2:45 AM  | SQLite+files  | `~/backup/plex/`            |
-| seerr           | 2:50 AM  | SQLite+files  | `~/backup/seerr/`           |
-| bazarr          | 2:55 AM  | SQLite+files  | `~/backup/bazarr/`          |
-| sabnzbd         | 3:00 AM  | SQLite+files  | `~/backup/sabnzbd/`         |
 | vpn-qbit        | 3:05 AM  | Files only    | `~/backup/vpn-qbit/`        |
 | nut             | 3:10 AM  | Files only    | `~/backup/nut/`             |
 | vaultwarden     | 3:15 AM  | SQLite+files  | `~/backup/vaultwarden/`     |

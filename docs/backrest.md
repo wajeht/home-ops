@@ -296,7 +296,14 @@ Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 - ✅ gitea
 - ✅ garage
 - ✅ homeassistant
-- ⏳ remaining 30 apps
+- ✅ seerr
+- ✅ bazarr
+- ✅ sabnzbd
+- ✅ listenarr
+- ✅ sonarr
+- ✅ radarr
+- ✅ plex
+- ⏳ remaining 23 apps
 
 When all apps are migrated:
 
