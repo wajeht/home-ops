@@ -78,7 +78,7 @@ security_opt:
   - no-new-privileges:true
 ```
 
-`read_only: true` makes the container's root filesystem immutable — use on stateless single-binary apps (Go/Node) and wajeht/\* apps with data volumes. Add `tmpfs: /tmp` when the app might write temp files. Skip `read_only` for LSIO images, Postgres, Redis, borgmatic, and complex runtimes (Python/Elixir) that write all over the root filesystem.
+`read_only: true` makes the container's root filesystem immutable — use on stateless single-binary apps (Go/Node) and wajeht/\* apps with data volumes. Add `tmpfs: /tmp` when the app might write temp files. Skip `read_only` for LSIO images, Postgres, Redis, and complex runtimes (Python/Elixir) that write all over the root filesystem.
 
 Most apps need `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` because they do user switching or chown on volumes at startup. Start with these and only remove them for truly stateless single-binary apps (Go/Node apps like authelia, miniflux, dozzle).
 
@@ -87,7 +87,6 @@ Most apps need `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` because they do use
 | `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` | Most apps (user switching, writable volumes, init systems) |
 | `NET_BIND_SERVICE`                            | App binds to port < 1024 (e.g., port 80)                   |
 | `SETGID, SETUID`                              | Redis (only needs user switching, no file ownership)       |
-| `DAC_READ_SEARCH, FOWNER, SETGID, SETUID`     | Borgmatic (file reads + crond user switching)              |
 | `NET_ADMIN`                                   | VPN containers (gluetun)                                   |
 
 ### Logging
@@ -126,19 +125,9 @@ healthcheck:
   retries: 3
 ```
 
-Borgmatic sidecars use:
-
-```yaml
-healthcheck:
-  test: ["CMD-SHELL", "borgmatic --version"]
-  interval: 30s
-  timeout: 10s
-  retries: 3
-```
-
 ### Init Process
 
-Add `init: true` for proper signal handling and zombie process reaping. **Do NOT** add this to s6-overlay containers (borgmatic, LinuxServer.io images, homeassistant) — they require being PID 1.
+Add `init: true` for proper signal handling and zombie process reaping. **Do NOT** add this to s6-overlay containers (LinuxServer.io images, homeassistant) — they require being PID 1.
 
 ```yaml
 restart: unless-stopped
