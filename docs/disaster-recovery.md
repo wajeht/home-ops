@@ -2,6 +2,8 @@
 
 How to recreate the homelab from scratch.
 
+> **Migration notice (2026-05-20):** Per-app backups are slowly being migrated from `borgmatic` sidecars to centralized [Backrest](backrest.md) (restic web UI). The borgmatic schedule below is still authoritative for apps that have not yet been moved; once migrated, an app's row should be removed from this doc and the new home is [docs/backrest.md](backrest.md). See [Migration Status](backrest.md#migration-status) for current progress.
+
 ## What's Backed Up Where
 
 | Data                  | Location                | Backup Strategy                |
