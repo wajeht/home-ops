@@ -200,6 +200,104 @@
         "schedule": { "cron": "0 5 * * 0" },
         "structureOnly": true
       }
+    },
+    {
+      "id": "seerr",
+      "uri": "/repos/seerr",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "bazarr",
+      "uri": "/repos/bazarr",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "sabnzbd",
+      "uri": "/repos/sabnzbd",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "listenarr",
+      "uri": "/repos/listenarr",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "sonarr",
+      "uri": "/repos/sonarr",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "radarr",
+      "uri": "/repos/radarr",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
+    },
+    {
+      "id": "plex",
+      "uri": "/repos/plex",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
     }
   ],
   "plans": [
@@ -780,6 +878,365 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=homeassistant+backup+FAILED&priority=Max&tags=skull",
             "template": "homeassistant backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "seerr",
+      "repo": "seerr",
+      "paths": ["/source/seerr"],
+      "excludes": [
+        "**/seerr/db/db.sqlite3",
+        "**/seerr/db/db.sqlite3-wal",
+        "**/seerr/db/db.sqlite3-shm",
+        "**/seerr/logs",
+        "**/seerr/cache",
+        "**/seerr/borgmatic"
+      ],
+      "schedule": { "cron": "50 2 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/seerr/db/db.sqlite3 -cmd \".timeout 30000\" \".backup /source/seerr/.seerr.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/seerr/.seerr.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=seerr+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "seerr backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=seerr+backup+FAILED&priority=Max&tags=skull",
+            "template": "seerr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bazarr",
+      "repo": "bazarr",
+      "paths": ["/source/bazarr"],
+      "excludes": [
+        "**/bazarr/db/bazarr.db",
+        "**/bazarr/db/bazarr.db-wal",
+        "**/bazarr/db/bazarr.db-shm",
+        "**/bazarr/log",
+        "**/bazarr/cache",
+        "**/bazarr/borgmatic"
+      ],
+      "schedule": { "cron": "55 2 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/bazarr/db/bazarr.db -cmd \".timeout 30000\" \".backup /source/bazarr/.bazarr.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/bazarr/.bazarr.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bazarr+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "bazarr backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bazarr+backup+FAILED&priority=Max&tags=skull",
+            "template": "bazarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sabnzbd",
+      "repo": "sabnzbd",
+      "paths": ["/source/sabnzbd"],
+      "excludes": [
+        "**/sabnzbd/admin/history1.db",
+        "**/sabnzbd/admin/history1.db-wal",
+        "**/sabnzbd/admin/history1.db-shm",
+        "**/sabnzbd/logs",
+        "**/sabnzbd/cache",
+        "**/sabnzbd/Downloads",
+        "**/sabnzbd/borgmatic"
+      ],
+      "schedule": { "cron": "0 3 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/sabnzbd/admin/history1.db -cmd \".timeout 30000\" \".backup /source/sabnzbd/.sabnzbd.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/sabnzbd/.sabnzbd.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sabnzbd+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "sabnzbd backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sabnzbd+backup+FAILED&priority=Max&tags=skull",
+            "template": "sabnzbd backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "listenarr",
+      "repo": "listenarr",
+      "paths": ["/source/listenarr"],
+      "excludes": [
+        "**/listenarr/database/listenarr.db",
+        "**/listenarr/database/listenarr.db-wal",
+        "**/listenarr/database/listenarr.db-shm",
+        "**/listenarr/ffmpeg",
+        "**/listenarr/logs",
+        "**/listenarr/cache",
+        "**/listenarr/borgmatic"
+      ],
+      "schedule": { "cron": "25 2 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/listenarr/database/listenarr.db -cmd \".timeout 30000\" \".backup /source/listenarr/.listenarr.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/listenarr/.listenarr.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=listenarr+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "listenarr backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=listenarr+backup+FAILED&priority=Max&tags=skull",
+            "template": "listenarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sonarr",
+      "repo": "sonarr",
+      "paths": ["/source/sonarr"],
+      "excludes": [
+        "**/sonarr/sonarr.db",
+        "**/sonarr/sonarr.db-wal",
+        "**/sonarr/sonarr.db-shm",
+        "**/sonarr/logs.db",
+        "**/sonarr/logs.db-wal",
+        "**/sonarr/logs.db-shm",
+        "**/sonarr/asp",
+        "**/sonarr/logs",
+        "**/sonarr/Sentry",
+        "**/sonarr/*.pid",
+        "**/sonarr/borgmatic"
+      ],
+      "schedule": { "cron": "50 0 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/sonarr/sonarr.db -cmd \".timeout 30000\" \".backup /source/sonarr/.sonarr.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/sonarr/.sonarr.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sonarr+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "sonarr backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sonarr+backup+FAILED&priority=Max&tags=skull",
+            "template": "sonarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "radarr",
+      "repo": "radarr",
+      "paths": ["/source/radarr"],
+      "excludes": [
+        "**/radarr/radarr.db",
+        "**/radarr/radarr.db-wal",
+        "**/radarr/radarr.db-shm",
+        "**/radarr/logs.db",
+        "**/radarr/logs.db-wal",
+        "**/radarr/logs.db-shm",
+        "**/radarr/asp",
+        "**/radarr/logs",
+        "**/radarr/Sentry",
+        "**/radarr/MediaCover",
+        "**/radarr/Backups",
+        "**/radarr/*.pid",
+        "**/radarr/borgmatic"
+      ],
+      "schedule": { "cron": "55 0 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/radarr/radarr.db -cmd \".timeout 30000\" \".backup /source/radarr/.radarr.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/radarr/.radarr.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=radarr+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "radarr backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=radarr+backup+FAILED&priority=Max&tags=skull",
+            "template": "radarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "plex",
+      "repo": "plex",
+      "paths": ["/source/plex"],
+      "excludes": [
+        "**/plex/Library/Application Support/Plex Media Server/Cache",
+        "**/plex/Library/Application Support/Plex Media Server/Crash Reports",
+        "**/plex/Library/Application Support/Plex Media Server/Logs",
+        "**/plex/Library/Application Support/Plex Media Server/Metadata",
+        "**/plex/Library/Application Support/Plex Media Server/Media",
+        "**/plex/Library/Application Support/Plex Media Server/Drivers",
+        "**/plex/Library/Application Support/Plex Media Server/Scanners",
+        "**/plex/Library/Application Support/Plex Media Server/Codecs",
+        "**/com.plexapp.plugins.library.db",
+        "**/com.plexapp.plugins.library.db-wal",
+        "**/com.plexapp.plugins.library.db-shm",
+        "**/com.plexapp.plugins.library.blobs.db",
+        "**/com.plexapp.plugins.library.blobs.db-wal",
+        "**/com.plexapp.plugins.library.blobs.db-shm",
+        "**/plex/borgmatic"
+      ],
+      "schedule": { "cron": "45 2 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 '/source/plex/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db' -cmd '.timeout 30000' '.backup /source/plex/.plex-library.bak' && sqlite3 '/source/plex/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.blobs.db' -cmd '.timeout 30000' '.backup /source/plex/.plex-blobs.bak'"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/plex/.plex-library.bak /source/plex/.plex-blobs.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plex+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "plex backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plex+backup+FAILED&priority=Max&tags=skull",
+            "template": "plex backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
