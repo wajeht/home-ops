@@ -186,6 +186,20 @@
         "schedule": { "cron": "0 5 * * 0" },
         "structureOnly": true
       }
+    },
+    {
+      "id": "homeassistant",
+      "uri": "/repos/homeassistant",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
     }
   ],
   "plans": [
@@ -720,6 +734,52 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=garage+backup+FAILED&priority=Max&tags=skull",
             "template": "garage backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "homeassistant",
+      "repo": "homeassistant",
+      "paths": ["/source/homeassistant"],
+      "excludes": [
+        "**/homeassistant/home-assistant_v2.db",
+        "**/homeassistant/home-assistant_v2.db-wal",
+        "**/homeassistant/home-assistant_v2.db-shm",
+        "**/homeassistant/borgmatic"
+      ],
+      "schedule": { "cron": "5 2 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/homeassistant/home-assistant_v2.db -cmd \".timeout 30000\" \".backup /source/homeassistant/.homeassistant.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/homeassistant/.homeassistant.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=homeassistant+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "homeassistant backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=homeassistant+backup+FAILED&priority=Max&tags=skull",
+            "template": "homeassistant backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

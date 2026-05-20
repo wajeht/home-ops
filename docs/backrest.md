@@ -295,7 +295,8 @@ Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 - ✅ notify
 - ✅ gitea
 - ✅ garage
-- ⏳ remaining 31 apps
+- ✅ homeassistant
+- ⏳ remaining 30 apps
 
 When all apps are migrated:
 
