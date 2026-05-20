@@ -153,12 +153,7 @@ Same as DB-only, but `paths` is the whole data dir and excludes filter out raw D
 ```json
 {
   "paths": ["/source/<app>"],
-  "excludes": [
-    "**/<app>/<db-file>.db",
-    "**/<app>/<db-file>.db-wal",
-    "**/<app>/<db-file>.db-shm",
-    "**/<app>/borgmatic"
-  ]
+  "excludes": ["**/<app>/<db-file>.db", "**/<app>/<db-file>.db-wal", "**/<app>/<db-file>.db-shm"]
 }
 ```
 
@@ -191,7 +186,6 @@ The app's `*-db` container needs `container_name: <app>-db` set (already true fo
 ```json
 {
   "paths": ["/source/<app>"],
-  "excludes": ["**/<app>/borgmatic"],
   "hooks": [
     /* only ntfy success/error hooks, no DB hooks */
   ]
