@@ -276,7 +276,8 @@ Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 - ✅ bang
 - ✅ favicon
 - ✅ calendar
-- ⏳ remaining 41 apps
+- ✅ screenshot
+- ⏳ remaining 40 apps
 
 When all apps are migrated:
 

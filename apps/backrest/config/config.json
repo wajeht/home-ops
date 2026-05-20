@@ -46,6 +46,20 @@
         "schedule": { "cron": "0 5 * * 0" },
         "structureOnly": true
       }
+    },
+    {
+      "id": "screenshot",
+      "uri": "/repos/screenshot",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
     }
   ],
   "plans": [
@@ -123,6 +137,36 @@
           "conditions": ["CONDITION_SNAPSHOT_END"],
           "actionCommand": {
             "command": "rm -f /source/calendar/.calendar.bak"
+          }
+        }
+      ]
+    },
+    {
+      "id": "screenshot",
+      "repo": "screenshot",
+      "paths": ["/source/screenshot"],
+      "excludes": [
+        "**/screenshot/db.sqlite",
+        "**/screenshot/db.sqlite-wal",
+        "**/screenshot/db.sqlite-shm",
+        "**/screenshot/borgmatic"
+      ],
+      "schedule": { "cron": "55 1 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/screenshot/db.sqlite -cmd \".timeout 30000\" \".backup /source/screenshot/.screenshot.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/screenshot/.screenshot.bak"
           }
         }
       ]
