@@ -67,7 +67,6 @@ Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 | tautulli        | 1:05 AM  | SQLite+files  | `~/backup/tautulli/`        |
 | audiobookshelf  | 1:10 AM  | SQLite+files  | `~/backup/audiobookshelf/`  |
 | changedetection | 1:15 AM  | Files only    | `~/backup/changedetection/` |
-| mm2us           | 1:40 AM  | SQLite (DB)   | `~/backup/mm2us/`           |
 | notify          | 1:45 AM  | SQLite (DB)   | `~/backup/notify/`          |
 | homeassistant   | 2:05 AM  | SQLite+files  | `~/backup/homeassistant/`   |
 | zigbee2mqtt     | 2:10 AM  | Files only    | `~/backup/zigbee2mqtt/`     |
