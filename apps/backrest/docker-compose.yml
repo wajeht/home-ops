@@ -1,0 +1,60 @@
+services:
+  backrest:
+    container_name: backrest
+    image: ghcr.io/garethgeorge/backrest:v1.13.0@sha256:9c9966b5c285ec791a6b06cb4545fa0247424d05442e12f9558b4322d9f8a15f
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Chicago
+      - BACKREST_PORT=0.0.0.0:9898
+      - BACKREST_CONFIG=/config/config.json
+      - BACKREST_DATA=/data
+      - XDG_CACHE_HOME=/cache
+      - TMPDIR=/tmp/dumps
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/jaw/data:/source:ro
+      - /home/jaw/backup/restic:/repos
+      - /home/jaw/data/backrest:/data
+      - /home/jaw/data/backrest/cache:/cache
+      - /home/jaw/data/backrest/dumps:/tmp/dumps
+      - ./config.json:/config/config.json:ro
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backrest.rule=Host(`backrest.jaw.dev`)"
+      - "traefik.http.routers.backrest.entrypoints=websecure"
+      - "traefik.http.routers.backrest.middlewares=google-auth@file"
+      - "traefik.http.services.backrest.loadbalancer.server.port=9898"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9898/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    oom_score_adj: -300
+
+networks:
+  traefik:
+    external: true
