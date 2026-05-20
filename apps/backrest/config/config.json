@@ -88,6 +88,20 @@
         "schedule": { "cron": "0 5 * * 0" },
         "structureOnly": true
       }
+    },
+    {
+      "id": "ntfy",
+      "uri": "/repos/ntfy",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": { "cron": "0 4 * * 0" },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": { "cron": "0 5 * * 0" },
+        "structureOnly": true
+      }
     }
   ],
   "plans": [
@@ -345,6 +359,55 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=beszel+backup+FAILED&priority=Max&tags=skull",
             "template": "beszel backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ntfy",
+      "repo": "ntfy",
+      "paths": ["/source/ntfy"],
+      "excludes": [
+        "**/ntfy/user.db",
+        "**/ntfy/user.db-wal",
+        "**/ntfy/user.db-shm",
+        "**/ntfy/cache.db",
+        "**/ntfy/cache.db-wal",
+        "**/ntfy/cache.db-shm",
+        "**/ntfy/borgmatic"
+      ],
+      "schedule": { "cron": "20 1 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": {
+        "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/ntfy/user.db -cmd \".timeout 30000\" \".backup /source/ntfy/.ntfy-user.bak\" && sqlite3 /source/ntfy/cache.db -cmd \".timeout 30000\" \".backup /source/ntfy/.ntfy-cache.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/ntfy/.ntfy-user.bak /source/ntfy/.ntfy-cache.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=ntfy+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "ntfy backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=ntfy+backup+FAILED&priority=Max&tags=skull",
+            "template": "ntfy backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
