@@ -49,16 +49,9 @@ Each per-app borgmatic backs up to:
 
 Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 
-| App         | Schedule | Type          | Repo                    |
-| ----------- | -------- | ------------- | ----------------------- |
-| immich      | 12:35 AM | Postgres (DB) | `~/backup/immich/`      |
-| zigbee2mqtt | 2:10 AM  | Files only    | `~/backup/zigbee2mqtt/` |
-| frigate     | 2:20 AM  | SQLite+files  | `~/backup/frigate/`     |
-| traefik     | 2:40 AM  | Files only    | `~/backup/traefik/`     |
-| vpn-qbit    | 3:05 AM  | Files only    | `~/backup/vpn-qbit/`    |
-| nut         | 3:10 AM  | Files only    | `~/backup/nut/`         |
-| vaultwarden | 3:15 AM  | SQLite+files  | `~/backup/vaultwarden/` |
-| **global**  | 3:45 AM  | All ~/data/   | `~/backup/borg/`        |
+| App        | Schedule | Type        | Repo             |
+| ---------- | -------- | ----------- | ---------------- |
+| **global** | 3:45 AM  | All ~/data/ | `~/backup/borg/` |
 
 ### Borgmatic Commands
 

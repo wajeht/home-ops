@@ -315,7 +315,14 @@ Apps marked ✅ are on Backrest. Others still on per-app borgmatic.
 - ✅ bitmagnet
 - ✅ paperless-ngx
 - ✅ authelia
-- ⏳ remaining 11 apps
+- ✅ frigate
+- ✅ nut
+- ✅ vaultwarden
+- ✅ vpn-qbit
+- ✅ traefik
+- ✅ zigbee2mqtt
+- ✅ immich
+- ⏳ remaining 4 apps
 
 When all apps are migrated:
 

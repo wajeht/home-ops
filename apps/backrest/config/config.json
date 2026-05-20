@@ -410,6 +410,94 @@
         "schedule": { "cron": "0 5 * * 0" },
         "structureOnly": true
       }
+    },
+    {
+      "id": "miniflux",
+      "uri": "/repos/miniflux",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+      "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
+    },
+    {
+      "id": "bitmagnet",
+      "uri": "/repos/bitmagnet",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+      "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
+    },
+    {
+      "id": "paperless-ngx",
+      "uri": "/repos/paperless-ngx",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+      "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
+    },
+    {
+      "id": "authelia",
+      "uri": "/repos/authelia",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+      "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
+    },
+    {
+      "id": "frigate",
+      "uri": "/repos/frigate",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+      "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
+    },
+    {
+      "id": "nut",
+      "uri": "/repos/nut",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+      "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
+    },
+    {
+      "id": "vaultwarden",
+      "uri": "/repos/vaultwarden",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+      "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
+    },
+    {
+      "id": "vpn-qbit",
+      "uri": "/repos/vpn-qbit",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+      "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
+    },
+    {
+      "id": "traefik",
+      "uri": "/repos/traefik",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+      "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
+    },
+    {
+      "id": "zigbee2mqtt",
+      "uri": "/repos/zigbee2mqtt",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+      "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
+    },
+    {
+      "id": "immich",
+      "uri": "/repos/immich",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+      "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
     }
   ],
   "plans": [
@@ -1688,6 +1776,391 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=hello-world+backup+FAILED&priority=Max&tags=skull",
             "template": "hello-world backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "miniflux",
+      "repo": "miniflux",
+      "paths": ["/source/miniflux/.miniflux.dump"],
+      "schedule": { "cron": "0 0 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": { "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 } },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec miniflux-db pg_dump -U miniflux -d miniflux -F custom -f /tmp/miniflux.dump && docker cp miniflux-db:/tmp/miniflux.dump /source/miniflux/.miniflux.dump && docker exec miniflux-db rm -f /tmp/miniflux.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": { "command": "rm -f /source/miniflux/.miniflux.dump" }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "miniflux backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+FAILED&priority=Max&tags=skull",
+            "template": "miniflux backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bitmagnet",
+      "repo": "bitmagnet",
+      "paths": ["/source/bitmagnet/.bitmagnet.dump"],
+      "schedule": { "cron": "20 0 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": { "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 } },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec bitmagnet-db pg_dump -U postgres -d bitmagnet -F custom -f /tmp/bitmagnet.dump && docker cp bitmagnet-db:/tmp/bitmagnet.dump /source/bitmagnet/.bitmagnet.dump && docker exec bitmagnet-db rm -f /tmp/bitmagnet.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": { "command": "rm -f /source/bitmagnet/.bitmagnet.dump" }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bitmagnet+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "bitmagnet backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bitmagnet+backup+FAILED&priority=Max&tags=skull",
+            "template": "bitmagnet backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "paperless-ngx",
+      "repo": "paperless-ngx",
+      "paths": ["/source/paperless"],
+      "excludes": ["**/paperless/db", "**/paperless/redis", "**/paperless/borgmatic"],
+      "schedule": { "cron": "30 0 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": { "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 } },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec paperless-db pg_dump -U paperless -d paperless -F custom -f /tmp/paperless.dump && docker cp paperless-db:/tmp/paperless.dump /source/paperless/.paperless.dump && docker exec paperless-db rm -f /tmp/paperless.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": { "command": "rm -f /source/paperless/.paperless.dump" }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=paperless-ngx+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "paperless-ngx backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=paperless-ngx+backup+FAILED&priority=Max&tags=skull",
+            "template": "paperless-ngx backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "authelia",
+      "repo": "authelia",
+      "paths": ["/source/authelia"],
+      "excludes": [
+        "**/authelia/db.sqlite3",
+        "**/authelia/db.sqlite3-wal",
+        "**/authelia/db.sqlite3-shm",
+        "**/authelia/borgmatic"
+      ],
+      "schedule": { "cron": "45 0 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": { "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 } },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/authelia/db.sqlite3 -cmd \".timeout 30000\" \".backup /source/authelia/.authelia.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": { "command": "rm -f /source/authelia/.authelia.bak" }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=authelia+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "authelia backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=authelia+backup+FAILED&priority=Max&tags=skull",
+            "template": "authelia backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "frigate",
+      "repo": "frigate",
+      "paths": ["/source/frigate"],
+      "excludes": [
+        "**/frigate/frigate.db",
+        "**/frigate/frigate.db-wal",
+        "**/frigate/frigate.db-shm",
+        "**/frigate/media",
+        "**/frigate/model_cache",
+        "**/frigate/borgmatic"
+      ],
+      "schedule": { "cron": "20 2 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": { "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 } },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/frigate/frigate.db -cmd \".timeout 30000\" \".backup /source/frigate/.frigate.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": { "command": "rm -f /source/frigate/.frigate.bak" }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=frigate+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "frigate backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=frigate+backup+FAILED&priority=Max&tags=skull",
+            "template": "frigate backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "nut",
+      "repo": "nut",
+      "paths": ["/source/nut"],
+      "excludes": ["**/nut/borgmatic"],
+      "schedule": { "cron": "10 3 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": { "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 } },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=nut+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "nut backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=nut+backup+FAILED&priority=Max&tags=skull",
+            "template": "nut backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vaultwarden",
+      "repo": "vaultwarden",
+      "paths": ["/source/vaultwarden"],
+      "excludes": [
+        "**/vaultwarden/db.sqlite3",
+        "**/vaultwarden/db.sqlite3-wal",
+        "**/vaultwarden/db.sqlite3-shm",
+        "**/vaultwarden/borgmatic"
+      ],
+      "schedule": { "cron": "15 3 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": { "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 } },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/vaultwarden/db.sqlite3 -cmd \".timeout 30000\" \".backup /source/vaultwarden/.vaultwarden.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": { "command": "rm -f /source/vaultwarden/.vaultwarden.bak" }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vaultwarden+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "vaultwarden backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vaultwarden+backup+FAILED&priority=Max&tags=skull",
+            "template": "vaultwarden backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vpn-qbit",
+      "repo": "vpn-qbit",
+      "paths": ["/source/qbittorrent", "/source/gluetun"],
+      "excludes": [
+        "**/qbittorrent/logs",
+        "**/qbittorrent/cache",
+        "**/qbittorrent/ipc-socket",
+        "**/qbittorrent/borgmatic",
+        "**/gluetun/logs",
+        "**/gluetun/cache",
+        "**/gluetun/ipc-socket"
+      ],
+      "schedule": { "cron": "5 3 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": { "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 } },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vpn-qbit+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "vpn-qbit backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vpn-qbit+backup+FAILED&priority=Max&tags=skull",
+            "template": "vpn-qbit backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "traefik",
+      "repo": "traefik",
+      "paths": ["/source/traefik"],
+      "excludes": ["**/traefik/borgmatic"],
+      "schedule": { "cron": "40 2 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": { "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 } },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=traefik+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "traefik backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=traefik+backup+FAILED&priority=Max&tags=skull",
+            "template": "traefik backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "zigbee2mqtt",
+      "repo": "zigbee2mqtt",
+      "paths": ["/source/zigbee2mqtt"],
+      "excludes": ["**/zigbee2mqtt/borgmatic"],
+      "schedule": { "cron": "10 2 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": { "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 } },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zigbee2mqtt+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "zigbee2mqtt backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zigbee2mqtt+backup+FAILED&priority=Max&tags=skull",
+            "template": "zigbee2mqtt backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "immich",
+      "repo": "immich",
+      "paths": ["/source/immich/.immich.dump"],
+      "schedule": { "cron": "35 0 * * *", "clock": "CLOCK_LOCAL" },
+      "retention": { "policyTimeBucketed": { "daily": 7, "weekly": 4, "monthly": 6 } },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec immich-db pg_dump -U immich -d immich -F custom -f /tmp/immich.dump && docker cp immich-db:/tmp/immich.dump /source/immich/.immich.dump && docker exec immich-db rm -f /tmp/immich.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": { "command": "rm -f /source/immich/.immich.dump" }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=immich+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "immich backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=immich+backup+FAILED&priority=Max&tags=skull",
+            "template": "immich backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
