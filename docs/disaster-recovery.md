@@ -59,7 +59,6 @@ Global borgmatic also backs up `~/data/` to NFS as an additional safety net.
 | hello-world     | 12:25 AM | Postgres (DB) | `~/backup/hello-world/`     |
 | paperless       | 12:30 AM | PG + files    | `~/backup/paperless/`       |
 | immich          | 12:35 AM | Postgres (DB) | `~/backup/immich/`          |
-| uptime-kuma     | 12:40 AM | SQLite+files  | `~/backup/uptime-kuma/`     |
 | authelia        | 12:45 AM | SQLite+files  | `~/backup/authelia/`        |
 | sonarr          | 12:50 AM | SQLite+files  | `~/backup/sonarr/`          |
 | radarr          | 12:55 AM | SQLite+files  | `~/backup/radarr/`          |
