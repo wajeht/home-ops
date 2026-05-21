@@ -79,11 +79,17 @@
         #   url: http://audiobookshelf:80
         #   key: "{{HOMEPAGE_VAR_AUDIOBOOKSHELF_KEY}}"
 
+    - Readmeabook:
+        icon: mdi-book-open-page-variant
+        href: https://readmeabook.jaw.dev
+        description: Audiobook Library
+        # siteMonitor: http://readmeabook:3030
+
     - Listenarr:
         icon: listenarr
         href: https://listenarr.jaw.dev
         description: Music
-        # siteMonitor: http://listenarr:5656
+        # siteMonitor: http://listenarr:4545
 
     - Immich:
         icon: immich
@@ -162,11 +168,23 @@
         description: Smart Home
         # siteMonitor: http://homeassistant:8123
 
+    - Scrypted:
+        icon: scrypted
+        href: https://scrypted.jaw.dev
+        description: Camera Automation
+        # siteMonitor: https://scrypted:10443
+
     - AdGuard:
         icon: adguard-home
         href: http://192.168.4.181
         description: DNS Ad Blocking
         # siteMonitor: http://192.168.4.181:80
+
+    - NUT:
+        icon: mdi-power-plug
+        href: https://nut.jaw.dev
+        description: UPS Monitor
+        # siteMonitor: http://peanut:8080
 
     - Traefik:
         icon: traefik
@@ -183,11 +201,23 @@
         description: GitOps Deployer
         # siteMonitor: http://docker-cd:80
 
+    - Backrest:
+        icon: mdi-backup-restore
+        href: https://backrest.jaw.dev
+        description: Backups
+        # siteMonitor: http://backrest:9898
+
     - Google Auth:
         icon: google
         href: https://auth.jaw.dev
         description: OAuth Proxy
         # siteMonitor: http://google-auth:4181
+
+    - Google Auth User:
+        icon: google
+        href: https://auth-user.jaw.dev
+        description: User OAuth Proxy
+        # siteMonitor: http://google-auth-user:4181
 
     - Portainer:
         icon: portainer
@@ -319,9 +349,15 @@
         description: Workout Tracker
         # siteMonitor: http://gains:80
 
+    - Zepp:
+        icon: mdi-watch
+        href: https://zepp.jaw.dev
+        description: Fitness Data
+        # siteMonitor: http://zepp:80
+
     - Close Powerlifting:
         icon: mdi-weight-lifter
-        href: https://close-powerlifting.jaw.dev
+        href: https://closepowerlifting.com
         description: Powerlifting Stats
         # siteMonitor: http://close-powerlifting:80
 
@@ -390,6 +426,12 @@
         href: https://git.jaw.dev
         description: Git URL Shortener
         # siteMonitor: http://git:80
+
+    - Hydra Server:
+        icon: mdi-server
+        href: https://hydra-server.jaw.dev
+        description: Custom Server
+        # siteMonitor: http://hydra-server:3000
 
     - Hello World:
         icon: mdi-hand-wave
