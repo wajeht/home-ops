@@ -65,9 +65,10 @@ jobs:
 
   deploy:
     needs: build-and-push
-    uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.18
+    uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.21
     with:
       app-path: apps/your-app-name
+      service-name: your-compose-service-name
       tag: ${{ needs.build-and-push.outputs.version }}
       url: https://your-app.jaw.dev # optional, defaults to https://<repo-name>.jaw.dev
     secrets:
@@ -120,6 +121,7 @@ Reusable workflow at `wajeht/docker-cd-deploy-workflow` that:
 | --------------- | -------- | ----------------------------- | ------------------------------------- |
 | `home-ops-repo` | No       | `wajeht/home-ops`             | Target repo                           |
 | `app-path`      | Yes      | -                             | Path to app (e.g., `apps/ufc`)        |
+| `service-name`  | Yes      | -                             | Compose service to update             |
 | `tag`           | Yes      | -                             | Image tag (e.g., `v1.0.0`)            |
 | `url`           | No       | `https://<repo-name>.jaw.dev` | Production URL for GitHub Deployments |
 
@@ -140,9 +142,10 @@ The workflow uses native GitHub Actions `environment:` which provides:
 For custom domains (not `*.jaw.dev`), pass the `url` input:
 
 ```yaml
-uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.18
+uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.21
 with:
   app-path: apps/close-powerlifting
+  service-name: close-powerlifting
   tag: ${{ needs.build.outputs.tag }}
   url: https://closepowerlifting.com
 ```
