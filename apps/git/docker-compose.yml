@@ -1,6 +1,6 @@
 services:
   git:
-    image: ghcr.io/wajeht/git:049ab15
+    image: ghcr.io/wajeht/git:0a604b3
     environment:
       - TZ=America/Chicago
       - APP_PORT=80
