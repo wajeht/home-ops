@@ -402,24 +402,6 @@
       }
     },
     {
-      "id": "nut",
-      "uri": "/repos/nut",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "vaultwarden",
       "uri": "/repos/vaultwarden",
       "password": "",
@@ -1660,40 +1642,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=hello-world+backup+FAILED&priority=Max&tags=skull",
             "template": "hello-world backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "nut",
-      "repo": "nut",
-      "paths": ["/source/nut"],
-      "excludes": ["**/nut/borgmatic"],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=nut+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "nut backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=nut+backup+FAILED&priority=Max&tags=skull",
-            "template": "nut backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
