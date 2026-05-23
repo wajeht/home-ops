@@ -44,7 +44,8 @@ flowchart LR
     end
 
     subgraph infra[Infra]
-        subgraph dell[Dell OptiPlex 7050 Micro]
+        subgraph dell["Dell OptiPlex 7050 Micro
+        i7-7700 / 32GB RAM"]
             docker_cd[docker-cd] -->|compose up| apps
             traefik[Traefik] -->|proxy| docker_cd
             traefik -->|forward-auth| google_auth[Google Auth] -->|authed| apps
