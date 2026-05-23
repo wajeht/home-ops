@@ -111,7 +111,7 @@ flowchart LR
 
     style app_repo fill:#e8f4fd,stroke:#4a90d9
     style ops_repo fill:#e8f4fd,stroke:#4a90d9
-    style public fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#333
+    style public fill:#dbeafe,stroke:#2563eb,color:#333
     style infra fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
     style cloudflare fill:#fde8d0,stroke:#f6821f
     style cf fill:#fde8d0,stroke:#f6821f,color:#333
