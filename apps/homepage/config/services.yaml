@@ -143,11 +143,6 @@
         description: Zigbee Bridge
         # siteMonitor: http://zigbee2mqtt:8080
 
-    - Proxmox:
-        icon: proxmox
-        href: https://192.168.4.162:8006
-        description: Hypervisor
-
     - Intel AMT (7050):
         icon: mdi-desktop-tower-monitor
         href: http://192.168.4.161:16992
