@@ -44,7 +44,7 @@ Gatus hot-reloads on config changes, so a `docker-cd` deploy is enough — no re
 | ICMP | `icmp://host`              | Plain reachability check                              |
 | DNS  | `dns://server`             | Validate a DNS record resolves                        |
 
-For apps on a private network (e.g. AdGuard on `adguard_net`), use `tcp://192.168.4.161:<host-port>` to hit the host's published port.
+For apps running on a different host (e.g. AdGuard on `pi@192.168.4.181`), use a TCP probe against the host's published port: `tcp://<host-ip>:<port>`.
 
 ### Host Header Quirks
 
