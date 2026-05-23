@@ -31,25 +31,6 @@ endpoints:
     alerts:
       - type: ntfy
 
-  - name: Authelia
-    group: Infra
-    url: http://authelia:9091/api/health
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 2000"
-    alerts:
-      - type: ntfy
-
-  - name: AdGuard
-    group: Infra
-    url: tcp://192.168.4.161:53
-    interval: 1m
-    conditions:
-      - "[CONNECTED] == true"
-    alerts:
-      - type: ntfy
-
   - name: Homepage
     group: Core
     url: http://homepage:3000
@@ -95,16 +76,6 @@ endpoints:
   - name: Plex
     group: Media
     url: http://plex:32400/identity
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-    alerts:
-      - type: ntfy
-
-  - name: Sonarr
-    group: Downloads
-    url: http://sonarr:8989/ping
     interval: 1m
     conditions:
       - "[STATUS] == 200"
