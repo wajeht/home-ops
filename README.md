@@ -118,7 +118,7 @@ flowchart LR
     style cf_region fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_ddos fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_bot fill:#fde8d0,stroke:#f6821f,color:#333
-    style you fill:#dbeafe,stroke:#2563eb,color:#333
+    style you fill:#fef3c7,stroke:#f59e0b,color:#333
     style ucg_cf fill:#fde8e8,stroke:#dc2626,color:#333
     style ucg_region fill:#fde8e8,stroke:#dc2626,color:#333
     style ucg_ids fill:#fde8e8,stroke:#dc2626,color:#333
