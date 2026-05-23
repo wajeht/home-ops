@@ -1,37 +1,4 @@
 services:
-  # Gatus is scratch-based, so copy static BusyBox for Docker healthchecks.
-  gatus-healthcheck-bin:
-    container_name: gatus-healthcheck-bin
-    image: busybox:1.38.0-musl@sha256:f36701e0a15a97186ccc59bbe9a6217b649edecb36ce32d07fa31bf5ad15e56d
-    command: ["sh", "-c", "cp /bin/busybox /healthcheck/busybox && chmod 0555 /healthcheck/busybox && tail -f /dev/null"]
-    network_mode: none
-    volumes:
-      - gatus-healthcheck-bin:/healthcheck
-    healthcheck:
-      test: ["CMD", "/bin/busybox", "test", "-x", "/healthcheck/busybox"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-    restart: unless-stopped
-    read_only: true
-    tmpfs:
-      - /tmp
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.1"
-          memory: 32M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
   gatus:
     container_name: gatus
     image: ghcr.io/twin/gatus:stable@sha256:c5f210d095fa78e6efaa20ffeb14803f2ba4f10615e16a6d12087697149617f0
@@ -39,18 +6,14 @@ services:
       - TZ=America/Chicago
       - GATUS_CONFIG_PATH=/config
       - GATUS_LOG_LEVEL=INFO
-    depends_on:
-      gatus-healthcheck-bin:
-        condition: service_healthy
     volumes:
       - ./config:/config:ro
+      - ./httpcheck:/httpcheck:ro
       - /home/jaw/data/gatus:/data
-      - gatus-healthcheck-bin:/healthcheck:ro
     networks:
       - traefik
     healthcheck:
-      test:
-        ["CMD", "/healthcheck/busybox", "wget", "-q", "--spider", "http://127.0.0.1:8080/health"]
+      test: ["CMD", "/httpcheck", "http://127.0.0.1:8080/health"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -87,6 +50,3 @@ services:
 networks:
   traefik:
     external: true
-
-volumes:
-  gatus-healthcheck-bin:

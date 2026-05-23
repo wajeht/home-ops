@@ -125,7 +125,7 @@ healthcheck:
   retries: 3
 ```
 
-For scratch/minimal images with no shell, `curl`, or `wget`, either use the app's own healthcheck command or mount a static helper binary. See `apps/gatus/docker-compose.yml` for the BusyBox helper pattern.
+For scratch/minimal images with no shell, `curl`, or `wget`, either use the app's own healthcheck command or mount a static helper binary. See `apps/gatus/docker-compose.yml` for the Microcheck `httpcheck` pattern.
 
 ### Init Process
 
