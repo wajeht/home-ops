@@ -152,7 +152,7 @@ flowchart LR
     linkStyle 28 stroke:#22c55e,stroke-dasharray:5
     linkStyle 29 stroke:#22c55e,stroke-dasharray:5
     linkStyle 30 stroke:#22c55e,stroke-dasharray:5
-    linkStyle 31 stroke:#2563eb,stroke-width:3px,stroke-dasharray:5
+    linkStyle 31 stroke:#2563eb,stroke-dasharray:5
 ```
 
 GitOps-driven homelab running on Docker Compose.
