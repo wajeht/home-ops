@@ -19,8 +19,6 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.middlewares=cloudflare-only@file,gzip@file,security-headers@file"
-      - "--entrypoints.web.http.encodedcharacters=false"
-      - "--entrypoints.websecure.http.encodedcharacters=false"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       # Trust X-Forwarded-* headers from Cloudflare
