@@ -312,24 +312,6 @@
       }
     },
     {
-      "id": "listenarr",
-      "uri": "/repos/listenarr",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "sonarr",
       "uri": "/repos/sonarr",
       "password": "",
@@ -386,42 +368,6 @@
     {
       "id": "prowlarr",
       "uri": "/repos/prowlarr",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
-      "id": "audiobookshelf",
-      "uri": "/repos/audiobookshelf",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
-      "id": "plausible",
-      "uri": "/repos/plausible",
       "password": "",
       "autoInitialize": true,
       "prunePolicy": {
@@ -1428,61 +1374,6 @@
       ]
     },
     {
-      "id": "listenarr",
-      "repo": "listenarr",
-      "paths": ["/source/listenarr"],
-      "excludes": [
-        "**/listenarr/database/listenarr.db",
-        "**/listenarr/database/listenarr.db-wal",
-        "**/listenarr/database/listenarr.db-shm",
-        "**/listenarr/ffmpeg",
-        "**/listenarr/logs",
-        "**/listenarr/cache",
-        "**/listenarr/borgmatic"
-      ],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "sqlite3 /source/listenarr/database/listenarr.db -cmd \".timeout 30000\" \".backup /source/listenarr/.listenarr.bak\""
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/listenarr/.listenarr.bak"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=listenarr+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "listenarr backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=listenarr+backup+FAILED&priority=Max&tags=skull",
-            "template": "listenarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
       "id": "sonarr",
       "repo": "sonarr",
       "paths": ["/source/sonarr"],
@@ -1723,105 +1614,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=prowlarr+backup+FAILED&priority=Max&tags=skull",
             "template": "prowlarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "audiobookshelf",
-      "repo": "audiobookshelf",
-      "paths": ["/source/audiobookshelf"],
-      "excludes": [
-        "**/audiobookshelf/config/absdatabase.sqlite",
-        "**/audiobookshelf/config/absdatabase.sqlite-wal",
-        "**/audiobookshelf/config/absdatabase.sqlite-shm",
-        "**/audiobookshelf/borgmatic"
-      ],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "sqlite3 /source/audiobookshelf/config/absdatabase.sqlite -cmd \".timeout 30000\" \".backup /source/audiobookshelf/.audiobookshelf.bak\""
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/audiobookshelf/.audiobookshelf.bak"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=audiobookshelf+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "audiobookshelf backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=audiobookshelf+backup+FAILED&priority=Max&tags=skull",
-            "template": "audiobookshelf backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "plausible",
-      "repo": "plausible",
-      "paths": ["/source/plausible"],
-      "excludes": ["**/plausible/db", "**/plausible/borgmatic"],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "docker exec plausible-db pg_dump -U plausible -d plausible -F custom -f /tmp/plausible.dump && docker cp plausible-db:/tmp/plausible.dump /source/plausible/.plausible.dump && docker exec plausible-db rm -f /tmp/plausible.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/plausible/.plausible.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plausible+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "plausible backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plausible+backup+FAILED&priority=Max&tags=skull",
-            "template": "plausible backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
