@@ -2,6 +2,8 @@ services:
   gatus:
     container_name: gatus
     image: ghcr.io/twin/gatus:stable@sha256:c5f210d095fa78e6efaa20ffeb14803f2ba4f10615e16a6d12087697149617f0
+    env_file:
+      - .env
     environment:
       - TZ=America/Chicago
       - GATUS_CONFIG_PATH=/config

@@ -14,6 +14,7 @@ alerting:
   ntfy:
     url: "http://ntfy:80"
     topic: gatus
+    token: ${NTFY_TOKEN}
     priority: 3
     default-alert:
       enabled: true
