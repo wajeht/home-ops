@@ -168,6 +168,24 @@
       }
     },
     {
+      "id": "gatus",
+      "uri": "/repos/gatus",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 4 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 5 * * 0"
+        },
+        "structureOnly": true
+      }
+    },
+    {
       "id": "dbgate",
       "uri": "/repos/dbgate",
       "password": "",
@@ -1197,6 +1215,59 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=uptime-kuma+backup+FAILED&priority=Max&tags=skull",
             "template": "uptime-kuma backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gatus",
+      "repo": "gatus",
+      "paths": ["/source/gatus"],
+      "excludes": [
+        "**/gatus/gatus.db",
+        "**/gatus/gatus.db-wal",
+        "**/gatus/gatus.db-shm",
+        "**/gatus/borgmatic"
+      ],
+      "schedule": {
+        "cron": "42 0 * * *",
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/gatus/gatus.db -cmd \".timeout 30000\" \".backup /source/gatus/.gatus.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/gatus/.gatus.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gatus+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "gatus backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gatus+backup+FAILED&priority=Max&tags=skull",
+            "template": "gatus backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

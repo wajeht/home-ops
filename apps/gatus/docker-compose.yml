@@ -1,0 +1,83 @@
+services:
+  # Gatus is scratch-based, so copy static BusyBox for Docker healthchecks.
+  gatus-healthcheck-bin:
+    container_name: gatus-healthcheck-bin
+    image: busybox:1.37.0-musl@sha256:6fd0ce7107f108ae0a60d9cff21e7979b59a96df2862bc1ae0b394d8a98a0cca
+    command: ["sh", "-c", "cp /bin/busybox /healthcheck/busybox && chmod 0555 /healthcheck/busybox"]
+    network_mode: none
+    volumes:
+      - gatus-healthcheck-bin:/healthcheck
+    restart: "no"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 32M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  gatus:
+    container_name: gatus
+    image: ghcr.io/twin/gatus:stable@sha256:c5f210d095fa78e6efaa20ffeb14803f2ba4f10615e16a6d12087697149617f0
+    environment:
+      - TZ=America/Chicago
+      - GATUS_CONFIG_PATH=/config
+      - GATUS_LOG_LEVEL=INFO
+    depends_on:
+      gatus-healthcheck-bin:
+        condition: service_completed_successfully
+    volumes:
+      - ./config:/config:ro
+      - /home/jaw/data/gatus:/data
+      - gatus-healthcheck-bin:/healthcheck:ro
+    networks:
+      - traefik
+    healthcheck:
+      test:
+        ["CMD", "/healthcheck/busybox", "wget", "-q", "--spider", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gatus.rule=Host(`gatus.jaw.dev`)"
+      - "traefik.http.routers.gatus.entrypoints=websecure"
+      - "traefik.http.routers.gatus.middlewares=google-auth@file"
+      - "traefik.http.services.gatus.loadbalancer.server.port=8080"
+
+networks:
+  traefik:
+    external: true
+
+volumes:
+  gatus-healthcheck-bin:
