@@ -482,6 +482,12 @@
         description: Cyber Swiss Army Knife
         # siteMonitor: http://cyberchef:8080
 
+    - Vikunja:
+        icon: vikunja
+        href: https://todo.jaw.dev
+        description: To-Do / Tasks
+        # siteMonitor: http://vikunja:3456
+
     - Hindsight:
         icon: mdi-brain
         href: https://hindsight.jaw.dev
