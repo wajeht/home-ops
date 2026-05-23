@@ -31,6 +31,15 @@ endpoints:
     alerts:
       - type: ntfy
 
+  - name: AdGuard
+    group: Infra
+    url: tcp://192.168.4.181:53
+    interval: 1m
+    conditions:
+      - "[CONNECTED] == true"
+    alerts:
+      - type: ntfy
+
   - name: Homepage
     group: Core
     url: http://homepage:3000
