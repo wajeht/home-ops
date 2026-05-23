@@ -312,24 +312,6 @@
       }
     },
     {
-      "id": "sonarr",
-      "uri": "/repos/sonarr",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "radarr",
       "uri": "/repos/radarr",
       "password": "",
@@ -1351,65 +1333,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sabnzbd+backup+FAILED&priority=Max&tags=skull",
             "template": "sabnzbd backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "sonarr",
-      "repo": "sonarr",
-      "paths": ["/source/sonarr"],
-      "excludes": [
-        "**/sonarr/sonarr.db",
-        "**/sonarr/sonarr.db-wal",
-        "**/sonarr/sonarr.db-shm",
-        "**/sonarr/logs.db",
-        "**/sonarr/logs.db-wal",
-        "**/sonarr/logs.db-shm",
-        "**/sonarr/asp",
-        "**/sonarr/logs",
-        "**/sonarr/Sentry",
-        "**/sonarr/*.pid",
-        "**/sonarr/borgmatic"
-      ],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "sqlite3 /source/sonarr/sonarr.db -cmd \".timeout 30000\" \".backup /source/sonarr/.sonarr.bak\""
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/sonarr/.sonarr.bak"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sonarr+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "sonarr backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sonarr+backup+FAILED&priority=Max&tags=skull",
-            "template": "sonarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
