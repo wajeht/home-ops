@@ -3,11 +3,17 @@ services:
   gatus-healthcheck-bin:
     container_name: gatus-healthcheck-bin
     image: busybox:1.38.0-musl@sha256:f36701e0a15a97186ccc59bbe9a6217b649edecb36ce32d07fa31bf5ad15e56d
-    command: ["sh", "-c", "cp /bin/busybox /healthcheck/busybox && chmod 0555 /healthcheck/busybox"]
+    command: ["sh", "-c", "cp /bin/busybox /healthcheck/busybox && chmod 0555 /healthcheck/busybox && tail -f /dev/null"]
     network_mode: none
     volumes:
       - gatus-healthcheck-bin:/healthcheck
-    restart: "no"
+    healthcheck:
+      test: ["CMD", "/bin/busybox", "test", "-x", "/healthcheck/busybox"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
     read_only: true
     tmpfs:
       - /tmp
@@ -35,7 +41,7 @@ services:
       - GATUS_LOG_LEVEL=INFO
     depends_on:
       gatus-healthcheck-bin:
-        condition: service_completed_successfully
+        condition: service_healthy
     volumes:
       - ./config:/config:ro
       - /home/jaw/data/gatus:/data
