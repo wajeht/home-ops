@@ -104,12 +104,6 @@
         description: DNS Ad Blocking
         # siteMonitor: http://192.168.4.181:80
 
-    - NUT:
-        icon: mdi-power-plug
-        href: https://nut.jaw.dev
-        description: UPS Monitor
-        # siteMonitor: http://peanut:8080
-
     - Traefik:
         icon: traefik
         href: https://traefik.jaw.dev
@@ -200,6 +194,12 @@
         href: https://beszel.jaw.dev
         description: Server Monitor
         # siteMonitor: http://beszel:8090
+
+    - NUT:
+        icon: mdi-power-plug
+        href: https://nut.jaw.dev
+        description: UPS Monitor
+        # siteMonitor: http://peanut:8080
 
 - Personal:
     - UFC:
