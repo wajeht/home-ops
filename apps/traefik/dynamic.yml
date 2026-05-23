@@ -1,11 +1,13 @@
 http:
   middlewares:
+    # Used by the catch-all router for unknown *.jaw.dev subdomains.
     redirect-to-main:
       redirectRegex:
         regex: ".*"
         replacement: "https://jaw.dev"
         permanent: true
 
+    # Compress normal text responses; skip media formats that are already compressed.
     gzip:
       compress:
         excludedContentTypes:
@@ -21,6 +23,7 @@ http:
           - application/dash+xml
           - application/vnd.apple.mpegurl
 
+    # Origin lock-down: only Cloudflare edge IPs can reach HTTPS routers.
     cloudflare-only:
       ipAllowList:
         sourceRange:
@@ -47,6 +50,7 @@ http:
           - 2a06:98c0::/29
           - 2c0f:f248::/32
 
+    # Browser-facing safety headers shared by HTTPS apps.
     security-headers:
       headers:
         stsSeconds: 31536000
@@ -61,6 +65,7 @@ http:
           Cross-Origin-Opener-Policy: "same-origin"
           Cross-Origin-Resource-Policy: "cross-origin"
 
+    # General rate limit. Uses Cloudflare's real-client IP header.
     rate-limit-global:
       rateLimit:
         period: 1s
@@ -69,6 +74,7 @@ http:
         sourceCriterion:
           requestHeaderName: CF-Connecting-IP
 
+    # Stricter rate limit for auth-protected routes.
     rate-limit-auth:
       rateLimit:
         period: 1s
@@ -77,6 +83,7 @@ http:
         sourceCriterion:
           requestHeaderName: CF-Connecting-IP
 
+    # API-specific rate limit for public endpoints.
     rate-limit-api:
       rateLimit:
         period: 1s
@@ -85,6 +92,7 @@ http:
         sourceCriterion:
           requestHeaderName: CF-Connecting-IP
 
+    # Google auth service for admin-only apps.
     google-auth-forward:
       forwardAuth:
         address: http://google-auth:4181
@@ -93,17 +101,20 @@ http:
         authResponseHeaders:
           - X-Forwarded-User
 
+    # Standard admin auth chain: rate limit first, then Google auth.
     google-auth:
       chain:
         middlewares:
           - rate-limit-auth
           - google-auth-forward
 
+    # Admin auth without rate limiting for routes that already limit elsewhere.
     google-auth-no-ratelimit:
       chain:
         middlewares:
           - google-auth-forward
 
+    # Separate Google auth service for user-facing apps.
     google-auth-user-forward:
       forwardAuth:
         address: http://google-auth-user:4181
@@ -112,19 +123,21 @@ http:
         authResponseHeaders:
           - X-Forwarded-User
 
+    # User auth chain: rate limit first, then user Google auth.
     google-auth-user:
       chain:
         middlewares:
           - rate-limit-auth
           - google-auth-user-forward
 
+    # User auth without rate limiting for routes that already limit elsewhere.
     google-auth-user-no-ratelimit:
       chain:
         middlewares:
           - google-auth-user-forward
 
   routers:
-    # Catch-all for unknown subdomains (low priority)
+    # Low-priority fallback: unknown *.jaw.dev subdomains redirect to jaw.dev.
     catchall:
       rule: "HostRegexp(`[a-z0-9-]+\\.jaw\\.dev`)"
       entrypoints:
@@ -140,12 +153,13 @@ http:
               - "*.jaw.dev"
 
   services:
-    # Dummy service for redirects (never actually used)
+    # Placeholder service required by redirect-only routers.
     dummy:
       loadBalancer:
         servers:
           - url: "http://127.0.0.1"
 
   serversTransports:
+    # Used only by Scrypted when Traefik cannot verify its backend cert.
     scrypted-transport:
       insecureSkipVerify: true
