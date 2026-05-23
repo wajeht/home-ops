@@ -9,31 +9,62 @@ services:
       TZ: America/Chicago
       CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
     command:
+      # Privacy: do not call out for version checks or anonymous stats.
       - "--global.checknewversion=false"
       - "--global.sendanonymoususage=false"
+
+      # Dashboard/API: enabled, but only exposed by the authenticated router below.
       - "--api.dashboard=true"
+
+      # Docker provider: read container labels from Docker; containers must opt in.
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.network=traefik"
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+
+      # Entry points: public HTTP and HTTPS listeners.
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+
+      # Default HTTPS middlewares: Cloudflare-only, compression, browser headers.
       - "--entrypoints.websecure.http.middlewares=cloudflare-only@file,gzip@file,security-headers@file"
+
+      # Reject ambiguous encoded path characters to avoid proxy/backend mismatch.
+      - "--entrypoints.web.http.encodedcharacters.allowencodedslash=false"
+      - "--entrypoints.web.http.encodedcharacters.allowencodedbackslash=false"
+      - "--entrypoints.web.http.encodedcharacters.allowencodednullcharacter=false"
+      - "--entrypoints.web.http.encodedcharacters.allowencodedsemicolon=false"
+      - "--entrypoints.web.http.encodedcharacters.allowencodedpercent=false"
+      - "--entrypoints.web.http.encodedcharacters.allowencodedquestionmark=false"
+      - "--entrypoints.web.http.encodedcharacters.allowencodedhash=false"
+      - "--entrypoints.websecure.http.encodedcharacters.allowencodedslash=false"
+      - "--entrypoints.websecure.http.encodedcharacters.allowencodedbackslash=false"
+      - "--entrypoints.websecure.http.encodedcharacters.allowencodednullcharacter=false"
+      - "--entrypoints.websecure.http.encodedcharacters.allowencodedsemicolon=false"
+      - "--entrypoints.websecure.http.encodedcharacters.allowencodedpercent=false"
+      - "--entrypoints.websecure.http.encodedcharacters.allowencodedquestionmark=false"
+      - "--entrypoints.websecure.http.encodedcharacters.allowencodedhash=false"
+
+      # Redirect plain HTTP to HTTPS.
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      # Trust X-Forwarded-* headers from Cloudflare
+
+      # Trust real-client forwarded headers only when the sender is Cloudflare.
       - "--entrypoints.websecure.forwardedHeaders.trustedIPs=173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32"
       - "--entrypoints.web.forwardedHeaders.trustedIPs=173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32"
+
+      # Let's Encrypt wildcard certificate using Cloudflare DNS challenge.
       - "--certificatesresolvers.cloudflare.acme.email=mail@jaw.dev"
       - "--certificatesresolvers.cloudflare.acme.storage=/certs/acme.json"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.propagation.delaybeforechecks=30"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53"
-      # Wildcard cert for all *.jaw.dev
       - "--entrypoints.websecure.http.tls.domains[0].main=jaw.dev"
       - "--entrypoints.websecure.http.tls.domains[0].sans=*.jaw.dev"
       - "--entrypoints.websecure.http.tls.certresolver=cloudflare"
+
+      # Logs, healthcheck endpoint, and dynamic config file.
       - "--accesslog=true"
       - "--accesslog.filepath=/var/log/traefik/access.log"
       - "--accesslog.format=json"
