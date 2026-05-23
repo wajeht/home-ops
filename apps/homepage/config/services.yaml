@@ -357,12 +357,6 @@
         description: Dev Utilities
         # siteMonitor: http://it-tools:80
 
-    - Hindsight:
-        icon: mdi-brain
-        href: https://hindsight.jaw.dev
-        description: Agent Memory
-        # siteMonitor: http://hindsight:9999
-
     - SearXNG:
         icon: searxng
         href: https://search.jaw.dev
@@ -380,12 +374,6 @@
         href: https://garage.jaw.dev
         description: S3 Storage
         # siteMonitor: http://garage-webui:3909
-
-    - Code Server:
-        icon: vscode
-        href: https://code.jaw.dev
-        description: Web IDE
-        # siteMonitor: http://code-server:8080
 
     - Gitea:
         icon: gitea
