@@ -190,12 +190,6 @@
         description: Server Monitor
         # siteMonitor: http://beszel:8090
 
-    - NUT:
-        icon: mdi-power-plug
-        href: https://nut.jaw.dev
-        description: UPS Monitor
-        # siteMonitor: http://peanut:8080
-
 - Personal:
     - UFC:
         icon: mdi-mixed-martial-arts

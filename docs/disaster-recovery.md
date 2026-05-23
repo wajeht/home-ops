@@ -78,7 +78,6 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | bazarr        | 2:55 AM  | SQLite + files       | DB at `db/bazarr.db`                                           |
 | sabnzbd       | 3:00 AM  | SQLite + files       | DB at `admin/history1.db`. Excludes Downloads (huge transient) |
 | vpn-qbit      | 3:05 AM  | Files only           | Two source paths: qbittorrent + gluetun                        |
-| nut           | 3:10 AM  | Files only           | Peanut config                                                  |
 | vaultwarden   | 3:15 AM  | SQLite + files       | DB file is `db.sqlite3`                                        |
 | gitea         | 3:20 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                 |
 | **global**    | 3:45 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state    |
@@ -169,7 +168,7 @@ Use `docker exec` into the app's `*-db` container — `pg_dump` always matches t
 
 The app's `*-db` container needs `container_name: <app>-db` set (already true for all existing Postgres apps).
 
-### Plan: Files-only (dbgate, garage, nut, traefik, vpn-qbit, zigbee2mqtt)
+### Plan: Files-only (dbgate, garage, traefik, vpn-qbit, zigbee2mqtt)
 
 ```json
 {
@@ -342,7 +341,7 @@ docker exec hello-world-db rm /tmp/restore.dump
 docker compose up -d
 ```
 
-### Restore: Files only (dbgate, garage, nut, traefik, vpn-qbit, zigbee2mqtt)
+### Restore: Files only (dbgate, garage, traefik, vpn-qbit, zigbee2mqtt)
 
 ```bash
 # 1. Extract
