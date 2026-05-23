@@ -13,11 +13,9 @@ services:
       - /home/jaw/data/calendar:/mnt/calendar
     networks:
       - traefik
-      # - miniflux-internal
       - hello-world-internal
       - immich-internal
       # - plausible-internal
-      # - glitchtip-internal
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000"]
       interval: 30s
@@ -55,9 +53,6 @@ services:
 networks:
   traefik:
     external: true
-  # miniflux-internal:
-  #   external: true
-  #   name: miniflux_miniflux-internal
   hello-world-internal:
     external: true
     name: hello-world_internal
@@ -67,6 +62,3 @@ networks:
   # plausible-internal:
   #   external: true
   #   name: plausible_plausible-internal
-  # glitchtip-internal:
-  #   external: true
-  #   name: glitchtip_glitchtip-internal

@@ -19,16 +19,6 @@
         #   url: http://sonarr:8989
         #   key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
 
-    - Miniflux:
-        icon: miniflux
-        href: https://rss.jaw.dev
-        description: RSS Reader
-        # siteMonitor: http://miniflux:8080
-        # widget:
-        #   type: miniflux
-        #   url: http://miniflux:8080
-        #   key: "{{HOMEPAGE_VAR_MINIFLUX_KEY}}"
-
     - Tautulli:
         icon: tautulli
         href: https://tautulli.jaw.dev
@@ -133,18 +123,6 @@
         #   url: http://prowlarr:9696
         #   key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
 
-    - Huntarr:
-        icon: huntarr
-        href: https://huntarr.jaw.dev
-        description: Missing Media Hunter
-        # siteMonitor: http://huntarr:9705
-
-    - Cleanuparr:
-        icon: cleanuparr
-        href: https://cleanuparr.jaw.dev
-        description: Download Cleanup
-        # siteMonitor: http://cleanuparr:11011
-
 - Systems:
     - Home Assistant:
         icon: home-assistant
@@ -237,15 +215,6 @@
         # siteMonitor: http://renovate:8080
 
 - Logs:
-    - Frigate:
-        icon: frigate
-        href: https://frigate.jaw.dev
-        description: NVR
-        # siteMonitor: http://frigate:8971
-        # widget:
-        #   type: frigate
-        #   url: http://frigate:5000
-
     - Ntfy:
         icon: ntfy
         href: https://ntfy.jaw.dev
@@ -268,22 +237,6 @@
         href: https://gatus.jaw.dev
         description: Health Checks
         # siteMonitor: http://gatus:8080
-
-    - Changedetection:
-        icon: changedetection-io
-        href: https://changes.jaw.dev
-        description: Web Monitor
-        # siteMonitor: http://changedetection:5000
-        # widget:
-        #   type: changedetectionio
-        #   url: http://changedetection:5000
-        #   key: "{{HOMEPAGE_VAR_CHANGEDETECTION_KEY}}"
-
-    - GlitchTip:
-        icon: glitchtip
-        href: https://glitchtip.jaw.dev
-        description: Error Tracking
-        # siteMonitor: http://glitchtip:8000
 
     - Dozzle:
         icon: dozzle
@@ -400,12 +353,6 @@
         description: Git URL Shortener
         # siteMonitor: http://git:80
 
-    - Hydra Server:
-        icon: mdi-server
-        href: https://hydra-server.jaw.dev
-        description: Custom Server
-        # siteMonitor: http://hydra-server:3000
-
     - Hello World:
         icon: mdi-hand-wave
         href: https://hello-world.jaw.dev
@@ -460,12 +407,6 @@
         href: https://draw.jaw.dev
         description: Whiteboard
         # siteMonitor: http://excalidraw:80
-
-    - Linx:
-        icon: filerun
-        href: https://linx.jaw.dev
-        description: File Sharing
-        # siteMonitor: http://linx:8080
 
     - Garage:
         icon: mdi-garage

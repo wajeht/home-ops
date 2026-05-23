@@ -456,24 +456,6 @@
       }
     },
     {
-      "id": "changedetection",
-      "uri": "/repos/changedetection",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "plausible",
       "uri": "/repos/plausible",
       "password": "",
@@ -492,62 +474,8 @@
       }
     },
     {
-      "id": "glitchtip",
-      "uri": "/repos/glitchtip",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "hello-world",
       "uri": "/repos/hello-world",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
-      "id": "miniflux",
-      "uri": "/repos/miniflux",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
-      "id": "frigate",
-      "uri": "/repos/frigate",
       "password": "",
       "autoInitialize": true,
       "prunePolicy": {
@@ -1996,40 +1924,6 @@
       ]
     },
     {
-      "id": "changedetection",
-      "repo": "changedetection",
-      "paths": ["/source/changedetection"],
-      "excludes": ["**/changedetection/borgmatic"],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=changedetection+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "changedetection backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=changedetection+backup+FAILED&priority=Max&tags=skull",
-            "template": "changedetection backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
       "id": "plausible",
       "repo": "plausible",
       "paths": ["/source/plausible"],
@@ -2077,53 +1971,6 @@
       ]
     },
     {
-      "id": "glitchtip",
-      "repo": "glitchtip",
-      "paths": ["/source/glitchtip"],
-      "excludes": ["**/glitchtip/db", "**/glitchtip/borgmatic"],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "docker exec glitchtip-db pg_dump -U glitchtip -d glitchtip -F custom -f /tmp/glitchtip.dump && docker cp glitchtip-db:/tmp/glitchtip.dump /source/glitchtip/.glitchtip.dump && docker exec glitchtip-db rm -f /tmp/glitchtip.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/glitchtip/.glitchtip.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=glitchtip+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "glitchtip backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=glitchtip+backup+FAILED&priority=Max&tags=skull",
-            "template": "glitchtip backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
       "id": "hello-world",
       "repo": "hello-world",
       "paths": ["/source/hello-world/.hello-world.dump"],
@@ -2165,106 +2012,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=hello-world+backup+FAILED&priority=Max&tags=skull",
             "template": "hello-world backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "miniflux",
-      "repo": "miniflux",
-      "paths": ["/source/miniflux/.miniflux.dump"],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "docker exec miniflux-db pg_dump -U miniflux -d miniflux -F custom -f /tmp/miniflux.dump && docker cp miniflux-db:/tmp/miniflux.dump /source/miniflux/.miniflux.dump && docker exec miniflux-db rm -f /tmp/miniflux.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/miniflux/.miniflux.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "miniflux backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+FAILED&priority=Max&tags=skull",
-            "template": "miniflux backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "frigate",
-      "repo": "frigate",
-      "paths": ["/source/frigate"],
-      "excludes": [
-        "**/frigate/frigate.db",
-        "**/frigate/frigate.db-wal",
-        "**/frigate/frigate.db-shm",
-        "**/frigate/media",
-        "**/frigate/model_cache",
-        "**/frigate/borgmatic"
-      ],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "sqlite3 /source/frigate/frigate.db -cmd \".timeout 30000\" \".backup /source/frigate/.frigate.bak\""
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/frigate/.frigate.bak"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=frigate+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "frigate backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=frigate+backup+FAILED&priority=Max&tags=skull",
-            "template": "frigate backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
