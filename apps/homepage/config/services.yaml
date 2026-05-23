@@ -133,16 +133,6 @@
         #   url: http://prowlarr:9696
         #   key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
 
-    - Autobrr:
-        icon: autobrr
-        href: https://autobrr.jaw.dev
-        description: Download Automation
-        # siteMonitor: http://autobrr:7474
-        # widget:
-        #   type: autobrr
-        #   url: http://autobrr:7474
-        #   key: "{{HOMEPAGE_VAR_AUTOBRR_KEY}}"
-
     - Bitmagnet:
         icon: bitmagnet
         href: https://bitmagnet.jaw.dev
