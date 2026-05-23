@@ -103,6 +103,7 @@ flowchart LR
     end
 
     docker_cd -.->|poll 5m| traefik -.->|poll 5m| unifi -.->|poll 5m| cf -.->|poll 5m| ops_ci
+    you([You]) -->|HTTPS traffic| cf
 
     style app_repo fill:#e8f4fd,stroke:#4a90d9
     style ops_repo fill:#e8f4fd,stroke:#4a90d9
@@ -112,6 +113,7 @@ flowchart LR
     style cf_region fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_ddos fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_bot fill:#fde8d0,stroke:#f6821f,color:#333
+    style you fill:#fff7ed,stroke:#f97316,color:#333
     style ucg_cf fill:#fde8e8,stroke:#dc2626,color:#333
     style ucg_region fill:#fde8e8,stroke:#dc2626,color:#333
     style ucg_ids fill:#fde8e8,stroke:#dc2626,color:#333
