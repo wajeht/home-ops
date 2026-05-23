@@ -14,10 +14,11 @@ services:
     volumes:
       - /home/jaw/data/vikunja/db:/db
       - /home/jaw/data/vikunja/files:/app/vikunja/files
+      - ./httpcheck:/httpcheck:ro
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3456/api/v1/info"]
+      test: ["CMD", "/httpcheck", "http://127.0.0.1:3456/api/v1/info"]
       interval: 30s
       timeout: 5s
       retries: 3
