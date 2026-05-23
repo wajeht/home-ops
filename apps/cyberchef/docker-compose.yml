@@ -5,11 +5,11 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8080"]
-      interval: 10s
+      test: ["CMD-SHELL", "pidof nginx >/dev/null"]
+      interval: 30s
       timeout: 5s
-      retries: 5
-      start_period: 60s
+      retries: 3
+      start_period: 30s
     restart: unless-stopped
     init: true
     cap_drop:
