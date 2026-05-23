@@ -19,7 +19,7 @@
     {
       "description": "Ignore apps excluded from docker-cd deployment",
       "matchFileNames": [
-        "/(^|/)apps\\/(adguard|bazarr|convertx|excalidraw|git|nut|recyclarr|sonarr|vaultwarden|walker|zepp)\\//"
+        "/(^|/)apps\\/(adguard|bazarr|convertx|excalidraw|git|nut|sonarr|vaultwarden|walker|zepp)\\//"
       ],
       "enabled": false
     },
