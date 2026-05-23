@@ -17,7 +17,6 @@ services:
       - hello-world-internal
       - immich-internal
       # - plausible-internal
-      # - zipline-internal
       # - glitchtip-internal
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000"]
@@ -68,9 +67,6 @@ networks:
   # plausible-internal:
   #   external: true
   #   name: plausible_plausible-internal
-  # zipline-internal:
-  #   external: true
-  #   name: zipline_zipline-internal
   # glitchtip-internal:
   #   external: true
   #   name: glitchtip_glitchtip-internal
