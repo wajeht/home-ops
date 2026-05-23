@@ -625,7 +625,7 @@ Known issues and their fixes.
 Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
-- **Cache-only or tiny / no persistent state worth backing up**: `recyclarr`, `renovate`, `ddns-updater`, `walker`, `zepp`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`
+- **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `walker`, `zepp`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`
 - **Infra (config tracked in git)**: `backrest`, `google-auth`, `google-auth-user`
 
 If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, the app is stateless and doesn't need a Backrest plan.
