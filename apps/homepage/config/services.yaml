@@ -49,28 +49,6 @@
         #   url: http://seerr:5055
         #   key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
 
-    - Audiobookshelf:
-        icon: audiobookshelf
-        href: https://audiobooks.jaw.dev
-        description: Audiobooks
-        # siteMonitor: http://audiobookshelf:80
-        # widget:
-        #   type: audiobookshelf
-        #   url: http://audiobookshelf:80
-        #   key: "{{HOMEPAGE_VAR_AUDIOBOOKSHELF_KEY}}"
-
-    - Readmeabook:
-        icon: mdi-book-open-page-variant
-        href: https://readmeabook.jaw.dev
-        description: Audiobook Library
-        # siteMonitor: http://readmeabook:3030
-
-    - Listenarr:
-        icon: listenarr
-        href: https://listenarr.jaw.dev
-        description: Music
-        # siteMonitor: http://listenarr:4545
-
     - Immich:
         icon: immich
         href: https://immich.jaw.dev
@@ -223,12 +201,6 @@
         description: Server Monitor
         # siteMonitor: http://beszel:8090
 
-    - Plausible:
-        icon: plausible
-        href: https://plausible.jaw.dev
-        description: Web Analytics
-        # siteMonitor: http://plausible:8000
-
 - Personal:
     - UFC:
         icon: mdi-mixed-martial-arts
@@ -350,18 +322,6 @@
         href: https://vault.jaw.dev
         description: Passwords
         # siteMonitor: http://vaultwarden:80
-
-    - IT-Tools:
-        icon: it-tools
-        href: https://tools.jaw.dev
-        description: Dev Utilities
-        # siteMonitor: http://it-tools:80
-
-    - SearXNG:
-        icon: searxng
-        href: https://search.jaw.dev
-        description: Search Engine
-        # siteMonitor: http://searxng:8080
 
     - Excalidraw:
         icon: excalidraw
