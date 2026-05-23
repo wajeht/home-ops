@@ -296,6 +296,12 @@
         #   slug: status
         #   key: "{{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}"
 
+    - Gatus:
+        icon: gatus
+        href: https://gatus.jaw.dev
+        description: Health Checks
+        # siteMonitor: http://gatus:8080
+
     - Changedetection:
         icon: changedetection-io
         href: https://changes.jaw.dev

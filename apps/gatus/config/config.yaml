@@ -1,0 +1,96 @@
+storage:
+  type: sqlite
+  path: /data/gatus.db
+
+ui:
+  title: Service Health
+  header: Service Health
+  default-sort-by: group
+
+metrics: true
+concurrency: 6
+
+endpoints:
+  - name: Homepage
+    group: Core
+    url: http://homepage:3000
+    headers:
+      Host: home.jaw.dev
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 2000"
+
+  - name: Home Assistant
+    group: Core
+    url: http://homeassistant:8123
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: Immich
+    group: Core
+    url: http://immich:2283/api/server/ping
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: Backrest
+    group: Core
+    url: http://backrest:9898
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: Plex
+    group: Media
+    url: http://plex:32400/identity
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: Prowlarr
+    group: Downloads
+    url: http://prowlarr:9696/ping
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: SABnzbd
+    group: Downloads
+    url: http://sabnzbd:8080
+    headers:
+      Host: sabnzbd.jaw.dev
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: qBittorrent
+    group: Downloads
+    url: http://gluetun:8085
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: Gitea
+    group: Tools
+    url: http://gitea:3000/api/healthz
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+
+  - name: Beszel
+    group: Tools
+    url: http://beszel:8090
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"

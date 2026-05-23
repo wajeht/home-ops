@@ -125,6 +125,8 @@ healthcheck:
   retries: 3
 ```
 
+For scratch/minimal images with no shell, `curl`, or `wget`, either use the app's own healthcheck command or mount a static helper binary. See `apps/gatus/docker-compose.yml` for the BusyBox helper pattern.
+
 ### Init Process
 
 Add `init: true` for proper signal handling and zombie process reaping. **Do NOT** add this to s6-overlay containers (LinuxServer.io images, homeassistant) — they require being PID 1.

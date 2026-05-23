@@ -62,6 +62,7 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | paperless-ngx   | 12:30 AM | Postgres + files     | Data dir is `/source/paperless`, NOT `paperless-ngx`           |
 | immich          | 12:35 AM | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant       |
 | uptime-kuma     | 12:40 AM | SQLite + files       | DB file is `kuma.db`                                           |
+| gatus           | 12:42 AM | SQLite + files       | DB file is `gatus.db`                                          |
 | authelia        | 12:45 AM | SQLite + files       | DB file is `db.sqlite3`                                        |
 | sonarr          | 12:50 AM | SQLite + files       | Excludes logs.db, asp, Sentry, \*.pid                          |
 | radarr          | 12:55 AM | SQLite + files       | Excludes MediaCover, Backups (in addition to sonarr's)         |
@@ -563,14 +564,14 @@ A formatter has been observed to strip new entries from `config.json` between pu
 
 ```bash
 grep -c '"id":' ~/home-ops/apps/backrest/config/config.json
-# Expect 82 (41 repos × 41 plans). If lower, re-add the missing entries.
+# Expect 84 (42 repos × 42 plans). If lower, re-add the missing entries.
 ```
 
 #### 6. Verify
 
 ```bash
 docker logs backrest --tail 50          # should be no errors after orchestrator starts
-docker exec backrest ls /repos          # should list 41 repos
+docker exec backrest ls /repos          # should list 42 repos
 ```
 
 ### Testing Recovery
@@ -657,7 +658,7 @@ Known issues and their fixes.
 | Bad gateway 502 on first click of garage image link, works on retry                        | garage-webui's pool connection to garage:3900 went stale                                  | Add Traefik retry middleware to the route. Backrest unrelated.                                                            |
 | ntfy notifications never arrive                                                            | Shoutrrr URL syntax wrong                                                                 | Use `ntfy://ntfy/<topic>?scheme=http&title=foo&priority=Min&tags=skull`. Priority must be capitalized (`Min`, not `min`). |
 | First Shoutrrr push broke Backrest container                                               | Actually didn't — first deploy succeeded; later deploy hung during a backup               | Make sure no backup is running when redeploying. Backrest can't recreate while restic process holds files.                |
-| `config.json` entries disappear after pushing                                              | A formatter (locally or in CI) strips JSON entries it doesn't recognize                   | After each push, `grep -c '"id":' ~/home-ops/apps/backrest/config/config.json` on the server. Expected count: 82.         |
+| `config.json` entries disappear after pushing                                              | A formatter (locally or in CI) strips JSON entries it doesn't recognize                   | After each push, `grep -c '"id":' ~/home-ops/apps/backrest/config/config.json` on the server. Expected count: 84.         |
 | Stateless app got accidentally added to Backrest                                           | Misread of which apps had data                                                            | If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, skip it. Examples: close-powerlifting, ufc, ip.  |
 
 ## Apps Without Backup (Intentional)
@@ -665,7 +666,7 @@ Known issues and their fixes.
 Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
-- **Cache-only or tiny / no persistent state worth backing up**: `huntarr`, `hindsight`, `recyclarr`, `renovate`, `ddns-updater`, `searxng`, `linx`, `walker`, `zepp`, `code-server`, `hydra-server`, `readmeabook`, `stirling-pdf`, `flaresolverr`, `byparr`, `dozzle`, `crowdsec`, `convertx`, `excalidraw`, `git`, `it-tools`, `jaw-dev`, `jellyfin`, `overseerr`, `portainer`, `scrypted`, `autobrr`, `cleanuparr`, `speedtest`, `power-badge`, `adguard`
+- **Cache-only or tiny / no persistent state worth backing up**: `huntarr`, `hindsight`, `recyclarr`, `renovate`, `ddns-updater`, `searxng`, `linx`, `walker`, `zepp`, `code-server`, `hydra-server`, `readmeabook`, `stirling-pdf`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `it-tools`, `jaw-dev`, `portainer`, `scrypted`, `autobrr`, `cleanuparr`, `speedtest`, `power-badge`, `adguard`
 - **Infra (config tracked in git)**: `backrest`, `google-auth`, `google-auth-user`
 
 If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, the app is stateless and doesn't need a Backrest plan.
