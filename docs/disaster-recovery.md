@@ -59,7 +59,6 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | glitchtip       | 12:15 AM | Postgres + files     |                                                                |
 | bitmagnet       | 12:20 AM | Postgres (DB only)   | User is `postgres`, not `bitmagnet`                            |
 | hello-world     | 12:25 AM | Postgres (DB only)   |                                                                |
-| paperless-ngx   | 12:30 AM | Postgres + files     | Data dir is `/source/paperless`, NOT `paperless-ngx`           |
 | immich          | 12:35 AM | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant       |
 | uptime-kuma     | 12:40 AM | SQLite + files       | DB file is `kuma.db`                                           |
 | gatus           | 12:42 AM | SQLite + files       | DB file is `gatus.db`                                          |
@@ -158,7 +157,7 @@ Same as DB-only, but `paths` is the whole data dir and excludes filter out raw D
 }
 ```
 
-### Plan: Postgres (paperless-ngx, gitea-no-wait-gitea-is-sqlite, miniflux, etc.)
+### Plan: Postgres (miniflux, bitmagnet, plausible, etc.)
 
 Use `docker exec` into the app's `*-db` container — `pg_dump` always matches the postgres major version. Use `docker cp` to pull the dump out (don't redirect stdout cross-container):
 
@@ -355,27 +354,27 @@ docker exec miniflux-db rm /tmp/restore.dump
 docker compose up -d
 ```
 
-### Restore: Postgres + files (paperless-ngx, plausible, zipline, glitchtip)
+### Restore: Postgres + files (plausible, zipline, glitchtip)
 
 ```bash
 # 1. Extract
-docker exec backrest restic -r /repos/paperless-ngx restore latest --target /tmp/restore
+docker exec backrest restic -r /repos/zipline restore latest --target /tmp/restore
 
 # 2. Stop the app
-cd ~/home-ops/apps/paperless-ngx && docker compose stop paperless
+cd ~/home-ops/apps/zipline && docker compose stop zipline
 
 # 3. Restore files (exclude .dump and the raw db dir)
-rsync -a --delete /tmp/restore/source/paperless/ /home/jaw/data/paperless/ \
-  --exclude '.paperless.dump' --exclude 'db' --exclude 'redis'
+rsync -a --delete /tmp/restore/source/zipline/ /home/jaw/data/zipline/ \
+  --exclude '.zipline.dump' --exclude 'db'
 
 # 4. Drop + recreate the DB
-docker exec paperless-db dropdb -U paperless paperless
-docker exec paperless-db createdb -U paperless paperless
+docker exec zipline-db dropdb -U zipline zipline
+docker exec zipline-db createdb -U zipline zipline
 
 # 5. pg_restore
-docker cp /tmp/restore/source/paperless/.paperless.dump paperless-db:/tmp/restore.dump
-docker exec paperless-db pg_restore -U paperless -d paperless /tmp/restore.dump
-docker exec paperless-db rm /tmp/restore.dump
+docker cp /tmp/restore/source/zipline/.zipline.dump zipline-db:/tmp/restore.dump
+docker exec zipline-db pg_restore -U zipline -d zipline /tmp/restore.dump
+docker exec zipline-db rm /tmp/restore.dump
 
 # 6. Start
 docker compose up -d
@@ -648,7 +647,6 @@ Known issues and their fixes.
 | Spaces in DB path break the hook (e.g. plex)                                               | Shell word-splitting on unquoted paths                                                    | Wrap each path in **single quotes**. JSON escapes inside double-quoted strings only escape the JSON, not the shell.       |
 | Multiple DBs per app (ntfy, plex)                                                          | One hook can run one shell command                                                        | Chain with `&&` — the whole pre-hook is a single shell line.                                                              |
 | Postgres user differs from app name (bitmagnet uses `postgres`)                            | Default assumption that user == app name doesn't always hold                              | Check `POSTGRES_USER` env in the `*-db` service; use that explicitly in `pg_dump -U`.                                     |
-| Data dir name doesn't match app dir (paperless-ngx → /source/paperless)                    | App folder and data folder use different names                                            | Look at the actual `volumes:` line in the app's compose to find the real data dir.                                        |
 | Nested DB path (seerr → `db/db.sqlite3`, gitea → `gitea/gitea.db`)                         | App stores its DB in a subdirectory                                                       | Excludes and sqlite3 paths must match the nested path exactly.                                                            |
 | `unable to create lock in backend: repository is already locked by PID ... on <container>` | Stale lock from killed backup (container restart, OOM, cancel)                            | `docker exec backrest restic -r /repos/<app> unlock --remove-all` — plain `unlock` only removes non-exclusive locks       |
 | Repeated OOM kills during backup                                                           | Memory limit too low — restic's in-memory index spikes well past source size              | Bump `deploy.resources.limits.memory`. Current default is 4G.                                                             |
@@ -666,7 +664,7 @@ Known issues and their fixes.
 Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
-- **Cache-only or tiny / no persistent state worth backing up**: `huntarr`, `hindsight`, `recyclarr`, `renovate`, `ddns-updater`, `searxng`, `linx`, `walker`, `zepp`, `code-server`, `hydra-server`, `readmeabook`, `stirling-pdf`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `it-tools`, `jaw-dev`, `portainer`, `scrypted`, `cleanuparr`, `speedtest`, `power-badge`, `adguard`
+- **Cache-only or tiny / no persistent state worth backing up**: `huntarr`, `hindsight`, `recyclarr`, `renovate`, `ddns-updater`, `searxng`, `linx`, `walker`, `zepp`, `code-server`, `hydra-server`, `readmeabook`, `stirling-pdf`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `it-tools`, `jaw-dev`, `scrypted`, `cleanuparr`, `speedtest`, `power-badge`, `adguard`
 - **Infra (config tracked in git)**: `backrest`, `google-auth`, `google-auth-user`
 
 If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, the app is stateless and doesn't need a Backrest plan.
