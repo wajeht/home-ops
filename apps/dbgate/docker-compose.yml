@@ -19,7 +19,6 @@ services:
       # - plausible-internal
       # - zipline-internal
       # - glitchtip-internal
-      # - bitmagnet-internal
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000"]
       interval: 30s
@@ -75,6 +74,3 @@ networks:
   # glitchtip-internal:
   #   external: true
   #   name: glitchtip_glitchtip-internal
-  # bitmagnet-internal:
-  #   external: true
-  #   name: bitmagnet_bitmagnet-internal

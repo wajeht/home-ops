@@ -57,7 +57,6 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | plausible       | 12:05 AM | Postgres + files     | ClickHouse `events/` backed up raw                             |
 | zipline         | 12:10 AM | Postgres + files     | uploads, public, themes                                        |
 | glitchtip       | 12:15 AM | Postgres + files     |                                                                |
-| bitmagnet       | 12:20 AM | Postgres (DB only)   | User is `postgres`, not `bitmagnet`                            |
 | hello-world     | 12:25 AM | Postgres (DB only)   |                                                                |
 | immich          | 12:35 AM | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant       |
 | uptime-kuma     | 12:40 AM | SQLite + files       | DB file is `kuma.db`                                           |
@@ -157,7 +156,7 @@ Same as DB-only, but `paths` is the whole data dir and excludes filter out raw D
 }
 ```
 
-### Plan: Postgres (miniflux, bitmagnet, plausible, etc.)
+### Plan: Postgres (miniflux, plausible, etc.)
 
 Use `docker exec` into the app's `*-db` container — `pg_dump` always matches the postgres major version. Use `docker cp` to pull the dump out (don't redirect stdout cross-container):
 
@@ -332,7 +331,7 @@ rm -f /home/jaw/data/<app>/<db-file>.db-wal /home/jaw/data/<app>/<db-file>.db-sh
 docker compose up -d
 ```
 
-### Restore: Postgres DB-only (hello-world, miniflux, bitmagnet, immich)
+### Restore: Postgres DB-only (hello-world, miniflux, immich)
 
 ```bash
 # 1. Extract
@@ -646,7 +645,6 @@ Known issues and their fixes.
 | sqlite3 backup fails immediately under concurrent writes                                   | No retry budget configured                                                                | Add `-cmd ".timeout 30000"` before the `.backup` command (30-second retry window).                                        |
 | Spaces in DB path break the hook (e.g. plex)                                               | Shell word-splitting on unquoted paths                                                    | Wrap each path in **single quotes**. JSON escapes inside double-quoted strings only escape the JSON, not the shell.       |
 | Multiple DBs per app (ntfy, plex)                                                          | One hook can run one shell command                                                        | Chain with `&&` — the whole pre-hook is a single shell line.                                                              |
-| Postgres user differs from app name (bitmagnet uses `postgres`)                            | Default assumption that user == app name doesn't always hold                              | Check `POSTGRES_USER` env in the `*-db` service; use that explicitly in `pg_dump -U`.                                     |
 | Nested DB path (seerr → `db/db.sqlite3`, gitea → `gitea/gitea.db`)                         | App stores its DB in a subdirectory                                                       | Excludes and sqlite3 paths must match the nested path exactly.                                                            |
 | `unable to create lock in backend: repository is already locked by PID ... on <container>` | Stale lock from killed backup (container restart, OOM, cancel)                            | `docker exec backrest restic -r /repos/<app> unlock --remove-all` — plain `unlock` only removes non-exclusive locks       |
 | Repeated OOM kills during backup                                                           | Memory limit too low — restic's in-memory index spikes well past source size              | Bump `deploy.resources.limits.memory`. Current default is 4G.                                                             |
