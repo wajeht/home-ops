@@ -55,13 +55,11 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | --------------- | -------- | -------------------- | -------------------------------------------------------------- |
 | miniflux        | 12:00 AM | Postgres (DB only)   | `pg_dump` via `docker exec miniflux-db`                        |
 | plausible       | 12:05 AM | Postgres + files     | ClickHouse `events/` backed up raw                             |
-| zipline         | 12:10 AM | Postgres + files     | uploads, public, themes                                        |
 | glitchtip       | 12:15 AM | Postgres + files     |                                                                |
 | hello-world     | 12:25 AM | Postgres (DB only)   |                                                                |
 | immich          | 12:35 AM | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant       |
 | uptime-kuma     | 12:40 AM | SQLite + files       | DB file is `kuma.db`                                           |
 | gatus           | 12:42 AM | SQLite + files       | DB file is `gatus.db`                                          |
-| authelia        | 12:45 AM | SQLite + files       | DB file is `db.sqlite3`                                        |
 | sonarr          | 12:50 AM | SQLite + files       | Excludes logs.db, asp, Sentry, \*.pid                          |
 | radarr          | 12:55 AM | SQLite + files       | Excludes MediaCover, Backups (in addition to sonarr's)         |
 | prowlarr        | 1:00 AM  | SQLite + files       |                                                                |
@@ -353,27 +351,27 @@ docker exec miniflux-db rm /tmp/restore.dump
 docker compose up -d
 ```
 
-### Restore: Postgres + files (plausible, zipline, glitchtip)
+### Restore: Postgres + files (plausible, glitchtip)
 
 ```bash
 # 1. Extract
-docker exec backrest restic -r /repos/zipline restore latest --target /tmp/restore
+docker exec backrest restic -r /repos/glitchtip restore latest --target /tmp/restore
 
 # 2. Stop the app
-cd ~/home-ops/apps/zipline && docker compose stop zipline
+cd ~/home-ops/apps/glitchtip && docker compose stop glitchtip
 
 # 3. Restore files (exclude .dump and the raw db dir)
-rsync -a --delete /tmp/restore/source/zipline/ /home/jaw/data/zipline/ \
-  --exclude '.zipline.dump' --exclude 'db'
+rsync -a --delete /tmp/restore/source/glitchtip/ /home/jaw/data/glitchtip/ \
+  --exclude '.glitchtip.dump' --exclude 'db'
 
 # 4. Drop + recreate the DB
-docker exec zipline-db dropdb -U zipline zipline
-docker exec zipline-db createdb -U zipline zipline
+docker exec glitchtip-db dropdb -U glitchtip glitchtip
+docker exec glitchtip-db createdb -U glitchtip glitchtip
 
 # 5. pg_restore
-docker cp /tmp/restore/source/zipline/.zipline.dump zipline-db:/tmp/restore.dump
-docker exec zipline-db pg_restore -U zipline -d zipline /tmp/restore.dump
-docker exec zipline-db rm /tmp/restore.dump
+docker cp /tmp/restore/source/glitchtip/.glitchtip.dump glitchtip-db:/tmp/restore.dump
+docker exec glitchtip-db pg_restore -U glitchtip -d glitchtip /tmp/restore.dump
+docker exec glitchtip-db rm /tmp/restore.dump
 
 # 6. Start
 docker compose up -d

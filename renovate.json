@@ -19,17 +19,13 @@
     {
       "description": "Ignore apps excluded from docker-cd deployment",
       "matchFileNames": [
-        "/(^|/)apps\\/(adguard|audiobookshelf|authelia|bazarr|changedetection|cleanuparr|code-server|convertx|excalidraw|frigate|git|glitchtip|hindsight|huntarr|hydra-server|it-tools|linx|listenarr|miniflux|nut|plausible|readmeabook|recyclarr|scrypted|searxng|sonarr|speedtest|stirling-pdf|tautulli|vaultwarden|walker|zepp|zipline)\\//"
+        "/(^|/)apps\\/(adguard|audiobookshelf|bazarr|changedetection|cleanuparr|code-server|convertx|excalidraw|frigate|git|glitchtip|hindsight|huntarr|hydra-server|it-tools|linx|listenarr|miniflux|nut|plausible|readmeabook|recyclarr|scrypted|searxng|sonarr|speedtest|stirling-pdf|tautulli|vaultwarden|walker|zepp)\\//"
       ],
       "enabled": false
     },
     {
       "enabled": false,
       "matchPackageNames": ["/^ghcr\\.io/wajeht//"]
-    },
-    {
-      "matchPackageNames": ["ghcr.io/diced/zipline"],
-      "enabled": false
     },
     {
       "description": "Pin LinuxServer images to stable -lsNNN tags; reject unstable/develop/nightly/development channels",

@@ -203,12 +203,6 @@
         description: User OAuth Proxy
         # siteMonitor: http://google-auth-user:4181
 
-    - Authelia:
-        icon: authelia
-        href: https://authelia.jaw.dev
-        description: Auth Gateway
-        # siteMonitor: http://authelia:9091
-
     - Zigbee2MQTT:
         icon: zigbee2mqtt
         href: https://z2m.jaw.dev
@@ -454,12 +448,6 @@
         href: https://hindsight.jaw.dev
         description: Agent Memory
         # siteMonitor: http://hindsight:9999
-
-    - Zipline:
-        icon: zipline
-        href: https://img.jaw.dev
-        description: Image Sharing
-        # siteMonitor: http://0.0.0.0:3000
 
     - SearXNG:
         icon: searxng

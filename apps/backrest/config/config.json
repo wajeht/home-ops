@@ -492,24 +492,6 @@
       }
     },
     {
-      "id": "zipline",
-      "uri": "/repos/zipline",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "glitchtip",
       "uri": "/repos/glitchtip",
       "password": "",
@@ -548,24 +530,6 @@
     {
       "id": "miniflux",
       "uri": "/repos/miniflux",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
-      "id": "authelia",
-      "uri": "/repos/authelia",
       "password": "",
       "autoInitialize": true,
       "prunePolicy": {
@@ -2113,53 +2077,6 @@
       ]
     },
     {
-      "id": "zipline",
-      "repo": "zipline",
-      "paths": ["/source/zipline"],
-      "excludes": ["**/zipline/db", "**/zipline/borgmatic"],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "docker exec zipline-db pg_dump -U zipline -d zipline -F custom -f /tmp/zipline.dump && docker cp zipline-db:/tmp/zipline.dump /source/zipline/.zipline.dump && docker exec zipline-db rm -f /tmp/zipline.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/zipline/.zipline.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zipline+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "zipline backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zipline+backup+FAILED&priority=Max&tags=skull",
-            "template": "zipline backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
       "id": "glitchtip",
       "repo": "glitchtip",
       "paths": ["/source/glitchtip"],
@@ -2294,58 +2211,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+FAILED&priority=Max&tags=skull",
             "template": "miniflux backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "authelia",
-      "repo": "authelia",
-      "paths": ["/source/authelia"],
-      "excludes": [
-        "**/authelia/db.sqlite3",
-        "**/authelia/db.sqlite3-wal",
-        "**/authelia/db.sqlite3-shm",
-        "**/authelia/borgmatic"
-      ],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "sqlite3 /source/authelia/db.sqlite3 -cmd \".timeout 30000\" \".backup /source/authelia/.authelia.bak\""
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/authelia/.authelia.bak"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=authelia+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "authelia backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=authelia+backup+FAILED&priority=Max&tags=skull",
-            "template": "authelia backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
