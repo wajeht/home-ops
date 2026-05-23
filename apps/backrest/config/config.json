@@ -150,24 +150,6 @@
       }
     },
     {
-      "id": "uptime-kuma",
-      "uri": "/repos/uptime-kuma",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "gatus",
       "uri": "/repos/gatus",
       "password": "",
@@ -404,24 +386,6 @@
     {
       "id": "prowlarr",
       "uri": "/repos/prowlarr",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
-      "id": "tautulli",
-      "uri": "/repos/tautulli",
       "password": "",
       "autoInitialize": true,
       "prunePolicy": {
@@ -1018,59 +982,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=mm2us+backup+FAILED&priority=Max&tags=skull",
             "template": "mm2us backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "uptime-kuma",
-      "repo": "uptime-kuma",
-      "paths": ["/source/uptime-kuma"],
-      "excludes": [
-        "**/uptime-kuma/kuma.db",
-        "**/uptime-kuma/kuma.db-wal",
-        "**/uptime-kuma/kuma.db-shm",
-        "**/uptime-kuma/borgmatic"
-      ],
-      "schedule": {
-        "cron": "40 0 * * *",
-        "clock": "CLOCK_LOCAL"
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "sqlite3 /source/uptime-kuma/kuma.db -cmd \".timeout 30000\" \".backup /source/uptime-kuma/.uptime-kuma.bak\""
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/uptime-kuma/.uptime-kuma.bak"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=uptime-kuma+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "uptime-kuma backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=uptime-kuma+backup+FAILED&priority=Max&tags=skull",
-            "template": "uptime-kuma backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
@@ -1812,61 +1723,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=prowlarr+backup+FAILED&priority=Max&tags=skull",
             "template": "prowlarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "tautulli",
-      "repo": "tautulli",
-      "paths": ["/source/tautulli"],
-      "excludes": [
-        "**/tautulli/tautulli.db",
-        "**/tautulli/tautulli.db-wal",
-        "**/tautulli/tautulli.db-shm",
-        "**/tautulli/cache",
-        "**/tautulli/logs",
-        "**/tautulli/*.lock",
-        "**/tautulli/borgmatic"
-      ],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "sqlite3 /source/tautulli/tautulli.db -cmd \".timeout 30000\" \".backup /source/tautulli/.tautulli.bak\""
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/tautulli/.tautulli.bak"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=tautulli+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "tautulli backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=tautulli+backup+FAILED&priority=Max&tags=skull",
-            "template": "tautulli backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

@@ -19,16 +19,6 @@
         #   url: http://sonarr:8989
         #   key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
 
-    - Tautulli:
-        icon: tautulli
-        href: https://tautulli.jaw.dev
-        description: Plex Stats
-        # siteMonitor: http://tautulli:8181
-        # widget:
-        #   type: tautulli
-        #   url: http://tautulli:8181
-        #   key: "{{HOMEPAGE_VAR_TAUTULLI_KEY}}"
-
     - Plex:
         icon: plex
         href: https://plex.jaw.dev
@@ -130,12 +120,6 @@
         description: Smart Home
         # siteMonitor: http://homeassistant:8123
 
-    - Scrypted:
-        icon: scrypted
-        href: https://scrypted.jaw.dev
-        description: Camera Automation
-        # siteMonitor: https://scrypted:10443
-
     - AdGuard:
         icon: adguard-home
         href: http://192.168.4.181
@@ -220,17 +204,6 @@
         href: https://ntfy.jaw.dev
         description: Notifications
         # siteMonitor: http://ntfy:80
-
-    - Uptime Kuma:
-        icon: uptime-kuma
-        href: https://status.jaw.dev
-        description: Status Monitor
-        # siteMonitor: http://uptime-kuma:3001
-        # widget:
-        #   type: uptimekuma
-        #   url: http://uptime-kuma:3001
-        #   slug: status
-        #   key: "{{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}"
 
     - Gatus:
         icon: gatus
@@ -378,12 +351,6 @@
         description: Passwords
         # siteMonitor: http://vaultwarden:80
 
-    - Stirling PDF:
-        icon: stirling-pdf
-        href: https://pdf.jaw.dev
-        description: PDF Tools
-        # siteMonitor: http://stirling-pdf:8080
-
     - IT-Tools:
         icon: it-tools
         href: https://tools.jaw.dev
@@ -429,9 +396,3 @@
         #   type: gitea
         #   url: http://gitea:3000
         #   key: "{{HOMEPAGE_VAR_GITEA_KEY}}"
-
-    - Speed Test:
-        icon: openspeedtest
-        href: https://speedtest.jaw.dev
-        description: Network Speed Test
-        # siteMonitor: http://speedtest:3000

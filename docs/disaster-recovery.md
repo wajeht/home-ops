@@ -56,12 +56,10 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | plausible      | 12:05 AM | Postgres + files     | ClickHouse `events/` backed up raw                             |
 | hello-world    | 12:25 AM | Postgres (DB only)   |                                                                |
 | immich         | 12:35 AM | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant       |
-| uptime-kuma    | 12:40 AM | SQLite + files       | DB file is `kuma.db`                                           |
 | gatus          | 12:42 AM | SQLite + files       | DB file is `gatus.db`                                          |
 | sonarr         | 12:50 AM | SQLite + files       | Excludes logs.db, asp, Sentry, \*.pid                          |
 | radarr         | 12:55 AM | SQLite + files       | Excludes MediaCover, Backups (in addition to sonarr's)         |
 | prowlarr       | 1:00 AM  | SQLite + files       |                                                                |
-| tautulli       | 1:05 AM  | SQLite + files       | Excludes cache, logs, \*.lock                                  |
 | audiobookshelf | 1:10 AM  | SQLite + files       | DB at `config/absdatabase.sqlite`                              |
 | ntfy           | 1:20 AM  | SQLite (×2) + files  | Two DBs: `user.db` + `cache.db` (chained in hook)              |
 | bang           | 1:30 AM  | SQLite (DB only)     | Ephemeral keinos/sqlite3 — bang has no `container_name`        |
@@ -656,7 +654,7 @@ Known issues and their fixes.
 Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
-- **Cache-only or tiny / no persistent state worth backing up**: `hindsight`, `recyclarr`, `renovate`, `ddns-updater`, `searxng`, `walker`, `zepp`, `code-server`, `readmeabook`, `stirling-pdf`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `it-tools`, `jaw-dev`, `scrypted`, `speedtest`, `power-badge`, `adguard`
+- **Cache-only or tiny / no persistent state worth backing up**: `hindsight`, `recyclarr`, `renovate`, `ddns-updater`, `searxng`, `walker`, `zepp`, `code-server`, `readmeabook`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `it-tools`, `jaw-dev`, `power-badge`, `adguard`
 - **Infra (config tracked in git)**: `backrest`, `google-auth`, `google-auth-user`
 
 If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, the app is stateless and doesn't need a Backrest plan.
