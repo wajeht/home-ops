@@ -103,7 +103,7 @@ flowchart LR
     end
 
     docker_cd -.->|poll 5m| traefik -.->|poll 5m| unifi -.->|poll 5m| cf -.->|poll 5m| ops_ci
-    you((You)) -.->|HTTPS| cf
+    you((You)) -.->|HTTPS| cf -.->|WAF| unifi -.->|Firewall| traefik -.->|proxy| apps
 
     style app_repo fill:#e8f4fd,stroke:#4a90d9
     style ops_repo fill:#e8f4fd,stroke:#4a90d9
@@ -153,6 +153,9 @@ flowchart LR
     linkStyle 29 stroke:#22c55e,stroke-dasharray:5
     linkStyle 30 stroke:#22c55e,stroke-dasharray:5
     linkStyle 31 stroke:#2563eb,stroke-dasharray:5
+    linkStyle 32 stroke:#2563eb,stroke-dasharray:5
+    linkStyle 33 stroke:#2563eb,stroke-dasharray:5
+    linkStyle 34 stroke:#2563eb,stroke-dasharray:5
 ```
 
 GitOps-driven homelab running on Docker Compose.
