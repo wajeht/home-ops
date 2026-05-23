@@ -20,7 +20,6 @@ services:
       # - zipline-internal
       # - glitchtip-internal
       # - bitmagnet-internal
-      # - paperless-internal
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000"]
       interval: 30s
@@ -79,6 +78,3 @@ networks:
   # bitmagnet-internal:
   #   external: true
   #   name: bitmagnet_bitmagnet-internal
-  # paperless-internal:
-  #   external: true
-  #   name: paperless-ngx_paperless-internal

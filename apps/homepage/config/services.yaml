@@ -209,17 +209,6 @@
         description: User OAuth Proxy
         # siteMonitor: http://google-auth-user:4181
 
-    - Portainer:
-        icon: portainer
-        href: https://portainer.jaw.dev
-        description: Docker Management
-        # siteMonitor: http://portainer:9000
-        # widget:
-        #   type: portainer
-        #   url: http://portainer:9000
-        #   env: 1
-        #   key: "{{HOMEPAGE_VAR_PORTAINER_KEY}}"
-
     - Authelia:
         icon: authelia
         href: https://authelia.jaw.dev
@@ -471,16 +460,6 @@
         href: https://hindsight.jaw.dev
         description: Agent Memory
         # siteMonitor: http://hindsight:9999
-
-    - Paperless:
-        icon: paperless-ngx
-        href: https://paperless.jaw.dev
-        description: Documents
-        # siteMonitor: http://paperless:8000
-        # widget:
-        #   type: paperlessngx
-        #   url: http://paperless:8000
-        #   key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}"
 
     - Zipline:
         icon: zipline

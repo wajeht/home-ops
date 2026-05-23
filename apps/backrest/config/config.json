@@ -582,24 +582,6 @@
       }
     },
     {
-      "id": "paperless-ngx",
-      "uri": "/repos/paperless-ngx",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "authelia",
       "uri": "/repos/authelia",
       "password": "",
@@ -2376,53 +2358,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bitmagnet+backup+FAILED&priority=Max&tags=skull",
             "template": "bitmagnet backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "paperless-ngx",
-      "repo": "paperless-ngx",
-      "paths": ["/source/paperless"],
-      "excludes": ["**/paperless/db", "**/paperless/redis", "**/paperless/borgmatic"],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "docker exec paperless-db pg_dump -U paperless -d paperless -F custom -f /tmp/paperless.dump && docker cp paperless-db:/tmp/paperless.dump /source/paperless/.paperless.dump && docker exec paperless-db rm -f /tmp/paperless.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/paperless/.paperless.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=paperless-ngx+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "paperless-ngx backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=paperless-ngx+backup+FAILED&priority=Max&tags=skull",
-            "template": "paperless-ngx backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
