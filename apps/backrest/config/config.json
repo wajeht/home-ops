@@ -618,24 +618,6 @@
       }
     },
     {
-      "id": "vikunja",
-      "uri": "/repos/vikunja",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "frigate",
       "uri": "/repos/frigate",
       "password": "",
@@ -2441,58 +2423,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=paperless-ngx+backup+FAILED&priority=Max&tags=skull",
             "template": "paperless-ngx backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vikunja",
-      "repo": "vikunja",
-      "paths": ["/source/vikunja"],
-      "excludes": [
-        "**/vikunja/db/vikunja.db",
-        "**/vikunja/db/vikunja.db-wal",
-        "**/vikunja/db/vikunja.db-shm"
-      ],
-      "schedule": {
-        "cron": "48 0 * * *",
-        "clock": "CLOCK_LOCAL"
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "sqlite3 /source/vikunja/db/vikunja.db -cmd \".timeout 30000\" \".backup /source/vikunja/.vikunja.bak\""
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/vikunja/.vikunja.bak"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vikunja+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "vikunja backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vikunja+backup+FAILED&priority=Max&tags=skull",
-            "template": "vikunja backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

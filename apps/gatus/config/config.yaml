@@ -155,16 +155,6 @@ endpoints:
     alerts:
       - type: ntfy
 
-  - name: Vikunja
-    group: Tools
-    url: http://vikunja:3456/api/v1/info
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-    alerts:
-      - type: ntfy
-
   - name: Beszel
     group: Tools
     url: http://beszel:8090
