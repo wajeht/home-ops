@@ -564,24 +564,6 @@
       }
     },
     {
-      "id": "bitmagnet",
-      "uri": "/repos/bitmagnet",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "authelia",
       "uri": "/repos/authelia",
       "password": "",
@@ -2312,52 +2294,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+FAILED&priority=Max&tags=skull",
             "template": "miniflux backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "bitmagnet",
-      "repo": "bitmagnet",
-      "paths": ["/source/bitmagnet/.bitmagnet.dump"],
-      "schedule": {
-        "disabled": true
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "docker exec bitmagnet-db pg_dump -U postgres -d bitmagnet -F custom -f /tmp/bitmagnet.dump && docker cp bitmagnet-db:/tmp/bitmagnet.dump /source/bitmagnet/.bitmagnet.dump && docker exec bitmagnet-db rm -f /tmp/bitmagnet.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/bitmagnet/.bitmagnet.dump"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bitmagnet+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "bitmagnet backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bitmagnet+backup+FAILED&priority=Max&tags=skull",
-            "template": "bitmagnet backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

@@ -133,12 +133,6 @@
         #   url: http://prowlarr:9696
         #   key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
 
-    - Bitmagnet:
-        icon: bitmagnet
-        href: https://bitmagnet.jaw.dev
-        description: DHT Indexer
-        # siteMonitor: http://bitmagnet:3333
-
     - Huntarr:
         icon: huntarr
         href: https://huntarr.jaw.dev
