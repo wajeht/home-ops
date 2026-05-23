@@ -476,6 +476,12 @@
         description: Dev Utilities
         # siteMonitor: http://it-tools:80
 
+    - CyberChef:
+        icon: cyberchef
+        href: https://cyberchef.jaw.dev
+        description: Cyber Swiss Army Knife
+        # siteMonitor: http://cyberchef:8080
+
     - Hindsight:
         icon: mdi-brain
         href: https://hindsight.jaw.dev
