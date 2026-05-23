@@ -154,7 +154,7 @@ flowchart LR
 
 GitOps-driven homelab running on Docker Compose.
 
-Push to git, [docker-cd](https://github.com/wajeht/docker-cd) handles the rest — auto-discovers `apps/*/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, rolling deploys. [Traefik](https://traefik.io/traefik/) routes via Docker labels with wildcard SSL. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh; own images deploy in ~1 min via [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow).
+Push to git, [docker-cd](https://github.com/wajeht/docker-cd) handles the rest — auto-discovers `apps/*/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, rolling deploys. [Traefik](https://traefik.io/traefik/) routes via Docker labels with wildcard SSL. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh; own images deploy in ~1 min via [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow), which updates `home-ops`, triggers docker-cd `/api/sync`, tracks GitHub Deployments, and creates/cleans temporary PR apps. [dcdb](https://github.com/wajeht/dcdb) manages databases in docker-cd Compose environments for discovery, SQL, dump/restore, prod-to-PR sync, and port forwarding.
 
 All containers [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, and health checks. Nightly backups to NAS via centralized [Backrest](docs/disaster-recovery.md) (restic web UI) with per-app retention, integrity checks, and ntfy alerts.
 
