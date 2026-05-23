@@ -125,7 +125,9 @@ healthcheck:
   retries: 3
 ```
 
-For scratch/minimal images with no shell, `curl`, or `wget`, either use the app's own healthcheck command or mount a static helper binary. See `apps/gatus/docker-compose.yml` for the Microcheck `httpcheck` pattern.
+For scratch/minimal images with no shell, `curl`, or `wget`, either use the app's own healthcheck command or mount a static helper binary. See [apps/gatus/README.md → httpcheck Pattern](../apps/gatus/README.md#httpcheck-pattern) for the canonical example.
+
+To register the app for uptime monitoring and ntfy alerts, add an endpoint per [apps/gatus/README.md](../apps/gatus/README.md#adding-an-endpoint).
 
 ### Init Process
 
