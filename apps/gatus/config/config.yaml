@@ -145,6 +145,16 @@ endpoints:
     alerts:
       - type: ntfy
 
+  - name: CyberChef
+    group: Tools
+    url: http://cyberchef:8080
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
   - name: Beszel
     group: Tools
     url: http://beszel:8090
