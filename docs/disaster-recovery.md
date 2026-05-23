@@ -64,7 +64,6 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | uptime-kuma     | 12:40 AM | SQLite + files       | DB file is `kuma.db`                                           |
 | gatus           | 12:42 AM | SQLite + files       | DB file is `gatus.db`                                          |
 | authelia        | 12:45 AM | SQLite + files       | DB file is `db.sqlite3`                                        |
-| vikunja         | 12:48 AM | SQLite + files       | DB at `db/vikunja.db`; files at `files/`                       |
 | sonarr          | 12:50 AM | SQLite + files       | Excludes logs.db, asp, Sentry, \*.pid                          |
 | radarr          | 12:55 AM | SQLite + files       | Excludes MediaCover, Backups (in addition to sonarr's)         |
 | prowlarr        | 1:00 AM  | SQLite + files       |                                                                |
