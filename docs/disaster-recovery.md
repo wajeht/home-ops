@@ -56,8 +56,7 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | hello-world   | 12:25 AM | Postgres (DB only)   |                                                                |
 | immich        | 12:35 AM | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant       |
 | gatus         | 12:42 AM | SQLite + files       | DB file is `gatus.db`                                          |
-| sonarr        | 12:50 AM | SQLite + files       | Excludes logs.db, asp, Sentry, \*.pid                          |
-| radarr        | 12:55 AM | SQLite + files       | Excludes MediaCover, Backups (in addition to sonarr's)         |
+| radarr        | 12:55 AM | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid     |
 | prowlarr      | 1:00 AM  | SQLite + files       |                                                                |
 | ntfy          | 1:20 AM  | SQLite (×2) + files  | Two DBs: `user.db` + `cache.db` (chained in hook)              |
 | bang          | 1:30 AM  | SQLite (DB only)     | Ephemeral keinos/sqlite3 — bang has no `container_name`        |

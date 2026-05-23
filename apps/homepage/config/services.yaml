@@ -9,16 +9,6 @@
         #   url: http://radarr:7878
         #   key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
 
-    - Sonarr:
-        icon: sonarr
-        href: https://sonarr.jaw.dev
-        description: TV Shows
-        # siteMonitor: http://sonarr:8989
-        # widget:
-        #   type: sonarr
-        #   url: http://sonarr:8989
-        #   key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
-
     - Plex:
         icon: plex
         href: https://plex.jaw.dev
