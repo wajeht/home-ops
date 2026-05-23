@@ -32,6 +32,10 @@ flowchart LR
     ops_renovate -->|update images| ops_ci
     ops_ci -->|/api/sync| cf --> unifi -->|:80/:443| traefik -->|proxy| apps
 
+    subgraph public[public]
+        you((You))
+    end
+
     subgraph cloudflare[Cloudflare]
         cf((WAF))
         cf_region([Region Blocking])
@@ -103,10 +107,11 @@ flowchart LR
     end
 
     docker_cd -.->|poll 5m| traefik -.->|poll 5m| unifi -.->|poll 5m| cf -.->|poll 5m| ops_ci
-    you[You] -.->|HTTPS| cf -.->|WAF| unifi -.->|Firewall| traefik -.->|proxy| apps
+    you -.->|HTTPS| cf -.->|WAF| unifi -.->|Firewall| traefik -.->|proxy| apps
 
     style app_repo fill:#e8f4fd,stroke:#4a90d9
     style ops_repo fill:#e8f4fd,stroke:#4a90d9
+    style public fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#333
     style infra fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
     style cloudflare fill:#fde8d0,stroke:#f6821f
     style cf fill:#fde8d0,stroke:#f6821f,color:#333
