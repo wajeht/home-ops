@@ -58,7 +58,7 @@ headers:
 
 ## Alerting
 
-Alerts go to the self-hosted ntfy on the `gatus` topic (matches the per-app-topic pattern used by `borgmatic`, `ddns-updater`, etc.). Subscribe via the ntfy app at `https://ntfy.jaw.dev/gatus`.
+Alerts go to the self-hosted ntfy on the `gatus` topic (matches the per-app-topic pattern used by `ddns-updater`, backrest plans, etc.). Subscribe via the ntfy app at `https://ntfy.jaw.dev/gatus`.
 
 Defaults (set under `alerting.ntfy.default-alert`):
 

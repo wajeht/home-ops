@@ -91,7 +91,7 @@ sudo systemctl disable --now ModemManager wpa_supplicant packagekit udisks2 upow
 
 ## Docker Socket
 
-Traefik and Portainer mount `/var/run/docker.sock` (root-equivalent access). Consider [docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy) to limit API access.
+Several services mount `/var/run/docker.sock` (root-equivalent access) — Traefik, Backrest, Dozzle, Beszel, Homepage, Walker, docker-cd. Consider [docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy) to limit API access.
 
 ## IoT VLAN
 

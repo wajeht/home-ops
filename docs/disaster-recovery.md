@@ -51,50 +51,35 @@ apps/backrest/
 
 Per-app schedules are staggered to prevent resource contention. `global` runs last after all per-app backups complete.
 
-| App             | Schedule | Type                 | Notes                                                          |
-| --------------- | -------- | -------------------- | -------------------------------------------------------------- |
-| miniflux        | 12:00 AM | Postgres (DB only)   | `pg_dump` via `docker exec miniflux-db`                        |
-| plausible       | 12:05 AM | Postgres + files     | ClickHouse `events/` backed up raw                             |
-| zipline         | 12:10 AM | Postgres + files     | uploads, public, themes                                        |
-| glitchtip       | 12:15 AM | Postgres + files     |                                                                |
-| bitmagnet       | 12:20 AM | Postgres (DB only)   | User is `postgres`, not `bitmagnet`                            |
-| hello-world     | 12:25 AM | Postgres (DB only)   |                                                                |
-| paperless-ngx   | 12:30 AM | Postgres + files     | Data dir is `/source/paperless`, NOT `paperless-ngx`           |
-| immich          | 12:35 AM | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant       |
-| uptime-kuma     | 12:40 AM | SQLite + files       | DB file is `kuma.db`                                           |
-| gatus           | 12:42 AM | SQLite + files       | DB file is `gatus.db`                                          |
-| authelia        | 12:45 AM | SQLite + files       | DB file is `db.sqlite3`                                        |
-| sonarr          | 12:50 AM | SQLite + files       | Excludes logs.db, asp, Sentry, \*.pid                          |
-| radarr          | 12:55 AM | SQLite + files       | Excludes MediaCover, Backups (in addition to sonarr's)         |
-| prowlarr        | 1:00 AM  | SQLite + files       |                                                                |
-| tautulli        | 1:05 AM  | SQLite + files       | Excludes cache, logs, \*.lock                                  |
-| audiobookshelf  | 1:10 AM  | SQLite + files       | DB at `config/absdatabase.sqlite`                              |
-| changedetection | 1:15 AM  | Files only           |                                                                |
-| ntfy            | 1:20 AM  | SQLite (×2) + files  | Two DBs: `user.db` + `cache.db` (chained in hook)              |
-| bang            | 1:30 AM  | SQLite (DB only)     | Ephemeral keinos/sqlite3 — bang has no `container_name`        |
-| favicon         | 1:35 AM  | SQLite + files       |                                                                |
-| mm2us           | 1:40 AM  | SQLite (DB only)     |                                                                |
-| notify          | 1:45 AM  | SQLite (DB only)     |                                                                |
-| calendar        | 1:50 AM  | SQLite (DB only)     |                                                                |
-| screenshot      | 1:55 AM  | SQLite + files       |                                                                |
-| gains           | 2:00 AM  | SQLite (DB only)     |                                                                |
-| homeassistant   | 2:05 AM  | SQLite + files       | DB file is `home-assistant_v2.db`                              |
-| zigbee2mqtt     | 2:10 AM  | Files only           |                                                                |
-| dbgate          | 2:15 AM  | Files only           | `/mnt/*` mounts to other apps' data NOT backed up here         |
-| frigate         | 2:20 AM  | SQLite + files       | Excludes media (NAS) + model_cache (regenerable)               |
-| listenarr       | 2:25 AM  | SQLite + files       | DB at `database/listenarr.db`                                  |
-| garage          | 2:30 AM  | Files only           | meta + data dirs (S3 bucket contents — can be large)           |
-| beszel          | 2:35 AM  | SQLite + files       | DB file is `data.db`                                           |
-| traefik         | 2:40 AM  | Files only           | Includes `acme.json` certs                                     |
-| plex            | 2:45 AM  | SQLite (×2) + files  | Two DBs deeply nested under `Library/Application Support/...`  |
-| seerr           | 2:50 AM  | SQLite + files       | DB at `db/db.sqlite3`                                          |
-| bazarr          | 2:55 AM  | SQLite + files       | DB at `db/bazarr.db`                                           |
-| sabnzbd         | 3:00 AM  | SQLite + files       | DB at `admin/history1.db`. Excludes Downloads (huge transient) |
-| vpn-qbit        | 3:05 AM  | Files only           | Two source paths: qbittorrent + gluetun                        |
-| nut             | 3:10 AM  | Files only           | Peanut config                                                  |
-| vaultwarden     | 3:15 AM  | SQLite + files       | DB file is `db.sqlite3`                                        |
-| gitea           | 3:20 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                 |
-| **global**      | 3:45 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state    |
+| App           | Schedule | Type                 | Notes                                                          |
+| ------------- | -------- | -------------------- | -------------------------------------------------------------- |
+| hello-world   | 12:25 AM | Postgres (DB only)   |                                                                |
+| immich        | 12:35 AM | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant       |
+| gatus         | 12:42 AM | SQLite + files       | DB file is `gatus.db`                                          |
+| radarr        | 12:55 AM | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid     |
+| prowlarr      | 1:00 AM  | SQLite + files       |                                                                |
+| ntfy          | 1:20 AM  | SQLite (×2) + files  | Two DBs: `user.db` + `cache.db` (chained in hook)              |
+| bang          | 1:30 AM  | SQLite (DB only)     | Ephemeral keinos/sqlite3 — bang has no `container_name`        |
+| favicon       | 1:35 AM  | SQLite + files       |                                                                |
+| mm2us         | 1:40 AM  | SQLite (DB only)     |                                                                |
+| notify        | 1:45 AM  | SQLite (DB only)     |                                                                |
+| calendar      | 1:50 AM  | SQLite (DB only)     |                                                                |
+| screenshot    | 1:55 AM  | SQLite + files       |                                                                |
+| gains         | 2:00 AM  | SQLite (DB only)     |                                                                |
+| homeassistant | 2:05 AM  | SQLite + files       | DB file is `home-assistant_v2.db`                              |
+| zigbee2mqtt   | 2:10 AM  | Files only           |                                                                |
+| dbgate        | 2:15 AM  | Files only           | `/mnt/*` mounts to other apps' data NOT backed up here         |
+| garage        | 2:30 AM  | Files only           | meta + data dirs (S3 bucket contents — can be large)           |
+| beszel        | 2:35 AM  | SQLite + files       | DB file is `data.db`                                           |
+| traefik       | 2:40 AM  | Files only           | Includes `acme.json` certs                                     |
+| plex          | 2:45 AM  | SQLite (×2) + files  | Two DBs deeply nested under `Library/Application Support/...`  |
+| seerr         | 2:50 AM  | SQLite + files       | DB at `db/db.sqlite3`                                          |
+| bazarr        | 2:55 AM  | SQLite + files       | DB at `db/bazarr.db`                                           |
+| sabnzbd       | 3:00 AM  | SQLite + files       | DB at `admin/history1.db`. Excludes Downloads (huge transient) |
+| vpn-qbit      | 3:05 AM  | Files only           | Two source paths: qbittorrent + gluetun                        |
+| vaultwarden   | 3:15 AM  | SQLite + files       | DB file is `db.sqlite3`                                        |
+| gitea         | 3:20 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                 |
+| **global**    | 3:45 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state    |
 
 Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 4 AM, integrity check Sunday 5 AM (structure-only).
 
@@ -158,7 +143,7 @@ Same as DB-only, but `paths` is the whole data dir and excludes filter out raw D
 }
 ```
 
-### Plan: Postgres (paperless-ngx, gitea-no-wait-gitea-is-sqlite, miniflux, etc.)
+### Plan: Postgres (hello-world, immich)
 
 Use `docker exec` into the app's `*-db` container — `pg_dump` always matches the postgres major version. Use `docker cp` to pull the dump out (don't redirect stdout cross-container):
 
@@ -182,7 +167,7 @@ Use `docker exec` into the app's `*-db` container — `pg_dump` always matches t
 
 The app's `*-db` container needs `container_name: <app>-db` set (already true for all existing Postgres apps).
 
-### Plan: Files-only (changedetection, dbgate, garage, nut, traefik, vpn-qbit, zigbee2mqtt)
+### Plan: Files-only (dbgate, garage, traefik, vpn-qbit, zigbee2mqtt)
 
 ```json
 {
@@ -333,55 +318,29 @@ rm -f /home/jaw/data/<app>/<db-file>.db-wal /home/jaw/data/<app>/<db-file>.db-sh
 docker compose up -d
 ```
 
-### Restore: Postgres DB-only (hello-world, miniflux, bitmagnet, immich)
+### Restore: Postgres DB-only (hello-world, immich)
 
 ```bash
 # 1. Extract
-docker exec backrest restic -r /repos/miniflux restore latest --target /tmp/restore
+docker exec backrest restic -r /repos/hello-world restore latest --target /tmp/restore
 
 # 2. Bring DB container up (rest of app can stay down)
-cd ~/home-ops/apps/miniflux && docker compose up -d miniflux-db
+cd ~/home-ops/apps/hello-world && docker compose up -d hello-world-db
 
 # 3. Drop + recreate the database
-docker exec miniflux-db dropdb -U miniflux miniflux
-docker exec miniflux-db createdb -U miniflux miniflux
+docker exec hello-world-db dropdb -U hello-world hello-world
+docker exec hello-world-db createdb -U hello-world hello-world
 
 # 4. Restore via pg_restore
-docker cp /tmp/restore/source/miniflux/.miniflux.dump miniflux-db:/tmp/restore.dump
-docker exec miniflux-db pg_restore -U miniflux -d miniflux /tmp/restore.dump
-docker exec miniflux-db rm /tmp/restore.dump
+docker cp /tmp/restore/source/hello-world/.hello-world.dump hello-world-db:/tmp/restore.dump
+docker exec hello-world-db pg_restore -U hello-world -d hello-world /tmp/restore.dump
+docker exec hello-world-db rm /tmp/restore.dump
 
 # 5. Bring app up
 docker compose up -d
 ```
 
-### Restore: Postgres + files (paperless-ngx, plausible, zipline, glitchtip)
-
-```bash
-# 1. Extract
-docker exec backrest restic -r /repos/paperless-ngx restore latest --target /tmp/restore
-
-# 2. Stop the app
-cd ~/home-ops/apps/paperless-ngx && docker compose stop paperless
-
-# 3. Restore files (exclude .dump and the raw db dir)
-rsync -a --delete /tmp/restore/source/paperless/ /home/jaw/data/paperless/ \
-  --exclude '.paperless.dump' --exclude 'db' --exclude 'redis'
-
-# 4. Drop + recreate the DB
-docker exec paperless-db dropdb -U paperless paperless
-docker exec paperless-db createdb -U paperless paperless
-
-# 5. pg_restore
-docker cp /tmp/restore/source/paperless/.paperless.dump paperless-db:/tmp/restore.dump
-docker exec paperless-db pg_restore -U paperless -d paperless /tmp/restore.dump
-docker exec paperless-db rm /tmp/restore.dump
-
-# 6. Start
-docker compose up -d
-```
-
-### Restore: Files only (changedetection, dbgate, garage, nut, traefik, vpn-qbit, zigbee2mqtt)
+### Restore: Files only (dbgate, garage, traefik, vpn-qbit, zigbee2mqtt)
 
 ```bash
 # 1. Extract
@@ -647,8 +606,6 @@ Known issues and their fixes.
 | sqlite3 backup fails immediately under concurrent writes                                   | No retry budget configured                                                                | Add `-cmd ".timeout 30000"` before the `.backup` command (30-second retry window).                                        |
 | Spaces in DB path break the hook (e.g. plex)                                               | Shell word-splitting on unquoted paths                                                    | Wrap each path in **single quotes**. JSON escapes inside double-quoted strings only escape the JSON, not the shell.       |
 | Multiple DBs per app (ntfy, plex)                                                          | One hook can run one shell command                                                        | Chain with `&&` — the whole pre-hook is a single shell line.                                                              |
-| Postgres user differs from app name (bitmagnet uses `postgres`)                            | Default assumption that user == app name doesn't always hold                              | Check `POSTGRES_USER` env in the `*-db` service; use that explicitly in `pg_dump -U`.                                     |
-| Data dir name doesn't match app dir (paperless-ngx → /source/paperless)                    | App folder and data folder use different names                                            | Look at the actual `volumes:` line in the app's compose to find the real data dir.                                        |
 | Nested DB path (seerr → `db/db.sqlite3`, gitea → `gitea/gitea.db`)                         | App stores its DB in a subdirectory                                                       | Excludes and sqlite3 paths must match the nested path exactly.                                                            |
 | `unable to create lock in backend: repository is already locked by PID ... on <container>` | Stale lock from killed backup (container restart, OOM, cancel)                            | `docker exec backrest restic -r /repos/<app> unlock --remove-all` — plain `unlock` only removes non-exclusive locks       |
 | Repeated OOM kills during backup                                                           | Memory limit too low — restic's in-memory index spikes well past source size              | Bump `deploy.resources.limits.memory`. Current default is 4G.                                                             |
@@ -666,7 +623,7 @@ Known issues and their fixes.
 Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
-- **Cache-only or tiny / no persistent state worth backing up**: `huntarr`, `hindsight`, `recyclarr`, `renovate`, `ddns-updater`, `searxng`, `linx`, `walker`, `zepp`, `code-server`, `hydra-server`, `readmeabook`, `stirling-pdf`, `byparr`, `dozzle`, `convertx`, `cyberchef`, `excalidraw`, `git`, `it-tools`, `jaw-dev`, `portainer`, `scrypted`, `autobrr`, `cleanuparr`, `speedtest`, `power-badge`, `adguard`
+- **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `walker`, `zepp`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`
 - **Infra (config tracked in git)**: `backrest`, `google-auth`, `google-auth-user`
 
 If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, the app is stateless and doesn't need a Backrest plan.

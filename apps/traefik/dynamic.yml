@@ -158,8 +158,3 @@ http:
       loadBalancer:
         servers:
           - url: "http://127.0.0.1"
-
-  serversTransports:
-    # Used only by Scrypted when Traefik cannot verify its backend cert.
-    scrypted-transport:
-      insecureSkipVerify: true
