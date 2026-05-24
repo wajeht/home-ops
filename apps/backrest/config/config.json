@@ -474,6 +474,24 @@
       }
     },
     {
+      "id": "syncthing",
+      "uri": "/repos/syncthing",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 4 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 5 * * 0"
+        },
+        "structureOnly": true
+      }
+    },
+    {
       "id": "global",
       "uri": "/repos/global",
       "password": "",
@@ -1777,6 +1795,46 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=immich+backup+FAILED&priority=Max&tags=skull",
             "template": "immich backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "syncthing",
+      "repo": "syncthing",
+      "paths": ["/source/syncthing/config"],
+      "excludes": [
+        "**/syncthing/config/index-*",
+        "**/syncthing/config/logs",
+        "**/syncthing/config/.stversions",
+        "**/syncthing/config/borgmatic"
+      ],
+      "schedule": {
+        "cron": "10 3 * * *",
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=syncthing+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "syncthing backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=syncthing+backup+FAILED&priority=Max&tags=skull",
+            "template": "syncthing backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
