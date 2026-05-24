@@ -516,7 +516,7 @@
       "repo": "bang",
       "paths": ["/source/bang/.bang.bak"],
       "schedule": {
-        "cron": "30 1 * * *",
+        "cron": "0 1 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -569,7 +569,7 @@
         "**/favicon/borgmatic"
       ],
       "schedule": {
-        "cron": "35 1 * * *",
+        "cron": "10 1 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -616,7 +616,7 @@
       "repo": "calendar",
       "paths": ["/source/calendar/.calendar.bak"],
       "schedule": {
-        "cron": "50 1 * * *",
+        "cron": "40 1 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -669,7 +669,7 @@
         "**/screenshot/borgmatic"
       ],
       "schedule": {
-        "cron": "55 1 * * *",
+        "cron": "50 1 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -769,7 +769,7 @@
         "**/beszel/borgmatic"
       ],
       "schedule": {
-        "cron": "35 2 * * *",
+        "cron": "50 2 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -825,7 +825,7 @@
         "**/ntfy/borgmatic"
       ],
       "schedule": {
-        "cron": "20 1 * * *",
+        "cron": "50 0 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -872,7 +872,7 @@
       "repo": "mm2us",
       "paths": ["/source/mm2us/.mm2us.bak"],
       "schedule": {
-        "cron": "40 1 * * *",
+        "cron": "20 1 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -925,7 +925,7 @@
         "**/gatus/borgmatic"
       ],
       "schedule": {
-        "cron": "42 0 * * *",
+        "cron": "20 0 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -973,7 +973,7 @@
       "paths": ["/source/dbgate"],
       "excludes": ["**/dbgate/borgmatic"],
       "schedule": {
-        "cron": "15 2 * * *",
+        "cron": "30 2 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1007,7 +1007,7 @@
       "repo": "notify",
       "paths": ["/source/notify/.notify.bak"],
       "schedule": {
-        "cron": "45 1 * * *",
+        "cron": "30 1 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1060,7 +1060,7 @@
         "**/gitea/borgmatic"
       ],
       "schedule": {
-        "cron": "20 3 * * *",
+        "cron": "20 4 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1108,7 +1108,7 @@
       "paths": ["/source/garage"],
       "excludes": ["**/garage/borgmatic"],
       "schedule": {
-        "cron": "30 2 * * *",
+        "cron": "40 2 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1148,7 +1148,7 @@
         "**/homeassistant/borgmatic"
       ],
       "schedule": {
-        "cron": "5 2 * * *",
+        "cron": "10 2 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1203,7 +1203,7 @@
         "**/seerr/borgmatic"
       ],
       "schedule": {
-        "cron": "50 2 * * *",
+        "cron": "20 3 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1258,7 +1258,8 @@
         "**/bazarr/borgmatic"
       ],
       "schedule": {
-        "disabled": true
+        "cron": "30 3 * * *",
+        "clock": "CLOCK_LOCAL"
       },
       "retention": {
         "policyTimeBucketed": {
@@ -1313,7 +1314,7 @@
         "**/sabnzbd/borgmatic"
       ],
       "schedule": {
-        "cron": "0 3 * * *",
+        "cron": "40 3 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1375,7 +1376,7 @@
         "**/radarr/borgmatic"
       ],
       "schedule": {
-        "cron": "55 0 * * *",
+        "cron": "30 0 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1439,7 +1440,7 @@
         "**/plex/borgmatic"
       ],
       "schedule": {
-        "cron": "45 2 * * *",
+        "cron": "10 3 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1499,7 +1500,7 @@
         "**/prowlarr/borgmatic"
       ],
       "schedule": {
-        "cron": "0 1 * * *",
+        "cron": "40 0 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1546,7 +1547,8 @@
       "repo": "hello-world",
       "paths": ["/source/hello-world/.hello-world.dump"],
       "schedule": {
-        "disabled": true
+        "cron": "0 0 * * *",
+        "clock": "CLOCK_LOCAL"
       },
       "retention": {
         "policyTimeBucketed": {
@@ -1598,7 +1600,8 @@
         "**/vaultwarden/borgmatic"
       ],
       "schedule": {
-        "disabled": true
+        "cron": "10 4 * * *",
+        "clock": "CLOCK_LOCAL"
       },
       "retention": {
         "policyTimeBucketed": {
@@ -1653,7 +1656,7 @@
         "**/gluetun/ipc-socket"
       ],
       "schedule": {
-        "cron": "5 3 * * *",
+        "cron": "50 3 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1688,7 +1691,7 @@
       "paths": ["/source/traefik"],
       "excludes": ["**/traefik/borgmatic"],
       "schedule": {
-        "cron": "40 2 * * *",
+        "cron": "0 3 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1723,7 +1726,7 @@
       "paths": ["/source/zigbee2mqtt"],
       "excludes": ["**/zigbee2mqtt/borgmatic"],
       "schedule": {
-        "cron": "10 2 * * *",
+        "cron": "20 2 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1757,7 +1760,7 @@
       "repo": "immich",
       "paths": ["/source/immich/.immich.dump"],
       "schedule": {
-        "cron": "35 0 * * *",
+        "cron": "10 0 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1810,7 +1813,7 @@
         "**/syncthing/config/borgmatic"
       ],
       "schedule": {
-        "cron": "10 3 * * *",
+        "cron": "0 4 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1852,7 +1855,7 @@
         "**/*.dump"
       ],
       "schedule": {
-        "cron": "45 3 * * *",
+        "cron": "30 4 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
