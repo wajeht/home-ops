@@ -19,6 +19,9 @@ message: |
   {{- if .services }}
   **services:** {{ join ", " .services }}
   {{- end }}
+  {{- if .unhealthyServices }}
+  **unhealthy:** {{ join ", " .unhealthyServices }}
+  {{- end }}
   {{- if .reason }}
   **reason:** {{ .reason }}
   {{- end }}

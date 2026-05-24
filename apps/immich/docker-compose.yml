@@ -2,7 +2,7 @@
 services:
   immich:
     container_name: immich
-    image: ghcr.io/immich-app/immich-server:v2.6.1@sha256:aa7fe8eec3130742d07498dac7e02baa2d32a903573810ba95ed11f155c7eac1
+    image: ghcr.io/immich-app/immich-server:v2.7.5@sha256:c15bff75068effb03f4355997d03dc7e0fc58720c2b54ad6f7f10d1bc57efaa5
     # Exposed for direct local network access (bypasses Cloudflare 100MB upload limit)
     ports:
       - "2283:2283"
@@ -71,7 +71,7 @@ services:
 
   immich-machine-learning:
     container_name: immich-machine-learning
-    image: ghcr.io/immich-app/immich-machine-learning:v2.6.1@sha256:cafc1ff51b95a931d17d69226435bbb28ea314f151598b8b087391c232d00ab6
+    image: ghcr.io/immich-app/immich-machine-learning:v2.6.3@sha256:33b17015c3d14f2565e9b8cd36b48a70027b14b5cd20da7fbfff21a370b0309c
     env_file:
       - .env
     environment:
@@ -162,7 +162,7 @@ services:
 
   immich-redis:
     container_name: immich-redis
-    image: redis:8-alpine@sha256:81b6f81d6a6c5b9019231a2e8eb10085e3a139a34f833dcc965a8a959b040b72
+    image: redis:8-alpine@sha256:d146f83b1e0f02fc27c26a50cee39338c736674c5959db84363e6ae3cd9e02d2
     networks:
       - immich-internal
     healthcheck:
@@ -192,54 +192,7 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  immich-borgmatic:
-    container_name: immich-borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.3@sha256:529ef5f19838b650e07de2cdf91e0f403d849cf83636baacc6ec8a55e2a76f79
-    env_file:
-      - .env
-    environment:
-      - TZ=America/Chicago
-      - PGPASSWORD=${POSTGRES_PASSWORD}
-    volumes:
-      - /home/jaw/backup/immich:/repository
-      - /home/jaw/data/immich/borgmatic:/borgmatic/state
-      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
-      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    networks:
-      - backup
-      - immich-internal
-    depends_on:
-      immich-db:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   traefik:
-    external: true
-  backup:
     external: true
   immich-internal:

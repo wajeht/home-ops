@@ -313,14 +313,17 @@ nfs_persist() {
 	# nconnect=4: 4 parallel TCP connections per mount (needs kernel 5.3+)
 	# rsize/wsize=1048576: 1MB read/write chunks (server may negotiate lower)
 	# noatime: skip access-time updates to reduce unnecessary NAS writes
-	local entry="$NAS_IP:$nas_path $local_path nfs4 defaults,_netdev,nofail,nconnect=4,rsize=1048576,wsize=1048576,noatime 0 0"
-	if grep -qF "$NAS_IP:$nas_path" /etc/fstab; then
+	# x-systemd.before/required-by=docker.service: block docker until NFS is mounted,
+	#   so containers don't bind-mount the empty placeholder dir on boot
+	local opts="defaults,_netdev,nofail,nconnect=4,rsize=1048576,wsize=1048576,noatime,x-systemd.before=docker.service,x-systemd.required-by=docker.service"
+	local entry="$NAS_IP:$nas_path $local_path nfs4 $opts 0 0"
+	if grep -qxF "$entry" /etc/fstab; then
 		dim "$name: already in fstab"
 	else
-		# Remove stale entries for same mount point (e.g. old NAS IP)
+		# Remove stale entries for same mount point (old IP, old options, etc.)
 		$SUDO sed -i "\| $local_path |d" /etc/fstab
 		echo "$entry" | $SUDO tee -a /etc/fstab >/dev/null
-		ok "$name: added to fstab"
+		ok "$name: added to fstab (run 'sudo systemctl daemon-reload' to apply)"
 	fi
 }
 
@@ -670,89 +673,6 @@ cmd_update_infra_force() {
 }
 
 #=============================================================================
-# BORGMATIC-INIT - Initialize borg repos for all borgmatic containers
-#=============================================================================
-cmd_borgmatic_init() {
-	header "Borgmatic Init"
-
-	local containers
-	containers=$($SUDO docker ps --format '{{.Names}}' | grep borgmatic | sort)
-
-	if [ -z "$containers" ]; then
-		warn "No borgmatic containers running"
-		return 1
-	fi
-
-	local initialized=0 skipped=0 failed=0
-	for c in $containers; do
-		local needs_init=0
-		if ! $SUDO docker exec "$c" borg info /repository &>/dev/null; then
-			needs_init=1
-		fi
-		if [ "$needs_init" = "1" ]; then
-			if $SUDO docker exec "$c" borgmatic repo-create --encryption repokey-blake2 &>/dev/null; then
-				ok "$c: initialized"
-				initialized=$((initialized + 1))
-			else
-				err "$c: failed"
-				failed=$((failed + 1))
-			fi
-		else
-			dim "$c: already initialized"
-			skipped=$((skipped + 1))
-		fi
-	done
-
-	echo ""
-	ok "Done ($initialized new, $skipped existing, $failed failed)"
-}
-
-#=============================================================================
-# BORGMATIC-BACKUP - Run backup on all borgmatic containers
-#=============================================================================
-cmd_borgmatic_backup() {
-	local target=${1:-}
-	header "Borgmatic Backup"
-
-	local containers
-	if [ -n "$target" ]; then
-		local name="${target}-borgmatic"
-		if ! $SUDO docker ps --format '{{.Names}}' | grep -q "^${name}$"; then
-			err "$name not running"
-			return 1
-		fi
-		containers="$name"
-	else
-		containers=$($SUDO docker ps --format '{{.Names}}' | grep borgmatic | sort)
-	fi
-
-	if [ -z "$containers" ]; then
-		warn "No borgmatic containers running"
-		return 1
-	fi
-
-	local success=0 failed=0
-	for c in $containers; do
-		# Auto-init if repo doesn't exist
-		if ! $SUDO docker exec "$c" borg info /repository &>/dev/null; then
-			info "$c: initializing..."
-			$SUDO docker exec "$c" borgmatic repo-create --encryption repokey-blake2 &>/dev/null || true
-		fi
-		info "$c: backing up..."
-		if $SUDO docker exec "$c" borgmatic create --verbosity -1 2>&1; then
-			ok "$c"
-			success=$((success + 1))
-		else
-			err "$c"
-			failed=$((failed + 1))
-		fi
-	done
-
-	echo ""
-	ok "Done ($success success, $failed failed)"
-}
-
-#=============================================================================
 # IMAGES - Show/remove unused Docker images and volumes
 #=============================================================================
 cmd_images() {
@@ -887,13 +807,6 @@ case "${1:-}" in
 	update-infra-force)
 		cmd_update_infra_force
 		;;
-	borgmatic-init)
-		cmd_borgmatic_init
-		;;
-	borgmatic-backup)
-		shift
-		cmd_borgmatic_backup "$@"
-		;;
 	images)
 		shift
 		cmd_images "$@"
@@ -924,8 +837,6 @@ case "${1:-}" in
 		echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
 		echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
 		echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
-		echo -e "  ${GREEN}borgmatic-init${NC}           Initialize borg repos for all borgmatic containers"
-		echo -e "  ${GREEN}borgmatic-backup${NC} [app]    Run backup (all or single app)"
 		echo -e "  ${GREEN}images${NC}                   Show unused Docker images and volumes"
 		echo -e "  ${GREEN}images prune${NC}             Remove unused images (>7d) and orphan volumes"
 		echo -e "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"

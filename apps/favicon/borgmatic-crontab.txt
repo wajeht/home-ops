@@ -1,2 +1,0 @@
-# daily at 1:35 AM
-35 1 * * * PATH=$PATH:/usr/local/bin /usr/local/bin/borgmatic --verbosity -2 --syslog-verbosity 1

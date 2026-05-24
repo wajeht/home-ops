@@ -1,6 +1,6 @@
 services:
   renovate:
-    image: ghcr.io/mend/renovate-ce:14.1.1-full@sha256:967d06d55dc997b8c188e2d8b372058fafd1e794b219b0e7c8cbcbdaf74ca312
+    image: ghcr.io/mend/renovate-ce:14.5.0-full@sha256:4ba2e31c26b4cb1e3b014e361be1e7ab76011a91593c6020373ea301bfe72dce
     container_name: renovate
     environment:
       MEND_RNV_ACCEPT_TOS: "y"

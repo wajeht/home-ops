@@ -42,14 +42,6 @@ sudo docker restart homeassistant
 
 Then in HA UI: Settings → Devices & Services → Add Integration → search "HACS" → follow GitHub auth flow.
 
-## Frigate integration
-
-Requires HACS. In HACS → search "Frigate" (type: Integration) → install → restart HA.
-
-Then: Settings → Devices & Services → Add Integration → search "Frigate" → URL: `http://frigate:5000`
-
-Auto-discovers cameras via MQTT (mosquitto in zigbee2mqtt stack).
-
 ## Home Assistant Web Proxy
 
 Required for proxying go2rtc streams through HA. Install via HACS → Integrations → search "hass-web-proxy" → install → restart HA → Settings → Devices & Services → Add Integration → search "Proxy".
