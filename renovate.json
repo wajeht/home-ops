@@ -18,9 +18,7 @@
   "packageRules": [
     {
       "description": "Ignore apps excluded from docker-cd deployment",
-      "matchFileNames": [
-        "/(^|/)apps\\/(adguard|bazarr|convertx|excalidraw|git|vaultwarden|walker|zepp)\\//"
-      ],
+      "matchFileNames": ["/(^|/)apps\\/(adguard|convertx|git|vaultwarden|walker|zepp)\\//"],
       "enabled": false
     },
     {
