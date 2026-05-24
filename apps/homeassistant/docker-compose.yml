@@ -1,7 +1,7 @@
 services:
   homeassistant:
     container_name: homeassistant
-    image: ghcr.io/home-assistant/home-assistant:2026.4.4@sha256:c1e5f0147f4cb51ccb05bb30b62a1269cc1bd48a6274792d3b38a77ab274dfd2
+    image: ghcr.io/home-assistant/home-assistant:2026.5.3@sha256:ff875078181a0383bf3fca9f061be12d6180896dbd531de04e094e25505b0bb9
     volumes:
       - /home/jaw/data/homeassistant:/config
     environment:
@@ -48,49 +48,6 @@ services:
       - "traefik.http.routers.homeassistant-app.middlewares=rate-limit-global@file"
       - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
 
-  homeassistant-borgmatic:
-    container_name: homeassistant-borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.5@sha256:f6b0a640d72bf7bb628479246e7c919404917cc58ddc6cdfb8d2d40d786d3a26
-    env_file:
-      - .env
-    environment:
-      - TZ=America/Chicago
-    volumes:
-      - /home/jaw/data/homeassistant:/source/data
-      - /home/jaw/backup/homeassistant:/repository
-      - /home/jaw/data/homeassistant/borgmatic:/borgmatic/state
-      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
-      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    networks:
-      - backup
-    healthcheck:
-      test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   traefik:
-    external: true
-  backup:
     external: true
