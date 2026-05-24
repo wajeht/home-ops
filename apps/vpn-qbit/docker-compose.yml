@@ -58,7 +58,7 @@ services:
           memory: 512M
 
   qbittorrent:
-    image: linuxserver/qbittorrent:5.1.4-r2-ls445@sha256:855e5f4805ac218f406a5ae989a62a77e03f7e5f70128335b7970550a58c96e1
+    image: linuxserver/qbittorrent:5.1.4-r3-ls453@sha256:c9990949e968e99333f47f49da7d16e81ba6e1469c8c46807a65b984c9e8b6ff
     container_name: qbittorrent
     network_mode: "service:gluetun"
     depends_on:
