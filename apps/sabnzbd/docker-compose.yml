@@ -1,6 +1,6 @@
 services:
   sabnzbd:
-    image: linuxserver/sabnzbd:unstable-version-4.5.5@sha256:05f5d6e23623495e6a424612eeaa9344e2d96338a3e0770fe82520705a61e221
+    image: linuxserver/sabnzbd:5.0.1-ls251@sha256:87c97fa81966adb5cf511ae62b6681a37136c32f1ad7190b0b8b4d12d766ea9f
     container_name: sabnzbd
     environment:
       - PUID=1000
@@ -45,6 +45,7 @@ services:
       - "traefik.http.routers.sabnzbd.entrypoints=websecure"
       - "traefik.http.routers.sabnzbd.middlewares=google-auth@file"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+
 networks:
   traefik:
     external: true

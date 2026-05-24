@@ -187,7 +187,7 @@ SATA_DIRS=(
 )
 
 # NFS config
-NAS_IP="192.168.4.219"
+NAS_IP="192.168.4.243"
 NFS_MOUNTS=(
 	"plex|/volume1/plex|$USER_HOME/plex"
 	"backup|/volume1/backup|$USER_HOME/backup"
@@ -221,6 +221,12 @@ ensure_external_networks() {
 # SETUP - Create directories
 #=============================================================================
 cmd_setup() {
+	header "Mounts"
+	sata_mount
+	sata_persist
+	cmd_nfs mount all
+	cmd_nfs persist all
+
 	header "Creating directories"
 	local created=0 total=0
 
@@ -229,7 +235,7 @@ cmd_setup() {
 	for dir in "${STATIC_DIRS[@]}"; do
 		total=$((total + 1))
 		if [ ! -d "$dir" ]; then
-			$SUDO mkdir -p "$dir"
+			mkdir -p "$dir"
 			dim "Created: $dir"
 			created=$((created + 1))
 		fi
@@ -243,7 +249,7 @@ cmd_setup() {
 	for dir in $dirs; do
 		discovered=$((discovered + 1))
 		if [ ! -e "$dir" ]; then
-			$SUDO mkdir -p "$dir"
+			mkdir -p "$dir"
 			dim "Created: $dir"
 			created=$((created + 1))
 		fi
@@ -251,7 +257,7 @@ cmd_setup() {
 	dim "Found $discovered volume mounts across compose files"
 
 	chmod 700 "$USER_HOME/.sops" 2>/dev/null || true
-	chown -R 1000:1000 "$USER_HOME/plex" "$USER_HOME/data" 2>/dev/null || true
+	# No blanket chown — containers handle internal ownership via CHOWN/FOWNER caps
 	# Traefik runs as root in container (cap_drop: ALL removes DAC_OVERRIDE)
 	# acme.json must be owned by root or Traefik can't read/write it
 	$SUDO chown root:root "$USER_HOME/data/traefik/certs/acme.json" 2>/dev/null || true
@@ -269,7 +275,7 @@ nfs_mount() {
 	fi
 	info "Mounting $name: $NAS_IP:$nas_path -> $local_path"
 	mkdir -p "$local_path"
-	if $SUDO mount -t nfs "$NAS_IP:$nas_path" "$local_path"; then
+	if $SUDO mount -t nfs -o nconnect=4,rsize=1048576,wsize=1048576,noatime "$NAS_IP:$nas_path" "$local_path"; then
 		ok "$name"
 	else
 		err "$name failed"
@@ -288,18 +294,53 @@ nfs_unmount() {
 
 nfs_status() {
 	local name=$1 nas_path=$2 local_path=$3
+	local mount_status fstab_status
 	if mountpoint -q "$local_path" 2>/dev/null; then
-		printf "${GREEN}%-10s${NC} MOUNTED   " "$name:"
-		df -h "$local_path" | awk 'NR==2 {print $3"/"$2" ("$5" used)"}'
+		mount_status="${GREEN}MOUNTED${NC}   $(df -h "$local_path" | awk 'NR==2 {print $3"/"$2" ("$5" used)"}')"
 	else
-		printf "${RED}%-10s${NC} NOT MOUNTED\n" "$name:"
+		mount_status="${RED}NOT MOUNTED${NC}"
+	fi
+	if grep -qF "$NAS_IP:$nas_path" /etc/fstab; then
+		fstab_status="${GREEN}PERSISTED${NC}"
+	else
+		fstab_status="${DIM}NOT PERSISTED${NC}"
+	fi
+	printf "%-10s %b  %b\n" "$name:" "$mount_status" "$fstab_status"
+}
+
+nfs_persist() {
+	local name=$1 nas_path=$2 local_path=$3
+	# nconnect=4: 4 parallel TCP connections per mount (needs kernel 5.3+)
+	# rsize/wsize=1048576: 1MB read/write chunks (server may negotiate lower)
+	# noatime: skip access-time updates to reduce unnecessary NAS writes
+	# x-systemd.before/required-by=docker.service: block docker until NFS is mounted,
+	#   so containers don't bind-mount the empty placeholder dir on boot
+	local opts="defaults,_netdev,nofail,nconnect=4,rsize=1048576,wsize=1048576,noatime,x-systemd.before=docker.service,x-systemd.required-by=docker.service"
+	local entry="$NAS_IP:$nas_path $local_path nfs4 $opts 0 0"
+	if grep -qxF "$entry" /etc/fstab; then
+		dim "$name: already in fstab"
+	else
+		# Remove stale entries for same mount point (old IP, old options, etc.)
+		$SUDO sed -i "\| $local_path |d" /etc/fstab
+		echo "$entry" | $SUDO tee -a /etc/fstab >/dev/null
+		ok "$name: added to fstab (run 'sudo systemctl daemon-reload' to apply)"
+	fi
+}
+
+nfs_unpersist() {
+	local name=$1 nas_path=$2 local_path=$3
+	if grep -qF "$NAS_IP:$nas_path" /etc/fstab; then
+		$SUDO sed -i "\|$NAS_IP:$nas_path|d" /etc/fstab
+		ok "$name: removed from fstab"
+	else
+		dim "$name: not in fstab"
 	fi
 }
 
 cmd_nfs() {
 	local action=$1 target=${2:-all}
 	[ -z "$action" ] && {
-		echo -e "Usage: $0 nfs {mount|unmount|status} [plex|backup|all]"
+		echo -e "Usage: $0 nfs {mount|unmount|persist|unpersist|status} [plex|backup|all]"
 		exit 1
 	}
 
@@ -309,6 +350,8 @@ cmd_nfs() {
 			case "$action" in
 				mount) nfs_mount "$name" "$nas_path" "$local_path" ;;
 				unmount | umount) nfs_unmount "$name" "$nas_path" "$local_path" ;;
+				persist) nfs_persist "$name" "$nas_path" "$local_path" ;;
+				unpersist) nfs_unpersist "$name" "$nas_path" "$local_path" ;;
 				status) nfs_status "$name" "$nas_path" "$local_path" ;;
 			esac
 		fi
@@ -330,11 +373,6 @@ sata_mount() {
 	info "Mounting SATA: $SATA_DEVICE -> $SATA_MOUNT"
 	$SUDO mkdir -p "$SATA_MOUNT"
 	if $SUDO mount "$SATA_DEVICE" "$SATA_MOUNT"; then
-		# Ensure fstab entry exists
-		if ! grep -q "$SATA_DEVICE.*$SATA_MOUNT" /etc/fstab 2>/dev/null; then
-			echo "$SATA_DEVICE $SATA_MOUNT ext4 defaults 0 2" | $SUDO tee -a /etc/fstab >/dev/null
-			dim "Added fstab entry"
-		fi
 		# Create subdirectories
 		for dir in "${SATA_DIRS[@]}"; do
 			$SUDO mkdir -p "$dir"
@@ -355,13 +393,38 @@ sata_unmount() {
 	fi
 }
 
-sata_status() {
-	if mountpoint -q "$SATA_MOUNT" 2>/dev/null; then
-		printf "${GREEN}%-10s${NC} MOUNTED   " "sata:"
-		df -h "$SATA_MOUNT" | awk 'NR==2 {print $3"/"$2" ("$5" used)"}'
+sata_persist() {
+	local entry="$SATA_DEVICE $SATA_MOUNT ext4 defaults 0 2"
+	if grep -qF "$SATA_DEVICE" /etc/fstab; then
+		dim "sata: already in fstab"
 	else
-		printf "${RED}%-10s${NC} NOT MOUNTED\n" "sata:"
+		echo "$entry" | $SUDO tee -a /etc/fstab >/dev/null
+		ok "sata: added to fstab"
 	fi
+}
+
+sata_unpersist() {
+	if grep -qF "$SATA_DEVICE" /etc/fstab; then
+		$SUDO sed -i "\|$SATA_DEVICE|d" /etc/fstab
+		ok "sata: removed from fstab"
+	else
+		dim "sata: not in fstab"
+	fi
+}
+
+sata_status() {
+	local mount_status fstab_status
+	if mountpoint -q "$SATA_MOUNT" 2>/dev/null; then
+		mount_status="${GREEN}MOUNTED${NC}   $(df -h "$SATA_MOUNT" | awk 'NR==2 {print $3"/"$2" ("$5" used)"}')"
+	else
+		mount_status="${RED}NOT MOUNTED${NC}"
+	fi
+	if grep -qF "$SATA_DEVICE" /etc/fstab; then
+		fstab_status="${GREEN}PERSISTED${NC}"
+	else
+		fstab_status="${DIM}NOT PERSISTED${NC}"
+	fi
+	printf "%-10s %b  %b\n" "sata:" "$mount_status" "$fstab_status"
 }
 
 cmd_sata() {
@@ -369,8 +432,10 @@ cmd_sata() {
 	case "$action" in
 		mount) sata_mount ;;
 		unmount | umount) sata_unmount ;;
+		persist) sata_persist ;;
+		unpersist) sata_unpersist ;;
 		status) sata_status ;;
-		*) echo -e "Usage: $0 sata {mount|unmount|status}" ;;
+		*) echo -e "Usage: $0 sata {mount|unmount|persist|unpersist|status}" ;;
 	esac
 }
 
@@ -412,10 +477,8 @@ cmd_install() {
 		$SUDO chmod +x /usr/local/bin/sops
 	fi
 
-	# Mount drives before creating dirs (so mount paths aren't created as local dirs)
+	# Mount, persist, and create dirs
 	step "3/4" "Mounts + Directories..."
-	sata_mount
-	cmd_nfs mount all
 	cmd_setup
 
 	# Create external networks
@@ -610,93 +673,6 @@ cmd_update_infra_force() {
 }
 
 #=============================================================================
-# BORGMATIC-INIT - Initialize borg repos for all borgmatic containers
-#=============================================================================
-cmd_borgmatic_init() {
-	header "Borgmatic Init"
-
-	local containers
-	containers=$($SUDO docker ps --format '{{.Names}}' | grep borgmatic | sort)
-
-	if [ -z "$containers" ]; then
-		warn "No borgmatic containers running"
-		return 1
-	fi
-
-	local initialized=0 skipped=0 failed=0
-	for c in $containers; do
-		local needs_init=0
-		# Check both repos (nas + local sata)
-		for repo in /repository /local-backup; do
-			if $SUDO docker exec "$c" test -d "$repo" 2>/dev/null && ! $SUDO docker exec "$c" borg info "$repo" &>/dev/null; then
-				needs_init=1
-				break
-			fi
-		done
-		if [ "$needs_init" = "1" ]; then
-			if $SUDO docker exec "$c" borgmatic init --encryption repokey-blake2 &>/dev/null; then
-				ok "$c: initialized"
-				initialized=$((initialized + 1))
-			else
-				err "$c: failed"
-				failed=$((failed + 1))
-			fi
-		else
-			dim "$c: already initialized"
-			skipped=$((skipped + 1))
-		fi
-	done
-
-	echo ""
-	ok "Done ($initialized new, $skipped existing, $failed failed)"
-}
-
-#=============================================================================
-# BORGMATIC-BACKUP - Run backup on all borgmatic containers
-#=============================================================================
-cmd_borgmatic_backup() {
-	local target=${1:-}
-	header "Borgmatic Backup"
-
-	local containers
-	if [ -n "$target" ]; then
-		local name="${target}-borgmatic"
-		if ! $SUDO docker ps --format '{{.Names}}' | grep -q "^${name}$"; then
-			err "$name not running"
-			return 1
-		fi
-		containers="$name"
-	else
-		containers=$($SUDO docker ps --format '{{.Names}}' | grep borgmatic | sort)
-	fi
-
-	if [ -z "$containers" ]; then
-		warn "No borgmatic containers running"
-		return 1
-	fi
-
-	local success=0 failed=0
-	for c in $containers; do
-		# Auto-init if repo doesn't exist
-		if ! $SUDO docker exec "$c" borg info /repository &>/dev/null; then
-			info "$c: initializing..."
-			$SUDO docker exec "$c" borgmatic init --encryption repokey-blake2 &>/dev/null || true
-		fi
-		info "$c: backing up..."
-		if $SUDO docker exec "$c" borgmatic create --verbosity -1 2>&1; then
-			ok "$c"
-			success=$((success + 1))
-		else
-			err "$c"
-			failed=$((failed + 1))
-		fi
-	done
-
-	echo ""
-	ok "Done ($success success, $failed failed)"
-}
-
-#=============================================================================
 # IMAGES - Show/remove unused Docker images and volumes
 #=============================================================================
 cmd_images() {
@@ -831,13 +807,6 @@ case "${1:-}" in
 	update-infra-force)
 		cmd_update_infra_force
 		;;
-	borgmatic-init)
-		cmd_borgmatic_init
-		;;
-	borgmatic-backup)
-		shift
-		cmd_borgmatic_backup "$@"
-		;;
 	images)
 		shift
 		cmd_images "$@"
@@ -854,9 +823,13 @@ case "${1:-}" in
 		echo -e "  ${GREEN}setup${NC}                    Create all data directories"
 		echo -e "  ${GREEN}sata mount${NC}               Mount SATA drive (/mnt/sata)"
 		echo -e "  ${GREEN}sata unmount${NC}             Unmount SATA drive"
+		echo -e "  ${GREEN}sata persist${NC}             Add SATA mount to fstab (survives reboot)"
+		echo -e "  ${GREEN}sata unpersist${NC}           Remove SATA mount from fstab"
 		echo -e "  ${GREEN}sata status${NC}              Show SATA mount status"
 		echo -e "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
 		echo -e "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
+		echo -e "  ${GREEN}nfs persist${NC} [target]     Add NFS mounts to fstab (survives reboot)"
+		echo -e "  ${GREEN}nfs unpersist${NC} [target]   Remove NFS mounts from fstab"
 		echo -e "  ${GREEN}nfs status${NC}               Show NFS mount status"
 		echo -e "  ${GREEN}install${NC}                  Deploy all services"
 		echo -e "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
@@ -864,8 +837,6 @@ case "${1:-}" in
 		echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
 		echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
 		echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
-		echo -e "  ${GREEN}borgmatic-init${NC}           Initialize borg repos for all borgmatic containers"
-		echo -e "  ${GREEN}borgmatic-backup${NC} [app]    Run backup (all or single app)"
 		echo -e "  ${GREEN}images${NC}                   Show unused Docker images and volumes"
 		echo -e "  ${GREEN}images prune${NC}             Remove unused images (>7d) and orphan volumes"
 		echo -e "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"

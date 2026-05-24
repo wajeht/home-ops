@@ -1,0 +1,93 @@
+services:
+  beszel:
+    container_name: beszel
+    image: henrygd/beszel:0.18@sha256:a849ad80814b6a1a3be665304dcace5d4854b3bed7bde4dd1227e8ce1b82d477
+    volumes:
+      - /home/jaw/data/beszel:/beszel_data
+    networks:
+      - traefik
+      - beszel-internal
+    healthcheck:
+      test: ["CMD", "/beszel", "health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 256M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.beszel.rule=Host(`beszel.jaw.dev`)"
+      - "traefik.http.routers.beszel.entrypoints=websecure"
+      - "traefik.http.routers.beszel.middlewares=google-auth@file"
+      - "traefik.http.services.beszel.loadbalancer.server.port=8090"
+
+  beszel-agent:
+    container_name: beszel-agent
+    image: henrygd/beszel-agent:0.18@sha256:8874e2c53f9de5e063a6a80d6b617e20fa593ac5dc4eb4c6ce1f912f510f38f8
+    env_file:
+      - .env
+    environment:
+      - PORT=45876
+      - FILESYSTEM=/dev/nvme0n1p2
+      - SENSORS=coretemp_package_id_0,nvme_composite
+      - SMART_INTERVAL=1h
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/extra-filesystems/host:ro
+    devices:
+      - /dev/nvme0:/dev/nvme0
+      - /dev/sda:/dev/sda
+    networks:
+      - beszel-internal
+    healthcheck:
+      test: ["CMD", "/agent", "health"]
+      interval: 120s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SYS_RAWIO
+      - SYS_ADMIN
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+
+networks:
+  traefik:
+    external: true
+  beszel-internal:
+    internal: true

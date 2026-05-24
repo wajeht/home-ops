@@ -1,1 +1,2 @@
 rolling_update: [hello-world]
+ignore_deployment: true

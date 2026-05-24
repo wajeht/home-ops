@@ -1,7 +1,7 @@
 services:
   ntfy:
     container_name: ntfy
-    image: binwiederhier/ntfy:v2.19.2@sha256:9114cd5cdcb8c2ea1239bd710caae867e82c2deda68271b9db151240b403b3f4
+    image: binwiederhier/ntfy:v2.23.0@sha256:b32b4221a64ec2e7c000f0782b2feef24022e1a09a24e531640f4cbba6cfa1e6
     command: serve
     env_file:
       - .env
@@ -14,6 +14,7 @@ services:
       - NTFY_AUTH_DEFAULT_ACCESS=deny-all
       - NTFY_ENABLE_LOGIN=true
       - NTFY_BEHIND_PROXY=true
+      - NTFY_MESSAGE_SIZE_LIMIT=16k
     volumes:
       - /home/jaw/data/ntfy:/var/lib/ntfy
       - ./templates:/etc/ntfy/templates:ro
@@ -54,48 +55,6 @@ services:
       - "traefik.http.routers.ntfy.entrypoints=websecure"
       - "traefik.http.routers.ntfy.middlewares=rate-limit-api@file"
       - "traefik.http.services.ntfy.loadbalancer.server.port=80"
-  ntfy-borgmatic:
-    container_name: ntfy-borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.3@sha256:529ef5f19838b650e07de2cdf91e0f403d849cf83636baacc6ec8a55e2a76f79
-    env_file:
-      - .env
-    environment:
-      - TZ=America/Chicago
-    volumes:
-      - /home/jaw/data/ntfy:/source/data
-      - /home/jaw/backup/ntfy:/repository
-      - /mnt/sata/backup/ntfy:/local-backup
-      - /home/jaw/data/ntfy/borgmatic:/borgmatic/state
-      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
-      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    networks:
-      - backup
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-
 networks:
   traefik:
     external: true

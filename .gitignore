@@ -3,6 +3,8 @@
 .env.*
 !.env.example
 !*.env.sops
+# PR temp deploys copy app .env.sops files here so docker-cd can merge overrides.
+!*.env.sops.override
 *.secret
 *.key
 *.pem
@@ -49,8 +51,19 @@ tmp/
 # Personal notes
 docs/notes.md
 docs/todo.md
+docs/k3s.md
+
+
+# ISO images
+*.iso
 
 # Claude
 .claude/settings.local.json
 CLAUDE.md
 *.sqlite
+.mcp.json
+.agents
+AGENTS.md
+.claude
+skills-lock.json
+opencode.jsonc

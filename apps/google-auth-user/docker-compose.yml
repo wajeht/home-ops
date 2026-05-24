@@ -1,3 +1,4 @@
+# force
 services:
   google-auth-user:
     container_name: google-auth-user
@@ -22,6 +23,13 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    volumes:
+      - ./portcheck:/portcheck:ro
+    healthcheck:
+      test: ["CMD", "/portcheck", "--port", "4181"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     networks:
       - traefik
     restart: unless-stopped

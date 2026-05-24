@@ -19,6 +19,9 @@ message: |
   {{- if .services }}
   **services:** {{ join ", " .services }}
   {{- end }}
+  {{- if .unhealthyServices }}
+  **unhealthy:** {{ join ", " .unhealthyServices }}
+  {{- end }}
   {{- if .reason }}
   **reason:** {{ .reason }}
   {{- end }}
@@ -27,6 +30,12 @@ message: |
   {{- end }}
   {{- if .error }}
   **error:** {{ .error }}
+  {{- end }}
+  {{- if .containerLogs }}
+  **logs:**
+  ```
+  {{ .containerLogs }}
+  ```
   {{- end }}
   {{- if .removedStacks }}
   **removed:** {{ join ", " .removedStacks }}

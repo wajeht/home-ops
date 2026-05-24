@@ -1,6 +1,6 @@
 services:
   renovate:
-    image: ghcr.io/mend/renovate-ce:14.1.1-full@sha256:967d06d55dc997b8c188e2d8b372058fafd1e794b219b0e7c8cbcbdaf74ca312
+    image: ghcr.io/mend/renovate-ce:14.5.0-full@sha256:4ba2e31c26b4cb1e3b014e361be1e7ab76011a91593c6020373ea301bfe72dce
     container_name: renovate
     environment:
       MEND_RNV_ACCEPT_TOS: "y"
@@ -14,6 +14,7 @@ services:
       GITHUB_COM_TOKEN: ${GITHUB_COM_TOKEN}
       RENOVATE_SECRETS: ${RENOVATE_SECRETS}
       NODE_OPTIONS: "--max-old-space-size=2048" # OOM on large repos (e.g. docker-cd) at 1536
+      COREPACK_ENABLE_STRICT: "0"
       LOG_LEVEL: info
       MEND_RNV_CRON_JOB_SCHEDULER_ALL: "0 0,8,18 * * *" # 3x daily (12am, 8am, 6pm), renovate config schedule controls PR creation
       RENOVATE_REPOSITORY_CACHE: enabled

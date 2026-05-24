@@ -34,3 +34,13 @@ All qBittorrent traffic routes through VPN. If VPN drops, qBittorrent loses conn
 docker exec gluetun wget -qO- ifconfig.me
 # Should show VPN server IP, not your real IP
 ```
+
+## Troubleshooting
+
+```bash
+# VPN logs (connection, DNS, healthcheck)
+docker logs gluetun
+
+# qBittorrent logs (torrent errors, file permissions, tracker issues)
+docker exec qbittorrent cat /config/qBittorrent/logs/qbittorrent.log
+```

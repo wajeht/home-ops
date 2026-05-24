@@ -10,10 +10,6 @@
 ![Temp](https://img.shields.io/endpoint?url=https%3A%2F%2Fcd.jaw.dev%2Fbadges%2Ftemperature%3Funit%3Df&style=flat&cacheSeconds=300)
 ![Power](https://img.shields.io/endpoint?url=https://power-badge.jaw.dev&style=flat&cacheSeconds=300)
 
-GitOps-driven homelab running on Docker Compose
-
-## Overview
-
 ```mermaid
 flowchart LR
     subgraph app_repo["GitHub — custom-repo"]
@@ -36,6 +32,10 @@ flowchart LR
     ops_renovate -->|update images| ops_ci
     ops_ci -->|/api/sync| cf --> unifi -->|:80/:443| traefik -->|proxy| apps
 
+    subgraph public[public]
+        you((You))
+    end
+
     subgraph cloudflare[Cloudflare]
         cf((WAF))
         cf_region([Region Blocking])
@@ -56,14 +56,14 @@ flowchart LR
             Vaultwarden
             Paperless-ngx
             Immich
-            +53 more"]
+            +54 more"]
         end
 
         subgraph nas[Synology DS923+]
             nfs[(NFS)]
         end
 
-        subgraph ucg[UniFi Cloud Gateway Ultra]
+        subgraph ucg[UniFi Cloud Gateway Fiber]
             unifi{{Firewall}}
             ucg_cf([Cloudflare IPs Only])
             ucg_region([Region Blocking])
@@ -82,7 +82,7 @@ flowchart LR
         zigbee -->|Zigbee| plugs([Smart Plugs x4])
         zigbee -->|Zigbee| switches([Smart Switches x2])
 
-        subgraph tplink[TP-Link TL-SG608P]
+        subgraph uswflex[UniFi Flex 2.5G PoE]
             poe{{PoE Switch}}
         end
 
@@ -90,25 +90,35 @@ flowchart LR
             ap{{WiFi 6 AP}}
         end
 
+        subgraph unvr[UniFi UNVR Instant]
+            nvr{{NVR}}
+        end
+
         nfs -->|NFS| apps
         adguard -->|DNS| unifi
-        unifi --> nfs
+        unifi -->|2.5GbE| nfs
         unifi --> poe
+        unifi -->|2.5GbE| dell
         poe -->|PoE| zigbee
         poe -->|PoE| adguard
         poe -->|PoE| ap
+        poe -->|PoE| nvr
+        nvr -->|WiFi| camera([G6 Instant Camera])
     end
 
     docker_cd -.->|poll 5m| traefik -.->|poll 5m| unifi -.->|poll 5m| cf -.->|poll 5m| ops_ci
+    you -.->|HTTPS| cf -.->|WAF| unifi -.->|Firewall| traefik -.->|proxy| apps
 
     style app_repo fill:#e8f4fd,stroke:#4a90d9
     style ops_repo fill:#e8f4fd,stroke:#4a90d9
+    style public fill:#dbeafe,stroke:#2563eb,color:#333
     style infra fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
     style cloudflare fill:#fde8d0,stroke:#f6821f
     style cf fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_region fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_ddos fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_bot fill:#fde8d0,stroke:#f6821f,color:#333
+    style you fill:#fef3c7,stroke:#f59e0b,color:#333
     style ucg_cf fill:#fde8e8,stroke:#dc2626,color:#333
     style ucg_region fill:#fde8e8,stroke:#dc2626,color:#333
     style ucg_ids fill:#fde8e8,stroke:#dc2626,color:#333
@@ -136,41 +146,32 @@ flowchart LR
     style ucg fill:#fef2f2,stroke:#dc2626
     style pi fill:#f0fdf4,stroke:#22c55e
     style slzb fill:#faf5ff,stroke:#9b59b6
-    style tplink fill:#f3f4f6,stroke:#6b7280
+    style uswflex fill:#f3f4f6,stroke:#6b7280
     style u6 fill:#eff6ff,stroke:#0559c9
+    style unvr fill:#fef2f2,stroke:#dc2626
+    style nvr fill:#fde8e8,stroke:#dc2626,color:#333
+    style camera fill:#fde8e8,stroke:#dc2626,color:#333
     style plugs fill:#f5e6ff,stroke:#9b59b6,color:#333
     style switches fill:#f5e6ff,stroke:#9b59b6,color:#333
-    linkStyle 24 stroke:#22c55e,stroke-dasharray:5
-    linkStyle 25 stroke:#22c55e,stroke-dasharray:5
-    linkStyle 26 stroke:#22c55e,stroke-dasharray:5
     linkStyle 27 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 28 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 29 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 30 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 31 stroke:#2563eb,stroke-dasharray:5
+    linkStyle 32 stroke:#2563eb,stroke-dasharray:5
+    linkStyle 33 stroke:#2563eb,stroke-dasharray:5
+    linkStyle 34 stroke:#2563eb,stroke-dasharray:5
 ```
 
-Push to git, [docker-cd](https://github.com/wajeht/docker-cd) auto-deploys. It polls every 5 min or instantly via `/api/sync` webhook, auto-discovers all stacks in `apps/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, and deploys with rolling updates.
+GitOps-driven homelab running on Docker Compose.
 
-[Traefik](https://traefik.io/traefik/) handles routing via Docker labels with auto SSL via Cloudflare DNS challenge. [traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth) provides Google OAuth protection.
+Push to git, [docker-cd](https://github.com/wajeht/docker-cd) handles the rest — auto-discovers `apps/*/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, rolling deploys. [Traefik](https://traefik.io/traefik/) routes via Docker labels with wildcard SSL. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh; own images deploy in ~1 min via [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow), which updates `home-ops`, triggers docker-cd `/api/sync`, tracks GitHub Deployments, and creates/cleans temporary PR apps. [dcdb](https://github.com/wajeht/dcdb) manages databases in docker-cd Compose environments for discovery, SQL, dump/restore, prod-to-PR sync, and port forwarding.
 
-[Renovate](https://github.com/renovatebot/renovate) keeps third-party deps updated (~60min via polling). Own images use [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow) which triggers `/api/sync` for instant deploy (~1min).
-
-All containers are [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, health checks, and log rotation. [Borgmatic](https://torsion.org/borgmatic/) handles automated backups — 2 critical apps hourly, rest daily — with database dumps (8 Postgres + 21 SQLite) and file backups, weekly integrity checks, and ntfy notifications.
-
-## Hardware
-
-| Device                                                                                                                                                                                                                                                                                                                                 | RAM  | Storage  | OS              | Function       |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | -------- | --------------- | -------------- |
-| [Dell OptiPlex 7050 Micro (i7-7700)](https://www.amazon.com/s?k=dell+optiplex+7050+micro+i7-7700)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [WD Blue SN570 1TB NVMe](https://www.amazon.com/s?k=WD+Blue+SN570+1TB) (OS + apps)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Micron M600 1TB SATA](https://www.amazon.com/s?k=Micron+M600+1TB) (Frigate recordings) | 32GB | 2TB      | Ubuntu 24.04    | Docker Host    |
-| [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [GeeekPi P33 NVMe PoE+ HAT](https://www.amazon.com/dp/B0DMW98LBR)                                                                                                                                                                  | 8GB  | 128GB SD | Raspberry Pi OS | AdGuard        |
-| [Synology DS923+](https://www.amazon.com/dp/B0BM7KDN6R)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [WD Red Plus 8TB](https://www.amazon.com/s?k=WD+Red+Plus+8TB) x2<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Seagate IronWolf 12TB](https://www.amazon.com/s?k=Seagate+IronWolf+12TB) x2                                                                        | 20GB | 25TB SHR | DSM             | NAS            |
-| [UniFi Cloud Gateway Ultra](https://store.ui.com/us/en/products/ucg-ultra)                                                                                                                                                                                                                                                             | 3GB  | 16GB     | UniFi OS        | Firewall       |
-| [UniFi U6+](https://store.ui.com/us/en/products/u6-plus)                                                                                                                                                                                                                                                                               | -    | -        | -               | WiFi 6 AP      |
-| [SMLIGHT SLZB-MR3U](https://www.amazon.com/dp/B0FB97W6CN)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [THIRDREALITY Smart Plug Gen3](https://www.amazon.com/dp/B0GHQT8TQ8) x4<br>&nbsp;&nbsp;&nbsp;&nbsp;— [THIRDREALITY Smart Switch](https://www.amazon.com/dp/B0CR9ZSV5L) x2                                                                       | -    | -        | -               | Zigbee Gateway |
-| [TP-Link TL-SG608P](https://www.amazon.com/TP-Link-Gigabit-Ethernet-Desktop-TL-SG1008P/dp/B00BP0SSAS)                                                                                                                                                                                                                                  | -    | -        | -               | PoE Switch     |
-| [CyberPower 1500VA AVR](https://www.amazon.com/CyberPower-CP1500AVRLCD-Intelligent-Outlets-Mini-Tower/dp/B000FBK3QK)                                                                                                                                                                                                                   | -    | -        | -               | UPS            |
-
-With all equipment connected: 69W idle @ 120V, 145 min UPS runtime, 50 kWh/mo (~$6/mo).
+All containers [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, and health checks. Nightly backups to NAS via centralized [Backrest](docs/disaster-recovery.md) (restic web UI) with per-app retention, integrity checks, and ntfy alerts.
 
 ## Docs
 
+- [Hardware](docs/hardware.md)
 - [Quick Start](docs/quick-start.md)
 - [Adding Apps](docs/adding-apps.md)
 - [Secrets](docs/secrets.md)

@@ -13,7 +13,7 @@ services:
       - /home/jaw/plex/tv:/tv
       - /home/jaw/plex/music:/music
     devices:
-      - /dev/dri:/dev/dri # Intel Quick Sync (card0=HDR tone mapping, renderD128=transcode)
+      - /dev/dri:/dev/dri # Intel Quick Sync (cardN=HDR tone mapping, renderD128=transcode)
     shm_size: "2g" # shared memory for 4K transcoding (default 64MB crashes)
     tmpfs:
       - /transcode:size=8G # RAM-based transcode dir (set in Plex Settings > Transcoder)
@@ -51,8 +51,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.plex.rule=Host(`plex.jaw.dev`)"
       - "traefik.http.routers.plex.entrypoints=websecure"
-      - "traefik.http.routers.plex.middlewares=google-auth-user@file"
       - "traefik.http.services.plex.loadbalancer.server.port=32400"
+
 networks:
   traefik:
     external: true

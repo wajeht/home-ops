@@ -1,7 +1,7 @@
 services:
   garage:
     container_name: garage
-    image: dxflrs/garage:v2.2.0@sha256:45a61ce3f7c9c24fc23d9ed2b09b27ed560ab87b34605d175d5c588f539c24e4
+    image: dxflrs/garage:v2.3.0@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690
     env_file:
       - .env
     volumes:
@@ -88,53 +88,6 @@ services:
       - "traefik.http.routers.garage-webui.middlewares=google-auth@file"
       - "traefik.http.services.garage-webui.loadbalancer.server.port=3909"
 
-  garage-borgmatic:
-    container_name: garage-borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.3@sha256:529ef5f19838b650e07de2cdf91e0f403d849cf83636baacc6ec8a55e2a76f79
-    env_file:
-      - .env
-    environment:
-      - TZ=America/Chicago
-    depends_on:
-      garage:
-        condition: service_healthy
-    volumes:
-      - /home/jaw/data/garage:/source/data:ro
-      - /home/jaw/backup/garage:/repository
-      - /mnt/sata/backup/garage:/local-backup
-      - /home/jaw/data/garage/borgmatic:/borgmatic/state
-      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
-      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    networks:
-      - backup
-    healthcheck:
-      test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   traefik:
-    external: true
-  backup:
     external: true

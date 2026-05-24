@@ -17,12 +17,18 @@
   ],
   "packageRules": [
     {
+      "description": "Ignore apps excluded from docker-cd deployment",
+      "matchFileNames": ["/(^|/)apps\\/(adguard|git|vaultwarden|walker|zepp)\\//"],
+      "enabled": false
+    },
+    {
       "enabled": false,
       "matchPackageNames": ["/^ghcr\\.io/wajeht//"]
     },
     {
-      "matchPackageNames": ["ghcr.io/diced/zipline"],
-      "enabled": false
+      "description": "Pin LinuxServer images to stable -lsNNN tags; reject unstable/develop/nightly/development channels",
+      "matchPackageNames": ["/^linuxserver\\//"],
+      "allowedVersions": "/^v?\\d[\\w.-]*-ls\\d+$/"
     }
   ]
 }

@@ -9,36 +9,6 @@
         #   url: http://radarr:7878
         #   key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
 
-    - Sonarr:
-        icon: sonarr
-        href: https://sonarr.jaw.dev
-        description: TV Shows
-        # siteMonitor: http://sonarr:8989
-        # widget:
-        #   type: sonarr
-        #   url: http://sonarr:8989
-        #   key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
-
-    - Miniflux:
-        icon: miniflux
-        href: https://rss.jaw.dev
-        description: RSS Reader
-        # siteMonitor: http://miniflux:8080
-        # widget:
-        #   type: miniflux
-        #   url: http://miniflux:8080
-        #   key: "{{HOMEPAGE_VAR_MINIFLUX_KEY}}"
-
-    - Tautulli:
-        icon: tautulli
-        href: https://tautulli.jaw.dev
-        description: Plex Stats
-        # siteMonitor: http://tautulli:8181
-        # widget:
-        #   type: tautulli
-        #   url: http://tautulli:8181
-        #   key: "{{HOMEPAGE_VAR_TAUTULLI_KEY}}"
-
     - Plex:
         icon: plex
         href: https://plex.jaw.dev
@@ -68,16 +38,6 @@
         #   type: overseerr
         #   url: http://seerr:5055
         #   key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
-
-    - Audiobookshelf:
-        icon: audiobookshelf
-        href: https://audiobooks.jaw.dev
-        description: Audiobooks
-        # siteMonitor: http://audiobookshelf:80
-        # widget:
-        #   type: audiobookshelf
-        #   url: http://audiobookshelf:80
-        #   key: "{{HOMEPAGE_VAR_AUDIOBOOKSHELF_KEY}}"
 
     - Immich:
         icon: immich
@@ -121,34 +81,6 @@
         #   url: http://prowlarr:9696
         #   key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
 
-    - Autobrr:
-        icon: autobrr
-        href: https://autobrr.jaw.dev
-        description: Download Automation
-        # siteMonitor: http://autobrr:7474
-        # widget:
-        #   type: autobrr
-        #   url: http://autobrr:7474
-        #   key: "{{HOMEPAGE_VAR_AUTOBRR_KEY}}"
-
-    - Bitmagnet:
-        icon: bitmagnet
-        href: https://bitmagnet.jaw.dev
-        description: DHT Indexer
-        # siteMonitor: http://bitmagnet:3333
-
-    - Huntarr:
-        icon: huntarr
-        href: https://huntarr.jaw.dev
-        description: Missing Media Hunter
-        # siteMonitor: http://huntarr:9705
-
-    - Cleanuparr:
-        icon: cleanuparr
-        href: https://cleanuparr.jaw.dev
-        description: Download Cleanup
-        # siteMonitor: http://cleanuparr:11011
-
 - Systems:
     - Home Assistant:
         icon: home-assistant
@@ -177,28 +109,23 @@
         description: GitOps Deployer
         # siteMonitor: http://docker-cd:80
 
+    - Backrest:
+        icon: mdi-backup-restore
+        href: https://backrest.jaw.dev
+        description: Backups
+        # siteMonitor: http://backrest:9898
+
     - Google Auth:
         icon: google
         href: https://auth.jaw.dev
         description: OAuth Proxy
         # siteMonitor: http://google-auth:4181
 
-    - Portainer:
-        icon: portainer
-        href: https://portainer.jaw.dev
-        description: Docker Management
-        # siteMonitor: http://portainer:9000
-        # widget:
-        #   type: portainer
-        #   url: http://portainer:9000
-        #   env: 1
-        #   key: "{{HOMEPAGE_VAR_PORTAINER_KEY}}"
-
-    - Authelia:
-        icon: authelia
-        href: https://authelia.jaw.dev
-        description: Auth Gateway
-        # siteMonitor: http://authelia:9091
+    - Google Auth User:
+        icon: google
+        href: https://auth-user.jaw.dev
+        description: User OAuth Proxy
+        # siteMonitor: http://google-auth-user:4181
 
     - Zigbee2MQTT:
         icon: zigbee2mqtt
@@ -206,14 +133,15 @@
         description: Zigbee Bridge
         # siteMonitor: http://zigbee2mqtt:8080
 
-    - Frigate:
-        icon: frigate
-        href: https://frigate.jaw.dev
-        description: NVR
-        # siteMonitor: http://frigate:8971
-        # widget:
-        #   type: frigate
-        #   url: http://frigate:5000
+    - Intel AMT (7050):
+        icon: mdi-desktop-tower-monitor
+        href: http://192.168.4.161:16992
+        description: Remote KVM / Power Control
+
+    - Intel AMT (5050):
+        icon: mdi-desktop-tower-monitor
+        href: http://192.168.4.162:16992
+        description: Remote KVM / Power Control
 
     - DDNS Updater:
         icon: mdi-dns
@@ -227,12 +155,6 @@
         description: Dependency Updates
         # siteMonitor: http://renovate:8080
 
-    - DbGate:
-        icon: dbgate
-        href: https://dbgate.jaw.dev
-        description: Database Manager
-        # siteMonitor: http://dbgate:3000
-
 - Logs:
     - Ntfy:
         icon: ntfy
@@ -240,32 +162,11 @@
         description: Notifications
         # siteMonitor: http://ntfy:80
 
-    - Uptime Kuma:
-        icon: uptime-kuma
-        href: https://status.jaw.dev
-        description: Status Monitor
-        # siteMonitor: http://uptime-kuma:3001
-        # widget:
-        #   type: uptimekuma
-        #   url: http://uptime-kuma:3001
-        #   slug: status
-        #   key: "{{HOMEPAGE_VAR_UPTIME_KUMA_KEY}}"
-
-    - Changedetection:
-        icon: changedetection-io
-        href: https://changes.jaw.dev
-        description: Web Monitor
-        # siteMonitor: http://changedetection:5000
-        # widget:
-        #   type: changedetectionio
-        #   url: http://changedetection:5000
-        #   key: "{{HOMEPAGE_VAR_CHANGEDETECTION_KEY}}"
-
-    - GlitchTip:
-        icon: glitchtip
-        href: https://glitchtip.jaw.dev
-        description: Error Tracking
-        # siteMonitor: http://glitchtip:8000
+    - Gatus:
+        icon: gatus
+        href: https://gatus.jaw.dev
+        description: Health Checks
+        # siteMonitor: http://gatus:8080
 
     - Dozzle:
         icon: dozzle
@@ -273,11 +174,11 @@
         description: Docker Logs
         # siteMonitor: http://dozzle:8080
 
-    - Plausible:
-        icon: plausible
-        href: https://plausible.jaw.dev
-        description: Web Analytics
-        # siteMonitor: http://plausible:8000
+    - Beszel:
+        icon: beszel
+        href: https://beszel.jaw.dev
+        description: Server Monitor
+        # siteMonitor: http://beszel:8090
 
 - Personal:
     - UFC:
@@ -298,9 +199,15 @@
         description: Workout Tracker
         # siteMonitor: http://gains:80
 
+    - Zepp:
+        icon: mdi-watch
+        href: https://zepp.jaw.dev
+        description: Fitness Data
+        # siteMonitor: http://zepp:80
+
     - Close Powerlifting:
         icon: mdi-weight-lifter
-        href: https://close-powerlifting.jaw.dev
+        href: https://closepowerlifting.com
         description: Powerlifting Stats
         # siteMonitor: http://close-powerlifting:80
 
@@ -376,17 +283,13 @@
         description: Test App
         # siteMonitor: http://hello-world:3000
 
-    - GitHub:
-        icon: github
-        href: https://github.com/wajeht
-        description: Profile
-
-    - Home Ops:
-        icon: github
-        href: https://github.com/wajeht/home-ops
-        description: This Repo
-
 - Tools:
+    - DbGate:
+        icon: dbgate
+        href: https://dbgate.jaw.dev
+        description: Database Manager
+        # siteMonitor: http://dbgate:3000
+
     - ConvertX:
         icon: mdi-file-swap
         href: https://convertx.jaw.dev
@@ -399,63 +302,17 @@
         description: Passwords
         # siteMonitor: http://vaultwarden:80
 
-    - Stirling PDF:
-        icon: stirling-pdf
-        href: https://pdf.jaw.dev
-        description: PDF Tools
-        # siteMonitor: http://stirling-pdf:8080
-
-    - IT-Tools:
-        icon: it-tools
-        href: https://tools.jaw.dev
-        description: Dev Utilities
-        # siteMonitor: http://it-tools:80
-
-    - Paperless:
-        icon: paperless-ngx
-        href: https://paperless.jaw.dev
-        description: Documents
-        # siteMonitor: http://paperless:8000
-        # widget:
-        #   type: paperlessngx
-        #   url: http://paperless:8000
-        #   key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}"
-
-    - Zipline:
-        icon: zipline
-        href: https://img.jaw.dev
-        description: Image Sharing
-        # siteMonitor: http://0.0.0.0:3000
-
-    - SearXNG:
-        icon: searxng
-        href: https://search.jaw.dev
-        description: Search Engine
-        # siteMonitor: http://searxng:8080
-
     - Excalidraw:
         icon: excalidraw
         href: https://draw.jaw.dev
         description: Whiteboard
         # siteMonitor: http://excalidraw:80
 
-    - Linx:
-        icon: filerun
-        href: https://linx.jaw.dev
-        description: File Sharing
-        # siteMonitor: http://linx:8080
-
     - Garage:
         icon: mdi-garage
         href: https://garage.jaw.dev
         description: S3 Storage
         # siteMonitor: http://garage-webui:3909
-
-    - Code Server:
-        icon: vscode
-        href: https://code.jaw.dev
-        description: Web IDE
-        # siteMonitor: http://code-server:8080
 
     - Gitea:
         icon: gitea
@@ -466,9 +323,3 @@
         #   type: gitea
         #   url: http://gitea:3000
         #   key: "{{HOMEPAGE_VAR_GITEA_KEY}}"
-
-    - Speed Test:
-        icon: openspeedtest
-        href: https://speedtest.jaw.dev
-        description: Network Speed Test
-        # siteMonitor: http://speedtest:3000

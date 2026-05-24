@@ -1,4 +1,5 @@
 - resources:
+    label: system
     expanded: true
     cpu: true
     memory: true
@@ -7,21 +8,25 @@
     uptime: true
 
 - resources:
+    label: infra
     expanded: true
-    disk:
-      - /
-      - /host/nas
+    disk: /
 
-- openmeteo:
-    label: Amarillo
-    latitude: 35.222
-    longitude: -101.8313
-    units: imperial
-    cache: 5
+- resources:
+    label: nas
+    expanded: true
+    disk: /host/nas
 
-- unifi_console:
-    url: https://192.168.4.1
-    key: "{{HOMEPAGE_VAR_UNIFI_KEY}}"
+# - openmeteo:
+#     label: Amarillo
+#     latitude: 35.222
+#     longitude: -101.8313
+#     units: imperial
+#     cache: 5
+
+# - unifi_console:
+#     url: https://192.168.4.1
+#     key: "{{HOMEPAGE_VAR_UNIFI_KEY}}"
 
 - datetime:
     text_size: l
