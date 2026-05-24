@@ -53,34 +53,34 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 
 | App           | Schedule | Type                 | Notes                                                          |
 | ------------- | -------- | -------------------- | -------------------------------------------------------------- |
-| hello-world   | 12:25 AM | Postgres (DB only)   |                                                                |
-| immich        | 12:35 AM | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant       |
-| gatus         | 12:42 AM | SQLite + files       | DB file is `gatus.db`                                          |
-| radarr        | 12:55 AM | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid     |
-| prowlarr      | 1:00 AM  | SQLite + files       |                                                                |
-| ntfy          | 1:20 AM  | SQLite (×2) + files  | Two DBs: `user.db` + `cache.db` (chained in hook)              |
-| bang          | 1:30 AM  | SQLite (DB only)     | Ephemeral keinos/sqlite3 — bang has no `container_name`        |
-| favicon       | 1:35 AM  | SQLite + files       |                                                                |
-| mm2us         | 1:40 AM  | SQLite (DB only)     |                                                                |
-| notify        | 1:45 AM  | SQLite (DB only)     |                                                                |
-| calendar      | 1:50 AM  | SQLite (DB only)     |                                                                |
-| screenshot    | 1:55 AM  | SQLite + files       |                                                                |
+| hello-world   | 12:00 AM | Postgres (DB only)   |                                                                |
+| immich        | 12:10 AM | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant       |
+| gatus         | 12:20 AM | SQLite + files       | DB file is `gatus.db`                                          |
+| radarr        | 12:30 AM | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid     |
+| prowlarr      | 12:40 AM | SQLite + files       |                                                                |
+| ntfy          | 12:50 AM | SQLite (×2) + files  | Two DBs: `user.db` + `cache.db` (chained in hook)              |
+| bang          | 1:00 AM  | SQLite (DB only)     | Ephemeral keinos/sqlite3 — bang has no `container_name`        |
+| favicon       | 1:10 AM  | SQLite + files       |                                                                |
+| mm2us         | 1:20 AM  | SQLite (DB only)     |                                                                |
+| notify        | 1:30 AM  | SQLite (DB only)     |                                                                |
+| calendar      | 1:40 AM  | SQLite (DB only)     |                                                                |
+| screenshot    | 1:50 AM  | SQLite + files       |                                                                |
 | gains         | 2:00 AM  | SQLite (DB only)     |                                                                |
-| homeassistant | 2:05 AM  | SQLite + files       | DB file is `home-assistant_v2.db`                              |
-| zigbee2mqtt   | 2:10 AM  | Files only           |                                                                |
-| dbgate        | 2:15 AM  | Files only           | `/mnt/*` mounts to other apps' data NOT backed up here         |
-| garage        | 2:30 AM  | Files only           | meta + data dirs (S3 bucket contents — can be large)           |
-| beszel        | 2:35 AM  | SQLite + files       | DB file is `data.db`                                           |
-| traefik       | 2:40 AM  | Files only           | Includes `acme.json` certs                                     |
-| plex          | 2:45 AM  | SQLite (×2) + files  | Two DBs deeply nested under `Library/Application Support/...`  |
-| seerr         | 2:50 AM  | SQLite + files       | DB at `db/db.sqlite3`                                          |
-| bazarr        | 2:55 AM  | SQLite + files       | DB at `db/bazarr.db`                                           |
-| sabnzbd       | 3:00 AM  | SQLite + files       | DB at `admin/history1.db`. Excludes Downloads (huge transient) |
-| vpn-qbit      | 3:05 AM  | Files only           | Two source paths: qbittorrent + gluetun                        |
-| syncthing     | 3:10 AM  | Files only           | Config only (`/config`); excludes index DBs, logs, .stversions |
-| vaultwarden   | 3:15 AM  | SQLite + files       | DB file is `db.sqlite3`                                        |
-| gitea         | 3:20 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                 |
-| **global**    | 3:45 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state    |
+| homeassistant | 2:10 AM  | SQLite + files       | DB file is `home-assistant_v2.db`                              |
+| zigbee2mqtt   | 2:20 AM  | Files only           |                                                                |
+| dbgate        | 2:30 AM  | Files only           | `/mnt/*` mounts to other apps' data NOT backed up here         |
+| garage        | 2:40 AM  | Files only           | meta + data dirs (S3 bucket contents — can be large)           |
+| beszel        | 2:50 AM  | SQLite + files       | DB file is `data.db`                                           |
+| traefik       | 3:00 AM  | Files only           | Includes `acme.json` certs                                     |
+| plex          | 3:10 AM  | SQLite (×2) + files  | Two DBs deeply nested under `Library/Application Support/...`  |
+| seerr         | 3:20 AM  | SQLite + files       | DB at `db/db.sqlite3`                                          |
+| bazarr        | 3:30 AM  | SQLite + files       | DB at `db/bazarr.db`                                           |
+| sabnzbd       | 3:40 AM  | SQLite + files       | DB at `admin/history1.db`. Excludes Downloads (huge transient) |
+| vpn-qbit      | 3:50 AM  | Files only           | Two source paths: qbittorrent + gluetun                        |
+| syncthing     | 4:00 AM  | Files only           | Config only (`/config`); excludes index DBs, logs, .stversions |
+| vaultwarden   | 4:10 AM  | SQLite + files       | DB file is `db.sqlite3`                                        |
+| gitea         | 4:20 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                 |
+| **global**    | 4:30 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state    |
 
 Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 4 AM, integrity check Sunday 5 AM (structure-only).
 
