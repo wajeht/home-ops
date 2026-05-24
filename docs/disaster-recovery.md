@@ -77,6 +77,7 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | bazarr        | 2:55 AM  | SQLite + files       | DB at `db/bazarr.db`                                           |
 | sabnzbd       | 3:00 AM  | SQLite + files       | DB at `admin/history1.db`. Excludes Downloads (huge transient) |
 | vpn-qbit      | 3:05 AM  | Files only           | Two source paths: qbittorrent + gluetun                        |
+| syncthing     | 3:10 AM  | Files only           | Config only (`/config`); excludes index DBs, logs, .stversions |
 | vaultwarden   | 3:15 AM  | SQLite + files       | DB file is `db.sqlite3`                                        |
 | gitea         | 3:20 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                 |
 | **global**    | 3:45 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state    |
@@ -167,7 +168,7 @@ Use `docker exec` into the app's `*-db` container — `pg_dump` always matches t
 
 The app's `*-db` container needs `container_name: <app>-db` set (already true for all existing Postgres apps).
 
-### Plan: Files-only (dbgate, garage, traefik, vpn-qbit, zigbee2mqtt)
+### Plan: Files-only (dbgate, garage, syncthing, traefik, vpn-qbit, zigbee2mqtt)
 
 ```json
 {
@@ -340,7 +341,7 @@ docker exec hello-world-db rm /tmp/restore.dump
 docker compose up -d
 ```
 
-### Restore: Files only (dbgate, garage, traefik, vpn-qbit, zigbee2mqtt)
+### Restore: Files only (dbgate, garage, syncthing, traefik, vpn-qbit, zigbee2mqtt)
 
 ```bash
 # 1. Extract
@@ -523,14 +524,14 @@ A formatter has been observed to strip new entries from `config.json` between pu
 
 ```bash
 grep -c '"id":' ~/home-ops/apps/backrest/config/config.json
-# Expect 84 (42 repos × 42 plans). If lower, re-add the missing entries.
+# Expect 56 (28 repos × 28 plans). If lower, re-add the missing entries.
 ```
 
 #### 6. Verify
 
 ```bash
 docker logs backrest --tail 50          # should be no errors after orchestrator starts
-docker exec backrest ls /repos          # should list 42 repos
+docker exec backrest ls /repos          # should list 28 repos
 ```
 
 ### Testing Recovery
@@ -615,7 +616,7 @@ Known issues and their fixes.
 | Bad gateway 502 on first click of garage image link, works on retry                        | garage-webui's pool connection to garage:3900 went stale                                  | Add Traefik retry middleware to the route. Backrest unrelated.                                                            |
 | ntfy notifications never arrive                                                            | Shoutrrr URL syntax wrong                                                                 | Use `ntfy://ntfy/<topic>?scheme=http&title=foo&priority=Min&tags=skull`. Priority must be capitalized (`Min`, not `min`). |
 | First Shoutrrr push broke Backrest container                                               | Actually didn't — first deploy succeeded; later deploy hung during a backup               | Make sure no backup is running when redeploying. Backrest can't recreate while restic process holds files.                |
-| `config.json` entries disappear after pushing                                              | A formatter (locally or in CI) strips JSON entries it doesn't recognize                   | After each push, `grep -c '"id":' ~/home-ops/apps/backrest/config/config.json` on the server. Expected count: 84.         |
+| `config.json` entries disappear after pushing                                              | A formatter (locally or in CI) strips JSON entries it doesn't recognize                   | After each push, `grep -c '"id":' ~/home-ops/apps/backrest/config/config.json` on the server. Expected count: 56.         |
 | Stateless app got accidentally added to Backrest                                           | Misread of which apps had data                                                            | If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, skip it. Examples: close-powerlifting, ufc, ip.  |
 
 ## Apps Without Backup (Intentional)

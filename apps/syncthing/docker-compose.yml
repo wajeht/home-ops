@@ -1,0 +1,54 @@
+services:
+  syncthing:
+    image: linuxserver/syncthing:2.1.0-ls219@sha256:833b349a4247d10c4740aa3264df289537e0091e778ceefc2998ec694770f706
+    container_name: syncthing
+    hostname: syncthing
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/syncthing/config:/config
+      - /home/jaw/data/syncthing/data:/data
+    networks:
+      - traefik
+    ports:
+      - "22000:22000/tcp"
+      - "22000:22000/udp"
+      - "21027:21027/udp"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8384/rest/noauth/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.syncthing.rule=Host(`syncthing.jaw.dev`)"
+      - "traefik.http.routers.syncthing.entrypoints=websecure"
+      - "traefik.http.routers.syncthing.middlewares=google-auth@file"
+      - "traefik.http.services.syncthing.loadbalancer.server.port=8384"
+
+networks:
+  traefik:
+    external: true
