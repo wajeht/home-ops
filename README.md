@@ -1,6 +1,6 @@
 # home-ops
 
-> **Status:** Migrating from Docker Compose (docker-cd) on `main` to Kubernetes (this `kubernetes` branch). See [docs/kubernetes.md](docs/kubernetes.md) for the plan.
+> **Status:** Migrating from Docker Compose (docker-cd) on `main` to Kubernetes (this `talos` branch). See [docs/kubernetes.md](docs/kubernetes.md) for the plan.
 
 GitOps-driven homelab running on Talos Linux + Kubernetes.
 

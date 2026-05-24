@@ -133,7 +133,7 @@ What happens when you `git push`:
 
 ```mermaid
 flowchart LR
-    you([git push]) --> github[(GitHub<br/>kubernetes branch)]
+    you([git push]) --> github[(GitHub<br/>talos branch)]
     github -.->|every 1m<br/>via deploy key| sc[source-controller]
     sc --> kc[kustomize-controller]
     kc --> hc[helm-controller]
@@ -271,7 +271,7 @@ We're not deciding this yet — depends on how the cluster proves itself with `*
 ```
 home-ops repo on disk
     ↓ git push
-GitHub (kubernetes branch)
+GitHub (talos branch)
     ↓ Flux source-controller pulls (~1m)
 in-cluster Flux Kustomizations
     ↓ for each path, kustomize build

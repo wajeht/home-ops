@@ -7,7 +7,7 @@ Guidance for Claude Code working in this repository.
 This repo is mid-migration from Docker Compose (docker-cd) → Kubernetes.
 
 - **`main`** — running production on docker-cd (Docker Compose stacks in `apps/`)
-- **`kubernetes`** (this branch) — building the k8s replacement; docker-cd dirs/scripts already stripped
+- **`talos`** (this branch) — building the k8s replacement; docker-cd dirs/scripts already stripped
 
 Until migration is complete, `apps/` stays on `main` only. Workloads on this branch live under `kubernetes/apps/`.
 

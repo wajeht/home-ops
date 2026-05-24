@@ -42,7 +42,7 @@ What it does:
 
 1. Installs Flux controllers into the `flux-system` namespace (`source-controller`, `kustomize-controller`, `helm-controller`, `notification-controller`)
 2. Creates a **deploy key** in your GitHub repo for ongoing reconciliation (Flux no longer needs your PAT after this)
-3. Commits `kubernetes/flux/flux-system/{gotk-components.yaml, gotk-sync.yaml, kustomization.yaml}` to the `kubernetes` branch
+3. Commits `kubernetes/flux/flux-system/{gotk-components.yaml, gotk-sync.yaml, kustomization.yaml}` to the `talos` branch
 4. Sets up a `GitRepository` + `Kustomization` watching `kubernetes/flux/` so Flux can self-update
 
 ### 3. Pull the new files locally
