@@ -3,6 +3,8 @@
 .env.*
 !.env.example
 !*.env.sops
+# PR temp deploys copy app .env.sops files here so docker-cd can merge overrides.
+!*.env.sops.override
 *.secret
 *.key
 *.pem
@@ -51,13 +53,6 @@ docs/notes.md
 docs/todo.md
 docs/k3s.md
 
-
-# Talos (old location, keeping until cleanup)
-talos/
-
-# Talos generated configs + plaintext secrets (contain private keys)
-kubernetes/talos/clusterconfig/
-kubernetes/talos/talsecret.yaml
 
 # ISO images
 *.iso

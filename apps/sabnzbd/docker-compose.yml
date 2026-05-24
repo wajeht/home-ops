@@ -1,6 +1,6 @@
 services:
   sabnzbd:
-    image: linuxserver/sabnzbd:unstable-version-4.5.5@sha256:05f5d6e23623495e6a424612eeaa9344e2d96338a3e0770fe82520705a61e221
+    image: linuxserver/sabnzbd:5.0.1-ls251@sha256:87c97fa81966adb5cf511ae62b6681a37136c32f1ad7190b0b8b4d12d766ea9f
     container_name: sabnzbd
     environment:
       - PUID=1000
@@ -46,51 +46,8 @@ services:
       - "traefik.http.routers.sabnzbd.middlewares=google-auth@file"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
 
-  sabnzbd-borgmatic:
-    container_name: sabnzbd-borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.4@sha256:201001bead2ad04bd46567def5cc63fe277749a1ee7f2e544eb0a415b64f6706
-    env_file:
-      - .env
-    environment:
-      - TZ=America/Chicago
-    volumes:
-      - /home/jaw/data/sabnzbd:/source/data
-      - /home/jaw/backup/sabnzbd:/repository
-      - /home/jaw/data/sabnzbd/borgmatic:/borgmatic/state
-      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
-      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    networks:
-      - backup
-    healthcheck:
-      test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   traefik:
     external: true
   media:
-    external: true
-  backup:
     external: true

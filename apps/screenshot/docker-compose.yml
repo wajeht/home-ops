@@ -1,6 +1,6 @@
 services:
   screenshot:
-    image: ghcr.io/wajeht/screenshot:795d319
+    image: ghcr.io/wajeht/screenshot:697ce71
     environment:
       TZ: America/Chicago
       APP_ENV: production
@@ -41,49 +41,6 @@ services:
       - "traefik.http.routers.screenshot.middlewares=rate-limit-global@file"
       - "traefik.http.services.screenshot.loadbalancer.server.port=80"
 
-  screenshot-borgmatic:
-    container_name: screenshot-borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.4@sha256:201001bead2ad04bd46567def5cc63fe277749a1ee7f2e544eb0a415b64f6706
-    env_file:
-      - .env
-    environment:
-      - TZ=America/Chicago
-    volumes:
-      - /home/jaw/data/screenshot:/source/data
-      - /home/jaw/backup/screenshot:/repository
-      - /home/jaw/data/screenshot/borgmatic:/borgmatic/state
-      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
-      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    networks:
-      - backup
-    healthcheck:
-      test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   traefik:
-    external: true
-  backup:
     external: true
