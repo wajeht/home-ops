@@ -1,7 +1,7 @@
 services:
   dbgate:
     container_name: dbgate
-    image: dbgate/dbgate:7.1.10@sha256:2fd43d0e9ab564e70f10973cca9e4b5bc1c3bbc42e07813cb2a901e812b4994d
+    image: dbgate/dbgate:7.1.11@sha256:4192d22119afa969750c94b825b06dec77054c36a1f4be5a34e2bc31f2719111
     env_file:
       - .env
     volumes:
@@ -13,14 +13,8 @@ services:
       - /home/jaw/data/calendar:/mnt/calendar
     networks:
       - traefik
-      # - miniflux-internal
       - hello-world-internal
       - immich-internal
-      # - plausible-internal
-      # - zipline-internal
-      # - glitchtip-internal
-      # - bitmagnet-internal
-      # - paperless-internal
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000"]
       interval: 30s
@@ -55,73 +49,12 @@ services:
       - "traefik.http.routers.dbgate.middlewares=google-auth@file"
       - "traefik.http.services.dbgate.loadbalancer.server.port=3000"
 
-  dbgate-borgmatic:
-    container_name: dbgate-borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.5@sha256:f6b0a640d72bf7bb628479246e7c919404917cc58ddc6cdfb8d2d40d786d3a26
-    env_file:
-      - .env
-    environment:
-      - TZ=America/Chicago
-    volumes:
-      - /home/jaw/data/dbgate:/source/data
-      - /home/jaw/backup/dbgate:/repository
-      - /home/jaw/data/dbgate/borgmatic:/borgmatic/state
-      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
-      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    networks:
-      - backup
-    healthcheck:
-      test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   traefik:
     external: true
-  backup:
-    external: true
-  # miniflux-internal:
-  #   external: true
-  #   name: miniflux_miniflux-internal
   hello-world-internal:
     external: true
     name: hello-world_internal
   immich-internal:
     external: true
     name: immich_immich-internal
-  # plausible-internal:
-  #   external: true
-  #   name: plausible_plausible-internal
-  # zipline-internal:
-  #   external: true
-  #   name: zipline_zipline-internal
-  # glitchtip-internal:
-  #   external: true
-  #   name: glitchtip_glitchtip-internal
-  # bitmagnet-internal:
-  #   external: true
-  #   name: bitmagnet_bitmagnet-internal
-  # paperless-internal:
-  #   external: true
-  #   name: paperless-ngx_paperless-internal

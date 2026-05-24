@@ -41,7 +41,7 @@ services:
 
   gitea:
     container_name: gitea
-    image: gitea/gitea:1.26@sha256:d8667667b4ccbd1f67b86a376bffcc0a17b16cf71309ed04e3918231776d47dd
+    image: gitea/gitea:1.26@sha256:7d13848af12645600a5f9d93ee2560daa9c6fa6b5b859b7bff3a5e1c0b661031
     environment:
       - USER_UID=1000
       - USER_GID=1000
@@ -94,50 +94,7 @@ services:
       - "traefik.http.routers.gitea.middlewares=google-auth@file"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 
-  gitea-borgmatic:
-    container_name: gitea-borgmatic
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.5@sha256:f6b0a640d72bf7bb628479246e7c919404917cc58ddc6cdfb8d2d40d786d3a26
-    env_file:
-      - .env
-    environment:
-      - TZ=America/Chicago
-    volumes:
-      - /home/jaw/data/gitea:/source/data
-      - /home/jaw/backup/gitea:/repository
-      - /home/jaw/data/gitea/borgmatic:/borgmatic/state
-      - ./borgmatic-config.yml:/etc/borgmatic/config.yaml:ro
-      - ./borgmatic-crontab.txt:/etc/borgmatic.d/crontab.txt:ro
-    networks:
-      - backup
-    healthcheck:
-      test: ["CMD-SHELL", "borgmatic --version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    security_opt:
-      - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   traefik:
-    external: true
-  backup:
     external: true
   gitea-internal:
