@@ -59,11 +59,11 @@ http:
         forceSTSHeader: true
         contentTypeNosniff: true
         customFrameOptionsValue: "SAMEORIGIN"
-        referrerPolicy: "strict-origin-when-cross-origin"
+        referrerPolicy: "same-origin"
         permissionsPolicy: "camera=(), microphone=(), geolocation=()"
         customResponseHeaders:
           Cross-Origin-Opener-Policy: "same-origin"
-          Cross-Origin-Resource-Policy: "cross-origin"
+          Cross-Origin-Resource-Policy: "same-site"
 
     # General rate limit. Uses Cloudflare's real-client IP header.
     rate-limit-global:
