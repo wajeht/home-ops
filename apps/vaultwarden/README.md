@@ -32,7 +32,16 @@ Vaultwarden stores the admin token as an Argon2id PHC hash. The plaintext passwo
    sops --input-type dotenv --output-type dotenv apps/vaultwarden/.env.sops
    ```
 
-   Replace the `ADMIN_TOKEN=...` line with the new hashed value (including the single quotes). Save and exit.
+   Replace the `ADMIN_TOKEN=...` line with the new hashed value. **The single quotes are not optional** — see below.
+
+   > ⚠️ **The single quotes around the value are critical.** Without them, docker-compose's env-file parser treats every `$<word>` in the hash as a variable reference. `$argon2id`, `$v`, `$m`, `$<salt>`, `$<digest>` all expand to empty strings, and Vaultwarden receives a mangled hash. You'll then see `Invalid admin token` no matter what plaintext you enter, because verification is comparing against garbage.
+   >
+   > ```env
+   > ADMIN_TOKEN='$argon2id$v=19$m=65540,t=3,p=4$<salt>$<digest>'   ✓ correct
+   > ADMIN_TOKEN=$argon2id$v=19$m=65540,t=3,p=4$<salt>$<digest>     ✗ silently broken
+   > ```
+   >
+   > Double quotes also work in many cases but single quotes are safer (no escape rules apply inside them).
 
 3. **Commit + push** — docker-cd redeploys on next poll. The `[NOTICE] You are using a plain text ADMIN_TOKEN` log line should disappear.
 
