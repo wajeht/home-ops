@@ -18,7 +18,7 @@ Until migration is complete, `apps/` stays on `main` only. Workloads on this bra
 
 ## Target Architecture
 
-GitOps-driven k8s homelab on Talos Linux, modeled after [upstream/home-ops](https://github.com/upstream/home-ops).
+GitOps-driven k8s homelab on Talos Linux.
 
 - **Cluster**: 2 nodes — `soapwa` (CP, 192.168.4.162) + `yanlon` (worker, 192.168.4.163). `apollo` (.161) joins after docker-cd is retired.
 - **GitOps**: FluxCD watches this repo, reconciles `kubernetes/apps/`

@@ -72,7 +72,7 @@ kubectl -n kube-system get pods -l k8s-app=cilium
 
 | Flag                                                                | Why                                                                                                                                                                                       |
 | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--version 1.19.3`                                                  | Stable Cilium version; what upstream and most homelabs run                                                                                                                                    |
+| `--version 1.19.3`                                                  | Stable Cilium version; what most homelabs run                                                                                                                                             |
 | `ipam.mode=kubernetes`                                              | Use Kubernetes' own pod CIDR allocation (Talos manages it); not Cilium's `cluster-pool` mode                                                                                              |
 | `kubeProxyReplacement=true`                                         | Cilium replaces kube-proxy entirely — eBPF-based service routing                                                                                                                          |
 | `k8sServiceHost=localhost` + `k8sServicePort=7445`                  | Use **KubePrism** — Talos's built-in localhost API server proxy on every node, port 7445. Required so Cilium can reach the API server without going through a (nonexistent) kube-proxy LB |
@@ -82,15 +82,15 @@ kubectl -n kube-system get pods -l k8s-app=cilium
 | `l2announcements.enabled=true`                                      | Enable Cilium LB IPAM to advertise service IPs on the LAN via L2 (ARP), replacing MetalLB                                                                                                 |
 | `hubble.relay.enabled=true` + `hubble.ui.enabled=true`              | Observability — live flow visibility, useful for debugging network policies later                                                                                                         |
 
-## Why these differ from upstream's setup
+## Why these differ from a k3s setup
 
-upstream runs k3s, not Talos. His values use:
+k3s-based homelabs typically use:
 
 - `k8sServiceHost=127.0.0.1` + `k8sServicePort=6444` (k3s-specific localhost API proxy)
 - `ipam.mode=cluster-pool` (k3s default)
 - No Talos-specific cgroup / securityContext settings (regular Ubuntu doesn't need them)
 
-So we copy his structure but adapt ports + IPAM + Talos hardening flags.
+We adapt that structure for Talos: KubePrism ports, IPAM mode, and Talos hardening flags.
 
 ## Upgrading Cilium
 
@@ -104,4 +104,3 @@ Once Flux is running, port this install into a `HelmRelease` so it's GitOps-mana
 
 - [Cilium docs: Talos installation](https://docs.cilium.io/en/stable/installation/k8s-install-helm/) (general Helm path)
 - [Talos docs: Cilium](https://www.talos.dev/v1.12/kubernetes-guides/network/deploying-cilium/) — Talos-specific values
-- [upstream's Cilium HelmRelease](https://github.com/upstream/home-ops/blob/main/kubernetes/kubernetes/apps/cilium/app/helmrelease.yaml) — structure reference (k3s flavor)

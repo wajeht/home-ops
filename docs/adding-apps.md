@@ -279,15 +279,9 @@ flux get helmreleases -A
 
 For each app's HelmRelease `values:`, write the block based on:
 
-1. **Reference repos** — copy from upstream / onedr0p / bjw-s. Usually 90% of values match.
+1. **Reference repos** — copy from onedr0p / bjw-s. Usually 90% of values match.
 2. **The chart's own README** — read it before customizing.
 3. **Talos-specific gotchas** — anything that needs `--kubelet-insecure-tls`, hostPath workarounds, or capabilities.
-
-When in doubt, search upstream's repo first:
-
-```bash
-gh search code "chart: <app-name>" --repo upstream/home-ops --extension yaml
-```
 
 ## Common shapes
 
@@ -353,7 +347,6 @@ Common dependencies:
 
 ## References
 
-- [upstream's apps directory](https://github.com/upstream/home-ops/tree/main/kubernetes/kubernetes/apps) — primary reference (uses the flat layout for all apps)
 - [onedr0p/cluster-template apps](https://github.com/onedr0p/cluster-template/tree/main/templates/cluster/kubernetes/apps) — pattern source (uses namespace-grouped throughout)
 - [Flux Kustomization API](https://fluxcd.io/flux/components/kustomize/kustomizations/)
 - [Flux HelmRelease API](https://fluxcd.io/flux/components/helm/helmreleases/)

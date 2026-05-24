@@ -1,6 +1,6 @@
 # Kubernetes
 
-The k8s stack running on top of [Talos](talos.md). Modeled after [upstream/home-ops](https://github.com/upstream/home-ops) and [onedr0p/cluster-template](https://github.com/onedr0p/cluster-template).
+The k8s stack running on top of [Talos](talos.md). Modeled after [onedr0p/cluster-template](https://github.com/onedr0p/cluster-template).
 
 See [architecture.md](architecture.md) for how each component ties together, request flow diagrams, and the migration plan for moving jaw.dev to the cluster.
 
@@ -91,7 +91,6 @@ Keep docker-cd running on the OptiPlex 7050 (`apollo`) during migration. Once an
 
 ## References
 
-- [upstream/home-ops](https://github.com/upstream/home-ops) — primary reference
 - [onedr0p/cluster-template](https://github.com/onedr0p/cluster-template) — base template most homelabs fork
 - [bjw-s/home-ops](https://github.com/bjw-s/home-ops) — secondary reference
 - [home-operations/template](https://github.com/home-operations/template) — community-maintained template

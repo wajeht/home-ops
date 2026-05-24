@@ -11,7 +11,7 @@ Postgres-as-CRD for the cluster. Every Postgres-backed app gets its own `Cluster
 | Crunchy PGO   | Enterprise features (TLS automation, pgBouncer)                                           | Heavier RBAC/CR surface                       |
 | Bitnami chart | Just a chart, no operator                                                                 | No failover, no clustering, no day-2 ops      |
 
-For a homelab where each app has its own DB, CNPG is the dominant choice (upstream, onedr0p, bjw-s all use it).
+For a homelab where each app has its own DB, CNPG is the dominant choice (onedr0p, bjw-s all use it).
 
 ## What's installed
 
@@ -141,4 +141,3 @@ CNPG's `Cluster` has an `externalClusters` import path for live migrations, but 
 
 - [CNPG docs](https://cloudnative-pg.io/documentation/)
 - [Cluster CRD reference](https://cloudnative-pg.io/documentation/current/cloudnative-pg.v1/)
-- [upstream's CNPG HelmRelease](https://github.com/upstream/home-ops/blob/main/kubernetes/kubernetes/apps/cnpg/app/helmrelease.yaml)

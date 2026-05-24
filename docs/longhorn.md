@@ -11,7 +11,7 @@ Block storage for the cluster. Every PersistentVolumeClaim that doesn't specify 
 | local-path-provisioner | Trivially simple                                                         | No replication, no snapshots — single-node only |
 | OpenEBS                | Multiple engines, mature                                                 | More moving parts                               |
 
-For a 2-node homelab, **Longhorn** is the dominant choice (upstream, onedr0p, bjw-s all use it).
+For a 2-node homelab, **Longhorn** is the dominant choice (onedr0p, bjw-s all use it).
 
 ## Prerequisites
 
@@ -188,4 +188,3 @@ talosctl --nodes <node> get extensions
 
 - [Longhorn docs](https://longhorn.io/docs/)
 - [Talos UserVolumes](https://www.talos.dev/v1.12/talos-guides/configuration/disk-management/)
-- [upstream's Longhorn HelmRelease](https://github.com/upstream/home-ops/blob/main/kubernetes/kubernetes/apps/longhorn/app/helmrelease.yaml)

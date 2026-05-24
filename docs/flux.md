@@ -77,7 +77,7 @@ flux-system  kustomization/flux-system  kubernetes@sha1:abc...    False      Tru
 
 ## Repo layout (post-bootstrap)
 
-Flux uses Kustomize as its primary engine. The directory structure mirrors upstream's pattern:
+Flux uses Kustomize as its primary engine. The directory structure mirrors the common homelab pattern:
 
 ```
 kubernetes/
@@ -164,12 +164,11 @@ Same pattern applies to anything we installed imperatively (e.g. the Gateway API
 | UI               | None (CLI only)                 | Web UI                |
 | Config language  | Kustomize-first, Helm via CRDs  | Helm/Kustomize/raw    |
 | Multi-tenancy    | Lightweight                     | More mature           |
-| Homelab adoption | Dominant (upstream, onedr0p, bjw-s) | Minority (joryirving) |
+| Homelab adoption | Dominant (onedr0p, bjw-s)       | Minority (joryirving) |
 
 For a single-user homelab: Flux is lighter, has zero UI to maintain/secure, and matches the dominant homelab pattern (more tutorials to copy from). ArgoCD is more "job-skill relevant" but if you've used one, you can pick up the other.
 
 ## References
 
 - [Flux docs: GitHub bootstrap](https://fluxcd.io/flux/installation/bootstrap/github/)
-- [upstream's flux config](https://github.com/upstream/home-ops/tree/main/kubernetes/kubernetes/flux-system)
 - [onedr0p/cluster-template flux setup](https://github.com/onedr0p/cluster-template/tree/main/templates/cluster/kubernetes/flux)
