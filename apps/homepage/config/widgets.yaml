@@ -17,11 +17,6 @@
     expanded: true
     disk: /host/nas
 
-- resources:
-    label: frigate
-    expanded: true
-    disk: /host/sata
-
 # - openmeteo:
 #     label: Amarillo
 #     latitude: 35.222
