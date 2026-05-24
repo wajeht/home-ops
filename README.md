@@ -32,6 +32,10 @@ flowchart LR
     ops_renovate -->|update images| ops_ci
     ops_ci -->|/api/sync| cf --> unifi -->|:80/:443| traefik -->|proxy| apps
 
+    subgraph public[public]
+        you((You))
+    end
+
     subgraph cloudflare[Cloudflare]
         cf((WAF))
         cf_region([Region Blocking])
@@ -103,15 +107,18 @@ flowchart LR
     end
 
     docker_cd -.->|poll 5m| traefik -.->|poll 5m| unifi -.->|poll 5m| cf -.->|poll 5m| ops_ci
+    you -.->|HTTPS| cf -.->|WAF| unifi -.->|Firewall| traefik -.->|proxy| apps
 
     style app_repo fill:#e8f4fd,stroke:#4a90d9
     style ops_repo fill:#e8f4fd,stroke:#4a90d9
+    style public fill:#dbeafe,stroke:#2563eb,color:#333
     style infra fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
     style cloudflare fill:#fde8d0,stroke:#f6821f
     style cf fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_region fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_ddos fill:#fde8d0,stroke:#f6821f,color:#333
     style cf_bot fill:#fde8d0,stroke:#f6821f,color:#333
+    style you fill:#fef3c7,stroke:#f59e0b,color:#333
     style ucg_cf fill:#fde8e8,stroke:#dc2626,color:#333
     style ucg_region fill:#fde8e8,stroke:#dc2626,color:#333
     style ucg_ids fill:#fde8e8,stroke:#dc2626,color:#333
@@ -146,38 +153,25 @@ flowchart LR
     style camera fill:#fde8e8,stroke:#dc2626,color:#333
     style plugs fill:#f5e6ff,stroke:#9b59b6,color:#333
     style switches fill:#f5e6ff,stroke:#9b59b6,color:#333
-    linkStyle 26 stroke:#22c55e,stroke-dasharray:5
     linkStyle 27 stroke:#22c55e,stroke-dasharray:5
     linkStyle 28 stroke:#22c55e,stroke-dasharray:5
     linkStyle 29 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 30 stroke:#22c55e,stroke-dasharray:5
+    linkStyle 31 stroke:#2563eb,stroke-dasharray:5
+    linkStyle 32 stroke:#2563eb,stroke-dasharray:5
+    linkStyle 33 stroke:#2563eb,stroke-dasharray:5
+    linkStyle 34 stroke:#2563eb,stroke-dasharray:5
 ```
 
 GitOps-driven homelab running on Docker Compose.
 
-Push to git, [docker-cd](https://github.com/wajeht/docker-cd) handles the rest — auto-discovers `apps/*/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, rolling deploys. [Traefik](https://traefik.io/traefik/) routes via Docker labels with wildcard SSL. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh; own images deploy in ~1 min via [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow).
+Push to git, [docker-cd](https://github.com/wajeht/docker-cd) handles the rest — auto-discovers `apps/*/`, decrypts [SOPS](https://github.com/getsops/sops) secrets, rolling deploys. [Traefik](https://traefik.io/traefik/) routes via Docker labels with wildcard SSL. [Renovate](https://github.com/renovatebot/renovate) keeps deps fresh; own images deploy in ~1 min via [docker-cd-deploy-workflow](https://github.com/wajeht/docker-cd-deploy-workflow), which updates `home-ops`, triggers docker-cd `/api/sync`, tracks GitHub Deployments, and creates/cleans temporary PR apps. [dcdb](https://github.com/wajeht/dcdb) manages databases in docker-cd Compose environments for discovery, SQL, dump/restore, prod-to-PR sync, and port forwarding.
 
 All containers [hardened](docs/adding-apps.md#container-hardening) with dropped capabilities, resource limits, and health checks. Nightly backups to NAS via centralized [Backrest](docs/disaster-recovery.md) (restic web UI) with per-app retention, integrity checks, and ntfy alerts.
 
-## Hardware
-
-| Device                                                                                                                                                                                                                                                                                                                                                                                                                                    | RAM  | Storage  | OS              | Function        |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | -------- | --------------- | --------------- |
-| [Dell OptiPlex 7050 Micro (i7-7700)](https://www.amazon.com/s?k=dell+optiplex+7050+micro+i7-7700)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [WD Blue SN570 1TB NVMe](https://www.amazon.com/s?k=WD+Blue+SN570+1TB) (OS + apps)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Micron M600 1TB SATA](https://www.amazon.com/s?k=Micron+M600+1TB)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Intel I226-V 2.5GbE M.2 NIC](https://www.amazon.com/s?k=Intel+I226-V+2.5G+M.2+A%2BE+2230) | 32GB | 2TB      | Ubuntu 24.04    | Docker / GitOps |
-| [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [GeeekPi P33 NVMe PoE+ HAT](https://www.amazon.com/dp/B0DMW98LBR)                                                                                                                                                                                                                                                                     | 8GB  | 128GB SD | Raspberry Pi OS | AdGuard         |
-| [Synology DS923+](https://www.amazon.com/dp/B0BM7KDN6R)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [WD Red Plus 8TB](https://www.amazon.com/s?k=WD+Red+Plus+8TB) x2<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Seagate IronWolf 12TB](https://www.amazon.com/s?k=Seagate+IronWolf+12TB) x2<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Synology E10G22-T1-Mini 10GbE NIC](https://www.amazon.com/s?k=Synology+E10G22-T1-Mini)                                                      | 20GB | 25TB SHR | DSM             | NAS             |
-| [UniFi Cloud Gateway Fiber](https://store.ui.com/us/en/products/ucg-fiber)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Samsung 990 EVO Plus 1TB NVMe](https://www.amazon.com/s?k=Samsung+990+EVO+Plus+1TB)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [UACC SSD Tray](https://store.ui.com/us/en/category/accessories-installations/collections/drive-trays/products/uacc-ssd-tray)                                                                                   | 3GB  | 1TB      | UniFi OS        | Firewall        |
-| [UniFi U6+](https://store.ui.com/us/en/products/u6-plus)                                                                                                                                                                                                                                                                                                                                                                                  | -    | -        | -               | WiFi 6 AP       |
-| [UniFi UNVR Instant](https://store.ui.com/us/en/products/unvr-instant)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [UniFi Basic 3.5" HDD 4TB](https://store.ui.com/us/en/products/uacc-hdd-s-4tb)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [UniFi Camera G6 Instant](https://store.ui.com/us/en/products/uvc-g6-ins)                                                                                                                                                 | 4GB  | 4TB      | UniFi OS        | NVR / Camera    |
-| [SMLIGHT SLZB-MR3U](https://www.amazon.com/dp/B0FB97W6CN)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [THIRDREALITY Smart Plug Gen3](https://www.amazon.com/dp/B0GHQT8TQ8) x4<br>&nbsp;&nbsp;&nbsp;&nbsp;— [THIRDREALITY Smart Switch](https://www.amazon.com/dp/B0CR9ZSV5L) x2                                                                                                                                                                          | -    | -        | -               | Zigbee Gateway  |
-| [UniFi Flex 2.5G PoE 8-Port](https://store.ui.com/us/en/products/usw-flex-2-5g-8-poe)                                                                                                                                                                                                                                                                                                                                                     | -    | -        | -               | PoE Switch      |
-| [ElecVoztile 10" Rack PDU](https://www.amazon.com/dp/B0FF41T167)                                                                                                                                                                                                                                                                                                                                                                          | -    | -        | -               | PDU             |
-| [CyberPower 1500VA AVR](https://www.amazon.com/CyberPower-CP1500AVRLCD-Intelligent-Outlets-Mini-Tower/dp/B000FBK3QK)                                                                                                                                                                                                                                                                                                                      | -    | -        | -               | UPS             |
-| [DeskPi RackMate T2 12U](https://www.amazon.com/dp/B0FYNM62F7)                                                                                                                                                                                                                                                                                                                                                                            | -    | -        | -               | Rack            |
-
-With all equipment connected: ~120W idle @ 120V, ~80 min UPS runtime, 87 kWh/mo (~$10/mo).
-
 ## Docs
 
+- [Hardware](docs/hardware.md)
 - [Quick Start](docs/quick-start.md)
 - [Adding Apps](docs/adding-apps.md)
 - [Secrets](docs/secrets.md)

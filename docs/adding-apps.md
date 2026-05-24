@@ -80,7 +80,7 @@ security_opt:
 
 `read_only: true` makes the container's root filesystem immutable — use on stateless single-binary apps (Go/Node) and wajeht/\* apps with data volumes. Add `tmpfs: /tmp` when the app might write temp files. Skip `read_only` for LSIO images, Postgres, Redis, and complex runtimes (Python/Elixir) that write all over the root filesystem.
 
-Most apps need `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` because they do user switching or chown on volumes at startup. Start with these and only remove them for truly stateless single-binary apps (Go/Node apps like authelia, miniflux, dozzle).
+Most apps need `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` because they do user switching or chown on volumes at startup. Start with these and only remove them for truly stateless single-binary apps (Go/Node apps like dozzle).
 
 | Capability                                    | When needed                                                |
 | --------------------------------------------- | ---------------------------------------------------------- |
@@ -124,6 +124,10 @@ healthcheck:
   timeout: 5s
   retries: 3
 ```
+
+For scratch/minimal images with no shell, `curl`, or `wget`, either use the app's own healthcheck command or mount a static helper binary. See [apps/gatus/README.md → httpcheck Pattern](../apps/gatus/README.md#httpcheck-pattern) for the canonical example.
+
+To register the app for uptime monitoring and ntfy alerts, add an endpoint per [apps/gatus/README.md](../apps/gatus/README.md#adding-an-endpoint).
 
 ### Init Process
 

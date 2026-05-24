@@ -1,0 +1,156 @@
+storage:
+  type: sqlite
+  path: /data/gatus.db
+
+ui:
+  title: Service Health
+  header: Service Health
+  default-sort-by: group
+
+metrics: true
+concurrency: 6
+
+alerting:
+  ntfy:
+    url: "http://ntfy:80"
+    topic: gatus
+    token: ${NTFY_TOKEN}
+    priority: 3
+    default-alert:
+      enabled: true
+      failure-threshold: 3
+      success-threshold: 2
+      send-on-resolved: true
+
+endpoints:
+  - name: Traefik
+    group: Infra
+    url: tcp://traefik:80
+    interval: 1m
+    conditions:
+      - "[CONNECTED] == true"
+    alerts:
+      - type: ntfy
+
+  - name: AdGuard
+    group: Infra
+    url: tcp://192.168.4.181:53
+    interval: 1m
+    conditions:
+      - "[CONNECTED] == true"
+    alerts:
+      - type: ntfy
+
+  - name: Homepage
+    group: Core
+    url: http://homepage:3000
+    headers:
+      Host: home.jaw.dev
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 2000"
+    alerts:
+      - type: ntfy
+
+  - name: Home Assistant
+    group: Core
+    url: http://homeassistant:8123
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
+  - name: Immich
+    group: Core
+    url: http://immich:2283/api/server/ping
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
+  - name: Backrest
+    group: Core
+    url: http://backrest:9898
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
+  - name: Plex
+    group: Media
+    url: http://plex:32400/identity
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
+  - name: Radarr
+    group: Downloads
+    url: http://radarr:7878/ping
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
+  - name: Prowlarr
+    group: Downloads
+    url: http://prowlarr:9696/ping
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
+  - name: SABnzbd
+    group: Downloads
+    url: http://sabnzbd:8080
+    headers:
+      Host: sabnzbd.jaw.dev
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
+  - name: qBittorrent
+    group: Downloads
+    url: http://gluetun:8085
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
+  - name: Gitea
+    group: Tools
+    url: http://gitea:3000/api/healthz
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
+  - name: Beszel
+    group: Tools
+    url: http://beszel:8090
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
