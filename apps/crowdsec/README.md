@@ -2,6 +2,8 @@
 
 CrowdSec bans malicious IPs at Traefik before they reach apps. The agent parses Traefik's access log, runs detection scenarios, and pulls a community blocklist of known-bad IPs. A Yaegi plugin inside Traefik consults a local cache of decisions on every request and returns 403 for banned IPs; the cache refreshes from the agent's LAPI every 60s (stream mode).
 
+A web UI sidecar ([`crowdsec-web-ui`](https://github.com/TheDuffman85/crowdsec-web-ui)) runs in the same compose stack and exposes a dashboard at `crowdsec.jaw.dev` (behind google-auth) showing alerts, decisions, geo-IP for attackers, and AS info.
+
 ## How It Works
 
 ```
@@ -54,13 +56,35 @@ Internal LAN ranges (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) are in `cl
 
 ## Pre-Deploy Setup
 
-On a new host, before the first deploy, create the data dirs the agent writes to:
+On a new host, before the first deploy, create the data dirs:
 
 ```bash
 mkdir -p /home/jaw/data/crowdsec/{db,config}
+mkdir -p /home/jaw/data/crowdsec-web-ui
 ```
 
 The bouncer API key is already populated in both `.env.sops` files — no manual step. If you ever need to rotate it, regenerate one value and update both files (`apps/traefik/.env.sops` and `apps/crowdsec/.env.sops`) before redeploying.
+
+### Bootstrapping the Web UI watcher
+
+The UI authenticates to LAPI as a watcher (machine), separate from the bouncer key. On a fresh setup the machine doesn't exist yet — register it once:
+
+```bash
+docker exec crowdsec cscli machines add crowdsec-web-ui --auto -f -
+```
+
+Note: `-f -` prints to stdout (default `--auto` would try to write to `/etc/crowdsec/local_api_credentials.yaml`, which is already in use by the agent itself).
+
+Capture the printed `login` and `password`, then add them to `apps/crowdsec/.env.sops`:
+
+```
+CROWDSEC_WEB_UI_USER=crowdsec-web-ui
+CROWDSEC_WEB_UI_PASSWORD=<paste here>
+```
+
+Re-encrypt with `sops -e --input-type dotenv --output-type dotenv .env > .env.sops && rm .env`. The UI service reads both vars and authenticates on first start.
+
+To rotate the password: `docker exec crowdsec cscli machines delete crowdsec-web-ui` then repeat the steps above.
 
 ## SQLite WAL Mode
 
@@ -172,24 +196,31 @@ docker exec crowdsec cscli decisions list -o raw | wc -l
 
 CrowdSec itself has no self-hosted web UI. The `cscli dashboard setup` command that used to ship a local Metabase instance was deprecated in 1.6 and removed in 1.7 — don't go looking for it. Realistic options:
 
-**1. CLI (what you're using now).** `cscli decisions list`, `cscli alerts list`, `cscli metrics`. Fine for current homelab volume.
+**1. Web UI sidecar (deployed in this stack).** [TheDuffman85/crowdsec-web-ui](https://github.com/TheDuffman85/crowdsec-web-ui) at `crowdsec.jaw.dev`. Full dashboard — alerts, decisions, attacker geo-IP, AS info — behind google-auth. Runs as the `crowdsec-web-ui` service in this compose, talks to LAPI with watcher credentials. **This is the primary GUI.**
 
-**2. Homepage widget.** [Homepage](https://gethomepage.dev/widgets/services/crowdsec/) has a built-in CrowdSec widget that hits LAPI for live decision/alert counts. A few lines of YAML in `apps/homepage/`; no new container. Best at-a-glance option.
+**2. CLI.** `cscli decisions list`, `cscli alerts list`, `cscli metrics`. Useful for scripts and one-off queries.
 
-**3. CrowdSec Console (hosted, free tier).** [console.crowdsec.net](https://console.crowdsec.net). Enroll the instance by adding `ENROLL_KEY=<key>` to `apps/crowdsec/.env.sops` (use `sops apps/crowdsec/.env.sops`) and redeploying. Alert metadata leaves the homelab; logs and secrets stay local. The hosted UI shows decisions, alerts, scenario hits, top blocked IPs.
+**3. Homepage widget.** [Homepage](https://gethomepage.dev/widgets/services/crowdsec/) has a built-in CrowdSec widget that hits LAPI for live decision/alert counts. A few lines of YAML in `apps/homepage/`. Good for at-a-glance numbers on the main dashboard.
 
-**4. Vanilla Metabase pointed at the SQLite DB.** Possible but you'd build the dashboards from scratch — the upstream `crowdsecurity/metabase` image was removed from Docker Hub. Skip unless you really want a self-hosted dashboard with custom queries.
+**4. CrowdSec Console (hosted, free tier).** [console.crowdsec.net](https://console.crowdsec.net). Enroll the instance by adding `ENROLL_KEY=<key>` to `apps/crowdsec/.env.sops` and redeploying. Alert metadata leaves the homelab; logs and secrets stay local. Skip if you're happy with the local sidecar — it covers the same use cases.
+
+**5. Grafana + Prometheus.** The agent already exposes Prometheus metrics on `:6060` (293 metric series — `cs_active_decisions`, bucket pours, parser stats, etc.). Pair with [Grafana dashboard 21419](https://grafana.com/grafana/dashboards/21419-crowdsec-metrics/) if you stand up Grafana for other monitoring later. The official `crowdsecurity/grafana-dashboards` repo is stale (last update 2024-03), so dashboard 21419 is the better source.
 
 ## File Layout
 
 ```
 apps/crowdsec/
-├── docker-compose.yml   # agent container only (no Traefik labels)
+├── docker-compose.yml   # agent + crowdsec-web-ui sidecar
 ├── acquis.yaml          # tells agent to tail /var/log/traefik/access.log
 ├── docker-cd.yml        # rolling_update: false (stateful — no parallel instances)
-├── .env.sops            # BOUNCER_KEY_TRAEFIK, optional ENROLL_KEY (encrypted)
+├── .env.sops            # BOUNCER_KEY_TRAEFIK, CROWDSEC_WEB_UI_USER/PASSWORD, optional ENROLL_KEY
 └── README.md            # this file
 ```
+
+### Services in this stack
+
+- **`crowdsec`** — the agent. Reads Traefik logs, runs scenarios, exposes LAPI on `:8080` over the `traefik` Docker network. Backed by SQLite at `/home/jaw/data/crowdsec/db/`.
+- **`crowdsec-web-ui`** — sidecar dashboard ([TheDuffman85/crowdsec-web-ui](https://github.com/TheDuffman85/crowdsec-web-ui)). Authenticates to LAPI with watcher credentials, serves a web UI at `:3000`, routed to `crowdsec.jaw.dev` through Traefik with google-auth. Waits for the agent's healthcheck (`depends_on: service_healthy`) before starting.
 
 Traefik wiring lives in two files under `apps/traefik/`:
 

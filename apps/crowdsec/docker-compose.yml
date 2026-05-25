@@ -54,6 +54,68 @@ services:
       # Agent exposes no HTTP service; the bouncer middleware lives in apps/traefik/dynamic.yml.
       - "traefik.enable=false"
 
+  # Self-hosted web UI for CrowdSec — alerts, decisions, IP geo, AS info.
+  # Talks to the agent's LAPI over the traefik network via watcher (machine) credentials.
+  # Exposed at crowdsec.jaw.dev behind google-auth.
+  crowdsec-web-ui:
+    container_name: crowdsec-web-ui
+    image: ghcr.io/theduffman85/crowdsec-web-ui:2026.5.6@sha256:2d16d79437c54b06752d5ce0c3a8799985bc37eb85b85a0c7f6981511798db10
+    env_file:
+      - .env
+    environment:
+      TZ: America/Chicago
+      NODE_ENV: production
+      CROWDSEC_URL: http://crowdsec:8080
+      CROWDSEC_USER: ${CROWDSEC_WEB_UI_USER}
+      CROWDSEC_PASSWORD: ${CROWDSEC_WEB_UI_PASSWORD}
+    volumes:
+      - /home/jaw/data/crowdsec-web-ui:/app/data
+    networks:
+      - traefik
+    depends_on:
+      crowdsec:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.crowdsec-web-ui.rule=Host(`crowdsec.jaw.dev`)"
+      - "traefik.http.routers.crowdsec-web-ui.entrypoints=websecure"
+      - "traefik.http.routers.crowdsec-web-ui.middlewares=google-auth@file"
+      - "traefik.http.services.crowdsec-web-ui.loadbalancer.server.port=3000"
+
 networks:
   traefik:
     external: true
