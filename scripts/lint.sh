@@ -36,7 +36,8 @@ run_check() {
 
 # shellcheck disable=SC2329
 check_shell() {
-	shellcheck -x scripts/*.sh
+	find scripts apps infra -name '*.sh' -not -path './apps/adguard/*' -print0 |
+		xargs -0 shellcheck -x
 }
 
 # shellcheck disable=SC2329
@@ -66,11 +67,21 @@ check_hardening() {
 
 # shellcheck disable=SC2329
 check_compose() {
-	local broken=() f dir
+	local broken=() f dir had_env
 	while IFS= read -r -d '' f; do
 		dir=$(dirname "$f")
-		touch "$dir/.env"
-		docker compose -f "$f" config -q 2>/dev/null || broken+=("$f invalid")
+		had_env=0
+		if [ -f "$dir/.env" ]; then
+			had_env=1
+		else
+			: >"$dir/.env"
+		fi
+
+		docker compose -f "$f" --project-directory "$dir" config -q 2>/dev/null || broken+=("$f invalid")
+
+		if [ "$had_env" -eq 0 ]; then
+			rm -f "$dir/.env"
+		fi
 	done < <(find . -name 'docker-compose.yml' -not -path './.git/*' -not -path './apps/adguard/*' -print0)
 	if [ "${#broken[@]}" -gt 0 ]; then
 		printf '%s\n' "${broken[@]}"

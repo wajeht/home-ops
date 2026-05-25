@@ -187,7 +187,6 @@ STATIC_DIRS=(
 	"$USER_HOME/plex/music"
 	"$USER_HOME/plex/audiobooks"
 	"$USER_HOME/plex/podcasts"
-	"$USER_HOME/backup/borg"
 	"$USER_HOME/.sops"
 	"$USER_HOME/.docker"
 )
@@ -263,6 +262,7 @@ nfs_mount() {
 		ok "$name"
 	else
 		err "$name failed"
+		return 1
 	fi
 }
 
@@ -323,14 +323,21 @@ nfs_unpersist() {
 
 cmd_nfs() {
 	local action=${1:-} target=${2:-all}
+	local matched=0
 	[ -z "$action" ] && {
 		printf 'Usage: %s nfs {mount|unmount|persist|unpersist|status} [plex|backup|all]\n' "$0"
 		exit 1
 	}
 
+	case "$action" in
+		mount | unmount | umount | persist | unpersist | status) ;;
+		*) die "unknown nfs action: $action" ;;
+	esac
+
 	for mount in "${NFS_MOUNTS[@]}"; do
 		IFS='|' read -r name nas_path local_path <<<"$mount"
 		if [[ "$target" == "all" || "$target" == "$name" ]]; then
+			matched=1
 			case "$action" in
 				mount) nfs_mount "$name" "$nas_path" "$local_path" ;;
 				unmount | umount) nfs_unmount "$name" "$nas_path" "$local_path" ;;
@@ -340,6 +347,10 @@ cmd_nfs() {
 			esac
 		fi
 	done
+
+	if [ "$matched" -eq 0 ]; then
+		die "unknown nfs target: $target"
+	fi
 }
 
 #=============================================================================
@@ -365,6 +376,7 @@ sata_mount() {
 		ok "sata"
 	else
 		err "sata mount failed"
+		return 1
 	fi
 }
 
@@ -419,7 +431,10 @@ cmd_sata() {
 		persist) sata_persist ;;
 		unpersist) sata_unpersist ;;
 		status) sata_status ;;
-		*) printf 'Usage: %s sata {mount|unmount|persist|unpersist|status}\n' "$0" ;;
+		*)
+			printf 'Usage: %s sata {mount|unmount|persist|unpersist|status}\n' "$0"
+			return 1
+			;;
 	esac
 }
 
@@ -773,7 +788,7 @@ print_usage() {
 	printf '%b\n' "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
 	printf '%b\n' "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
 	printf '%b\n' "  ${GREEN}images${NC}                   Show unused Docker images and volumes"
-	printf '%b\n' "  ${GREEN}images prune${NC}             Remove unused images (>7d) and orphan volumes"
+	printf '%b\n' "  ${GREEN}images prune${NC}             Remove unused images and orphan volumes"
 	printf '%b\n' "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
 	printf '%b\n' "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
 	printf '\n'

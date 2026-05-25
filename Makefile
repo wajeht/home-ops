@@ -41,7 +41,7 @@ cloudflare:
 ## format                  Format yaml, markdown, json, and shell
 format:
 	@npx oxfmt "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
-	@shfmt -w -i 0 -ci scripts/*.sh
+	@find scripts apps infra -name '*.sh' -not -path './apps/adguard/*' -print0 | xargs -0 shfmt -w -i 0 -ci
 
 ## lint                    Run repo lint checks
 lint:
