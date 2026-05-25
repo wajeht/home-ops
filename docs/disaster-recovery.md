@@ -430,7 +430,7 @@ If the NAS is intact:
 
 ```bash
 # Mount NFS backup share
-./scripts/home-ops.sh nfs mount backup
+./scripts/setup.sh nfs mount backup
 
 # Restore the global snapshot (gets ~/data and ~/.sops in one shot)
 docker run --rm -e RESTIC_PASSWORD='<from-password-manager>' \
@@ -447,7 +447,7 @@ If the NAS is also gone, you need offline copies of `~/.sops/age-key.txt` and `~
 
 ```bash
 git clone https://github.com/wajeht/home-ops.git ~/home-ops
-cd ~/home-ops && ./scripts/home-ops.sh install
+cd ~/home-ops && ./scripts/setup.sh install
 ```
 
 The install script handles Docker, SOPS, networks, and docker-cd deployment.
@@ -455,9 +455,9 @@ The install script handles Docker, SOPS, networks, and docker-cd deployment.
 #### 3. Mount NFS and SATA
 
 ```bash
-./scripts/home-ops.sh nfs mount
-./scripts/home-ops.sh nfs persist      # survives reboots
-./scripts/home-ops.sh sata persist     # survives reboots
+./scripts/setup.sh nfs mount
+./scripts/setup.sh nfs persist      # survives reboots
+./scripts/setup.sh sata persist     # survives reboots
 ```
 
 #### 4. Bootstrap Backrest
@@ -481,7 +481,7 @@ See [quick-start.md → OS Tuning](quick-start.md#os-tuning) for swappiness and 
 #### 7. Verify
 
 ```bash
-./scripts/home-ops.sh status
+./scripts/setup.sh status
 # Then in Backrest UI: trigger a manual backup of each plan to confirm hooks fire correctly
 ```
 

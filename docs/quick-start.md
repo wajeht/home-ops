@@ -3,7 +3,7 @@
 ```bash
 git clone https://github.com/wajeht/home-ops.git ~/home-ops
 scp ~/.sops/age-key.txt user@server:~/.sops/
-cd ~/home-ops && ./scripts/home-ops.sh install
+cd ~/home-ops && ./scripts/setup.sh install
 ```
 
 ## OS Tuning
@@ -28,12 +28,12 @@ echo 'GOVERNOR="performance"' | sudo tee /etc/default/cpufrequtils
 ## Management
 
 ```bash
-./scripts/home-ops.sh install        # Deploy everything
-./scripts/home-ops.sh uninstall      # Remove all stacks and cleanup
-./scripts/home-ops.sh update-infra   # Pull latest and redeploy docker-cd
-./scripts/home-ops.sh status         # Show services, mounts, disk usage
-./scripts/home-ops.sh nfs mount      # Mount NFS shares
-./scripts/home-ops.sh nfs persist    # Add NFS mounts to fstab (survives reboot)
-./scripts/home-ops.sh sata persist   # Add SATA mount to fstab (survives reboot)
-./scripts/home-ops.sh setup          # Create data directories
+./scripts/setup.sh install        # Deploy everything
+./scripts/setup.sh uninstall      # Remove all stacks and cleanup
+./scripts/setup.sh update-infra   # Pull latest and redeploy docker-cd
+./scripts/setup.sh status         # Show services, mounts, disk usage
+./scripts/setup.sh nfs mount      # Mount NFS shares
+./scripts/setup.sh nfs persist    # Add NFS mounts to fstab (survives reboot)
+./scripts/setup.sh sata persist   # Add SATA mount to fstab (survives reboot)
+./scripts/setup.sh setup          # Create data directories
 ```

@@ -2,25 +2,12 @@
 # shellcheck disable=SC2317,SC2329  # check_* functions are dispatched indirectly via run_check
 set -euo pipefail
 
-# TTY-aware colors — disabled when stdout isn't a terminal.
-if [ -t 1 ]; then
-	BOLD=$'\033[1m'
-	DIM=$'\033[2m'
-	RED=$'\033[31m'
-	GREEN=$'\033[32m'
-	CYAN=$'\033[36m'
-	RESET=$'\033[0m'
-else
-	BOLD=''
-	DIM=''
-	RED=''
-	GREEN=''
-	CYAN=''
-	RESET=''
-fi
+# shellcheck source=scripts/utils.sh
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
+cd "$REPO_ROOT"
 
-ok="${GREEN}✓${RESET}"
-xx="${RED}✗${RESET}"
+ok_mark="${GREEN}✓${RESET}"
+fail_mark="${RED}✗${RESET}"
 
 fail=0
 
@@ -30,9 +17,15 @@ run_check() {
 	local label="$1" fn="$2" output rc
 	output=$("$fn" 2>&1) && rc=0 || rc=$?
 	if [ "$rc" -eq 0 ]; then
-		printf '  %s %s\n' "$ok" "$label"
+		printf '  %s %s\n' "$ok_mark" "$label"
+		if [ -n "$output" ]; then
+			while IFS= read -r line; do
+				[ -z "$line" ] && continue
+				printf '      %s%s%s\n' "$DIM" "$line" "$RESET"
+			done <<<"$output"
+		fi
 	else
-		printf '  %s %s\n' "$xx" "$label"
+		printf '  %s %s\n' "$fail_mark" "$label"
 		while IFS= read -r line; do
 			[ -z "$line" ] && continue
 			printf '      %s%s%s\n' "$DIM" "$line" "$RESET"
@@ -43,7 +36,7 @@ run_check() {
 
 # shellcheck disable=SC2329
 check_shell() {
-	shellcheck -x scripts/home-ops.sh scripts/lint.sh scripts/check-resources.sh scripts/update-cloudflare-ips.sh
+	shellcheck -x scripts/*.sh
 }
 
 # shellcheck disable=SC2329
@@ -145,6 +138,130 @@ check_backup() {
 	fi
 }
 
+# shellcheck disable=SC2329
+check_resources() {
+	local max_cpus=8
+	local max_memory_mb=32768
+	local max_memory_overcommit=3
+	local max_cpu_overcommit=15
+	local max_service_memory_mb=8192
+	local max_service_cpus="4.0"
+	local total_cpus=0
+	local total_memory_mb=0
+	local errors=0
+	local compose app limited_services cpus memory service mem_mb svc shm stop oom
+	local total_memory_gb max_total_memory_gb max_total_memory_mb max_total_cpus
+	local issues=()
+	local warnings=()
+
+	for compose in apps/*/docker-compose.yml; do
+		app="$(basename "$(dirname "$compose")")"
+		limited_services=" "
+
+		while read -r cpus memory service; do
+			if [[ "$memory" == *G ]]; then
+				mem_mb=$(awk "BEGIN {printf \"%.0f\", ${memory%G} * 1024}")
+			elif [[ "$memory" == *M ]]; then
+				mem_mb="${memory%M}"
+			else
+				issues+=("${app}/${service} unknown memory unit: ${memory}")
+				errors=1
+				continue
+			fi
+
+			if [ "$mem_mb" -gt "$max_service_memory_mb" ]; then
+				issues+=("${app}/${service} memory ${memory} exceeds per-service max $(awk "BEGIN {printf \"%.0f\", $max_service_memory_mb / 1024}")G")
+				errors=1
+			fi
+
+			if awk "BEGIN {exit !($cpus > $max_service_cpus)}"; then
+				issues+=("${app}/${service} cpus ${cpus} exceeds per-service max ${max_service_cpus}")
+				errors=1
+			fi
+
+			total_cpus=$(awk "BEGIN {printf \"%.1f\", $total_cpus + $cpus}")
+			total_memory_mb=$((total_memory_mb + mem_mb))
+			limited_services+="${service} "
+		done < <(awk '
+			/^  [a-zA-Z]/ && /:/ && !/deploy:/ && !/resources:/ && !/limits:/ && !/cpus:/ && !/memory:/ && !/labels:/ && !/reservations:/ { gsub(/:.*/, ""); gsub(/^ +/, ""); svc=$0 }
+			/deploy:/ { in_deploy=1; next }
+			in_deploy && /resources:/ { in_resources=1; next }
+			in_deploy && in_resources && /limits:/ { in_limits=1; next }
+			in_limits && /cpus:/ { gsub(/[" ]/, "", $2); cpus=$2; next }
+			in_limits && /memory:/ { gsub(/[" ]/, "", $2); mem=$2 }
+			in_limits && cpus && mem { print cpus, mem, svc; cpus=""; mem=""; in_deploy=0; in_resources=0; in_limits=0 }
+			/^[^ ]/ || /^  [^ ]/ { if (in_deploy && !/deploy:/) { in_deploy=0; in_resources=0; in_limits=0; cpus=""; mem="" } }
+		' "$compose")
+
+		while IFS= read -r svc; do
+			[ -z "$svc" ] && continue
+			case "$limited_services" in
+				*" $svc "*) ;;
+				*)
+					issues+=("${app}/${svc} missing deploy.resources.limits")
+					errors=1
+					;;
+			esac
+		done < <(awk '
+			/^services:[[:space:]]*$/ { in_svcs=1; next }
+			/^[a-zA-Z]/ && in_svcs { in_svcs=0 }
+			in_svcs && /^  [a-zA-Z][a-zA-Z0-9_-]*:[[:space:]]*$/ {
+				name = $0; sub(/^  /, "", name); sub(/:.*/, "", name); print name
+			}
+		' "$compose")
+
+		while read -r svc shm stop oom; do
+			[ "$shm" = "-" ] && warnings+=("${app}/${svc} postgres missing shm_size (recommended: 256m)")
+			[ "$stop" = "-" ] && warnings+=("${app}/${svc} postgres missing stop_grace_period (recommended: 30s)")
+			[ "$oom" = "-" ] && warnings+=("${app}/${svc} postgres missing oom_score_adj (recommended: -300)")
+		done < <(awk '
+			function flush() {
+				if (svc && img ~ /(^|\/)postgres:/) {
+					printf "%s %s %s %s\n", svc, (shm ? shm : "-"), (stop ? stop : "-"), (oom ? oom : "-")
+				}
+			}
+			/^services:[[:space:]]*$/ { in_svcs=1; next }
+			/^[a-zA-Z]/ && in_svcs { flush(); in_svcs=0; svc="" }
+			in_svcs && /^  [a-zA-Z][a-zA-Z0-9_-]*:[[:space:]]*$/ {
+				flush()
+				svc=$0; sub(/^  /, "", svc); sub(/:.*/, "", svc)
+				img=""; shm=""; stop=""; oom=""
+			}
+			svc && /^    image:[[:space:]]+/ {
+				img=$0; sub(/^    image:[[:space:]]+/, "", img); gsub(/["'\'']/, "", img)
+			}
+			svc && /^    shm_size:/ { shm=$2 }
+			svc && /^    stop_grace_period:/ { stop=$2 }
+			svc && /^    oom_score_adj:/ { oom=$2 }
+			END { flush() }
+		' "$compose")
+	done
+
+	total_memory_gb=$(awk "BEGIN {printf \"%.1f\", $total_memory_mb / 1024}")
+	max_total_memory_gb=$(awk "BEGIN {printf \"%.1f\", $max_memory_mb * $max_memory_overcommit / 1024}")
+	max_total_memory_mb=$((max_memory_mb * max_memory_overcommit))
+	max_total_cpus=$(awk "BEGIN {printf \"%.1f\", $max_cpus * $max_cpu_overcommit}")
+
+	if [ "$total_memory_mb" -gt "$max_total_memory_mb" ]; then
+		issues+=("total memory ${total_memory_gb}GB exceeds ${max_memory_overcommit}x overcommit limit (${max_total_memory_gb}GB)")
+		errors=1
+	fi
+	if awk "BEGIN {exit !($total_cpus > $max_total_cpus)}"; then
+		issues+=("total CPU ${total_cpus} exceeds ${max_cpu_overcommit}x overcommit limit (${max_total_cpus} threads)")
+		errors=1
+	fi
+
+	if [ "${#warnings[@]}" -gt 0 ]; then
+		printf 'resource warnings:\n'
+		printf '%s\n' "${warnings[@]}"
+	fi
+	if [ "${#issues[@]}" -gt 0 ]; then
+		printf '%s\n' "${issues[@]}"
+	fi
+
+	return "$errors"
+}
+
 printf '\n%s==>%s %slint%s\n' "$BOLD$CYAN" "$RESET" "$BOLD" "$RESET"
 run_check "shell scripts" check_shell
 run_check "sops encryption" check_sops
@@ -152,6 +269,7 @@ run_check "container hardening" check_hardening
 run_check "service hygiene" check_service_hygiene
 run_check "backup plans" check_backup
 run_check "compose syntax" check_compose
+run_check "resource limits" check_resources
 
 if [ "$fail" -eq 0 ]; then
 	printf '\n  %s✓%s all checks passed\n' "$GREEN" "$RESET"

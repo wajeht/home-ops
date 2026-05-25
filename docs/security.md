@@ -104,7 +104,7 @@ Web traffic is layered:
 Keep Cloudflare IP ranges current with:
 
 ```bash
-scripts/update-cloudflare-ips.sh
+scripts/cloudflare.sh
 ```
 
 If it changes files, review the diff and deploy through the normal git flow.

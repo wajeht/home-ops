@@ -8,7 +8,7 @@ Core services that other apps depend on.
 | [traefik](traefik/)         | infra | Reverse proxy             |
 | [google-auth](google-auth/) | infra | Google OAuth forward-auth |
 
-Managed via `./scripts/home-ops.sh`:
+Managed via `./scripts/setup.sh`:
 
 - `install` — first-time deploy of all infra + apps
 - `update-infra` — pull latest and redeploy docker-cd

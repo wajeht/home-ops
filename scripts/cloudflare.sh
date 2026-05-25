@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-dynamic_file="$repo_dir/apps/traefik/dynamic.yml"
-compose_file="$repo_dir/apps/traefik/docker-compose.yml"
+# shellcheck source=scripts/utils.sh
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
+
+dynamic_file="$REPO_ROOT/apps/traefik/dynamic.yml"
+compose_file="$REPO_ROOT/apps/traefik/docker-compose.yml"
 
 usage() {
 	cat <<'EOF'
-Usage: scripts/update-cloudflare-ips.sh [options]
+Usage: scripts/cloudflare.sh [options]
 
 Fetch Cloudflare's published edge IP ranges and update Traefik's origin
 allowlist/trusted-header ranges.
@@ -31,15 +33,11 @@ while [ "$#" -gt 0 ]; do
 	esac
 done
 
-if ! command -v jq >/dev/null 2>&1; then
-	printf 'jq is required\n' >&2
-	exit 1
-fi
+require_cmd jq
 
 for file in "$dynamic_file" "$compose_file"; do
 	if [ ! -f "$file" ]; then
-		printf 'missing file: %s\n' "$file" >&2
-		exit 1
+		die "missing file: $file"
 	fi
 done
 
@@ -52,8 +50,7 @@ curl -fsSL https://api.cloudflare.com/client/v4/ips |
 	jq -r '.result.ipv4_cidrs[], .result.ipv6_cidrs[]' >"$ranges_file"
 
 if [ ! -s "$ranges_file" ]; then
-	printf 'Cloudflare API returned no IP ranges\n' >&2
-	exit 1
+	die "Cloudflare API returned no IP ranges"
 fi
 
 cp "$dynamic_file" "$tmp_dir/dynamic.yml.before"

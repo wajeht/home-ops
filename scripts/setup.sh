@@ -1,6 +1,6 @@
 #!/bin/bash
-# home-ops management script
-# Usage: ./scripts/home-ops.sh <command> [args]
+# home-ops setup/management script
+# Usage: ./scripts/setup.sh <command> [args]
 set -eo pipefail
 
 # Don't run as root - script uses sudo internally
@@ -9,24 +9,8 @@ set -eo pipefail
 	exit 1
 }
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-BOLD='\033[1m'
-DIM='\033[2m'
-NC='\033[0m'
-
-# Helpers
-info() { echo -e "${BLUE}${BOLD}::${NC} $*"; }
-ok() { echo -e "${GREEN}${BOLD}ok${NC} $*"; }
-warn() { echo -e "${YELLOW}${BOLD}warn${NC} $*"; }
-err() { echo -e "${RED}${BOLD}err${NC} $*"; }
-step() { echo -e "\n${CYAN}${BOLD}[$1]${NC} $2"; }
-header() { echo -e "\n${BOLD}━━━ $* ━━━${NC}"; }
-dim() { echo -e "${DIM}  $*${NC}"; }
+# shellcheck source=scripts/utils.sh
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
 
 decrypt_dotenv_sops() {
 	sops --decrypt --input-type dotenv --output-type dotenv "$1"
@@ -774,7 +758,49 @@ cmd_update_submodules() {
 #=============================================================================
 # MAIN
 #=============================================================================
+print_usage() {
+	echo -e "${BOLD}home-ops${NC} setup script"
+	echo ""
+	echo -e "Usage: ${CYAN}$0${NC} <command> [args]"
+	echo ""
+	echo -e "${BOLD}Commands:${NC}"
+	echo -e "  ${GREEN}setup${NC}                    Create all data directories"
+	echo -e "  ${GREEN}sata mount${NC}               Mount SATA drive (/mnt/sata)"
+	echo -e "  ${GREEN}sata unmount${NC}             Unmount SATA drive"
+	echo -e "  ${GREEN}sata persist${NC}             Add SATA mount to fstab (survives reboot)"
+	echo -e "  ${GREEN}sata unpersist${NC}           Remove SATA mount from fstab"
+	echo -e "  ${GREEN}sata status${NC}              Show SATA mount status"
+	echo -e "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
+	echo -e "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
+	echo -e "  ${GREEN}nfs persist${NC} [target]     Add NFS mounts to fstab (survives reboot)"
+	echo -e "  ${GREEN}nfs unpersist${NC} [target]   Remove NFS mounts from fstab"
+	echo -e "  ${GREEN}nfs status${NC}               Show NFS mount status"
+	echo -e "  ${GREEN}install${NC}                  Deploy all services"
+	echo -e "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
+	echo -e "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
+	echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
+	echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
+	echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
+	echo -e "  ${GREEN}images${NC}                   Show unused Docker images and volumes"
+	echo -e "  ${GREEN}images prune${NC}             Remove unused images (>7d) and orphan volumes"
+	echo -e "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
+	echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
+	echo ""
+	echo -e "${BOLD}Examples:${NC}"
+	echo -e "  ${DIM}$0 setup${NC}                 # Create directories"
+	echo -e "  ${DIM}$0 nfs mount${NC}             # Mount all NFS shares"
+	echo -e "  ${DIM}$0 nfs mount plex${NC}        # Mount only plex"
+	echo -e "  ${DIM}$0 install${NC}               # Deploy everything"
+	echo -e "  ${DIM}$0 install-fresh${NC}         # Force full docker-cd app reconcile"
+	echo -e "  ${DIM}$0 update-infra-force${NC}    # Force-recreate infra containers"
+	echo -e "  ${DIM}$0 status${NC}                # Show status"
+}
+
 case "${1:-}" in
+	"" | help | -h | --help)
+		print_usage
+		exit 0
+		;;
 	setup)
 		cmd_setup
 		;;
@@ -815,41 +841,7 @@ case "${1:-}" in
 		cmd_update_submodules
 		;;
 	*)
-		echo -e "${BOLD}home-ops${NC} management script"
-		echo ""
-		echo -e "Usage: ${CYAN}$0${NC} <command> [args]"
-		echo ""
-		echo -e "${BOLD}Commands:${NC}"
-		echo -e "  ${GREEN}setup${NC}                    Create all data directories"
-		echo -e "  ${GREEN}sata mount${NC}               Mount SATA drive (/mnt/sata)"
-		echo -e "  ${GREEN}sata unmount${NC}             Unmount SATA drive"
-		echo -e "  ${GREEN}sata persist${NC}             Add SATA mount to fstab (survives reboot)"
-		echo -e "  ${GREEN}sata unpersist${NC}           Remove SATA mount from fstab"
-		echo -e "  ${GREEN}sata status${NC}              Show SATA mount status"
-		echo -e "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
-		echo -e "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
-		echo -e "  ${GREEN}nfs persist${NC} [target]     Add NFS mounts to fstab (survives reboot)"
-		echo -e "  ${GREEN}nfs unpersist${NC} [target]   Remove NFS mounts from fstab"
-		echo -e "  ${GREEN}nfs status${NC}               Show NFS mount status"
-		echo -e "  ${GREEN}install${NC}                  Deploy all services"
-		echo -e "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
-		echo -e "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
-		echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
-		echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
-		echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
-		echo -e "  ${GREEN}images${NC}                   Show unused Docker images and volumes"
-		echo -e "  ${GREEN}images prune${NC}             Remove unused images (>7d) and orphan volumes"
-		echo -e "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
-		echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
-		echo ""
-		echo -e "${BOLD}Examples:${NC}"
-		echo -e "  ${DIM}$0 setup${NC}                 # Create directories"
-		echo -e "  ${DIM}$0 nfs mount${NC}             # Mount all NFS shares"
-		echo -e "  ${DIM}$0 nfs mount plex${NC}        # Mount only plex"
-		echo -e "  ${DIM}$0 install${NC}               # Deploy everything"
-		echo -e "  ${DIM}$0 install-fresh${NC}         # Force full docker-cd app reconcile"
-		echo -e "  ${DIM}$0 update-infra-force${NC}    # Force-recreate infra containers"
-		echo -e "  ${DIM}$0 status${NC}                # Show status"
+		print_usage
 		exit 1
 		;;
 esac
