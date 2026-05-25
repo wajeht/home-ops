@@ -95,26 +95,26 @@ http:
           requestHeaderName: CF-Connecting-IP
 
     # Google auth service for admin-only apps.
-    google-auth-forward:
+    google-auth-admin-forward:
       forwardAuth:
-        address: http://google-auth:4181
+        address: http://google-auth-admin:4181
         trustForwardHeader: true
         maxResponseBodySize: 4096
         authResponseHeaders:
           - X-Forwarded-User
 
     # Standard admin auth chain: rate limit first, then Google auth.
-    google-auth:
+    google-auth-admin:
       chain:
         middlewares:
           - rate-limit-auth
-          - google-auth-forward
+          - google-auth-admin-forward
 
     # Admin auth without rate limiting for routes that already limit elsewhere.
-    google-auth-no-ratelimit:
+    google-auth-admin-no-ratelimit:
       chain:
         middlewares:
-          - google-auth-forward
+          - google-auth-admin-forward
 
     # Separate Google auth service for user-facing apps.
     google-auth-user-forward:

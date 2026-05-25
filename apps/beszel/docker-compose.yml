@@ -38,7 +38,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.beszel.rule=Host(`beszel.jaw.dev`)"
       - "traefik.http.routers.beszel.entrypoints=websecure"
-      - "traefik.http.routers.beszel.middlewares=google-auth@file"
+      - "traefik.http.routers.beszel.middlewares=google-auth-admin@file"
       - "traefik.http.services.beszel.loadbalancer.server.port=8090"
 
   beszel-agent:

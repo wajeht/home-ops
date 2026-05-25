@@ -115,11 +115,11 @@
         description: Backups
         # siteMonitor: http://backrest:9898
 
-    - Google Auth:
+    - Google Auth Admin:
         icon: google
         href: https://auth.jaw.dev
         description: OAuth Proxy
-        # siteMonitor: http://google-auth:4181
+        # siteMonitor: http://google-auth-admin:4181
 
     - Google Auth User:
         icon: google

@@ -12,7 +12,7 @@ Before pushing a new app:
 - service has `restart`, `init`, healthcheck, logging, and resource limits
 - container drops capabilities and uses `no-new-privileges`
 - internet-facing app is on the external `traefik` network
-- protected apps use `google-auth@file`
+- protected apps use `google-auth-admin@file`
 - app data under `/home/jaw/data/<name>` has a Backrest plan unless intentionally ignored
 - `./scripts/lint.sh` passes
 
@@ -65,7 +65,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
       - "traefik.http.routers.myapp.entrypoints=websecure"
-      - "traefik.http.routers.myapp.middlewares=google-auth@file"
+      - "traefik.http.routers.myapp.middlewares=google-auth-admin@file"
       - "traefik.http.services.myapp.loadbalancer.server.port=80"
 
 networks:
@@ -73,7 +73,7 @@ networks:
     external: true
 ```
 
-Use `google-auth@file` for protected apps.
+Use `google-auth-admin@file` for protected apps.
 Omit auth middleware for public apps.
 
 ## Container Hardening
@@ -167,7 +167,7 @@ oom_score_adj: -300 # protect from OOM killer
 Critical infrastructure gets `oom_score_adj: -500`, databases get `-300`. This ensures the OOM killer targets low-priority app containers first:
 
 ```yaml
-# Critical infra (traefik, adguard, docker-cd, google-auth)
+# Critical infra (traefik, adguard, docker-cd, google-auth-admin)
 oom_score_adj: -500
 
 # Databases (postgres, redis, clickhouse)
@@ -225,7 +225,7 @@ labels:
   - "traefik.enable=true"
   - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
   - "traefik.http.routers.myapp.entrypoints=websecure"
-  - "traefik.http.routers.myapp.middlewares=google-auth@file"
+  - "traefik.http.routers.myapp.middlewares=google-auth-admin@file"
   - "traefik.http.services.myapp.loadbalancer.server.port=8080"
 ```
 
@@ -246,7 +246,7 @@ labels:
   - "traefik.enable=true"
   - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
   - "traefik.http.routers.myapp.entrypoints=websecure"
-  - "traefik.http.routers.myapp.middlewares=google-auth@file"
+  - "traefik.http.routers.myapp.middlewares=google-auth-admin@file"
   - "traefik.http.routers.myapp-webhook.rule=Host(`myapp.jaw.dev`) && Path(`/webhook`)"
   - "traefik.http.routers.myapp-webhook.entrypoints=websecure"
   - "traefik.http.routers.myapp-webhook.priority=100"

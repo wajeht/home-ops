@@ -39,11 +39,11 @@ services:
         max-file: "3"
     labels:
       - "traefik.enable=true"
-      # Browser access — Google Auth protected
+      # Browser access — protected by google-auth-admin
       - "traefik.http.routers.homeassistant.rule=Host(`ha.jaw.dev`)"
       - "traefik.http.routers.homeassistant.entrypoints=websecure"
-      - "traefik.http.routers.homeassistant.middlewares=google-auth@file"
-      # Companion App — HA's own auth + rate limiting (no Google Auth)
+      - "traefik.http.routers.homeassistant.middlewares=google-auth-admin@file"
+      # Companion App — HA's own auth + rate limiting (no google-auth-admin)
       - "traefik.http.routers.homeassistant-app.rule=Host(`ha-app.jaw.dev`)"
       - "traefik.http.routers.homeassistant-app.entrypoints=websecure"
       - "traefik.http.routers.homeassistant-app.middlewares=rate-limit-global@file"
