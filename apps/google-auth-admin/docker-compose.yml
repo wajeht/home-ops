@@ -2,7 +2,9 @@
 services:
   google-auth-admin:
     container_name: google-auth-admin
-    image: thomseddon/traefik-forward-auth:2@sha256:69a2c985d2c518b6f0e77161a98628a148a5d964e4e84fc52cc62e19bb4da634
+    # Upstream did not publish a semver tag for the build that supports
+    # rule.*.whitelist. Keep this digest-only pin; 2/2.2.0 reject it.
+    image: thomseddon/traefik-forward-auth@sha256:b364aa6a4117569163eff793999901f9f5a0c4f7f2da18b4ecbcd140d7b6107b
     command:
       - --rule.bypass.action=allow
       - --rule.bypass.rule=HeadersRegexp(`X-Bypass-Key`, `^${X_BYPASS_KEY}$$`)
