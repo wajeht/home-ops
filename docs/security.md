@@ -8,23 +8,23 @@ Use this doc for host/network controls. App-level container requirements live in
 
 Scanned from LAN via `nmap -F <server-ip>`:
 
-| Port  | Service         | Status             | Action                                        |
-| ----- | --------------- | ------------------ | --------------------------------------------- |
-| 22    | SSH             | open               | Harden (see SSH below)                        |
-| 80    | HTTP            | open (Traefik)     | OK — redirects to HTTPS                       |
-| 443   | HTTPS           | open (Traefik)     | OK                                            |
-| 111   | rpcbind         | **disabled**       | Unnecessary (NFS v4.1 doesn't need it)        |
-| 1883  | MQTT            | open (Zigbee2MQTT) | Blocked by UFW, Docker-internal only          |
-| 2283  | Immich          | open               | Blocked by UFW, access via Traefik only       |
-| 8123  | Home Assistant  | open               | Blocked by UFW, access via Traefik only       |
-| 16992 | Intel AMT HTTP  | open               | LAN only — remote management (vPro)           |
-| 16993 | Intel AMT HTTPS | open               | LAN only — remote management (vPro)           |
-| 5900  | AMT KVM/VNC     | open               | LAN only — remote screen access (vPro)        |
-| 32400 | Plex            | open               | OK — needs direct access for remote streaming |
+| Port  | Service         | Status               | Action                                           |
+| ----- | --------------- | -------------------- | ------------------------------------------------ |
+| 22    | SSH             | open                 | Harden through SSH settings                      |
+| 80    | HTTP            | open through Traefik | Redirects to HTTPS                               |
+| 443   | HTTPS           | open (Traefik)       | OK                                               |
+| 111   | rpcbind         | **disabled**         | Unnecessary for NFS v4.1                         |
+| 1883  | MQTT            | open (Zigbee2MQTT)   | Blocked by UFW, Docker-internal only             |
+| 2283  | Immich          | open                 | Blocked by UFW, access via Traefik only          |
+| 8123  | Home Assistant  | open                 | Blocked by UFW, access via Traefik only          |
+| 16992 | Intel AMT HTTP  | open                 | LAN-only remote management                       |
+| 16993 | Intel AMT HTTPS | open                 | LAN-only remote management                       |
+| 5900  | AMT KVM/VNC     | open                 | LAN-only remote screen access                    |
+| 32400 | Plex            | open                 | Direct Plex access; bypasses Traefik Google auth |
 
 To restrict ports further, change Docker port mappings from `0.0.0.0:PORT:PORT` to `127.0.0.1:PORT:PORT`.
 
-## Firewall (UFW)
+## Firewall
 
 Active since 2026-03-13.
 
@@ -37,6 +37,8 @@ sudo ufw allow 443/tcp   # Traefik HTTPS
 sudo ufw allow 32400/tcp # Plex remote access
 sudo ufw enable
 ```
+
+`plex.jaw.dev` is protected by `google-auth-admin@file`, but direct access to `<server-ip>:32400` does not pass through Traefik. Keep `32400/tcp` open only if direct Plex client access is required. Close it if Plex must be reachable only through Cloudflare/Traefik/Google auth.
 
 ```bash
 # Management
@@ -81,11 +83,11 @@ Bans IPs after 5 failed SSH attempts for 10 minutes.
 | Service        | Purpose                   | Action               |
 | -------------- | ------------------------- | -------------------- |
 | rpcbind        | NFS v2/v3 port mapping    | **Already disabled** |
-| ModemManager   | Cellular modem management | Disable (no modem)   |
-| wpa_supplicant | WiFi management           | Disable (wired only) |
-| packagekit     | GUI package management    | Disable (headless)   |
-| udisks2        | GUI disk management       | Disable (headless)   |
-| upower         | Power management for GUI  | Disable (headless)   |
+| ModemManager   | Cellular modem management | Disable              |
+| wpa_supplicant | WiFi management           | Disable              |
+| packagekit     | GUI package management    | Disable              |
+| udisks2        | GUI disk management       | Disable              |
+| upower         | Power management for GUI  | Disable              |
 
 ```bash
 sudo systemctl disable --now ModemManager wpa_supplicant packagekit udisks2 upower

@@ -13,6 +13,7 @@ Before pushing a new app:
 - container drops capabilities and uses `no-new-privileges`
 - internet-facing app is on the external `traefik` network
 - protected apps use `google-auth-admin@file`
+- wider user access is handled by host rules in `apps/google-auth-admin/docker-compose.yml`, not by a second auth container
 - app data under `/home/jaw/data/<name>` has a Backrest plan unless intentionally ignored
 - `./scripts/lint.sh` passes
 
@@ -75,6 +76,37 @@ networks:
 
 Use `google-auth-admin@file` for protected apps.
 Omit auth middleware for public apps.
+
+## Access Scopes
+
+There is one Google auth container: `google-auth-admin`.
+
+- Default protected apps use `WHITELIST_ADMINS`.
+- Media-facing apps use `WHITELIST_MEDIA` through host rules in `apps/google-auth-admin/docker-compose.yml`.
+- Media hosts: `plex.jaw.dev`, `seerr.jaw.dev`, `convertx.jaw.dev`.
+
+For a normal admin-only app, only add the middleware label:
+
+```yaml
+- "traefik.http.routers.myapp.middlewares=google-auth-admin@file"
+```
+
+For an app that should allow media users too:
+
+1. Keep the same middleware label on the app.
+2. Add a host rule to `apps/google-auth-admin/docker-compose.yml`.
+3. Add users to `WHITELIST_MEDIA` in `apps/google-auth-admin/.env.sops`.
+
+Example:
+
+```yaml
+command:
+  - --rule.myapp.action=auth
+  - --rule.myapp.rule=Host(`myapp.jaw.dev`)
+  - --rule.myapp.whitelist=${WHITELIST_MEDIA}
+```
+
+Rule-specific whitelists override `WHITELIST_ADMINS` for matching hosts. That means a media user can access media-scoped apps but is denied on admin-only apps.
 
 ## Container Hardening
 

@@ -633,6 +633,6 @@ Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
 - **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `walker`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`
-- **Infra (config tracked in git)**: `backrest`, `google-auth-admin`, `google-auth-user`
+- **Infra tracked in git**: `backrest`, `google-auth-admin`. The auth config includes admin and media user whitelists.
 
 If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, the app is stateless and doesn't need a Backrest plan.

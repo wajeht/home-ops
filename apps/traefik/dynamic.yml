@@ -94,7 +94,7 @@ http:
         sourceCriterion:
           requestHeaderName: CF-Connecting-IP
 
-    # Google auth service for admin-only apps.
+    # Google auth service. App-specific user lists live in google-auth-admin rules.
     google-auth-admin-forward:
       forwardAuth:
         address: http://google-auth-admin:4181
@@ -115,28 +115,6 @@ http:
       chain:
         middlewares:
           - google-auth-admin-forward
-
-    # Separate Google auth service for user-facing apps.
-    google-auth-user-forward:
-      forwardAuth:
-        address: http://google-auth-user:4181
-        trustForwardHeader: true
-        maxResponseBodySize: 4096
-        authResponseHeaders:
-          - X-Forwarded-User
-
-    # User auth chain: rate limit first, then user Google auth.
-    google-auth-user:
-      chain:
-        middlewares:
-          - rate-limit-auth
-          - google-auth-user-forward
-
-    # User auth without rate limiting for routes that already limit elsewhere.
-    google-auth-user-no-ratelimit:
-      chain:
-        middlewares:
-          - google-auth-user-forward
 
   routers:
     # Low-priority fallback: unknown *.jaw.dev subdomains redirect to jaw.dev.

@@ -44,7 +44,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.convertx.rule=Host(`convertx.jaw.dev`)"
       - "traefik.http.routers.convertx.entrypoints=websecure"
-      - "traefik.http.routers.convertx.middlewares=google-auth-user@file"
+      - "traefik.http.routers.convertx.middlewares=google-auth-admin@file"
       - "traefik.http.services.convertx.loadbalancer.server.port=3000"
 
 networks:

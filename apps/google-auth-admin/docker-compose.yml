@@ -6,6 +6,17 @@ services:
     command:
       - --rule.bypass.action=allow
       - --rule.bypass.rule=HeadersRegexp(`X-Bypass-Key`, `^${X_BYPASS_KEY}$$`)
+      # Media-facing apps allow the wider media user list. Everything else falls
+      # back to WHITELIST_ADMINS below.
+      - --rule.plex.action=auth
+      - --rule.plex.rule=Host(`plex.jaw.dev`)
+      - --rule.plex.whitelist=${WHITELIST_MEDIA}
+      - --rule.seerr.action=auth
+      - --rule.seerr.rule=Host(`seerr.jaw.dev`)
+      - --rule.seerr.whitelist=${WHITELIST_MEDIA}
+      - --rule.convertx.action=auth
+      - --rule.convertx.rule=Host(`convertx.jaw.dev`)
+      - --rule.convertx.whitelist=${WHITELIST_MEDIA}
     env_file:
       - .env
     environment:

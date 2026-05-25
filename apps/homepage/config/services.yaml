@@ -121,12 +121,6 @@
         description: OAuth Proxy
         # siteMonitor: http://google-auth-admin:4181
 
-    - Google Auth User:
-        icon: google
-        href: https://auth-user.jaw.dev
-        description: User OAuth Proxy
-        # siteMonitor: http://google-auth-user:4181
-
     - Zigbee2MQTT:
         icon: zigbee2mqtt
         href: https://z2m.jaw.dev
