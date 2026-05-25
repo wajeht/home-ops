@@ -54,7 +54,6 @@ flowchart LR
             Plex
             Gitea
             Vaultwarden
-            Paperless-ngx
             Immich
             +40 more"]
         end
