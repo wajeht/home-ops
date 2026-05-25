@@ -26,8 +26,12 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
 
-      # Default HTTPS middlewares: Cloudflare-only, compression, browser headers.
-      - "--entrypoints.websecure.http.middlewares=cloudflare-only@file,gzip@file,security-headers@file"
+      # Default HTTPS middlewares: Cloudflare-only, CrowdSec bouncer, compression, browser headers.
+      - "--entrypoints.websecure.http.middlewares=cloudflare-only@file,crowdsec@docker,gzip@file,security-headers@file"
+
+      # CrowdSec bouncer plugin (Yaegi). Middleware is defined as labels on the crowdsec container.
+      - "--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+      - "--experimental.plugins.bouncer.version=v1.6.0"
 
       # Reject ambiguous encoded path characters to avoid proxy/backend mismatch.
       - "--entrypoints.web.http.encodedcharacters.allowencodedslash=false"

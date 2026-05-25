@@ -1,0 +1,71 @@
+services:
+  crowdsec:
+    container_name: crowdsec
+    image: crowdsecurity/crowdsec:v1.7.8@sha256:2f527c9bb8b367120eb08b82890aa912ce96bfa1ada93dda0721700e4b4e0dde
+    env_file:
+      - .env
+    environment:
+      TZ: America/Chicago
+      GID: "1000"
+      COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve"
+      CUSTOM_HOSTNAME: crowdsec
+      DISABLE_ONLINE_API: "false"
+      # Auto-registers the Traefik bouncer at boot using this key.
+      BOUNCER_KEY_TRAEFIK: ${BOUNCER_KEY_TRAEFIK}
+    volumes:
+      - traefik-logs:/var/log/traefik:ro
+      - ./acquis.yaml:/etc/crowdsec/acquis.yaml:ro
+      - /home/jaw/data/crowdsec/db:/var/lib/crowdsec/data
+      - /home/jaw/data/crowdsec/config:/etc/crowdsec
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "cscli", "lapi", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    oom_score_adj: -300
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+    labels:
+      - "traefik.enable=true"
+      # Bouncer middleware definition (interpolated from .env at compose-load time).
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.enabled=true"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecMode=live"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecLapiHost=crowdsec:8080"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecLapiScheme=http"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecLapiKey=${BOUNCER_KEY_TRAEFIK}"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.forwardedHeadersCustomName=CF-Connecting-IP"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.forwardedHeadersTrustedIPs=173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.clientTrustedIPs=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+      # Dummy service so Traefik's docker provider accepts the labels.
+      - "traefik.http.services.crowdsec-dummy.loadbalancer.server.port=8080"
+
+networks:
+  traefik:
+    external: true
+
+volumes:
+  traefik-logs:
+    external: true

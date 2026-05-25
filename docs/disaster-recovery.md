@@ -80,7 +80,8 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | syncthing     | 4:00 AM  | Files only           | Config only (`/config`); excludes index DBs, logs, .stversions |
 | vaultwarden   | 4:10 AM  | SQLite + files       | DB file is `db.sqlite3`                                        |
 | gitea         | 4:20 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                 |
-| **global**    | 4:30 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state    |
+| crowdsec      | 4:30 AM  | SQLite + files       | DB at `db/crowdsec.db`. Includes hub config and whitelists     |
+| **global**    | 4:40 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state    |
 
 Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 4 AM, integrity check Sunday 5 AM (structure-only).
 
@@ -524,7 +525,7 @@ A formatter has been observed to strip new entries from `config.json` between pu
 
 ```bash
 grep -c '"id":' ~/home-ops/apps/backrest/config/config.json
-# Expect 56 (28 repos × 28 plans). If lower, re-add the missing entries.
+# Expect 58 (29 repos × 29 plans). If lower, re-add the missing entries.
 ```
 
 #### 6. Verify
@@ -616,7 +617,7 @@ Known issues and their fixes.
 | Bad gateway 502 on first click of garage image link, works on retry                        | garage-webui's pool connection to garage:3900 went stale                                  | Add Traefik retry middleware to the route. Backrest unrelated.                                                            |
 | ntfy notifications never arrive                                                            | Shoutrrr URL syntax wrong                                                                 | Use `ntfy://ntfy/<topic>?scheme=http&title=foo&priority=Min&tags=skull`. Priority must be capitalized (`Min`, not `min`). |
 | First Shoutrrr push broke Backrest container                                               | Actually didn't — first deploy succeeded; later deploy hung during a backup               | Make sure no backup is running when redeploying. Backrest can't recreate while restic process holds files.                |
-| `config.json` entries disappear after pushing                                              | A formatter (locally or in CI) strips JSON entries it doesn't recognize                   | After each push, `grep -c '"id":' ~/home-ops/apps/backrest/config/config.json` on the server. Expected count: 56.         |
+| `config.json` entries disappear after pushing                                              | A formatter (locally or in CI) strips JSON entries it doesn't recognize                   | After each push, `grep -c '"id":' ~/home-ops/apps/backrest/config/config.json` on the server. Expected count: 58.         |
 | Stateless app got accidentally added to Backrest                                           | Misread of which apps had data                                                            | If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, skip it. Examples: close-powerlifting, ufc, ip.  |
 
 ## Apps Without Backup (Intentional)
