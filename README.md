@@ -56,7 +56,7 @@ flowchart LR
             Vaultwarden
             Paperless-ngx
             Immich
-            +54 more"]
+            +40 more"]
         end
 
         subgraph nas[Synology DS923+]
@@ -174,6 +174,7 @@ All containers [hardened](docs/adding-apps.md#container-hardening) with dropped 
 - [Hardware](docs/hardware.md)
 - [Quick Start](docs/quick-start.md)
 - [Adding Apps](docs/adding-apps.md)
+- [Security](docs/security.md)
 - [Secrets](docs/secrets.md)
 - [SSL Setup](docs/ssl.md)
 - [Renovate](docs/renovate.md)

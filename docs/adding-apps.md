@@ -163,6 +163,7 @@ oom_score_adj: -300
 ## Deploy
 
 ```bash
+./scripts/lint.sh
 git add -A && git commit -m "add myapp" && git push
 ```
 
@@ -340,5 +341,6 @@ Then restart the container. This is a one-time setup since the config persists i
 
 ```bash
 rm -rf apps/myapp
+./scripts/lint.sh
 git add -A && git commit -m "remove myapp" && git push
 ```

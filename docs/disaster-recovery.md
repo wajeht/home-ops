@@ -494,15 +494,15 @@ When swapping hardware or deleting docker-cd state to force a full redeploy:
 NFS mounts drop on reboot/network change. If docker-cd deploys before NFS is mounted, Backrest sees an empty `/home/jaw/backup/restic` and would try to create a new (empty) repo:
 
 ```bash
-make nfs-mount
-make nfs-persist
+./scripts/setup.sh nfs mount
+./scripts/setup.sh nfs persist
 ```
 
 #### 2. SATA Mount
 
 ```bash
-make sata-mount
-make sata-persist
+./scripts/setup.sh sata mount
+./scripts/setup.sh sata persist
 ```
 
 #### 3. Stale Restic Locks
@@ -525,14 +525,14 @@ A formatter has been observed to strip new entries from `config.json` between pu
 
 ```bash
 grep -c '"id":' ~/home-ops/apps/backrest/config/config.json
-# Expect 60 (30 repos × 30 plans). If lower, re-add the missing entries.
+# Expect 58 (29 repos × 29 plans). If lower, re-add the missing entries.
 ```
 
 #### 6. Verify
 
 ```bash
 docker logs backrest --tail 50          # should be no errors after orchestrator starts
-docker exec backrest ls /repos          # should list 30 repos
+docker exec backrest ls /repos          # should list 29 repos
 ```
 
 ### Testing Recovery
