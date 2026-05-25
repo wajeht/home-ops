@@ -117,7 +117,7 @@ security_opt:
   - no-new-privileges:true
 ```
 
-`read_only: true` makes the container's root filesystem immutable — use on stateless single-binary apps (Go/Node) and wajeht/\* apps with data volumes. Add `tmpfs: /tmp` when the app might write temp files. Skip `read_only` for LSIO images, Postgres, Redis, complex runtimes (Python/Elixir), and services using Compose `configs.content`.
+`read_only: true` makes the container's root filesystem immutable. Use it unless the image or Compose feature needs rootfs writes. Add `tmpfs: /tmp` when the app might write temp files.
 
 Most apps need `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` because they do user switching or chown on volumes at startup. Start with these and only remove them for truly stateless single-binary apps (Go/Node apps like dozzle).
 

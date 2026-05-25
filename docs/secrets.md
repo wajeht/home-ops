@@ -70,7 +70,7 @@ rm apps/myapp/.env
 
 ### Secret file from encrypted values
 
-Use this when the app expects a file, not an env var. oauth2-proxy uses this for encrypted email allowlists.
+Use this when the app expects a file, not an env var.
 
 ```yaml
 services:
