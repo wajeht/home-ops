@@ -71,13 +71,14 @@ fi
 run_net() {
 	local version="$1"
 	local script
-	script=$(cat <<EOF
+	script=$(
+		cat <<EOF
 set -e
 curl -${version} -fsS --max-time 10 https://ifconfig.me ||
 curl -${version} -fsS --max-time 10 https://api${version}.ipify.org ||
 curl -${version} -fsS --max-time 10 https://icanhazip.com
 EOF
-)
+	)
 
 	if [ -n "$remote_host" ]; then
 		ssh "$remote_host" "$script" 2>/dev/null || true
@@ -134,7 +135,8 @@ replace_block() {
 	rm -f "$content_file"
 }
 
-ipv4_block=$(cat <<EOF
+ipv4_block=$(
+	cat <<EOF
     # AT&T residential — dynamic IP, update if it changes. Without this, google-auth
     # login redirects (401/403) on protected apps + CrowdSec bouncer responses get
     # mistaken for brute force and self-perpetuate a ban loop.
@@ -145,11 +147,12 @@ EOF
 if [ -n "$ipv6_cidr" ]; then
 	ipv6_block="    - $ipv6_cidr"
 else
-	ipv6_block=$(cat <<'EOF'
+	ipv6_block=$(
+		cat <<'EOF'
     # No stable home IPv6 prefix detected yet. If one appears, the updater will
     # add the /64 here instead of whitelisting one temporary IPv6 address.
 EOF
-)
+	)
 fi
 
 before=$(mktemp)
