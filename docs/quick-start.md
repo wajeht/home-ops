@@ -50,9 +50,9 @@ docker-cd should start first, then deploy the rest of `apps/*`.
 ./scripts/cloudflare.sh                # Update Cloudflare IP allowlists
 ```
 
-## Optional OS Tuning
+## OS Tuning
 
-Apply after install if this is a fresh Ubuntu host. These are host-level performance defaults for the Docker server.
+Optional. Apply after install if this is a fresh Ubuntu host. These are host-level performance defaults for the Docker server.
 
 | Setting            | What it does                                                                    | Why we use it                                                 |
 | ------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------- |

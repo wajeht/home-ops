@@ -152,22 +152,15 @@ with:
   url: https://closepowerlifting.com
 ```
 
-## Apps Using Instant Deploy
+## Which Apps Use It
 
-- `bang`
-- `calendar`
-- `close-powerlifting`
-- `commit`
-- `favicon`
-- `gains`
-- `git`
-- `hello-world`
-- `ip`
-- `jaw.dev` (www)
-- `mm2us.com`
-- `notify`
-- `screenshot`
-- `ufc`
+Use instant deploy for apps you build and publish as `ghcr.io/wajeht/*`.
+
+Do not maintain a manual app list here — it goes stale. Check the compose files instead:
+
+```bash
+rg 'image: ghcr.io/wajeht/' apps/*/docker-compose.yml
+```
 
 ## Renovate vs Instant Deploy
 
