@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update update-force status relogin format lint push fix-git images images-prune clean update-submodules nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status sata-mount sata-unmount sata-persist sata-unpersist sata-status help
+.PHONY: setup install install-fresh uninstall update update-force status relogin cloudflare format lint push fix-git images images-prune clean update-submodules nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status sata-mount sata-unmount sata-persist sata-unpersist sata-status help
 
 ## setup                   Create data dirs and base setup
 setup:
@@ -33,6 +33,10 @@ status:
 ## relogin                 Refresh Docker login
 relogin:
 	@./scripts/setup.sh relogin
+
+## cloudflare              Update Cloudflare IP allowlists
+cloudflare:
+	@./scripts/cloudflare.sh
 
 ## format                  Format yaml, markdown, json, and shell
 format:
