@@ -33,6 +33,7 @@ while [ "$#" -gt 0 ]; do
 	esac
 done
 
+require_cmd curl
 require_cmd jq
 
 for file in "$dynamic_file" "$compose_file"; do
@@ -41,8 +42,7 @@ for file in "$dynamic_file" "$compose_file"; do
 	fi
 done
 
-tmp_dir=$(mktemp -d)
-trap 'rm -rf "$tmp_dir"' EXIT
+make_temp_dir tmp_dir
 
 ranges_file="$tmp_dir/cloudflare-ranges.txt"
 
@@ -58,7 +58,7 @@ cp "$compose_file" "$tmp_dir/docker-compose.yml.before"
 
 replace_block() {
 	local file="$1" start="$2" end="$3" body="$4" tmp
-	tmp=$(mktemp)
+	tmp=$(mktemp "$tmp_dir/replace.XXXXXX")
 	awk -v start="$start" -v end="$end" -v body="$body" '
 		index($0, start) {
 			found = 1

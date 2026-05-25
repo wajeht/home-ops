@@ -1,11 +1,11 @@
 #!/bin/bash
 # home-ops setup/management script
 # Usage: ./scripts/setup.sh <command> [args]
-set -eo pipefail
+set -euo pipefail
 
 # Don't run as root - script uses sudo internally
 [ "$EUID" -eq 0 ] && {
-	echo "ERROR: Don't run with sudo. Script uses sudo internally."
+	printf '%s\n' "ERROR: Don't run with sudo. Script uses sudo internally."
 	exit 1
 }
 
@@ -46,15 +46,11 @@ docker_relogin() {
 	if [ "$EUID" -ne 0 ] && [ -f /root/.docker/config.json ]; then
 		$SUDO install -m 600 /root/.docker/config.json "$USER_HOME/.docker/config.json"
 	fi
-
-	if [ -f "$USER_HOME/.docker/config.json" ]; then
-		python3 -c 'import json,sys;json.load(open(sys.argv[1]))' "$USER_HOME/.docker/config.json"
-	fi
 }
 
 sync_submodules() {
 	local secret_file="$REPO_DIR/infra/docker-cd/.env.sops"
-	local decrypted="" gh_token="" askpass="" rc=0
+	local decrypted="" gh_token="" askpass="" tmp_dir="" rc=0
 
 	[ ! -f .gitmodules ] && return 0
 
@@ -66,7 +62,8 @@ sync_submodules() {
 	fi
 
 	if [ -n "$gh_token" ]; then
-		askpass=$(mktemp)
+		make_temp_dir tmp_dir
+		askpass="$tmp_dir/git-askpass"
 		cat >"$askpass" <<'EOF'
 #!/bin/sh
 case "$1" in
@@ -82,7 +79,7 @@ EOF
 			GIT_TERMINAL_PROMPT=0 GIT_ASKPASS="$askpass" GIT_ACCESS_TOKEN="$gh_token" git submodule update --init --recursive || rc=$?
 		fi
 
-		rm -f "$askpass"
+		rm -rf "$tmp_dir"
 		return "$rc"
 	fi
 
@@ -92,7 +89,7 @@ EOF
 
 redeploy_compose() {
 	local dir=$1 name=$2 force=${3:-0}
-	local tmp="" env_backup="" had_env=0
+	local tmp="" env_backup="" tmp_dir="" had_env=0
 	local compose_file="$dir/docker-compose.yml"
 	local -a up_args=(-d)
 
@@ -103,13 +100,14 @@ redeploy_compose() {
 	info "Redeploying $name..."
 
 	if [ -f "$dir/.env.sops" ]; then
-		tmp=$(mktemp)
+		make_temp_dir tmp_dir
+		tmp="$tmp_dir/env"
 		decrypt_dotenv_sops "$dir/.env.sops" >"$tmp"
 
 		# Some stacks use env_file: .env, so materialize decrypted env during deploy.
 		if [ -f "$dir/.env" ]; then
 			had_env=1
-			env_backup=$(mktemp)
+			env_backup="$tmp_dir/env.backup"
 			cp "$dir/.env" "$env_backup"
 		fi
 		cp "$tmp" "$dir/.env"
@@ -120,8 +118,6 @@ redeploy_compose() {
 			else
 				rm -f "$dir/.env"
 			fi
-			rm -f "$env_backup"
-			rm -f "$tmp"
 			err "Failed to pull images for $name"
 			return 1
 		fi
@@ -131,8 +127,6 @@ redeploy_compose() {
 			else
 				rm -f "$dir/.env"
 			fi
-			rm -f "$env_backup"
-			rm -f "$tmp"
 			err "Failed to redeploy $name"
 			return 1
 		fi
@@ -141,8 +135,7 @@ redeploy_compose() {
 		else
 			rm -f "$dir/.env"
 		fi
-		rm -f "$env_backup"
-		rm -f "$tmp"
+		rm -rf "$tmp_dir"
 	else
 		if ! $SUDO docker compose -f "$compose_file" --project-directory "$dir" pull; then
 			err "Failed to pull images for $name"
@@ -306,7 +299,7 @@ nfs_persist() {
 	else
 		# Remove stale entries for same mount point (old IP, old options, etc.)
 		$SUDO sed -i "\| $local_path |d" /etc/fstab
-		echo "$entry" | $SUDO tee -a /etc/fstab >/dev/null
+		printf '%s\n' "$entry" | $SUDO tee -a /etc/fstab >/dev/null
 		ok "$name: added to fstab (run 'sudo systemctl daemon-reload' to apply)"
 	fi
 }
@@ -322,9 +315,9 @@ nfs_unpersist() {
 }
 
 cmd_nfs() {
-	local action=$1 target=${2:-all}
+	local action=${1:-} target=${2:-all}
 	[ -z "$action" ] && {
-		echo -e "Usage: $0 nfs {mount|unmount|persist|unpersist|status} [plex|backup|all]"
+		printf 'Usage: %s nfs {mount|unmount|persist|unpersist|status} [plex|backup|all]\n' "$0"
 		exit 1
 	}
 
@@ -382,7 +375,7 @@ sata_persist() {
 	if grep -qF "$SATA_DEVICE" /etc/fstab; then
 		dim "sata: already in fstab"
 	else
-		echo "$entry" | $SUDO tee -a /etc/fstab >/dev/null
+		printf '%s\n' "$entry" | $SUDO tee -a /etc/fstab >/dev/null
 		ok "sata: added to fstab"
 	fi
 }
@@ -419,7 +412,7 @@ cmd_sata() {
 		persist) sata_persist ;;
 		unpersist) sata_unpersist ;;
 		status) sata_status ;;
-		*) echo -e "Usage: $0 sata {mount|unmount|persist|unpersist|status}" ;;
+		*) printf 'Usage: %s sata {mount|unmount|persist|unpersist|status}\n' "$0" ;;
 	esac
 }
 
@@ -450,8 +443,10 @@ cmd_install() {
 		curl -fsSL https://get.docker.com | $SUDO sh
 	fi
 	if [ "$EUID" -ne 0 ]; then
-		$SUDO usermod -aG docker "$USER"
-		dim "Added $USER to docker group (re-login to take effect)"
+		local current_user
+		current_user=$(id -un)
+		$SUDO usermod -aG docker "$current_user"
+		dim "Added $current_user to docker group (re-login to take effect)"
 	fi
 
 	# Install SOPS
@@ -481,7 +476,7 @@ cmd_install() {
 
 	deploy_compose() {
 		local dir=$1 name=$2
-		local secret_file="" tmp=""
+		local secret_file="" tmp="" tmp_dir=""
 		info "Deploying $name..."
 		cd "$dir"
 
@@ -490,11 +485,13 @@ cmd_install() {
 		fi
 
 		if [ -n "$secret_file" ]; then
-			tmp=$(mktemp)
+			make_temp_dir tmp_dir
+			tmp="$tmp_dir/env"
 			decrypt_dotenv_sops "$secret_file" >"$tmp"
 			cp "$tmp" .env
 			$SUDO docker compose --env-file "$tmp" up -d 2>/dev/null || warn "$name not started"
-			rm -f "$tmp" .env
+			rm -f .env
+			rm -rf "$tmp_dir"
 		else
 			$SUDO docker compose up -d 2>/dev/null || warn "$name not started"
 		fi
@@ -505,10 +502,10 @@ cmd_install() {
 	deploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
 
 	header "Done"
-	echo ""
-	echo -e "${BOLD}Containers:${NC}"
+	printf '\n'
+	printf '%b\n' "${BOLD}Containers:${NC}"
 	$SUDO docker ps --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || true
-	echo ""
+	printf '\n'
 	ok "docker-cd will auto-deploy remaining apps within 60s: ${CYAN}https://cd.jaw.dev${NC}"
 }
 
@@ -539,10 +536,11 @@ cmd_install_fresh() {
 #=============================================================================
 cmd_uninstall() {
 	header "home-ops Uninstall"
-	echo -e "${RED}This will remove ALL containers, networks, and prune images.${NC}"
-	read -p "Continue? [y/N] " -n 1 -r
-	echo
-	[[ ! $REPLY =~ ^[Yy]$ ]] && exit 1
+	local reply=""
+	printf '%b\n' "${RED}This will remove ALL containers, networks, and prune images.${NC}"
+	read -r -n 1 -p "Continue? [y/N] " reply
+	printf '\n'
+	[[ ! $reply =~ ^[Yy]$ ]] && exit 1
 
 	# Stop core infra first to prevent re-deployments.
 	step "1/4" "Stopping core infra..."
@@ -590,17 +588,17 @@ cmd_uninstall() {
 #=============================================================================
 cmd_status() {
 	header "Status"
-	echo ""
-	echo -e "${BOLD}Containers:${NC}"
+	printf '\n'
+	printf '%b\n' "${BOLD}Containers:${NC}"
 	$SUDO docker ps --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || dim "None"
-	echo ""
-	echo -e "${BOLD}SATA:${NC}"
+	printf '\n'
+	printf '%b\n' "${BOLD}SATA:${NC}"
 	sata_status
-	echo ""
-	echo -e "${BOLD}NFS Mounts:${NC}"
+	printf '\n'
+	printf '%b\n' "${BOLD}NFS Mounts:${NC}"
 	cmd_nfs status
-	echo ""
-	echo -e "${BOLD}Disk:${NC}"
+	printf '\n'
+	printf '%b\n' "${BOLD}Disk:${NC}"
 	df -h "$USER_HOME/data" "$USER_HOME/plex" "$SATA_MOUNT" 2>/dev/null | tail -n +2 || true
 }
 
@@ -665,60 +663,61 @@ cmd_images() {
 
 	case "$action" in
 		status)
-			local running_file
-			running_file=$(mktemp)
+			local running_file tmp_dir
+			make_temp_dir tmp_dir
+			running_file="$tmp_dir/running-images"
 			docker ps --format '{{.ID}}' | while read -r cid; do
 				docker inspect --format '{{.Image}}' "$cid" 2>/dev/null | sed 's/sha256://' | cut -c1-12
 			done | sort -u >"$running_file"
 
-			echo ""
-			echo -e "${BOLD}Stale images (outdated, freed after next redeploy):${NC}"
+			printf '\n'
+			printf '%b\n' "${BOLD}Stale images (outdated, freed after next redeploy):${NC}"
 			local stale_out
 			stale_out=$(docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | awk -F'\t' '$3 == "<none>"' | while IFS=$'\t' read -r id repo _ size; do
 				if grep -q "$id" "$running_file" 2>/dev/null; then
 					printf "  %-45s %10s\n" "$repo" "$size"
 				fi
 			done)
-			if [ -z "$stale_out" ]; then dim "None"; else echo "$stale_out"; fi
+			if [ -z "$stale_out" ]; then dim "None"; else printf '%s\n' "$stale_out"; fi
 
-			echo ""
-			echo -e "${BOLD}Prunable images (safe to remove now):${NC}"
+			printf '\n'
+			printf '%b\n' "${BOLD}Prunable images (safe to remove now):${NC}"
 			local prunable_out
 			prunable_out=$(docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | while IFS=$'\t' read -r id repo tag size; do
 				grep -q "$id" "$running_file" 2>/dev/null || printf "  %-45s %10s\n" "$repo:$tag" "$size"
 			done)
-			if [ -z "$prunable_out" ]; then dim "None"; else echo "$prunable_out"; fi
+			if [ -z "$prunable_out" ]; then dim "None"; else printf '%s\n' "$prunable_out"; fi
 
-			rm -f "$running_file"
+			rm -rf "$tmp_dir"
 
-			echo ""
-			echo -e "${BOLD}Orphan volumes:${NC}"
+			printf '\n'
+			printf '%b\n' "${BOLD}Orphan volumes:${NC}"
 			local total_vols orphan_vols
 			total_vols=$(docker volume ls -q | wc -l)
 			orphan_vols=$(docker volume ls -f dangling=true -q | wc -l)
-			echo -e "  ${orphan_vols} orphan (${total_vols} total)"
+			printf '  %s orphan (%s total)\n' "$orphan_vols" "$total_vols"
 
-			echo ""
-			echo -e "${BOLD}Docker disk usage:${NC}"
+			printf '\n'
+			printf '%b\n' "${BOLD}Docker disk usage:${NC}"
 			docker system df
 
-			echo ""
+			printf '\n'
 			dim "Stale images free up after docker-cd redeploys those stacks"
 			dim "Run '$0 images prune' to remove prunable images and orphan volumes"
 			;;
 		prune)
 			info "Removing unused images..."
 			docker image prune -af
-			echo ""
+			printf '\n'
 			info "Removing orphan volumes..."
 			docker volume prune -f
-			echo ""
+			printf '\n'
 			info "Final state:"
 			docker system df
 			ok "Cleanup complete"
 			;;
 		*)
-			echo -e "Usage: $0 images [status|prune]"
+			printf 'Usage: %s images [status|prune]\n' "$0"
 			;;
 	esac
 }
@@ -737,7 +736,7 @@ cmd_update_submodules() {
 
 	local updated=0
 	# shellcheck disable=SC2016
-	git submodule foreach --quiet 'echo $sm_path' | while read -r sm_path; do
+	git submodule foreach --quiet 'printf "%s\n" "$sm_path"' | while read -r sm_path; do
 		local name
 		name=$(basename "$sm_path")
 		info "Checking $name..."
@@ -759,41 +758,41 @@ cmd_update_submodules() {
 # MAIN
 #=============================================================================
 print_usage() {
-	echo -e "${BOLD}home-ops${NC} setup script"
-	echo ""
-	echo -e "Usage: ${CYAN}$0${NC} <command> [args]"
-	echo ""
-	echo -e "${BOLD}Commands:${NC}"
-	echo -e "  ${GREEN}setup${NC}                    Create all data directories"
-	echo -e "  ${GREEN}sata mount${NC}               Mount SATA drive (/mnt/sata)"
-	echo -e "  ${GREEN}sata unmount${NC}             Unmount SATA drive"
-	echo -e "  ${GREEN}sata persist${NC}             Add SATA mount to fstab (survives reboot)"
-	echo -e "  ${GREEN}sata unpersist${NC}           Remove SATA mount from fstab"
-	echo -e "  ${GREEN}sata status${NC}              Show SATA mount status"
-	echo -e "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
-	echo -e "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
-	echo -e "  ${GREEN}nfs persist${NC} [target]     Add NFS mounts to fstab (survives reboot)"
-	echo -e "  ${GREEN}nfs unpersist${NC} [target]   Remove NFS mounts from fstab"
-	echo -e "  ${GREEN}nfs status${NC}               Show NFS mount status"
-	echo -e "  ${GREEN}install${NC}                  Deploy all services"
-	echo -e "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
-	echo -e "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
-	echo -e "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
-	echo -e "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
-	echo -e "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
-	echo -e "  ${GREEN}images${NC}                   Show unused Docker images and volumes"
-	echo -e "  ${GREEN}images prune${NC}             Remove unused images (>7d) and orphan volumes"
-	echo -e "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
-	echo -e "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
-	echo ""
-	echo -e "${BOLD}Examples:${NC}"
-	echo -e "  ${DIM}$0 setup${NC}                 # Create directories"
-	echo -e "  ${DIM}$0 nfs mount${NC}             # Mount all NFS shares"
-	echo -e "  ${DIM}$0 nfs mount plex${NC}        # Mount only plex"
-	echo -e "  ${DIM}$0 install${NC}               # Deploy everything"
-	echo -e "  ${DIM}$0 install-fresh${NC}         # Force full docker-cd app reconcile"
-	echo -e "  ${DIM}$0 update-infra-force${NC}    # Force-recreate infra containers"
-	echo -e "  ${DIM}$0 status${NC}                # Show status"
+	printf '%b\n' "${BOLD}home-ops${NC} setup script"
+	printf '\n'
+	printf '%b\n' "Usage: ${CYAN}$0${NC} <command> [args]"
+	printf '\n'
+	printf '%b\n' "${BOLD}Commands:${NC}"
+	printf '%b\n' "  ${GREEN}setup${NC}                    Create all data directories"
+	printf '%b\n' "  ${GREEN}sata mount${NC}               Mount SATA drive (/mnt/sata)"
+	printf '%b\n' "  ${GREEN}sata unmount${NC}             Unmount SATA drive"
+	printf '%b\n' "  ${GREEN}sata persist${NC}             Add SATA mount to fstab (survives reboot)"
+	printf '%b\n' "  ${GREEN}sata unpersist${NC}           Remove SATA mount from fstab"
+	printf '%b\n' "  ${GREEN}sata status${NC}              Show SATA mount status"
+	printf '%b\n' "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
+	printf '%b\n' "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
+	printf '%b\n' "  ${GREEN}nfs persist${NC} [target]     Add NFS mounts to fstab (survives reboot)"
+	printf '%b\n' "  ${GREEN}nfs unpersist${NC} [target]   Remove NFS mounts from fstab"
+	printf '%b\n' "  ${GREEN}nfs status${NC}               Show NFS mount status"
+	printf '%b\n' "  ${GREEN}install${NC}                  Deploy all services"
+	printf '%b\n' "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
+	printf '%b\n' "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
+	printf '%b\n' "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
+	printf '%b\n' "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
+	printf '%b\n' "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
+	printf '%b\n' "  ${GREEN}images${NC}                   Show unused Docker images and volumes"
+	printf '%b\n' "  ${GREEN}images prune${NC}             Remove unused images (>7d) and orphan volumes"
+	printf '%b\n' "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
+	printf '%b\n' "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
+	printf '\n'
+	printf '%b\n' "${BOLD}Examples:${NC}"
+	printf '%b\n' "  ${DIM}$0 setup${NC}                 # Create directories"
+	printf '%b\n' "  ${DIM}$0 nfs mount${NC}             # Mount all NFS shares"
+	printf '%b\n' "  ${DIM}$0 nfs mount plex${NC}        # Mount only plex"
+	printf '%b\n' "  ${DIM}$0 install${NC}               # Deploy everything"
+	printf '%b\n' "  ${DIM}$0 install-fresh${NC}         # Force full docker-cd app reconcile"
+	printf '%b\n' "  ${DIM}$0 update-infra-force${NC}    # Force-recreate infra containers"
+	printf '%b\n' "  ${DIM}$0 status${NC}                # Show status"
 }
 
 case "${1:-}" in

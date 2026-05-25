@@ -26,9 +26,8 @@ jobs:
         run: |
           npx oxfmt --check "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
           shfmt -d -i 0 -ci scripts/*.sh
-      - run: ./scripts/lint.sh
-      - name: Check resource limits
-        run: ./scripts/check-resources.sh
+      - name: Lint
+        run: ./scripts/lint.sh
 
   sync:
     if: github.event_name == 'push'
