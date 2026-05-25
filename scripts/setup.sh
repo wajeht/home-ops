@@ -13,10 +13,12 @@ set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
 
 decrypt_dotenv_sops() {
+	require_cmd sops
 	sops --decrypt --input-type dotenv --output-type dotenv "$1"
 }
 
 docker_relogin() {
+	require_cmd docker
 	local secret_file="$REPO_DIR/infra/docker-cd/.env.sops"
 	local decrypted=""
 	local dh_user="" dh_token="" gh_token=""
@@ -54,6 +56,7 @@ sync_submodules() {
 
 	[ ! -f .gitmodules ] && return 0
 
+	require_cmd git
 	info "Syncing git submodules..."
 
 	if [ -f "$secret_file" ]; then
@@ -87,10 +90,52 @@ EOF
 	GIT_TERMINAL_PROMPT=0 git submodule update --init --recursive
 }
 
+compose_cmd() {
+	local dir=$1
+	shift
+	local tmp_dir="" env_file="" env_backup="" had_env=0 rc=0
+	local compose_file="$dir/docker-compose.yml"
+
+	require_cmd docker
+
+	if [ -f "$dir/.env.sops" ]; then
+		tmp_dir=$(mktemp -d)
+		env_file="$tmp_dir/env"
+		if ! decrypt_dotenv_sops "$dir/.env.sops" >"$env_file"; then
+			rm -rf "$tmp_dir"
+			return 1
+		fi
+
+		# Some stacks use env_file: .env, so materialize decrypted env during deploy.
+		if [ -f "$dir/.env" ]; then
+			had_env=1
+			env_backup="$tmp_dir/env.backup"
+			cp "$dir/.env" "$env_backup"
+		fi
+		cp "$env_file" "$dir/.env"
+
+		$SUDO docker compose -f "$compose_file" --project-directory "$dir" --env-file "$env_file" "$@" || rc=$?
+
+		if [ "$had_env" = "1" ]; then
+			cp "$env_backup" "$dir/.env"
+		else
+			rm -f "$dir/.env"
+		fi
+		rm -rf "$tmp_dir"
+		return "$rc"
+	fi
+
+	$SUDO docker compose -f "$compose_file" --project-directory "$dir" "$@"
+}
+
+deploy_compose() {
+	local dir=$1 name=$2
+	info "Deploying $name..."
+	compose_cmd "$dir" up -d 2>/dev/null || warn "$name not started"
+}
+
 redeploy_compose() {
 	local dir=$1 name=$2 force=${3:-0}
-	local tmp="" env_backup="" tmp_dir="" had_env=0
-	local compose_file="$dir/docker-compose.yml"
 	local -a up_args=(-d)
 
 	if [ "$force" = "1" ]; then
@@ -99,54 +144,13 @@ redeploy_compose() {
 
 	info "Redeploying $name..."
 
-	if [ -f "$dir/.env.sops" ]; then
-		tmp_dir=$(mktemp -d)
-		tmp="$tmp_dir/env"
-		decrypt_dotenv_sops "$dir/.env.sops" >"$tmp"
-
-		# Some stacks use env_file: .env, so materialize decrypted env during deploy.
-		if [ -f "$dir/.env" ]; then
-			had_env=1
-			env_backup="$tmp_dir/env.backup"
-			cp "$dir/.env" "$env_backup"
-		fi
-		cp "$tmp" "$dir/.env"
-
-		if ! $SUDO docker compose -f "$compose_file" --project-directory "$dir" --env-file "$tmp" pull; then
-			if [ "$had_env" = "1" ]; then
-				cp "$env_backup" "$dir/.env"
-			else
-				rm -f "$dir/.env"
-			fi
-			rm -rf "$tmp_dir"
-			err "Failed to pull images for $name"
-			return 1
-		fi
-		if ! $SUDO docker compose -f "$compose_file" --project-directory "$dir" --env-file "$tmp" up "${up_args[@]}"; then
-			if [ "$had_env" = "1" ]; then
-				cp "$env_backup" "$dir/.env"
-			else
-				rm -f "$dir/.env"
-			fi
-			rm -rf "$tmp_dir"
-			err "Failed to redeploy $name"
-			return 1
-		fi
-		if [ "$had_env" = "1" ]; then
-			cp "$env_backup" "$dir/.env"
-		else
-			rm -f "$dir/.env"
-		fi
-		rm -rf "$tmp_dir"
-	else
-		if ! $SUDO docker compose -f "$compose_file" --project-directory "$dir" pull; then
-			err "Failed to pull images for $name"
-			return 1
-		fi
-		if ! $SUDO docker compose -f "$compose_file" --project-directory "$dir" up "${up_args[@]}"; then
-			err "Failed to redeploy $name"
-			return 1
-		fi
+	if ! compose_cmd "$dir" pull; then
+		err "Failed to pull images for $name"
+		return 1
+	fi
+	if ! compose_cmd "$dir" up "${up_args[@]}"; then
+		err "Failed to redeploy $name"
+		return 1
 	fi
 
 	ok "$name redeployed"
@@ -189,6 +193,7 @@ STATIC_DIRS=(
 )
 
 ensure_external_networks() {
+	require_cmd docker
 	# External networks/volumes used across stacks.
 	$SUDO docker network create traefik 2>/dev/null || true
 	$SUDO docker network create backup 2>/dev/null || true
@@ -426,6 +431,8 @@ cmd_install() {
 
 	# Prerequisites
 	step "1/4" "Checking prerequisites..."
+	require_cmd curl
+	require_cmd git
 	[ ! -f "$SOPS_AGE_KEY_FILE" ] && {
 		err "Copy age key: scp ~/.sops/age-key.txt $(whoami)@$(hostname -I | awk '{print $1}'):$USER_HOME/.sops/"
 		exit 1
@@ -434,10 +441,6 @@ cmd_install() {
 		err "Clone repo: git clone https://github.com/wajeht/home-ops.git $REPO_DIR"
 		exit 1
 	}
-	if ! command -v git &>/dev/null; then
-		err "Install git first"
-		exit 1
-	fi
 
 	# Install Docker
 	step "2/4" "Docker..."
@@ -475,29 +478,6 @@ cmd_install() {
 
 	# Deploy core services (order matters)
 	step "4/4" "Deploying..."
-
-	deploy_compose() {
-		local dir=$1 name=$2
-		local secret_file="" tmp="" tmp_dir=""
-		info "Deploying $name..."
-		cd "$dir"
-
-		if [ -f .env.sops ]; then
-			secret_file=".env.sops"
-		fi
-
-		if [ -n "$secret_file" ]; then
-			tmp_dir=$(mktemp -d)
-			tmp="$tmp_dir/env"
-			decrypt_dotenv_sops "$secret_file" >"$tmp"
-			cp "$tmp" .env
-			$SUDO docker compose --env-file "$tmp" up -d 2>/dev/null || warn "$name not started"
-			rm -f .env
-			rm -rf "$tmp_dir"
-		else
-			$SUDO docker compose up -d 2>/dev/null || warn "$name not started"
-		fi
-	}
 
 	deploy_compose "$REPO_DIR/apps/traefik" traefik
 	deploy_compose "$REPO_DIR/apps/google-auth" google-auth
@@ -539,6 +519,7 @@ cmd_install_fresh() {
 cmd_uninstall() {
 	header "home-ops Uninstall"
 	local reply=""
+	require_cmd docker
 	printf '%b\n' "${RED}This will remove ALL containers, networks, and prune images.${NC}"
 	read -r -n 1 -p "Continue? [y/N] " reply
 	printf '\n'
@@ -609,6 +590,7 @@ cmd_status() {
 #=============================================================================
 cmd_relogin() {
 	header "Docker registry relogin"
+	require_cmd docker
 	cd "$REPO_DIR"
 	docker_relogin
 	ok "Docker registry credentials refreshed"
@@ -619,6 +601,9 @@ cmd_relogin() {
 #=============================================================================
 cmd_update_infra() {
 	header "Updating infra"
+	require_cmd docker
+	require_cmd git
+	require_cmd sops
 	cd "$REPO_DIR"
 	info "Pulling latest..."
 	git pull
@@ -640,6 +625,9 @@ cmd_update_infra() {
 #=============================================================================
 cmd_update_infra_force() {
 	header "Updating infra (force recreate)"
+	require_cmd docker
+	require_cmd git
+	require_cmd sops
 	cd "$REPO_DIR"
 	info "Pulling latest..."
 	git pull
@@ -661,6 +649,7 @@ cmd_update_infra_force() {
 #=============================================================================
 cmd_images() {
 	local action=${1:-status}
+	require_cmd docker
 	header "Docker Cleanup"
 
 	case "$action" in
@@ -729,6 +718,7 @@ cmd_images() {
 #=============================================================================
 cmd_update_submodules() {
 	header "Updating submodules"
+	require_cmd git
 	cd "$REPO_DIR"
 
 	[ ! -f .gitmodules ] && {
