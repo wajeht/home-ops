@@ -1,6 +1,6 @@
 # CrowdSec
 
-CrowdSec bans malicious IPs at Traefik before they reach apps. The agent parses Traefik's access log, runs detection scenarios, and pulls a community blocklist of known-bad IPs. A Yaegi plugin inside Traefik queries the agent's local API on every request and returns 403 for banned IPs.
+CrowdSec bans malicious IPs at Traefik before they reach apps. The agent parses Traefik's access log, runs detection scenarios, and pulls a community blocklist of known-bad IPs. A Yaegi plugin inside Traefik consults a local cache of decisions on every request and returns 403 for banned IPs; the cache refreshes from the agent's LAPI every 60s (stream mode).
 
 ## How It Works
 
@@ -30,6 +30,18 @@ cloudflare-only@file → crowdsec@file → gzip@file → security-headers@file
 
 `cloudflare-only` runs first (cheap CIDR check), so CrowdSec only sees real client traffic from CF.
 
+## Design Choices
+
+A few non-obvious decisions, with reasoning so they're easy to revisit later.
+
+**Middleware in `dynamic.yml` (`@file`), not Docker labels (`@docker`).** Traefik's file provider loads `dynamic.yml` synchronously at startup. The docker provider enumerates containers asynchronously a moment later. If the bouncer middleware were defined via docker labels, the `catchall` router (defined in `dynamic.yml`) would fail to resolve `crowdsec@docker` for the brief window before the docker provider catches up, logging an error on every Traefik restart. Defining the middleware in `dynamic.yml` makes it available the instant Traefik reads the file — no race.
+
+**Stream mode, not live mode.** Live mode hits LAPI on every request; stream mode pulls all decisions in the background every 60s and serves blocks from a local cache. Upstream recommends stream mode for performance — request latency is unaffected by LAPI roundtrip, and LAPI sees one sync per minute instead of one query per request.
+
+**Key via `crowdsecLapiKeyFile` + Docker Compose secret, not env interpolation in YAML.** The plugin's official `crowdsecLapiKeyFile` option lets it read the key from a file path. We use Compose's `secrets.environment: CROWDSEC_BOUNCER_KEY` to source the value from `.env` (decrypted from `.env.sops` by docker-cd) and mount it at `/run/secrets/crowdsec_lapi_key` (tmpfs, never written to host disk). The result: the key never appears in any committed YAML and never lands on the host filesystem.
+
+**`rolling_update: false` in `docker-cd.yml`.** CrowdSec holds a SQLite DB and long-lived bouncer registrations. Two parallel instances during a rolling swap would race on the DB and confuse the bouncer-key registration. Better to take a few seconds of fail-open during redeploy than risk DB corruption.
+
 ## Real Client IP
 
 Bans key off `CF-Connecting-IP`, not the immediate source IP (which is always Cloudflare). The middleware's `forwardedHeadersCustomName` is set to `CF-Connecting-IP` and `forwardedHeadersTrustedIPs` lists the same CF ranges already trusted elsewhere in the stack.
@@ -42,13 +54,25 @@ Internal LAN ranges (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) are in `cl
 
 ## Pre-Deploy Setup
 
-Create the host data directories before first deploy:
+On a new host, before the first deploy, create the data dirs the agent writes to:
 
 ```bash
 mkdir -p /home/jaw/data/crowdsec/{db,config}
 ```
 
-The bouncer API key (`BOUNCER_KEY_TRAEFIK`) lives in `apps/crowdsec/.env.sops` and is auto-registered as a bouncer at agent startup via the `BOUNCER_KEY_*` env var convention.
+The bouncer API key is already populated in both `.env.sops` files — no manual step. If you ever need to rotate it, regenerate one value and update both files (`apps/traefik/.env.sops` and `apps/crowdsec/.env.sops`) before redeploying.
+
+## SQLite WAL Mode
+
+`USE_WAL: "true"` is set in the agent's compose. Without it the agent logs:
+
+```
+sqlite is not using WAL mode, LAPI might become unresponsive when inserting the community blocklist
+```
+
+WAL (Write-Ahead Logging) lets the bouncer plugin read decisions concurrently with the agent inserting the community blocklist. Without WAL, the blocklist update (≥2700 row inserts at boot, plus periodic resyncs) holds a write lock long enough to make LAPI queries time out.
+
+CrowdSec creates `crowdsec.db-wal` and `crowdsec.db-shm` sidecar files alongside `crowdsec.db`. The Backrest plan excludes both — only the main `crowdsec.db` (post-sqlite3 `.backup`) goes into snapshots.
 
 ## Common Operations
 
@@ -133,42 +157,51 @@ docker exec crowdsec cscli decisions list -o raw | wc -l
 
 ## Failure Modes
 
-| Symptom                                          | Cause                                               | Fix                                                                                                               |
-| ------------------------------------------------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Traefik refuses to start, log mentions plugin    | Yaegi can't fetch plugin (no internet, GitHub down) | Revert the `--experimental.plugins.*` lines in `apps/traefik/docker-compose.yml`, redeploy.                       |
-| LAPI unreachable, requests still pass            | Plugin default `defaultDecision=allow`              | Working as designed — fail-open avoids self-lockout when CrowdSec crashes.                                        |
-| Legit user banned (false positive)               | A behavioral scenario over-fired                    | `cscli decisions delete --ip <ip>` and add to the whitelist file above.                                           |
-| Agent banning Cloudflare IPs                     | Real-client header not extracted                    | Check `forwardedHeadersCustomName=CF-Connecting-IP` label on the crowdsec container.                              |
-| Bouncer shows `invalid` in `cscli bouncers list` | Key mismatch                                        | Confirm `BOUNCER_KEY_TRAEFIK` is identical in `apps/crowdsec/.env.sops` and used by the Traefik middleware label. |
+| Symptom                                                                      | Cause                                                                | Fix                                                                                                                                                                            |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Traefik refuses to start, log mentions plugin                                | Yaegi can't fetch plugin (no internet, GitHub down)                  | Revert the `--experimental.plugins.*` lines in `apps/traefik/docker-compose.yml`, redeploy.                                                                                    |
+| LAPI unreachable, requests still pass                                        | Plugin default `defaultDecision=allow`                               | Working as designed — fail-open avoids self-lockout when CrowdSec crashes.                                                                                                     |
+| Legit user banned (false positive)                                           | A behavioral scenario over-fired                                     | `cscli decisions delete --ip <ip>` and add to the whitelist file above.                                                                                                        |
+| Agent banning Cloudflare IPs                                                 | Real-client header not extracted                                     | In `apps/traefik/dynamic.yml`, confirm `forwardedHeadersCustomName: CF-Connecting-IP` and CF ranges are in `forwardedHeadersTrustedIPs`.                                       |
+| Bouncer shows `invalid` in `cscli bouncers list`                             | Key mismatch                                                         | Confirm `CROWDSEC_BOUNCER_KEY` in `apps/traefik/.env.sops` equals `BOUNCER_KEY_TRAEFIK` in `apps/crowdsec/.env.sops`. Both decrypt to the same value via SOPS.                 |
+| Traefik logs `middleware "crowdsec@file" does not exist` at startup          | Typo in `dynamic.yml` or YAML parse error                            | Run `docker exec traefik traefik healthcheck --ping`; check the `crowdsec:` middleware block in `dynamic.yml` parses cleanly.                                                  |
+| Plugin logs `open /run/secrets/crowdsec_lapi_key: no such file or directory` | `secrets:` block missing or `.env` doesn't have CROWDSEC_BOUNCER_KEY | Verify `apps/traefik/.env.sops` decrypts to a `.env` containing `CROWDSEC_BOUNCER_KEY=...` and the traefik service has `secrets: [crowdsec_lapi_key]`.                         |
+| `handleStreamCache:updated` never appears in Traefik logs                    | Stream sync failing silently                                         | Check `docker exec traefik wget -qO- -S --header "X-Api-Key: $(cat /run/secrets/crowdsec_lapi_key)" http://crowdsec:8080/v1/decisions/stream?startup=true` for a 200 response. |
 
-## Web Dashboard (Optional)
+## Visibility Options
 
-To enroll the instance in [console.crowdsec.net](https://console.crowdsec.net) for a hosted dashboard:
+CrowdSec itself has no self-hosted web UI. The `cscli dashboard setup` command that used to ship a local Metabase instance was deprecated in 1.6 and removed in 1.7 — don't go looking for it. Realistic options:
 
-1. Create an account, generate an enrollment key.
-2. Add `ENROLL_KEY=<key>` to `apps/crowdsec/.env.sops` (`sops apps/crowdsec/.env.sops`).
-3. Redeploy. The agent enrolls on next boot.
+**1. CLI (what you're using now).** `cscli decisions list`, `cscli alerts list`, `cscli metrics`. Fine for current homelab volume.
+
+**2. Homepage widget.** [Homepage](https://gethomepage.dev/widgets/services/crowdsec/) has a built-in CrowdSec widget that hits LAPI for live decision/alert counts. A few lines of YAML in `apps/homepage/`; no new container. Best at-a-glance option.
+
+**3. CrowdSec Console (hosted, free tier).** [console.crowdsec.net](https://console.crowdsec.net). Enroll the instance by adding `ENROLL_KEY=<key>` to `apps/crowdsec/.env.sops` (use `sops apps/crowdsec/.env.sops`) and redeploying. Alert metadata leaves the homelab; logs and secrets stay local. The hosted UI shows decisions, alerts, scenario hits, top blocked IPs.
+
+**4. Vanilla Metabase pointed at the SQLite DB.** Possible but you'd build the dashboards from scratch — the upstream `crowdsecurity/metabase` image was removed from Docker Hub. Skip unless you really want a self-hosted dashboard with custom queries.
 
 ## File Layout
 
 ```
 apps/crowdsec/
-├── docker-compose.yml   # agent + bouncer middleware labels
+├── docker-compose.yml   # agent container only (no Traefik labels)
 ├── acquis.yaml          # tells agent to tail /var/log/traefik/access.log
-└── .env.sops            # BOUNCER_KEY_TRAEFIK, optional ENROLL_KEY
+├── docker-cd.yml        # rolling_update: false (stateful — no parallel instances)
+├── .env.sops            # BOUNCER_KEY_TRAEFIK, optional ENROLL_KEY (encrypted)
+└── README.md            # this file
 ```
 
-Traefik wiring:
+Traefik wiring lives in two files under `apps/traefik/`:
 
-- `apps/traefik/docker-compose.yml`
+- `docker-compose.yml`
   - `--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin`
   - `--experimental.plugins.bouncer.version=v1.6.0`
   - `crowdsec@file` in the `websecure` default middleware chain
-  - `secrets.crowdsec_lapi_key` sourced from `CROWDSEC_BOUNCER_KEY` env
-- `apps/traefik/dynamic.yml`
-  - `http.middlewares.crowdsec.plugin.bouncer` — full middleware config (stream mode, CF ranges, key file path)
+  - `secrets.crowdsec_lapi_key` block sourced from `CROWDSEC_BOUNCER_KEY` env (in `.env`)
+- `dynamic.yml`
+  - `http.middlewares.crowdsec.plugin.bouncer` — full middleware config (stream mode, CF ranges, `crowdsecLapiKeyFile: /run/secrets/crowdsec_lapi_key`)
 
-Host data: `/home/jaw/data/crowdsec/{db,config}` (SQLite + hub state, backed up by Backrest).
+Host data: `/home/jaw/data/crowdsec/{db,config}` (SQLite + hub state, backed up by Backrest at 4:30 AM daily).
 
 ## Backup
 
@@ -190,3 +223,21 @@ docker compose up -d
 ```
 
 Loss of the DB is non-fatal: the bouncer re-registers from `BOUNCER_KEY_TRAEFIK` on agent boot, and the community blocklist re-syncs within ~10 min. The valuable part is custom whitelists and accumulated local decisions.
+
+## Future Phases (Deferred)
+
+Things explicitly out of scope for the current Phase 1 setup, in rough order of value:
+
+- **AppSec / WAF.** CrowdSec ships an inline request-inspection engine (SQLi, XSS, deserialization, etc.) separate from the log-parsing scenarios. Enabling it adds `crowdsecAppsecEnabled: true` to the middleware and exposes a second port (`:7422`) on the agent. Per-request CPU cost and a real false-positive tuning burden; revisit after the behavioral layer is trusted.
+- **Captcha middleware.** Instead of straight 403 on detection, present an hCaptcha challenge. Better UX for borderline decisions on auth pages; needs a captcha provider account.
+- **Cloudflare edge bouncer (`cs-cloudflare-bouncer`).** Pushes bans into CF's IP-list / WAF rules so attackers are blocked at the edge and never reach origin. Needs a CF API token with WAF scope. CF Free tier IP-list quota is 10k entries (community blocklist is larger); usually configured to sync only high-severity decisions.
+- **Linux / SSH collection + host firewall bouncer.** Add `crowdsecurity/linux` + `crowdsecurity/sshd` to detect SSH brute-force from host auth log, and `cs-firewall-bouncer` to enforce bans via iptables/nftables. Currently relying on `fail2ban` for SSH (see `docs/security.md`).
+- **Self-hosted dashboard with custom queries.** Vanilla Metabase pointed at the SQLite DB — discussed in _Visibility Options_ above.
+
+## Deploy Notes
+
+A few things worth knowing if you're re-deploying or migrating this:
+
+- **Yaegi plugin downloads on first Traefik start.** The bouncer plugin is fetched from GitHub the first time Traefik boots with the `--experimental.plugins.bouncer.*` flags. ~30s extra start time on a fresh host; cached after that. If the host has no internet, Traefik won't start.
+- **Deploy order on a fresh setup.** If you're introducing CrowdSec on an already-running stack: deploy `apps/crowdsec/` first and wait for the agent to be healthy, THEN add `crowdsec@file` to the websecure default chain in `apps/traefik/docker-compose.yml`. Otherwise expect a transient window of `middleware does not exist` errors and 404s on every router. With `@file` middleware, the only requirement is that the `dynamic.yml` middleware block exists; the agent itself just needs to be reachable on the network for the plugin to authenticate.
+- **`forwardedHeadersTrustedIPs` and Cloudflare's ranges.** Cloudflare publishes their IP list at [cloudflare.com/ips/](https://www.cloudflare.com/ips/). When CF adds a new range, update this list in `dynamic.yml` AND the matching `cloudflare-only` list also in `dynamic.yml` AND the `forwardedHeaders.trustedIPs` flags in `apps/traefik/docker-compose.yml`. (Same change in three places — annoying but explicit.)
