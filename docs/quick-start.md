@@ -52,7 +52,14 @@ docker-cd should start first, then deploy the rest of `apps/*`.
 
 ## Optional OS Tuning
 
-Apply after install if this is a fresh Ubuntu host:
+Apply after install if this is a fresh Ubuntu host. These are host-level performance defaults for the Docker server.
+
+| Setting            | What it does                                                                    | Why we use it                                                 |
+| ------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `vm.swappiness=10` | Makes Linux avoid swap until memory pressure is real                            | Keeps containers responsive and avoids unnecessary SSD writes |
+| CPU `performance`  | Keeps CPU frequency high instead of slowly ramping up from low-power idle modes | Reduces latency for many small container requests             |
+
+Skip this on laptops or power-sensitive hosts. For this always-on OptiPlex, the power cost is small and the latency behavior is better.
 
 ```bash
 sudo sysctl vm.swappiness=10
