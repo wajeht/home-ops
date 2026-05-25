@@ -115,12 +115,6 @@
         description: Backups
         # siteMonitor: http://backrest:9898
 
-    - OAuth2 Proxy:
-        icon: google
-        href: https://auth.jaw.dev
-        description: OAuth Proxy
-        # siteMonitor: http://oauth2-admin:4180/ping
-
     - Zigbee2MQTT:
         icon: zigbee2mqtt
         href: https://z2m.jaw.dev
