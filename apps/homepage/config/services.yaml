@@ -138,11 +138,6 @@
         href: http://192.168.4.161:16992
         description: Remote KVM / Power Control
 
-    - Intel AMT (5050):
-        icon: mdi-desktop-tower-monitor
-        href: http://192.168.4.162:16992
-        description: Remote KVM / Power Control
-
     - DDNS Updater:
         icon: mdi-dns
         href: https://ddns.jaw.dev
