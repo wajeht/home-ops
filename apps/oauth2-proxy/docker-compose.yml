@@ -21,8 +21,10 @@ services:
       - --proxy-prefix=/oauth2/admin
       - --redirect-url=https://auth.jaw.dev/oauth2/admin/callback
       - --authenticated-emails-file=/etc/oauth2-proxy/admin-emails.txt
+    configs:
+      - source: oauth2_admin_emails
+        target: /etc/oauth2-proxy/admin-emails.txt
     volumes:
-      - ./admin-emails.txt:/etc/oauth2-proxy/admin-emails.txt:ro
       - ./portcheck:/portcheck:ro
     env_file:
       - .env
@@ -87,8 +89,10 @@ services:
       - --proxy-prefix=/oauth2/media
       - --redirect-url=https://auth.jaw.dev/oauth2/media/callback
       - --authenticated-emails-file=/etc/oauth2-proxy/media-emails.txt
+    configs:
+      - source: oauth2_media_emails
+        target: /etc/oauth2-proxy/media-emails.txt
     volumes:
-      - ./media-emails.txt:/etc/oauth2-proxy/media-emails.txt:ro
       - ./portcheck:/portcheck:ro
     env_file:
       - .env
@@ -130,3 +134,16 @@ services:
 networks:
   traefik:
     external: true
+
+configs:
+  oauth2_admin_emails:
+    content: |
+      ${OAUTH2_ADMIN_EMAIL_1}
+  oauth2_media_emails:
+    content: |
+      ${OAUTH2_MEDIA_EMAIL_1}
+      ${OAUTH2_MEDIA_EMAIL_2}
+      ${OAUTH2_MEDIA_EMAIL_3}
+      ${OAUTH2_MEDIA_EMAIL_4}
+      ${OAUTH2_MEDIA_EMAIL_5}
+      ${OAUTH2_MEDIA_EMAIL_6}

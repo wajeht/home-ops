@@ -20,6 +20,9 @@ apps/authelia/users.yml
 secrets/
 !secrets/.gitkeep
 
+# Generated oauth2-proxy allowlists
+apps/oauth2-proxy/*-emails.txt
+
 # OS
 .DS_Store
 Thumbs.db

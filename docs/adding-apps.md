@@ -81,8 +81,8 @@ Omit auth middleware for public apps.
 
 OAuth access is split by middleware:
 
-- Admin apps use `oauth2-admin@file` and `apps/oauth2-proxy/admin-emails.txt`.
-- Media apps use `oauth2-media@file` and `apps/oauth2-proxy/media-emails.txt`.
+- Admin apps use `oauth2-admin@file` and `OAUTH2_ADMIN_EMAIL_*` in `apps/oauth2-proxy/.env.sops`.
+- Media apps use `oauth2-media@file` and `OAUTH2_MEDIA_EMAIL_*` in `apps/oauth2-proxy/.env.sops`.
 - Current media hosts: `plex.jaw.dev`, `seerr.jaw.dev`, `convertx.jaw.dev`.
 
 Admin-only app:
@@ -97,7 +97,7 @@ Media app:
 - "traefik.http.routers.myapp.middlewares=oauth2-media@file"
 ```
 
-Add/remove users by editing the matching email file in `apps/oauth2-proxy/`.
+Add/remove users by editing `apps/oauth2-proxy/.env.sops`.
 
 ## Container Hardening
 

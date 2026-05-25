@@ -2,8 +2,8 @@
 
 Google OAuth forward-auth via [oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy).
 
-- `oauth2-admin` uses `admin-emails.txt`.
-- `oauth2-media` uses `media-emails.txt`.
+- `oauth2-admin` uses admin email variables from `.env.sops`.
+- `oauth2-media` uses media email variables from `.env.sops`.
 - Traefik middlewares live in `apps/traefik/dynamic.yml`.
 
 Protected apps use one of these labels:
@@ -19,6 +19,15 @@ Google OAuth redirect URIs:
 https://auth.jaw.dev/oauth2/admin/callback
 https://auth.jaw.dev/oauth2/media/callback
 ```
+
+## Access Lists
+
+Edit `apps/oauth2-proxy/.env.sops` to add or remove users:
+
+- `OAUTH2_ADMIN_EMAIL_*` controls admin access.
+- `OAUTH2_MEDIA_EMAIL_*` controls media access.
+
+Docker-cd decrypts `.env.sops` to `.env`. Docker Compose turns those variables into the runtime files oauth2-proxy reads at `/etc/oauth2-proxy/*-emails.txt`.
 
 ## Healthcheck
 
