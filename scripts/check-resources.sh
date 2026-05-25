@@ -7,6 +7,11 @@ set -euo pipefail
 MAX_CPUS=8
 MAX_MEMORY_MB=32768
 MAX_MEMORY_OVERCOMMIT=3
+# CPU overcommit is safer than memory (CFS throttles, no OOM-kill). Homelab norm is
+# 5-10x against threads for mostly-idle workloads; VMware's "painful" zone starts at 6x
+# for *active* VMs. 15x is the hard cap — well into territory where simultaneous bursts
+# would queue noticeably even for idle services.
+MAX_CPU_OVERCOMMIT=15
 MAX_SERVICE_MEMORY_MB=8192
 MAX_SERVICE_CPUS="4.0"
 
@@ -59,17 +64,24 @@ done
 total_memory_gb=$(awk "BEGIN {printf \"%.1f\", $total_memory_mb / 1024}")
 max_total_memory_mb=$((MAX_MEMORY_MB * MAX_MEMORY_OVERCOMMIT))
 max_total_memory_gb=$((MAX_MEMORY_MB / 1024 * MAX_MEMORY_OVERCOMMIT))
+max_total_cpus=$(awk "BEGIN {printf \"%.1f\", $MAX_CPUS * $MAX_CPU_OVERCOMMIT}")
 cpu_ratio=$(awk "BEGIN {printf \"%.1f\", $total_cpus / $MAX_CPUS}")
 mem_ratio=$(awk "BEGIN {printf \"%.1f\", $total_memory_mb / $MAX_MEMORY_MB}")
 
 echo "Resource limits summary (Dell OptiPlex 7050: ${MAX_CPUS} threads, $((MAX_MEMORY_MB / 1024))GB RAM)"
-echo "  CPU:    ${total_cpus} / ${MAX_CPUS} threads (${cpu_ratio}x overcommit)"
+echo "  CPU:    ${total_cpus} / ${max_total_cpus} threads (${cpu_ratio}x overcommit, ${MAX_CPU_OVERCOMMIT}x limit)"
 echo "  Memory: ${total_memory_gb}GB / ${max_total_memory_gb}GB max (${mem_ratio}x overcommit, ${MAX_MEMORY_OVERCOMMIT}x limit)"
 echo "  Per-service max: $((MAX_SERVICE_MEMORY_MB / 1024))G memory, ${MAX_SERVICE_CPUS} cpus"
 
 # total memory check
 if [ "$total_memory_mb" -gt "$max_total_memory_mb" ]; then
 	echo "FAIL: Total memory ${total_memory_gb}GB exceeds ${MAX_MEMORY_OVERCOMMIT}x overcommit limit (${max_total_memory_gb}GB)"
+	errors=1
+fi
+
+# total cpu check
+if awk "BEGIN {exit !($total_cpus > $max_total_cpus)}"; then
+	echo "FAIL: Total CPU ${total_cpus} exceeds ${MAX_CPU_OVERCOMMIT}x overcommit limit (${max_total_cpus} threads)"
 	errors=1
 fi
 
