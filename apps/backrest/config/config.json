@@ -510,6 +510,24 @@
       }
     },
     {
+      "id": "zepp",
+      "uri": "/repos/zepp",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 4 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 5 * * 0"
+        },
+        "structureOnly": true
+      }
+    },
+    {
       "id": "global",
       "uri": "/repos/global",
       "password": "",
@@ -1913,6 +1931,53 @@
       ]
     },
     {
+      "id": "zepp",
+      "repo": "zepp",
+      "paths": ["/source/zepp/.zepp.bak"],
+      "schedule": {
+        "disabled": {},
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/zepp/db.sqlite -cmd \".timeout 30000\" \".backup /source/zepp/.zepp.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/zepp/.zepp.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zepp+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "zepp backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zepp+backup+FAILED&priority=Max&tags=skull",
+            "template": "zepp backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
       "id": "global",
       "repo": "global",
       "paths": ["/source", "/sops"],
@@ -1925,7 +1990,7 @@
         "**/*.dump"
       ],
       "schedule": {
-        "cron": "40 4 * * *",
+        "cron": "50 4 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {

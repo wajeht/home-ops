@@ -24,6 +24,7 @@ services:
       - gitea-internal
     restart: unless-stopped
     init: true
+    # lint-ignore: healthcheck  # bash worker loop, no port — process liveness is restart-on-exit
     cap_drop:
       - ALL
     security_opt:

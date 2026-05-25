@@ -3,6 +3,7 @@ services:
     image: ghcr.io/wajeht/power-badge:f9ceba6
     container_name: power-badge
     restart: unless-stopped
+    init: true
     read_only: true
     tmpfs:
       - /tmp

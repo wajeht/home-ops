@@ -51,37 +51,38 @@ apps/backrest/
 
 Per-app schedules are staggered to prevent resource contention. `global` runs last after all per-app backups complete.
 
-| App           | Schedule | Type                 | Notes                                                          |
-| ------------- | -------- | -------------------- | -------------------------------------------------------------- |
-| hello-world   | 12:00 AM | Postgres (DB only)   |                                                                |
-| immich        | 12:10 AM | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant       |
-| gatus         | 12:20 AM | SQLite + files       | DB file is `gatus.db`                                          |
-| radarr        | 12:30 AM | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid     |
-| prowlarr      | 12:40 AM | SQLite + files       |                                                                |
-| ntfy          | 12:50 AM | SQLite (×2) + files  | Two DBs: `user.db` + `cache.db` (chained in hook)              |
-| bang          | 1:00 AM  | SQLite (DB only)     | Ephemeral keinos/sqlite3 — bang has no `container_name`        |
-| favicon       | 1:10 AM  | SQLite + files       |                                                                |
-| mm2us         | 1:20 AM  | SQLite (DB only)     |                                                                |
-| notify        | 1:30 AM  | SQLite (DB only)     |                                                                |
-| calendar      | 1:40 AM  | SQLite (DB only)     |                                                                |
-| screenshot    | 1:50 AM  | SQLite + files       |                                                                |
-| gains         | 2:00 AM  | SQLite (DB only)     |                                                                |
-| homeassistant | 2:10 AM  | SQLite + files       | DB file is `home-assistant_v2.db`                              |
-| zigbee2mqtt   | 2:20 AM  | Files only           |                                                                |
-| dbgate        | 2:30 AM  | Files only           | `/mnt/*` mounts to other apps' data NOT backed up here         |
-| garage        | 2:40 AM  | Files only           | meta + data dirs (S3 bucket contents — can be large)           |
-| beszel        | 2:50 AM  | SQLite + files       | DB file is `data.db`                                           |
-| traefik       | 3:00 AM  | Files only           | Includes `acme.json` certs                                     |
-| plex          | 3:10 AM  | SQLite (×2) + files  | Two DBs deeply nested under `Library/Application Support/...`  |
-| seerr         | 3:20 AM  | SQLite + files       | DB at `db/db.sqlite3`                                          |
-| bazarr        | 3:30 AM  | SQLite + files       | DB at `db/bazarr.db`                                           |
-| sabnzbd       | 3:40 AM  | SQLite + files       | DB at `admin/history1.db`. Excludes Downloads (huge transient) |
-| vpn-qbit      | 3:50 AM  | Files only           | Two source paths: qbittorrent + gluetun                        |
-| syncthing     | 4:00 AM  | Files only           | Config only (`/config`); excludes index DBs, logs, .stversions |
-| vaultwarden   | 4:10 AM  | SQLite + files       | DB file is `db.sqlite3`                                        |
-| gitea         | 4:20 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                 |
-| crowdsec      | 4:30 AM  | SQLite + files       | DB at `db/crowdsec.db`. Includes hub config and whitelists     |
-| **global**    | 4:40 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state    |
+| App           | Schedule    | Type                 | Notes                                                                                                                         |
+| ------------- | ----------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| hello-world   | 12:00 AM    | Postgres (DB only)   |                                                                                                                               |
+| immich        | 12:10 AM    | Postgres (DB only)   | Photos at `~/immich` (NFS) NOT backed up — NAS-redundant                                                                      |
+| gatus         | 12:20 AM    | SQLite + files       | DB file is `gatus.db`                                                                                                         |
+| radarr        | 12:30 AM    | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid                                                                    |
+| prowlarr      | 12:40 AM    | SQLite + files       |                                                                                                                               |
+| ntfy          | 12:50 AM    | SQLite (×2) + files  | Two DBs: `user.db` + `cache.db` (chained in hook)                                                                             |
+| bang          | 1:00 AM     | SQLite (DB only)     | Ephemeral keinos/sqlite3 — bang has no `container_name`                                                                       |
+| favicon       | 1:10 AM     | SQLite + files       |                                                                                                                               |
+| mm2us         | 1:20 AM     | SQLite (DB only)     |                                                                                                                               |
+| notify        | 1:30 AM     | SQLite (DB only)     |                                                                                                                               |
+| calendar      | 1:40 AM     | SQLite (DB only)     |                                                                                                                               |
+| screenshot    | 1:50 AM     | SQLite + files       |                                                                                                                               |
+| gains         | 2:00 AM     | SQLite (DB only)     |                                                                                                                               |
+| homeassistant | 2:10 AM     | SQLite + files       | DB file is `home-assistant_v2.db`                                                                                             |
+| zigbee2mqtt   | 2:20 AM     | Files only           |                                                                                                                               |
+| dbgate        | 2:30 AM     | Files only           | `/mnt/*` mounts to other apps' data NOT backed up here                                                                        |
+| garage        | 2:40 AM     | Files only           | meta + data dirs (S3 bucket contents — can be large)                                                                          |
+| beszel        | 2:50 AM     | SQLite + files       | DB file is `data.db`                                                                                                          |
+| traefik       | 3:00 AM     | Files only           | Includes `acme.json` certs                                                                                                    |
+| plex          | 3:10 AM     | SQLite (×2) + files  | Two DBs deeply nested under `Library/Application Support/...`                                                                 |
+| seerr         | 3:20 AM     | SQLite + files       | DB at `db/db.sqlite3`                                                                                                         |
+| bazarr        | 3:30 AM     | SQLite + files       | DB at `db/bazarr.db`                                                                                                          |
+| sabnzbd       | 3:40 AM     | SQLite + files       | DB at `admin/history1.db`. Excludes Downloads (huge transient)                                                                |
+| vpn-qbit      | 3:50 AM     | Files only           | Two source paths: qbittorrent + gluetun                                                                                       |
+| syncthing     | 4:00 AM     | Files only           | Config only (`/config`); excludes index DBs, logs, .stversions                                                                |
+| vaultwarden   | 4:10 AM     | SQLite + files       | DB file is `db.sqlite3`                                                                                                       |
+| gitea         | 4:20 AM     | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                                                                                |
+| crowdsec      | 4:30 AM     | SQLite + files       | DB at `db/crowdsec.db`. Includes hub config and whitelists                                                                    |
+| ~~zepp~~      | ~~4:40 AM~~ | ~~SQLite (DB only)~~ | ~~DB at `db.sqlite`.~~ Schedule disabled — app is `ignore_deployment: true`. Re-enable in config when zepp comes back online. |
+| **global**    | 4:50 AM     | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state                                                                   |
 
 Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 4 AM, integrity check Sunday 5 AM (structure-only).
 
@@ -525,14 +526,14 @@ A formatter has been observed to strip new entries from `config.json` between pu
 
 ```bash
 grep -c '"id":' ~/home-ops/apps/backrest/config/config.json
-# Expect 58 (29 repos × 29 plans). If lower, re-add the missing entries.
+# Expect 60 (30 repos × 30 plans). If lower, re-add the missing entries.
 ```
 
 #### 6. Verify
 
 ```bash
 docker logs backrest --tail 50          # should be no errors after orchestrator starts
-docker exec backrest ls /repos          # should list 29 repos
+docker exec backrest ls /repos          # should list 30 repos
 ```
 
 ### Testing Recovery
@@ -617,7 +618,7 @@ Known issues and their fixes.
 | Bad gateway 502 on first click of garage image link, works on retry                        | garage-webui's pool connection to garage:3900 went stale                                  | Add Traefik retry middleware to the route. Backrest unrelated.                                                            |
 | ntfy notifications never arrive                                                            | Shoutrrr URL syntax wrong                                                                 | Use `ntfy://ntfy/<topic>?scheme=http&title=foo&priority=Min&tags=skull`. Priority must be capitalized (`Min`, not `min`). |
 | First Shoutrrr push broke Backrest container                                               | Actually didn't — first deploy succeeded; later deploy hung during a backup               | Make sure no backup is running when redeploying. Backrest can't recreate while restic process holds files.                |
-| `config.json` entries disappear after pushing                                              | A formatter (locally or in CI) strips JSON entries it doesn't recognize                   | After each push, `grep -c '"id":' ~/home-ops/apps/backrest/config/config.json` on the server. Expected count: 58.         |
+| `config.json` entries disappear after pushing                                              | A formatter (locally or in CI) strips JSON entries it doesn't recognize                   | After each push, `grep -c '"id":' ~/home-ops/apps/backrest/config/config.json` on the server. Expected count: 60.         |
 | Stateless app got accidentally added to Backrest                                           | Misread of which apps had data                                                            | If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, skip it. Examples: close-powerlifting, ufc, ip.  |
 
 ## Apps Without Backup (Intentional)
@@ -625,7 +626,7 @@ Known issues and their fixes.
 Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
-- **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `walker`, `zepp`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`, `crowdsec-web-ui` (cache rebuilds from LAPI on boot; only UI prefs would reset)
+- **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `walker`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`, `crowdsec-web-ui` (cache rebuilds from LAPI on boot; only UI prefs would reset)
 - **Infra (config tracked in git)**: `backrest`, `google-auth`, `google-auth-user`
 
 If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, the app is stateless and doesn't need a Backrest plan.

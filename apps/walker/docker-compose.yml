@@ -1,4 +1,5 @@
 services:
+  # lint-ignore: backup  # cache-only (just a small JSON of configured repos, auto-regenerates)
   walker:
     image: ghcr.io/wajeht/walker:v0.0.15
     container_name: walker

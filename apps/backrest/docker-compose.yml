@@ -36,6 +36,7 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    # lint-ignore: init  # upstream image already runs under tini
     cap_drop:
       - ALL
     cap_add:

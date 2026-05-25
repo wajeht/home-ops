@@ -1,4 +1,5 @@
 services:
+  # lint-ignore: backup  # stateless — last-known-IP cache, auto-rebuilds on startup
   ddns-updater:
     container_name: ddns-updater
     image: ghcr.io/qdm12/ddns-updater:v2.9.1@sha256:3758e33ca466190a580d08acc6bffb59c1b22526b9e27b76815f541fc7acc932

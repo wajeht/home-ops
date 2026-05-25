@@ -16,6 +16,7 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+    # lint-ignore: init  # home-assistant uses s6, must be PID 1
     cap_drop:
       - ALL
     cap_add:
@@ -42,6 +43,13 @@ services:
       - "traefik.http.routers.homeassistant.rule=Host(`ha.jaw.dev`)"
       - "traefik.http.routers.homeassistant.entrypoints=websecure"
       - "traefik.http.routers.homeassistant.middlewares=google-auth@file"
+      # Webhooks — bypass google-auth (URL contains the secret token). Without this,
+      # external services hitting /api/webhook/<id> get 403s, which CrowdSec's
+      # http-generic-403-bf scenario mistakes for brute force and bans the source IP.
+      - "traefik.http.routers.homeassistant-webhook.rule=Host(`ha.jaw.dev`) && PathPrefix(`/api/webhook/`)"
+      - "traefik.http.routers.homeassistant-webhook.entrypoints=websecure"
+      - "traefik.http.routers.homeassistant-webhook.middlewares=rate-limit-global@file"
+      - "traefik.http.routers.homeassistant-webhook.priority=100"
       # Companion App — HA's own auth + rate limiting (no Google Auth)
       - "traefik.http.routers.homeassistant-app.rule=Host(`ha-app.jaw.dev`)"
       - "traefik.http.routers.homeassistant-app.entrypoints=websecure"

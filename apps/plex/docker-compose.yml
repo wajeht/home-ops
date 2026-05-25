@@ -22,6 +22,7 @@ services:
     networks:
       - traefik
     restart: unless-stopped
+    # lint-ignore: init  # LinuxServer.io s6-overlay must be PID 1
     cap_drop:
       - ALL
     cap_add:

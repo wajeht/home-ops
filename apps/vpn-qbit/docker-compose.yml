@@ -80,6 +80,7 @@ services:
       start_period: 60s
       retries: 3
     restart: unless-stopped
+    # lint-ignore: init  # LinuxServer.io qbittorrent uses s6-overlay, must be PID 1
     cap_drop:
       - ALL
     cap_add:
