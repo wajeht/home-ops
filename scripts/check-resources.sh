@@ -14,10 +14,31 @@ MAX_MEMORY_OVERCOMMIT=3
 MAX_CPU_OVERCOMMIT=15
 MAX_SERVICE_MEMORY_MB=8192
 MAX_SERVICE_CPUS="4.0"
+BAR_WIDTH=20
+
+# TTY-aware colors — disabled when stdout isn't a terminal.
+if [ -t 1 ]; then
+	BOLD=$'\033[1m'
+	DIM=$'\033[2m'
+	RED=$'\033[31m'
+	GREEN=$'\033[32m'
+	YELLOW=$'\033[33m'
+	CYAN=$'\033[36m'
+	RESET=$'\033[0m'
+else
+	BOLD=''
+	DIM=''
+	RED=''
+	GREEN=''
+	YELLOW=''
+	CYAN=''
+	RESET=''
+fi
 
 total_cpus=0
 total_memory_mb=0
 errors=0
+violations=()
 
 for compose in apps/*/docker-compose.yml; do
 	app="$(basename "$(dirname "$compose")")"
@@ -32,18 +53,17 @@ for compose in apps/*/docker-compose.yml; do
 		elif [[ "$memory" == *M ]]; then
 			mem_mb="${memory%M}"
 		else
-			echo "  WARN: unknown memory unit in $compose: $memory"
+			violations+=("${YELLOW}!${RESET}  ${app}/${service} unknown memory unit: ${memory}")
 			continue
 		fi
 
-		# per-service checks
 		if [ "$mem_mb" -gt "$MAX_SERVICE_MEMORY_MB" ]; then
-			echo "FAIL: ${app}/${service} memory ${memory} exceeds per-service max $(awk "BEGIN {printf \"%.0f\", $MAX_SERVICE_MEMORY_MB / 1024}")G"
+			violations+=("${RED}✗${RESET}  ${app}/${service} memory ${memory} exceeds per-service max $(awk "BEGIN {printf \"%.0f\", $MAX_SERVICE_MEMORY_MB / 1024}")G")
 			errors=1
 		fi
 
 		if awk "BEGIN {exit !($cpus > $MAX_SERVICE_CPUS)}"; then
-			echo "FAIL: ${app}/${service} cpus ${cpus} exceeds per-service max ${MAX_SERVICE_CPUS}"
+			violations+=("${RED}✗${RESET}  ${app}/${service} cpus ${cpus} exceeds per-service max ${MAX_SERVICE_CPUS}")
 			errors=1
 		fi
 
@@ -62,31 +82,69 @@ for compose in apps/*/docker-compose.yml; do
 done
 
 total_memory_gb=$(awk "BEGIN {printf \"%.1f\", $total_memory_mb / 1024}")
+max_total_memory_gb=$(awk "BEGIN {printf \"%.1f\", $MAX_MEMORY_MB * $MAX_MEMORY_OVERCOMMIT / 1024}")
 max_total_memory_mb=$((MAX_MEMORY_MB * MAX_MEMORY_OVERCOMMIT))
-max_total_memory_gb=$((MAX_MEMORY_MB / 1024 * MAX_MEMORY_OVERCOMMIT))
 max_total_cpus=$(awk "BEGIN {printf \"%.1f\", $MAX_CPUS * $MAX_CPU_OVERCOMMIT}")
 cpu_ratio=$(awk "BEGIN {printf \"%.1f\", $total_cpus / $MAX_CPUS}")
 mem_ratio=$(awk "BEGIN {printf \"%.1f\", $total_memory_mb / $MAX_MEMORY_MB}")
+host_ram_gb=$((MAX_MEMORY_MB / 1024))
 
-echo "Resource limits summary (Dell OptiPlex 7050: ${MAX_CPUS} threads, $((MAX_MEMORY_MB / 1024))GB RAM)"
-echo "  CPU:    ${total_cpus} / ${max_total_cpus} threads (${cpu_ratio}x overcommit, ${MAX_CPU_OVERCOMMIT}x limit)"
-echo "  Memory: ${total_memory_gb}GB / ${max_total_memory_gb}GB max (${mem_ratio}x overcommit, ${MAX_MEMORY_OVERCOMMIT}x limit)"
-echo "  Per-service max: $((MAX_SERVICE_MEMORY_MB / 1024))G memory, ${MAX_SERVICE_CPUS} cpus"
-
-# total memory check
+# Overcommit check — fails if exceeding the limit.
 if [ "$total_memory_mb" -gt "$max_total_memory_mb" ]; then
-	echo "FAIL: Total memory ${total_memory_gb}GB exceeds ${MAX_MEMORY_OVERCOMMIT}x overcommit limit (${max_total_memory_gb}GB)"
+	violations+=("${RED}✗${RESET}  total memory ${total_memory_gb}GB exceeds ${MAX_MEMORY_OVERCOMMIT}x overcommit limit (${max_total_memory_gb}GB)")
+	errors=1
+fi
+if awk "BEGIN {exit !($total_cpus > $max_total_cpus)}"; then
+	violations+=("${RED}✗${RESET}  total CPU ${total_cpus} exceeds ${MAX_CPU_OVERCOMMIT}x overcommit limit (${max_total_cpus} threads)")
 	errors=1
 fi
 
-# total cpu check
-if awk "BEGIN {exit !($total_cpus > $max_total_cpus)}"; then
-	echo "FAIL: Total CPU ${total_cpus} exceeds ${MAX_CPU_OVERCOMMIT}x overcommit limit (${max_total_cpus} threads)"
-	errors=1
+# Render a green/yellow/red horizontal bar; coloring follows utilization-of-limit.
+make_bar() {
+	local ratio="$1" limit="$2"
+	local pct filled empty color
+	pct=$(awk "BEGIN {p = $ratio / $limit * 100; if (p > 100) p = 100; printf \"%d\", p}")
+	filled=$((pct * BAR_WIDTH / 100))
+	empty=$((BAR_WIDTH - filled))
+	if [ "$pct" -ge 80 ]; then
+		color="$RED"
+	elif [ "$pct" -ge 60 ]; then
+		color="$YELLOW"
+	else
+		color="$GREEN"
+	fi
+	printf '%s' "$color"
+	for ((i = 0; i < filled; i++)); do printf '█'; done
+	printf '%s' "$DIM"
+	for ((i = 0; i < empty; i++)); do printf '░'; done
+	printf '%s' "$RESET"
+}
+
+cpu_bar=$(make_bar "$cpu_ratio" "$MAX_CPU_OVERCOMMIT")
+mem_bar=$(make_bar "$mem_ratio" "$MAX_MEMORY_OVERCOMMIT")
+
+# Output
+printf '\n%s==>%s %sresources%s\n' "$BOLD$CYAN" "$RESET" "$BOLD" "$RESET"
+printf '  %sDell OptiPlex 7050  ·  %s threads  ·  %sGB RAM%s\n\n' \
+	"$DIM" "$MAX_CPUS" "$host_ram_gb" "$RESET"
+
+# Aligned rows: label(7) value(20) bar(20) ratio
+printf '  %-7s %s%5s%s / %5s threads   %b  %s%sx of %sx%s\n' \
+	"cpu" "$BOLD" "$total_cpus" "$RESET" "$max_total_cpus" "$cpu_bar" "$BOLD" "$cpu_ratio" "$MAX_CPU_OVERCOMMIT" "$RESET"
+printf '  %-7s %s%5s%s / %5s GB        %b  %s%sx of %sx%s\n' \
+	"memory" "$BOLD" "$total_memory_gb" "$RESET" "$max_total_memory_gb" "$mem_bar" "$BOLD" "$mem_ratio" "$MAX_MEMORY_OVERCOMMIT" "$RESET"
+printf '  %s%-7s%s %smax %sG mem · %s cpu per service%s\n' \
+	"" "per-svc" "" "$DIM" "$((MAX_SERVICE_MEMORY_MB / 1024))" "$MAX_SERVICE_CPUS" "$RESET"
+
+if [ "${#violations[@]}" -gt 0 ]; then
+	printf '\n'
+	for v in "${violations[@]}"; do printf '  %s\n' "$v"; done
 fi
 
 if [ "$errors" -eq 0 ]; then
-	echo "OK: within limits"
+	printf '\n  %s✓%s within limits\n' "$GREEN" "$RESET"
+else
+	printf '\n  %s✗ limit violations%s\n' "$RED$BOLD" "$RESET"
 fi
 
 exit "$errors"
