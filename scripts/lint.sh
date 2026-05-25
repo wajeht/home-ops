@@ -138,6 +138,27 @@ check_backup() {
 	fi
 }
 
+resource_bar() {
+	local ratio="$1" limit="$2" bar_width=20
+	local pct filled empty color i
+	pct=$(awk "BEGIN {p = $ratio / $limit * 100; if (p > 100) p = 100; printf \"%d\", p}")
+	filled=$((pct * bar_width / 100))
+	empty=$((bar_width - filled))
+	if [ "$pct" -ge 80 ]; then
+		color="$RED"
+	elif [ "$pct" -ge 60 ]; then
+		color="$YELLOW"
+	else
+		color="$GREEN"
+	fi
+
+	printf '%s' "$color"
+	for ((i = 0; i < filled; i++)); do printf '█'; done
+	printf '%s' "$DIM"
+	for ((i = 0; i < empty; i++)); do printf '░'; done
+	printf '%s' "$RESET"
+}
+
 # shellcheck disable=SC2329
 check_resources() {
 	local max_cpus=8
@@ -151,6 +172,7 @@ check_resources() {
 	local errors=0
 	local compose app limited_services cpus memory service mem_mb svc shm stop oom
 	local total_memory_gb max_total_memory_gb max_total_memory_mb max_total_cpus
+	local cpu_ratio mem_ratio host_ram_gb cpu_bar mem_bar
 	local issues=()
 	local warnings=()
 
@@ -241,6 +263,11 @@ check_resources() {
 	max_total_memory_gb=$(awk "BEGIN {printf \"%.1f\", $max_memory_mb * $max_memory_overcommit / 1024}")
 	max_total_memory_mb=$((max_memory_mb * max_memory_overcommit))
 	max_total_cpus=$(awk "BEGIN {printf \"%.1f\", $max_cpus * $max_cpu_overcommit}")
+	cpu_ratio=$(awk "BEGIN {printf \"%.1f\", $total_cpus / $max_cpus}")
+	mem_ratio=$(awk "BEGIN {printf \"%.1f\", $total_memory_mb / $max_memory_mb}")
+	host_ram_gb=$((max_memory_mb / 1024))
+	cpu_bar=$(resource_bar "$cpu_ratio" "$max_cpu_overcommit")
+	mem_bar=$(resource_bar "$mem_ratio" "$max_memory_overcommit")
 
 	if [ "$total_memory_mb" -gt "$max_total_memory_mb" ]; then
 		issues+=("total memory ${total_memory_gb}GB exceeds ${max_memory_overcommit}x overcommit limit (${max_total_memory_gb}GB)")
@@ -250,6 +277,14 @@ check_resources() {
 		issues+=("total CPU ${total_cpus} exceeds ${max_cpu_overcommit}x overcommit limit (${max_total_cpus} threads)")
 		errors=1
 	fi
+
+	printf '%sDell OptiPlex 7050 · %s threads · %sGB RAM%s\n' "$DIM" "$max_cpus" "$host_ram_gb" "$RESET"
+	printf '%-7s %s%5s%s / %5s threads   %b  %s%sx of %sx%s\n' \
+		"cpu" "$BOLD" "$total_cpus" "$RESET" "$max_total_cpus" "$cpu_bar" "$BOLD" "$cpu_ratio" "$max_cpu_overcommit" "$RESET"
+	printf '%-7s %s%5s%s / %5s GB        %b  %s%sx of %sx%s\n' \
+		"memory" "$BOLD" "$total_memory_gb" "$RESET" "$max_total_memory_gb" "$mem_bar" "$BOLD" "$mem_ratio" "$max_memory_overcommit" "$RESET"
+	printf '%s%-7s%s %smax %sG mem · %s cpu per service%s\n' \
+		"" "per-svc" "" "$DIM" "$((max_service_memory_mb / 1024))" "$max_service_cpus" "$RESET"
 
 	if [ "${#warnings[@]}" -gt 0 ]; then
 		printf 'resource warnings:\n'
