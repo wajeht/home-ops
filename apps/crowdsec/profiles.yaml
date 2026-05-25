@@ -3,6 +3,17 @@
 # Notification config lives in ./notifications/ntfy.yaml — the `name:` there must match
 # the entry in the notifications list below.
 
+name: soft_ip_remediation_for_noisy_http
+filters:
+  - Alert.Remediation == true && Alert.GetScope() == "Ip" && (Alert.GetScenario() in ["crowdsecurity/http-probing", "crowdsecurity/http-crawl-non_statics", "crowdsecurity/http-generic-bf"] || Alert.GetScenario() contains "http-generic-401-bf" || Alert.GetScenario() contains "http-generic-403-bf")
+decisions:
+  - type: ban
+    duration: 15m
+notifications:
+  - ntfy
+on_success: break
+
+---
 name: default_ip_remediation
 filters:
   - Alert.Remediation == true && Alert.GetScope() == "Ip"

@@ -44,13 +44,15 @@ A few non-obvious decisions, with reasoning so they're easy to revisit later.
 
 **`rolling_update: false` in `docker-cd.yml`.** CrowdSec holds a SQLite DB and long-lived bouncer registrations. Two parallel instances during a rolling swap would race on the DB and confuse the bouncer-key registration. Better to take a few seconds of fail-open during redeploy than risk DB corruption.
 
-**Whitelist-based protection, no scenarios disabled.** All upstream scenarios stay enabled. Our own IPs (LAN + the operator's current public IP, in `custom-whitelists.yaml`) are whitelisted at parser-time, so no scenario can ban us regardless of what it fires on. Trade-off: when the public IP rotates (residential ISP), we'll get banned briefly until the whitelist is updated. Symptom: 401s on every Google-auth-protected app from a fresh session — `curl ifconfig.me`, update the whitelist, push.
+**Whitelist-based protection, no scenarios disabled.** All upstream scenarios stay enabled. Our own IPs (LAN + the operator's current public IPv4 and, when available, public IPv6 `/64` in `custom-whitelists.yaml`) are whitelisted at parser-time, so no scenario can ban us regardless of what it fires on. `scripts/update-crowdsec-whitelist.sh` keeps the managed public-IP blocks current and deletes stale active decisions for the detected IPs.
 
 Three scenarios are particularly self-perpetuating in a stack with Google-auth + bouncer-on-websecure-default-chain — listed here so future debugging starts in the right place:
 
 - `http-probing` — fires on multiple 404s in a window. SPAs hit missing assets (`manifest.json`, `favicon.ico`) → false positive on normal browsing.
 - `http-crawl-non_statics` — fires on many non-static requests from one IP. Normal SPA usage.
 - `http-generic-bf` — fires on many 401/403s as "login brute force". Google-auth's redirect returns 401 on every protected app, generating real-looking 401 bursts; and once the bouncer bans an IP, its own 403 responses feed back into this scenario, self-perpetuating the ban. The whitelist breaks that loop by never banning trusted IPs in the first place.
+
+These three scenarios use a softer 15-minute ban in `profiles.yaml`; exploit/CVE/signature detections keep the normal 4-hour ban.
 
 **Custom whitelist file + override profiles + notifications wired in via bind-mounts.** Rather than letting the agent's persisted config dir be the source of truth for these (server-side state, not GitOps-friendly), the three files live in this repo and are mounted read-only into the container at their target paths. This means every behavioral knob — what's whitelisted, what gets banned for how long, what fires a notification — is committable and reviewable. Trade-off: the agent's `cscli` cannot edit these at runtime (any `cscli` write to those paths fails with read-only). For one-off bans/unbans use `cscli decisions add/delete`, which writes to the SQLite DB (mutable, on a separate mount).
 
@@ -154,6 +156,16 @@ whitelist:
 ```
 
 The hub-provided default at `parsers/s02-enrich/whitelists.yaml` (installed by `crowdsecurity/whitelists`) already covers loopback + RFC1918 — don't duplicate those here.
+
+### Update trusted public IPs
+
+From this repo, fetch the current public IPs as seen from the server and update the managed whitelist blocks:
+
+```bash
+scripts/update-crowdsec-whitelist.sh --server jaw@192.168.4.161
+```
+
+Add `--commit --push` to make docker-cd deploy the change. The script also deletes active decisions for the detected IPs so an old ban does not linger after the whitelist updates.
 
 ### Inspect metrics
 
@@ -280,7 +292,6 @@ Loss of the DB is non-fatal: the bouncer re-registers from `BOUNCER_KEY_TRAEFIK`
 Things explicitly out of scope for the current setup, in rough order of value:
 
 - **Cloudflare edge bouncer (`cs-cloudflare-worker-bouncer`).** Pushes bans into CF's Worker so attackers are blocked at the edge and never reach origin. Needs a CF API token with Worker scope. Use the _Worker_ variant — the original `cs-cloudflare-bouncer` was deprecated due to CF API rate-limit changes.
-- **Journald acquisition for sshd.** The `crowdsecurity/sshd` + `crowdsecurity/linux` parsers are already installed but the agent isn't reading host journal yet. Adding it needs `/var/log/journal` + `/etc/machine-id` mounts and `group_add: ["systemd-journal"]` (GID varies — verify on host with `getent group systemd-journal`). Currently relying on `fail2ban` for SSH (see `docs/security.md`).
 - **AppSec / WAF.** CrowdSec ships an inline request-inspection engine (SQLi, XSS, deserialization, etc.) separate from log-parsing. Enabling it adds `crowdsecAppsecEnabled: true` to the middleware and exposes a second port (`:7422`) on the agent. Per-request CPU cost and real FP-tuning burden; community reports significant burden for selfhosted apps.
 - **Captcha middleware.** Instead of 403 on detection, present an hCaptcha challenge. Better UX for borderline decisions on auth pages; needs a captcha provider account.
 

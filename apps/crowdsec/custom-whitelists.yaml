@@ -3,11 +3,17 @@ description: "Site-specific whitelist additions on top of crowdsecurity/whitelis
 whitelist:
   reason: "Site-specific trusted source — never ban"
   ip:
+    # BEGIN managed public IPv4 — scripts/update-crowdsec-whitelist.sh
     # AT&T residential — dynamic IP, update if it changes. Without this, google-auth
     # login redirects (401/403) on protected apps + CrowdSec bouncer responses get
     # mistaken for brute force and self-perpetuate a ban loop.
     - 23.116.32.48
+    # END managed public IPv4
   cidr:
+    # BEGIN managed public IPv6 — scripts/update-crowdsec-whitelist.sh
+    # No stable home IPv6 prefix detected yet. If one appears, the updater will
+    # add the /64 here instead of whitelisting one temporary IPv6 address.
+    # END managed public IPv6
     # Add specific CIDR ranges here. Examples:
     # - 100.64.0.0/10        # Tailscale / CGNAT
     # - 203.0.113.0/24       # Office static range
