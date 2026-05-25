@@ -85,6 +85,8 @@ OAuth access is split by middleware:
 - Media apps use `oauth2-media@file` and `OAUTH2_MEDIA_EMAIL_*` in `apps/oauth2-proxy/.env.sops`.
 - Current media hosts: `plex.jaw.dev`, `seerr.jaw.dev`, `convertx.jaw.dev`.
 
+docker-cd decrypts the oauth2-proxy `.env.sops`; Docker Compose renders those email values into runtime allowlist files for oauth2-proxy. Do not commit plaintext email allowlist files.
+
 Admin-only app:
 
 ```yaml
@@ -115,7 +117,7 @@ security_opt:
   - no-new-privileges:true
 ```
 
-`read_only: true` makes the container's root filesystem immutable — use on stateless single-binary apps (Go/Node) and wajeht/\* apps with data volumes. Add `tmpfs: /tmp` when the app might write temp files. Skip `read_only` for LSIO images, Postgres, Redis, and complex runtimes (Python/Elixir) that write all over the root filesystem.
+`read_only: true` makes the container's root filesystem immutable — use on stateless single-binary apps (Go/Node) and wajeht/\* apps with data volumes. Add `tmpfs: /tmp` when the app might write temp files. Skip `read_only` for LSIO images, Postgres, Redis, complex runtimes (Python/Elixir), and services using Compose `configs.content`.
 
 Most apps need `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` because they do user switching or chown on volumes at startup. Start with these and only remove them for truly stateless single-binary apps (Go/Node apps like dozzle).
 
@@ -230,6 +232,21 @@ services:
     image: myimage:v1.0
     env_file:
       - .env # docker-cd decrypts .env.sops -> .env
+```
+
+For apps that need a secret file instead of an env var, use Compose `configs.content` fed by the decrypted `.env`:
+
+```yaml
+services:
+  myapp:
+    configs:
+      - source: myapp_secret
+        target: /run/secrets/myapp-secret.txt
+
+configs:
+  myapp_secret:
+    content: |
+      ${MYAPP_SECRET_VALUE}
 ```
 
 Edit secrets:

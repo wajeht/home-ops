@@ -7,12 +7,12 @@ Use this doc when adding, viewing, or editing `.env.sops` files.
 ## How It Works
 
 ```
-apps/myapp/.env.sops  →  docker-cd auto-decrypts  →  container env vars
+apps/myapp/.env.sops  →  docker-cd auto-decrypts  →  .env
      encrypted            on deployment
      safe to commit
 ```
 
-Each stack has its own `.env.sops` file. When docker-cd deploys (via polling), it automatically decrypts SOPS-encrypted files.
+Each stack has its own `.env.sops` file. When docker-cd deploys, it decrypts `.env.sops` to `.env`. Compose can use that file as container env vars or render values into runtime config files.
 
 ## Structure
 
@@ -68,6 +68,23 @@ rm apps/myapp/.env
 #   - .env
 ```
 
+### Secret file from encrypted values
+
+Use this when the app expects a file, not an env var. oauth2-proxy uses this for encrypted email allowlists.
+
+```yaml
+services:
+  myapp:
+    configs:
+      - source: myapp_secret
+        target: /run/secrets/myapp-secret.txt
+
+configs:
+  myapp_secret:
+    content: |
+      ${MYAPP_SECRET_VALUE}
+```
+
 ### Deploy after changes
 
 ```bash
@@ -87,4 +104,4 @@ docker-cd will auto-deploy with decrypted secrets.
 - `.env.sops` files are safe to commit (encrypted)
 - Plain `.env` files are gitignored
 - docker-cd mounts age key at `/sops/age-key.txt`
-- Secrets passed as env vars at container runtime
+- Secrets can be passed as env vars or rendered into runtime config files

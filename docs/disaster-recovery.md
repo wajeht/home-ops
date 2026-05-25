@@ -31,7 +31,7 @@ Backups run through [Backrest](https://github.com/garethgeorge/backrest) (web UI
 
 ```bash
 # These MUST be backed up — can't recreate without them
-~/.sops/age-key.txt           # Decrypts all .env.sops secrets
+~/.sops/age-key.txt           # Decrypts all .env.sops secrets and auth allowlists
 ~/data/                       # All app configs and databases
 RESTIC_PASSWORD               # In apps/backrest/.env.sops — without it, NO restic repo is readable
 ```
@@ -405,7 +405,7 @@ mkdir -p ~/.sops && mv /tmp/age-key.txt ~/.sops/age-key.txt
 chmod 600 ~/.sops/age-key.txt
 ```
 
-Without `~/.sops/age-key.txt`, every `.env.sops` is unreadable — recovery from this state requires either the age key OR plaintext copies of every secret. **Back up the age key to multiple locations** (password manager, second offline copy).
+Without `~/.sops/age-key.txt`, every `.env.sops` is unreadable — recovery from this state requires either the age key OR plaintext copies of every secret and allowlist. **Back up the age key to multiple locations** (password manager, second offline copy).
 
 ### Test restore drill (do this monthly)
 
@@ -421,16 +421,16 @@ If `.tables` lists bang's tables, the full pipeline (backup + restore) works end
 
 ### Scenarios
 
-| Scenario                                         | Recovery                                                                                                                                                          |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| One app's data lost, NAS intact                  | Restore that app from `/repos/<app>` using the per-app restore procedure above                                                                                    |
-| One app's DB corrupted but files OK              | Restore just the `.bak`/`.dump` via `--include`, then `sqlite3 .restore` or `pg_restore`                                                                          |
-| Backrest container gone, restic repos intact     | Spin restic up anywhere with the password: `docker run --rm -e RESTIC_PASSWORD=… -v /mnt/nas/backup/restic:/repos restic/restic:latest -r /repos/<app> snapshots` |
-| Backrest config.json corrupted                   | Restore from git (`apps/backrest/config/config.json`) — the source of truth                                                                                       |
-| Whole local server gone, NAS intact              | Restore `~/home-ops` from git → restore `~/.sops/age-key.txt` from your password manager → mount NFS → deploy Backrest → restore each app                         |
-| `RESTIC_PASSWORD` lost                           | **No recovery — every restic repo is permanently unreadable.** Keep this password in your password manager.                                                       |
-| SOPS age key lost AND not in Backrest repo       | Every `.env.sops` is unreadable. Restoring `.env` plaintext copies (if any exist) is the only path. **Back up the age key to multiple offline locations.**        |
-| Restic repo + age key + RESTIC_PASSWORD all lost | Full data loss for that app. Compose files in git still survive — apps can be redeployed empty, configs lost.                                                     |
+| Scenario                                         | Recovery                                                                                                                                                                                          |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| One app's data lost, NAS intact                  | Restore that app from `/repos/<app>` using the per-app restore procedure above                                                                                                                    |
+| One app's DB corrupted but files OK              | Restore just the `.bak`/`.dump` via `--include`, then `sqlite3 .restore` or `pg_restore`                                                                                                          |
+| Backrest container gone, restic repos intact     | Spin restic up anywhere with the password: `docker run --rm -e RESTIC_PASSWORD=… -v /mnt/nas/backup/restic:/repos restic/restic:latest -r /repos/<app> snapshots`                                 |
+| Backrest config.json corrupted                   | Restore from git (`apps/backrest/config/config.json`) — the source of truth                                                                                                                       |
+| Whole local server gone, NAS intact              | Restore `~/home-ops` from git → restore `~/.sops/age-key.txt` from your password manager → mount NFS → deploy Backrest → restore each app                                                         |
+| `RESTIC_PASSWORD` lost                           | **No recovery — every restic repo is permanently unreadable.** Keep this password in your password manager.                                                                                       |
+| SOPS age key lost AND not in Backrest repo       | Every `.env.sops` is unreadable. Restoring `.env` plaintext copies (if any exist) is the only path. This includes oauth2-proxy allowlists. **Back up the age key to multiple offline locations.** |
+| Restic repo + age key + RESTIC_PASSWORD all lost | Full data loss for that app. Compose files in git still survive — apps can be redeployed empty, configs lost.                                                                                     |
 
 ### Full Rebuild Procedure
 
