@@ -39,9 +39,11 @@ total_cpus=0
 total_memory_mb=0
 errors=0
 violations=()
+warnings=()
 
 for compose in apps/*/docker-compose.yml; do
 	app="$(basename "$(dirname "$compose")")"
+	limited_services=" "
 
 	while IFS= read -r line; do
 		cpus=$(echo "$line" | awk '{print $1}')
@@ -69,6 +71,7 @@ for compose in apps/*/docker-compose.yml; do
 
 		total_cpus=$(awk "BEGIN {printf \"%.1f\", $total_cpus + $cpus}")
 		total_memory_mb=$((total_memory_mb + mem_mb))
+		limited_services+="${service} "
 	done < <(awk '
 		/^  [a-zA-Z]/ && /:/ && !/deploy:/ && !/resources:/ && !/limits:/ && !/cpus:/ && !/memory:/ && !/labels:/ && !/reservations:/ { gsub(/:.*/, ""); gsub(/^ +/, ""); svc=$0 }
 		/deploy:/ { in_deploy=1; next }
@@ -78,6 +81,58 @@ for compose in apps/*/docker-compose.yml; do
 		in_limits && /memory:/ { gsub(/[" ]/, "", $2); mem=$2 }
 		in_limits && cpus && mem { print cpus, mem, svc; cpus=""; mem=""; in_deploy=0; in_resources=0; in_limits=0 }
 		/^[^ ]/ || /^  [^ ]/ { if (in_deploy && !/deploy:/) { in_deploy=0; in_resources=0; in_limits=0; cpus=""; mem="" } }
+	' "$compose")
+
+	# Detect services with no deploy.resources.limits — these silently escape the
+	# accounting above, so an unbounded service could consume the whole host.
+	while IFS= read -r svc; do
+		[ -z "$svc" ] && continue
+		case "$limited_services" in
+			*" $svc "*) ;;
+			*)
+				violations+=("${RED}✗${RESET}  ${app}/${svc} missing deploy.resources.limits")
+				errors=1
+				;;
+		esac
+	done < <(awk '
+		/^services:[[:space:]]*$/ { in_svcs=1; next }
+		/^[a-zA-Z]/ && in_svcs { in_svcs=0 }
+		in_svcs && /^  [a-zA-Z][a-zA-Z0-9_-]*:[[:space:]]*$/ {
+			name = $0; sub(/^  /, "", name); sub(/:.*/, "", name); print name
+		}
+	' "$compose")
+
+	# Postgres services need the reliability extras from docs/adding-apps.md.
+	# Warnings (not failures) — present-or-absent check, value tuning is left to the operator.
+	while IFS= read -r line; do
+		svc=$(echo "$line" | awk '{print $1}')
+		shm=$(echo "$line" | awk '{print $2}')
+		stop=$(echo "$line" | awk '{print $3}')
+		oom=$(echo "$line" | awk '{print $4}')
+		[ "$shm" = "-" ] && warnings+=("${YELLOW}⚠${RESET}  ${app}/${svc} postgres missing shm_size (recommended: 256m)")
+		[ "$stop" = "-" ] && warnings+=("${YELLOW}⚠${RESET}  ${app}/${svc} postgres missing stop_grace_period (recommended: 30s)")
+		[ "$oom" = "-" ] && warnings+=("${YELLOW}⚠${RESET}  ${app}/${svc} postgres missing oom_score_adj (recommended: -300)")
+	done < <(awk '
+		function flush() {
+			# Match postgres: at image-name start (catches both vanilla postgres and prefixed images like ghcr.io/x/postgres).
+			if (svc && img ~ /(^|\/)postgres:/) {
+				printf "%s %s %s %s\n", svc, (shm ? shm : "-"), (stop ? stop : "-"), (oom ? oom : "-")
+			}
+		}
+		/^services:[[:space:]]*$/ { in_svcs=1; next }
+		/^[a-zA-Z]/ && in_svcs { flush(); in_svcs=0; svc="" }
+		in_svcs && /^  [a-zA-Z][a-zA-Z0-9_-]*:[[:space:]]*$/ {
+			flush()
+			svc=$0; sub(/^  /, "", svc); sub(/:.*/, "", svc)
+			img=""; shm=""; stop=""; oom=""
+		}
+		svc && /^    image:[[:space:]]+/ {
+			img=$0; sub(/^    image:[[:space:]]+/, "", img); gsub(/["'\'']/, "", img)
+		}
+		svc && /^    shm_size:/ { shm=$2 }
+		svc && /^    stop_grace_period:/ { stop=$2 }
+		svc && /^    oom_score_adj:/ { oom=$2 }
+		END { flush() }
 	' "$compose")
 done
 
@@ -136,13 +191,22 @@ printf '  %-7s %s%5s%s / %5s GB        %b  %s%sx of %sx%s\n' \
 printf '  %s%-7s%s %smax %sG mem · %s cpu per service%s\n' \
 	"" "per-svc" "" "$DIM" "$((MAX_SERVICE_MEMORY_MB / 1024))" "$MAX_SERVICE_CPUS" "$RESET"
 
+if [ "${#warnings[@]}" -gt 0 ]; then
+	printf '\n'
+	for w in "${warnings[@]}"; do printf '  %s\n' "$w"; done
+fi
+
 if [ "${#violations[@]}" -gt 0 ]; then
 	printf '\n'
 	for v in "${violations[@]}"; do printf '  %s\n' "$v"; done
 fi
 
 if [ "$errors" -eq 0 ]; then
-	printf '\n  %s✓%s within limits\n' "$GREEN" "$RESET"
+	if [ "${#warnings[@]}" -gt 0 ]; then
+		printf '\n  %s✓%s within limits, %s%d warning(s)%s\n' "$GREEN" "$RESET" "$YELLOW" "${#warnings[@]}" "$RESET"
+	else
+		printf '\n  %s✓%s within limits\n' "$GREEN" "$RESET"
+	fi
 else
 	printf '\n  %s✗ limit violations%s\n' "$RED$BOLD" "$RESET"
 fi
