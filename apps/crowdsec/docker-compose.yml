@@ -8,13 +8,6 @@ services:
       TZ: America/Chicago
       GID: "1000"
       COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve"
-      # Drop the two volume-based scenarios from the traefik collection that fire on
-      # normal SPA browsing (multiple 404s, many non-static requests). Signature-based
-      # scenarios in the collection (sqli/xss/path-traversal/sensitive-files/bad-UA/
-      # backdoors/CVEs/brute-force) are kept — they detect *what's* in the request,
-      # not how many. Matches mainstream homelab practice; same pair is the canonical
-      # example in `cscli scenarios remove` docs.
-      DISABLE_SCENARIOS: "crowdsecurity/http-probing crowdsecurity/http-crawl-non_statics"
       CUSTOM_HOSTNAME: crowdsec
       DISABLE_ONLINE_API: "false"
       # WAL mode prevents LAPI from blocking during community-blocklist inserts.

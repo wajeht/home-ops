@@ -3,8 +3,10 @@ description: "Site-specific whitelist additions on top of crowdsecurity/whitelis
 whitelist:
   reason: "Site-specific trusted source — never ban"
   ip:
-    # Add specific public IPv4/IPv6 here. Example:
-    # - 203.0.113.42
+    # AT&T residential — dynamic IP, update if it changes. Without this, google-auth
+    # login redirects (401/403) on protected apps + CrowdSec bouncer responses get
+    # mistaken for brute force and self-perpetuate a ban loop.
+    - 23.116.32.48
   cidr:
     # Add specific CIDR ranges here. Examples:
     # - 100.64.0.0/10        # Tailscale / CGNAT
