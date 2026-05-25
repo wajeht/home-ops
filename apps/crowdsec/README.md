@@ -44,6 +44,8 @@ A few non-obvious decisions, with reasoning so they're easy to revisit later.
 
 **`rolling_update: false` in `docker-cd.yml`.** CrowdSec holds a SQLite DB and long-lived bouncer registrations. Two parallel instances during a rolling swap would race on the DB and confuse the bouncer-key registration. Better to take a few seconds of fail-open during redeploy than risk DB corruption.
 
+**`http-probing` and `http-crawl-non_statics` disabled.** These two scenarios from `crowdsecurity/traefik` are volume-based (fire on many 404s or many non-static requests from one IP in a window) and produce false positives on normal SPA browsing — the SPA hits a missing asset, the agent sees a probing pattern, the IP gets banned. Same false positive shows up in upstream reports against Nextcloud, Immich, and other selfhosted apps. The signature-based scenarios in the collection (sqli/xss/path-traversal/sensitive-files/bad-UA/backdoors/brute-force, plus the entire `crowdsecurity/http-cve` collection) are kept — they detect _what's in the request_, not how many requests. Mainstream homelab practice; the CrowdSec docs themselves use `http-probing` as the canonical `cscli scenarios remove` example.
+
 ## Real Client IP
 
 Bans key off `CF-Connecting-IP`, not the immediate source IP (which is always Cloudflare). The middleware's `forwardedHeadersCustomName` is set to `CF-Connecting-IP` and `forwardedHeadersTrustedIPs` lists the same CF ranges already trusted elsewhere in the stack.
