@@ -160,3 +160,24 @@ Traefik wiring lives in `apps/traefik/docker-compose.yml`:
 - `crowdsec@docker` in the `websecure` default middleware chain
 
 Host data: `/home/jaw/data/crowdsec/{db,config}` (SQLite + hub state, backed up by Backrest).
+
+## Backup
+
+Daily Backrest snapshot at 4:30 AM (`apps/backrest/config/config.json`, plan id `crowdsec`).
+
+- Whole `/home/jaw/data/crowdsec/` is captured, with raw `crowdsec.db{,-wal,-shm}` excluded.
+- A pre-hook runs `sqlite3 ... .backup` into `/source/crowdsec/.crowdsec.bak` for crash-consistent DB capture.
+- Post-hook removes the `.bak`.
+
+Restore (after wiping local state):
+
+```bash
+docker exec backrest restic -r /repos/crowdsec restore latest --target /tmp/restore
+cd ~/home-ops/apps/crowdsec && docker compose stop
+rsync -a --delete /tmp/restore/source/crowdsec/ /home/jaw/data/crowdsec/ --exclude '.crowdsec.bak'
+docker exec backrest sqlite3 /home/jaw/data/crowdsec/db/crowdsec.db ".restore /tmp/restore/source/crowdsec/.crowdsec.bak"
+rm -f /home/jaw/data/crowdsec/db/crowdsec.db-wal /home/jaw/data/crowdsec/db/crowdsec.db-shm
+docker compose up -d
+```
+
+Loss of the DB is non-fatal: the bouncer re-registers from `BOUNCER_KEY_TRAEFIK` on agent boot, and the community blocklist re-syncs within ~10 min. The valuable part is custom whitelists and accumulated local decisions.
