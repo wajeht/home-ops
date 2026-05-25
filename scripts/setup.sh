@@ -62,7 +62,7 @@ sync_submodules() {
 	fi
 
 	if [ -n "$gh_token" ]; then
-		make_temp_dir tmp_dir
+		tmp_dir=$(mktemp -d)
 		askpass="$tmp_dir/git-askpass"
 		cat >"$askpass" <<'EOF'
 #!/bin/sh
@@ -100,7 +100,7 @@ redeploy_compose() {
 	info "Redeploying $name..."
 
 	if [ -f "$dir/.env.sops" ]; then
-		make_temp_dir tmp_dir
+		tmp_dir=$(mktemp -d)
 		tmp="$tmp_dir/env"
 		decrypt_dotenv_sops "$dir/.env.sops" >"$tmp"
 
@@ -118,6 +118,7 @@ redeploy_compose() {
 			else
 				rm -f "$dir/.env"
 			fi
+			rm -rf "$tmp_dir"
 			err "Failed to pull images for $name"
 			return 1
 		fi
@@ -127,6 +128,7 @@ redeploy_compose() {
 			else
 				rm -f "$dir/.env"
 			fi
+			rm -rf "$tmp_dir"
 			err "Failed to redeploy $name"
 			return 1
 		fi
@@ -485,7 +487,7 @@ cmd_install() {
 		fi
 
 		if [ -n "$secret_file" ]; then
-			make_temp_dir tmp_dir
+			tmp_dir=$(mktemp -d)
 			tmp="$tmp_dir/env"
 			decrypt_dotenv_sops "$secret_file" >"$tmp"
 			cp "$tmp" .env
@@ -664,7 +666,7 @@ cmd_images() {
 	case "$action" in
 		status)
 			local running_file tmp_dir
-			make_temp_dir tmp_dir
+			tmp_dir=$(mktemp -d)
 			running_file="$tmp_dir/running-images"
 			docker ps --format '{{.ID}}' | while read -r cid; do
 				docker inspect --format '{{.Image}}' "$cid" 2>/dev/null | sed 's/sha256://' | cut -c1-12

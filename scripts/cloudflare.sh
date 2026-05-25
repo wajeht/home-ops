@@ -42,7 +42,8 @@ for file in "$dynamic_file" "$compose_file"; do
 	fi
 done
 
-make_temp_dir tmp_dir
+tmp_dir=$(mktemp -d)
+trap 'rm -rf "$tmp_dir"' EXIT
 
 ranges_file="$tmp_dir/cloudflare-ranges.txt"
 

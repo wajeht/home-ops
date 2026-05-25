@@ -47,24 +47,3 @@ die() {
 require_cmd() {
 	command -v "$1" >/dev/null 2>&1 || die "$1 is required"
 }
-
-SCRIPT_TMP_DIRS=()
-
-make_temp_dir() {
-	local __result_var=${1:-}
-	local __tmp_dir
-	[ -n "$__result_var" ] || die "make_temp_dir requires a result variable name"
-	__tmp_dir=$(mktemp -d)
-	SCRIPT_TMP_DIRS+=("$__tmp_dir")
-	printf -v "$__result_var" '%s' "$__tmp_dir"
-}
-
-cleanup_temp_dirs() {
-	local tmp_dir
-	for tmp_dir in "${SCRIPT_TMP_DIRS[@]-}"; do
-		[ -n "$tmp_dir" ] || continue
-		rm -rf "$tmp_dir"
-	done
-}
-
-trap cleanup_temp_dirs EXIT
