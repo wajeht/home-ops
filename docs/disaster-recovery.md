@@ -2,7 +2,17 @@
 
 How to back up, restore, and recreate the homelab from scratch.
 
+Use this doc for backup plan templates, restore procedures, and full-server recovery. For adding a normal app, start with [Adding Apps](adding-apps.md).
+
 Backups run through [Backrest](https://github.com/garethgeorge/backrest) (web UI over [restic](https://restic.net)) — a single container managing per-app restic repos, with web-UI restore and ntfy notifications.
+
+## Start Here
+
+- New app backup: [Adding an App](#adding-an-app)
+- Manual backup: [Backup Commands](#backup-commands)
+- Restore one app: [Restore](#restore)
+- Full rebuild: [Full Rebuild](#full-rebuild)
+- Backrest operations: [Operations](#operations)
 
 ## What's Backed Up Where
 
@@ -407,7 +417,7 @@ docker exec backrest sqlite3 /tmp/restore-test/source/bang/.bang.bak ".tables"
 
 If `.tables` lists bang's tables, the full pipeline (backup + restore) works end-to-end. The cheapest way to discover backup rot before you need it.
 
-## Disaster Recovery
+## Full Rebuild
 
 ### Scenarios
 

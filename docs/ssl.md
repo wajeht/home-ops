@@ -2,6 +2,8 @@
 
 Traefik handles TLS automatically. `*.jaw.dev` uses Cloudflare DNS challenge.
 
+Use this doc for certificate routing and Cloudflare DNS-token requirements.
+
 ## How It Works
 
 1. Traefik obtains certs using Cloudflare DNS challenge.

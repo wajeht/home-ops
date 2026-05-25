@@ -4,6 +4,8 @@ Renovate automatically creates PRs when third-party Docker image versions are av
 
 > **Note:** Your own images (ghcr.io/wajeht/\*) use [instant deploy](instant-deploy.md) instead.
 
+Use this doc for third-party image update behavior and Renovate credentials.
+
 ## How It Works
 
 ```

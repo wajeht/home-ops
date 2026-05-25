@@ -2,6 +2,8 @@
 
 Push a tag → image builds → home-ops updates → docker-cd deploys. No Renovate delays.
 
+Use this doc for your own `ghcr.io/wajeht/*` apps. Third-party images use [Renovate](renovate.md).
+
 ## How It Works
 
 ```

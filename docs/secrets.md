@@ -2,6 +2,8 @@
 
 Secrets are encrypted with [SOPS](https://github.com/getsops/sops) + [age](https://github.com/FiloSottile/age), stored per-app in git. docker-cd auto-decrypts during deployment.
 
+Use this doc when adding, viewing, or editing `.env.sops` files.
+
 ## How It Works
 
 ```
@@ -15,24 +17,8 @@ Each stack has its own `.env.sops` file. When docker-cd deploys (via polling), i
 ## Structure
 
 ```
-apps/
-├── bang/.env.sops
-├── traefik/.env.sops
-├── calendar/.env.sops
-├── close-powerlifting/.env.sops
-├── commit/.env.sops
-├── gains/.env.sops
-├── gitea/.env.sops
-├── homepage/.env.sops
-├── mm2us/.env.sops
-├── notify/.env.sops
-├── screenshot/.env.sops
-├── vaultwarden/.env.sops
-├── ...
-├── vpn-qbit/.env.sops
-└── ...
-infra/
-└── docker-cd/.env.sops
+apps/<app>/.env.sops
+infra/<service>/.env.sops
 ```
 
 ## Local Setup

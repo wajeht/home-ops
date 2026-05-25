@@ -2,6 +2,20 @@
 
 Push a `docker-compose.yml` to `apps/<name>/` and docker-cd auto-deploys it.
 
+Use this doc for the app shape and required baseline. For secrets, see [Secrets](secrets.md). For backups, see [Disaster Recovery](disaster-recovery.md#adding-an-app).
+
+## Checklist
+
+Before pushing a new app:
+
+- `docker-compose.yml` lives in `apps/<name>/`
+- service has `restart`, `init`, healthcheck, logging, and resource limits
+- container drops capabilities and uses `no-new-privileges`
+- internet-facing app is on the external `traefik` network
+- protected apps use `google-auth@file`
+- app data under `/home/jaw/data/<name>` has a Backrest plan unless intentionally ignored
+- `./scripts/lint.sh` passes
+
 ## Create App
 
 ```bash

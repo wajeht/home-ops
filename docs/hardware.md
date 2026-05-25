@@ -1,5 +1,7 @@
 # Hardware
 
+Physical inventory for the homelab.
+
 | Device                                                                                                                                                                                                                                                                                                                                                                                                                                    | RAM  | Storage  | OS              | Function        |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | -------- | --------------- | --------------- |
 | [Dell OptiPlex 7050 Micro (i7-7700)](https://www.amazon.com/s?k=dell+optiplex+7050+micro+i7-7700)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [WD Blue SN570 1TB NVMe](https://www.amazon.com/s?k=WD+Blue+SN570+1TB) (OS + apps)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Micron M600 1TB SATA](https://www.amazon.com/s?k=Micron+M600+1TB)<br>&nbsp;&nbsp;&nbsp;&nbsp;— [Intel I226-V 2.5GbE M.2 NIC](https://www.amazon.com/s?k=Intel+I226-V+2.5G+M.2+A%2BE+2230) | 32GB | 2TB      | Ubuntu 24.04    | Docker / GitOps |

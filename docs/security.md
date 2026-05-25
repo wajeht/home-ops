@@ -2,6 +2,8 @@
 
 Server hardening for the Dell OptiPlex 7050 (Ubuntu 24.04).
 
+Use this doc for host/network controls. App-level container requirements live in [Adding Apps](adding-apps.md#container-hardening).
+
 ## Open Ports
 
 Scanned from LAN via `nmap -F <server-ip>`:
