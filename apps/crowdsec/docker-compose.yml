@@ -24,6 +24,13 @@ services:
     volumes:
       - traefik-logs:/var/log/traefik:ro
       - ./acquis.yaml:/etc/crowdsec/acquis.yaml:ro
+      # Custom whitelist layered on top of the hub's default whitelists.yaml. The hub
+      # default already covers RFC1918 + loopback; this file is for site-specific entries.
+      - ./custom-whitelists.yaml:/etc/crowdsec/parsers/s02-enrich/custom-whitelists.yaml:ro
+      # Override default profiles.yaml so bans trigger an ntfy notification.
+      - ./profiles.yaml:/etc/crowdsec/profiles.yaml:ro
+      # ntfy notification plugin config. Referenced by `notifications: [ntfy]` in profiles.yaml.
+      - ./notifications/ntfy.yaml:/etc/crowdsec/notifications/ntfy.yaml:ro
       - /home/jaw/data/crowdsec/db:/var/lib/crowdsec/data
       - /home/jaw/data/crowdsec/config:/etc/crowdsec
     networks:

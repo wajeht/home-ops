@@ -1,0 +1,23 @@
+# HTTP notification plugin → ntfy.jaw.dev (topic: crowdsec).
+# Posts a one-line summary per alert. URL uses the internal Docker DNS name (ntfy on the
+# traefik network) to skip Cloudflare/Traefik round-trip.
+# The `name:` value below ("ntfy") must match the entry in profiles.yaml `notifications:`.
+#
+# Requires a one-time ntfy ACL grant for anonymous write on the "crowdsec" topic:
+#   docker exec ntfy ntfy access '*' crowdsec write-only
+
+type: http
+name: ntfy
+log_level: info
+
+format: |
+  {{range . -}}
+  CrowdSec banned {{.Source.IP}} ({{.Source.AsName}}/{{.Source.Cn}}) — {{.Scenario}}
+  {{end -}}
+
+url: http://ntfy/crowdsec
+method: POST
+headers:
+  Title: "CrowdSec ban"
+  Priority: "default"
+  Tags: "shield,no_entry"

@@ -1,0 +1,13 @@
+name: jaw/custom-whitelists
+description: "Site-specific whitelist additions on top of crowdsecurity/whitelists (which already covers RFC1918 + loopback)."
+whitelist:
+  reason: "Site-specific trusted source — never ban"
+  ip:
+    # Add specific public IPv4/IPv6 here. Example:
+    # - 203.0.113.42
+  cidr:
+    # Add specific CIDR ranges here. Examples:
+    # - 100.64.0.0/10        # Tailscale / CGNAT
+    # - 203.0.113.0/24       # Office static range
+    # Explicit re-allow of own LAN — harmless duplicate of hub default; documents intent.
+    - 192.168.4.0/24

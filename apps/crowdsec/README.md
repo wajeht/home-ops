@@ -46,6 +46,8 @@ A few non-obvious decisions, with reasoning so they're easy to revisit later.
 
 **`http-probing` and `http-crawl-non_statics` disabled.** These two scenarios from `crowdsecurity/traefik` are volume-based (fire on many 404s or many non-static requests from one IP in a window) and produce false positives on normal SPA browsing — the SPA hits a missing asset, the agent sees a probing pattern, the IP gets banned. Same false positive shows up in upstream reports against Nextcloud, Immich, and other selfhosted apps. The signature-based scenarios in the collection (sqli/xss/path-traversal/sensitive-files/bad-UA/backdoors/brute-force, plus the entire `crowdsecurity/http-cve` collection) are kept — they detect _what's in the request_, not how many requests. Mainstream homelab practice; the CrowdSec docs themselves use `http-probing` as the canonical `cscli scenarios remove` example.
 
+**Custom whitelist file + override profiles + notifications wired in via bind-mounts.** Rather than letting the agent's persisted config dir be the source of truth for these (server-side state, not GitOps-friendly), the three files live in this repo and are mounted read-only into the container at their target paths. This means every behavioral knob — what's whitelisted, what gets banned for how long, what fires a notification — is committable and reviewable. Trade-off: the agent's `cscli` cannot edit these at runtime (any `cscli` write to those paths fails with read-only). For one-off bans/unbans use `cscli decisions add/delete`, which writes to the SQLite DB (mutable, on a separate mount).
+
 ## Real Client IP
 
 Bans key off `CF-Connecting-IP`, not the immediate source IP (which is always Cloudflare). The middleware's `forwardedHeadersCustomName` is set to `CF-Connecting-IP` and `forwardedHeadersTrustedIPs` lists the same CF ranges already trusted elsewhere in the stack.
@@ -88,6 +90,16 @@ Re-encrypt with `sops -e --input-type dotenv --output-type dotenv .env > .env.so
 
 To rotate the password: `docker exec crowdsec cscli machines delete crowdsec-web-ui` then repeat the steps above.
 
+### Granting ntfy access to the `crowdsec` topic
+
+The notification plugin posts to `http://ntfy/crowdsec` over the internal `traefik` Docker network. The ntfy server defaults to `deny-all`, so the topic needs anonymous write access. One-time grant (server-side, persisted in ntfy's user.db):
+
+```bash
+docker exec ntfy ntfy access '*' crowdsec write-only
+```
+
+Verify with `docker exec ntfy ntfy access` — should list `crowdsec` alongside the other write-only topics.
+
 ## SQLite WAL Mode
 
 `USE_WAL: "true"` is set in the agent's compose. Without it the agent logs:
@@ -124,20 +136,18 @@ docker exec crowdsec cscli decisions delete --ip 1.2.3.4
 
 ### Permanent whitelist
 
-Edit `/home/jaw/data/crowdsec/config/parsers/s02-enrich/whitelists.yaml`:
+Edit `apps/crowdsec/custom-whitelists.yaml` in the repo, commit, push. docker-cd redeploys; new entries are picked up at agent startup.
 
 ```yaml
-name: crowdsecurity/whitelists
-description: "Trusted IPs"
 whitelist:
-  reason: "trusted"
+  reason: "Site-specific trusted source — never ban"
   ip:
     - 203.0.113.1
   cidr:
     - 203.0.113.0/24
 ```
 
-Then restart the agent: `docker restart crowdsec`.
+The hub-provided default at `parsers/s02-enrich/whitelists.yaml` (installed by `crowdsecurity/whitelists`) already covers loopback + RFC1918 — don't duplicate those here.
 
 ### Inspect metrics
 
@@ -204,19 +214,21 @@ CrowdSec itself has no self-hosted web UI. The `cscli dashboard setup` command t
 
 **3. Homepage widget.** [Homepage](https://gethomepage.dev/widgets/services/crowdsec/) has a built-in CrowdSec widget that hits LAPI for live decision/alert counts. A few lines of YAML in `apps/homepage/`. Good for at-a-glance numbers on the main dashboard.
 
-**4. CrowdSec Console (hosted, free tier).** [console.crowdsec.net](https://console.crowdsec.net). Enroll the instance by adding `ENROLL_KEY=<key>` to `apps/crowdsec/.env.sops` and redeploying. Alert metadata leaves the homelab; logs and secrets stay local. Skip if you're happy with the local sidecar — it covers the same use cases.
-
-**5. Grafana + Prometheus.** The agent already exposes Prometheus metrics on `:6060` (293 metric series — `cs_active_decisions`, bucket pours, parser stats, etc.). Pair with [Grafana dashboard 21419](https://grafana.com/grafana/dashboards/21419-crowdsec-metrics/) if you stand up Grafana for other monitoring later. The official `crowdsecurity/grafana-dashboards` repo is stale (last update 2024-03), so dashboard 21419 is the better source.
+**4. Grafana + Prometheus.** The agent already exposes Prometheus metrics on `:6060` (293 metric series — `cs_active_decisions`, bucket pours, parser stats, etc.). Pair with [Grafana dashboard 21419](https://grafana.com/grafana/dashboards/21419-crowdsec-metrics/) if you stand up Grafana for other monitoring later. The official `crowdsecurity/grafana-dashboards` repo is stale (last update 2024-03), so dashboard 21419 is the better source.
 
 ## File Layout
 
 ```
 apps/crowdsec/
-├── docker-compose.yml   # agent + crowdsec-web-ui sidecar
-├── acquis.yaml          # tells agent to tail /var/log/traefik/access.log
-├── docker-cd.yml        # rolling_update: false (stateful — no parallel instances)
-├── .env.sops            # BOUNCER_KEY_TRAEFIK, CROWDSEC_WEB_UI_USER/PASSWORD, optional ENROLL_KEY
-└── README.md            # this file
+├── docker-compose.yml          # agent + crowdsec-web-ui sidecar
+├── acquis.yaml                 # tails /var/log/traefik/access.log
+├── custom-whitelists.yaml      # site-specific whitelist (on top of hub default)
+├── profiles.yaml               # overrides default profiles → adds ntfy notification
+├── notifications/
+│   └── ntfy.yaml               # ntfy HTTP plugin config (topic: crowdsec)
+├── docker-cd.yml               # rolling_update: false (stateful — no parallel instances)
+├── .env.sops                   # BOUNCER_KEY_TRAEFIK, CROWDSEC_WEB_UI_USER/PASSWORD
+└── README.md                   # this file
 ```
 
 ### Services in this stack
@@ -259,13 +271,12 @@ Loss of the DB is non-fatal: the bouncer re-registers from `BOUNCER_KEY_TRAEFIK`
 
 ## Future Phases (Deferred)
 
-Things explicitly out of scope for the current Phase 1 setup, in rough order of value:
+Things explicitly out of scope for the current setup, in rough order of value:
 
-- **AppSec / WAF.** CrowdSec ships an inline request-inspection engine (SQLi, XSS, deserialization, etc.) separate from the log-parsing scenarios. Enabling it adds `crowdsecAppsecEnabled: true` to the middleware and exposes a second port (`:7422`) on the agent. Per-request CPU cost and a real false-positive tuning burden; revisit after the behavioral layer is trusted.
-- **Captcha middleware.** Instead of straight 403 on detection, present an hCaptcha challenge. Better UX for borderline decisions on auth pages; needs a captcha provider account.
-- **Cloudflare edge bouncer (`cs-cloudflare-bouncer`).** Pushes bans into CF's IP-list / WAF rules so attackers are blocked at the edge and never reach origin. Needs a CF API token with WAF scope. CF Free tier IP-list quota is 10k entries (community blocklist is larger); usually configured to sync only high-severity decisions.
-- **Linux / SSH collection + host firewall bouncer.** Add `crowdsecurity/linux` + `crowdsecurity/sshd` to detect SSH brute-force from host auth log, and `cs-firewall-bouncer` to enforce bans via iptables/nftables. Currently relying on `fail2ban` for SSH (see `docs/security.md`).
-- **Self-hosted dashboard with custom queries.** Vanilla Metabase pointed at the SQLite DB — discussed in _Visibility Options_ above.
+- **Cloudflare edge bouncer (`cs-cloudflare-worker-bouncer`).** Pushes bans into CF's Worker so attackers are blocked at the edge and never reach origin. Needs a CF API token with Worker scope. Use the _Worker_ variant — the original `cs-cloudflare-bouncer` was deprecated due to CF API rate-limit changes.
+- **Journald acquisition for sshd.** The `crowdsecurity/sshd` + `crowdsecurity/linux` parsers are already installed but the agent isn't reading host journal yet. Adding it needs `/var/log/journal` + `/etc/machine-id` mounts and `group_add: ["systemd-journal"]` (GID varies — verify on host with `getent group systemd-journal`). Currently relying on `fail2ban` for SSH (see `docs/security.md`).
+- **AppSec / WAF.** CrowdSec ships an inline request-inspection engine (SQLi, XSS, deserialization, etc.) separate from log-parsing. Enabling it adds `crowdsecAppsecEnabled: true` to the middleware and exposes a second port (`:7422`) on the agent. Per-request CPU cost and real FP-tuning burden; community reports significant burden for selfhosted apps.
+- **Captcha middleware.** Instead of 403 on detection, present an hCaptcha challenge. Better UX for borderline decisions on auth pages; needs a captcha provider account.
 
 ## Deploy Notes
 
