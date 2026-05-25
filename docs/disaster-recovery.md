@@ -532,7 +532,7 @@ grep -c '"id":' ~/home-ops/apps/backrest/config/config.json
 
 ```bash
 docker logs backrest --tail 50          # should be no errors after orchestrator starts
-docker exec backrest ls /repos          # should list 28 repos
+docker exec backrest ls /repos          # should list 29 repos
 ```
 
 ### Testing Recovery
