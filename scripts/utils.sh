@@ -51,12 +51,12 @@ require_cmd() {
 SCRIPT_TMP_DIRS=()
 
 make_temp_dir() {
-	local result_var=${1:-}
-	local tmp_dir
-	[ -n "$result_var" ] || die "make_temp_dir requires a result variable name"
-	tmp_dir=$(mktemp -d)
-	SCRIPT_TMP_DIRS+=("$tmp_dir")
-	printf -v "$result_var" '%s' "$tmp_dir"
+	local __result_var=${1:-}
+	local __tmp_dir
+	[ -n "$__result_var" ] || die "make_temp_dir requires a result variable name"
+	__tmp_dir=$(mktemp -d)
+	SCRIPT_TMP_DIRS+=("$__tmp_dir")
+	printf -v "$__result_var" '%s' "$__tmp_dir"
 }
 
 cleanup_temp_dirs() {
