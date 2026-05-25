@@ -492,24 +492,6 @@
       }
     },
     {
-      "id": "crowdsec",
-      "uri": "/repos/crowdsec",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 4 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 5 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "zepp",
       "uri": "/repos/zepp",
       "password": "",
@@ -1874,58 +1856,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=syncthing+backup+FAILED&priority=Max&tags=skull",
             "template": "syncthing backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "crowdsec",
-      "repo": "crowdsec",
-      "paths": ["/source/crowdsec"],
-      "excludes": [
-        "**/crowdsec/db/crowdsec.db",
-        "**/crowdsec/db/crowdsec.db-wal",
-        "**/crowdsec/db/crowdsec.db-shm"
-      ],
-      "schedule": {
-        "cron": "30 4 * * *",
-        "clock": "CLOCK_LOCAL"
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "sqlite3 /source/crowdsec/db/crowdsec.db -cmd \".timeout 30000\" \".backup /source/crowdsec/.crowdsec.bak\""
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/crowdsec/.crowdsec.bak"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=crowdsec+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "crowdsec backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=crowdsec+backup+FAILED&priority=Max&tags=skull",
-            "template": "crowdsec backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

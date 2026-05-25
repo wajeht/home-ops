@@ -43,7 +43,7 @@ run_check() {
 
 # shellcheck disable=SC2329
 check_shell() {
-	shellcheck -x scripts/home-ops.sh scripts/lint.sh scripts/check-resources.sh
+	shellcheck -x scripts/home-ops.sh scripts/lint.sh scripts/check-resources.sh scripts/update-cloudflare-ips.sh
 }
 
 # shellcheck disable=SC2329

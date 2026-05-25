@@ -93,6 +93,22 @@ sudo systemctl disable --now ModemManager wpa_supplicant packagekit udisks2 upow
 
 Several services mount `/var/run/docker.sock` (root-equivalent access) — Traefik, Backrest, Dozzle, Beszel, Homepage, Walker, docker-cd. Consider [docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy) to limit API access.
 
+## Cloudflare and Origin Lock
+
+Web traffic is layered:
+
+1. Cloudflare handles edge WAF/DDoS/bot filtering.
+2. UniFi allows only Cloudflare IPs to reach `80/443`.
+3. Traefik repeats the Cloudflare-only check and trusts forwarded real-client headers only from Cloudflare.
+
+Keep Cloudflare IP ranges current with:
+
+```bash
+scripts/update-cloudflare-ips.sh
+```
+
+If it changes files, review the diff and deploy through the normal git flow.
+
 ## IoT VLAN
 
 Isolates IoT devices (cameras, sensors, smart plugs) from the main LAN. Devices can't reach the internet or other VLANs, but the server can reach them.

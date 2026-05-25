@@ -80,7 +80,6 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | syncthing     | 4:00 AM     | Files only           | Config only (`/config`); excludes index DBs, logs, .stversions                                                                |
 | vaultwarden   | 4:10 AM     | SQLite + files       | DB file is `db.sqlite3`                                                                                                       |
 | gitea         | 4:20 AM     | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                                                                                |
-| crowdsec      | 4:30 AM     | SQLite + files       | DB at `db/crowdsec.db`. Includes hub config and whitelists                                                                    |
 | ~~zepp~~      | ~~4:40 AM~~ | ~~SQLite (DB only)~~ | ~~DB at `db.sqlite`.~~ Schedule disabled — app is `ignore_deployment: true`. Re-enable in config when zepp comes back online. |
 | **global**    | 4:50 AM     | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state                                                                   |
 
@@ -626,7 +625,7 @@ Known issues and their fixes.
 Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
-- **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `walker`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`, `crowdsec-web-ui` (cache rebuilds from LAPI on boot; only UI prefs would reset)
+- **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `walker`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`
 - **Infra (config tracked in git)**: `backrest`, `google-auth`, `google-auth-user`
 
 If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, the app is stateless and doesn't need a Backrest plan.

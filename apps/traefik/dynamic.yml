@@ -27,6 +27,7 @@ http:
     cloudflare-only:
       ipAllowList:
         sourceRange:
+          # BEGIN managed cloudflare source ranges — scripts/update-cloudflare-ips.sh
           - 173.245.48.0/20
           - 103.21.244.0/22
           - 103.22.200.0/22
@@ -49,6 +50,7 @@ http:
           - 2405:8100::/32
           - 2a06:98c0::/29
           - 2c0f:f248::/32
+          # END managed cloudflare source ranges
 
     # Browser-facing safety headers shared by HTTPS apps.
     security-headers:
@@ -91,49 +93,6 @@ http:
         burst: 100
         sourceCriterion:
           requestHeaderName: CF-Connecting-IP
-
-    # CrowdSec bouncer. Plugin is loaded via --experimental.plugins.bouncer.* in the
-    # static config; this middleware references it. Defined as @file (not @docker) so
-    # it exists the instant Traefik reads dynamic.yml — avoids the startup race where
-    # the file provider loads before the docker provider enumerates containers.
-    # Stream mode pulls decisions every 60s and caches them — recommended by upstream
-    # for performance vs live mode which queries LAPI on every request.
-    crowdsec:
-      plugin:
-        bouncer:
-          enabled: true
-          crowdsecMode: stream
-          crowdsecLapiScheme: http
-          crowdsecLapiHost: crowdsec:8080
-          crowdsecLapiKeyFile: /run/secrets/crowdsec_lapi_key
-          forwardedHeadersCustomName: CF-Connecting-IP
-          forwardedHeadersTrustedIPs:
-            - 173.245.48.0/20
-            - 103.21.244.0/22
-            - 103.22.200.0/22
-            - 103.31.4.0/22
-            - 141.101.64.0/18
-            - 108.162.192.0/18
-            - 190.93.240.0/20
-            - 188.114.96.0/20
-            - 197.234.240.0/22
-            - 198.41.128.0/17
-            - 162.158.0.0/15
-            - 104.16.0.0/13
-            - 104.24.0.0/14
-            - 172.64.0.0/13
-            - 131.0.72.0/22
-            - 2400:cb00::/32
-            - 2606:4700::/32
-            - 2803:f800::/32
-            - 2405:b500::/32
-            - 2405:8100::/32
-            - 2a06:98c0::/29
-            - 2c0f:f248::/32
-          clientTrustedIPs:
-            - 10.0.0.0/8
-            - 172.16.0.0/12
-            - 192.168.0.0/16
 
     # Google auth service for admin-only apps.
     google-auth-forward:
