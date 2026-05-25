@@ -8,8 +8,9 @@ CrowdSec bans malicious IPs at Traefik before they reach apps. The agent parses 
 Cloudflare edge
        ↓  (cloudflare-only middleware: only CF IPs reach origin)
 Traefik
-   ├── crowdsec@docker middleware  → asks agent "is this IP banned?"
-   │                                  403 if yes, pass-through if no
+   ├── crowdsec@file middleware    → checks local decision cache
+   │                                  403 if IP is banned, pass-through if not
+   │                                  cache refreshed from LAPI every 60s (stream mode)
    └── writes JSON access log → traefik-logs volume
                                        ↓
 CrowdSec agent (apps/crowdsec)
@@ -19,19 +20,23 @@ CrowdSec agent (apps/crowdsec)
    - LAPI on :8080, internal traefik network only
 ```
 
-The plugin is loaded via `--experimental.plugins.bouncer.*` in `apps/traefik/docker-compose.yml`. It's downloaded from GitHub on Traefik start and cached inside the container.
+The plugin is loaded via `--experimental.plugins.bouncer.*` in `apps/traefik/docker-compose.yml`. It's downloaded from GitHub on Traefik start and cached inside the container. The middleware itself is defined in `apps/traefik/dynamic.yml` (file provider), so it exists the moment Traefik reads its dynamic config — no race with the docker provider.
 
 Order of the default middleware chain on `websecure`:
 
 ```
-cloudflare-only@file → crowdsec@docker → gzip@file → security-headers@file
+cloudflare-only@file → crowdsec@file → gzip@file → security-headers@file
 ```
 
 `cloudflare-only` runs first (cheap CIDR check), so CrowdSec only sees real client traffic from CF.
 
 ## Real Client IP
 
-Bans key off `CF-Connecting-IP`, not the immediate source IP (which is always Cloudflare). The plugin's `forwardedHeadersCustomName` is set to `CF-Connecting-IP` and `forwardedHeadersTrustedIPs` lists the same CF ranges already trusted elsewhere in the stack.
+Bans key off `CF-Connecting-IP`, not the immediate source IP (which is always Cloudflare). The middleware's `forwardedHeadersCustomName` is set to `CF-Connecting-IP` and `forwardedHeadersTrustedIPs` lists the same CF ranges already trusted elsewhere in the stack.
+
+## API Key Handling
+
+The bouncer API key is stored in `apps/traefik/.env.sops` as `CROWDSEC_BOUNCER_KEY` (encrypted) and in `apps/crowdsec/.env.sops` as `BOUNCER_KEY_TRAEFIK` — same value, two stacks. The agent reads it via the `BOUNCER_KEY_*` env-var convention to auto-register a bouncer named `traefik` at boot. Traefik consumes it via a Docker Compose secret (`secrets.environment: CROWDSEC_BOUNCER_KEY`) which is mounted at `/run/secrets/crowdsec_lapi_key` (tmpfs) and read by the middleware via `crowdsecLapiKeyFile`. The key never appears in any committed YAML file.
 
 Internal LAN ranges (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) are in `clientTrustedIPs` — they can never be banned.
 
@@ -153,11 +158,15 @@ apps/crowdsec/
 └── .env.sops            # BOUNCER_KEY_TRAEFIK, optional ENROLL_KEY
 ```
 
-Traefik wiring lives in `apps/traefik/docker-compose.yml`:
+Traefik wiring:
 
-- `--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin`
-- `--experimental.plugins.bouncer.version=v1.6.0`
-- `crowdsec@docker` in the `websecure` default middleware chain
+- `apps/traefik/docker-compose.yml`
+  - `--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin`
+  - `--experimental.plugins.bouncer.version=v1.6.0`
+  - `crowdsec@file` in the `websecure` default middleware chain
+  - `secrets.crowdsec_lapi_key` sourced from `CROWDSEC_BOUNCER_KEY` env
+- `apps/traefik/dynamic.yml`
+  - `http.middlewares.crowdsec.plugin.bouncer` — full middleware config (stream mode, CF ranges, key file path)
 
 Host data: `/home/jaw/data/crowdsec/{db,config}` (SQLite + hub state, backed up by Backrest).
 

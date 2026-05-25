@@ -28,9 +28,10 @@ services:
       - "--entrypoints.websecure.address=:443"
 
       # Default HTTPS middlewares: Cloudflare-only, CrowdSec bouncer, compression, browser headers.
-      - "--entrypoints.websecure.http.middlewares=cloudflare-only@file,crowdsec@docker,gzip@file,security-headers@file"
+      - "--entrypoints.websecure.http.middlewares=cloudflare-only@file,crowdsec@file,gzip@file,security-headers@file"
 
-      # CrowdSec bouncer plugin (Yaegi). Middleware is defined as labels on the crowdsec container.
+      # CrowdSec bouncer plugin (Yaegi). Middleware is defined in dynamic.yml; key
+      # is mounted from a Docker secret sourced from .env so it never lives in YAML.
       - "--experimental.plugins.bouncer.modulename=github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
       - "--experimental.plugins.bouncer.version=v1.6.0"
 
@@ -82,6 +83,8 @@ services:
       - /home/jaw/data/traefik/certs:/certs
       - ./dynamic.yml:/etc/traefik/dynamic.yml:ro
       - traefik-logs:/var/log/traefik
+    secrets:
+      - crowdsec_lapi_key
     networks:
       - traefik
     healthcheck:
@@ -119,6 +122,14 @@ services:
 networks:
   traefik:
     external: true
+
+# CrowdSec bouncer API key, sourced from CROWDSEC_BOUNCER_KEY in .env (decrypted from
+# .env.sops by docker-cd). Compose mounts the value as a tmpfs file at
+# /run/secrets/crowdsec_lapi_key inside Traefik; the bouncer middleware in dynamic.yml
+# reads it via crowdsecLapiKeyFile.
+secrets:
+  crowdsec_lapi_key:
+    environment: CROWDSEC_BOUNCER_KEY
 
 volumes:
   traefik-logs:
