@@ -10,6 +10,8 @@ services:
       COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve"
       CUSTOM_HOSTNAME: crowdsec
       DISABLE_ONLINE_API: "false"
+      # WAL mode prevents LAPI from blocking during community-blocklist inserts.
+      USE_WAL: "true"
       # Auto-registers the Traefik bouncer at boot using this key.
       BOUNCER_KEY_TRAEFIK: ${BOUNCER_KEY_TRAEFIK}
     volumes:
