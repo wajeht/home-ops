@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2317,SC2329  # check_* functions are dispatched indirectly via run_check
 set -euo pipefail
 
 # TTY-aware colors — disabled when stdout isn't a terminal.
