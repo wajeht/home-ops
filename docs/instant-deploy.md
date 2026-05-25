@@ -2,18 +2,18 @@
 
 Push a tag → image builds → home-ops updates → docker-cd deploys. No Renovate delays.
 
-Use this doc for your own `ghcr.io/wajeht/*` apps. Third-party images use [Renovate](renovate.md).
+Use this for your own `ghcr.io/wajeht/*` apps. Third-party images use [Renovate](renovate.md).
 
 ## How It Works
 
 ```
-App repo (ufc, commit, etc.)
+App repo
     ↓ push tag v1.0.0
 GitHub Actions builds image to ghcr.io
     ↓
 docker-cd-deploy-workflow updates home-ops
     ↓
-docker-cd detects change and deploys (~5min poll or instant via /api/sync)
+docker-cd deploys by polling or `/api/sync`
 ```
 
 ## Setup for New Apps
@@ -72,7 +72,7 @@ jobs:
       app-path: apps/your-app-name
       service-name: your-compose-service-name
       tag: ${{ needs.build-and-push.outputs.version }}
-      url: https://your-app.jaw.dev # optional, defaults to https://<repo-name>.jaw.dev
+      url: https://your-app.jaw.dev
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
 ```
@@ -122,9 +122,9 @@ Reusable workflow at `wajeht/docker-cd-deploy-workflow` that:
 | Input           | Required | Default                       | Description                           |
 | --------------- | -------- | ----------------------------- | ------------------------------------- |
 | `home-ops-repo` | No       | `wajeht/home-ops`             | Target repo                           |
-| `app-path`      | Yes      | -                             | Path to app (e.g., `apps/ufc`)        |
+| `app-path`      | Yes      | -                             | Path to app. Example: `apps/ufc`      |
 | `service-name`  | Yes      | -                             | Compose service to update             |
-| `tag`           | Yes      | -                             | Image tag (e.g., `v1.0.0`)            |
+| `tag`           | Yes      | -                             | Image tag. Example: `v1.0.0`          |
 | `url`           | No       | `https://<repo-name>.jaw.dev` | Production URL for GitHub Deployments |
 
 ### Secrets
@@ -139,9 +139,9 @@ The workflow uses native GitHub Actions `environment:` which provides:
 
 - "production" entry in the repo's Deployments sidebar
 - Clickable URL link to the deployed app
-- Deploy queue (serialized via `concurrency: deploy-home-ops`)
+- Deploy queue serialized with `concurrency: deploy-home-ops`
 
-For custom domains (not `*.jaw.dev`), pass the `url` input:
+For custom domains outside `*.jaw.dev`, pass the `url` input:
 
 ```yaml
 uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.21
@@ -156,7 +156,7 @@ with:
 
 Use instant deploy for apps you build and publish as `ghcr.io/wajeht/*`.
 
-Do not maintain a manual app list here — it goes stale. Check the compose files instead:
+Source of truth:
 
 ```bash
 rg 'image: ghcr.io/wajeht/' apps/*/docker-compose.yml
@@ -166,6 +166,6 @@ rg 'image: ghcr.io/wajeht/' apps/*/docker-compose.yml
 
 |         | Renovate           | Instant Deploy  |
 | ------- | ------------------ | --------------- |
-| Speed   | ~15min (polling)   | ~1min           |
+| Speed   | ~15min polling     | ~1min           |
 | Setup   | Mend UI config     | GH_TOKEN secret |
 | Use for | Third-party images | Your own images |

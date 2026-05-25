@@ -2,7 +2,7 @@
 
 Push a `docker-compose.yml` to `apps/<name>/` and docker-cd auto-deploys it.
 
-Use this doc for the app shape and required baseline. For secrets, see [Secrets](secrets.md). For backups, see [Disaster Recovery](disaster-recovery.md#adding-an-app).
+For secrets, see [Secrets](secrets.md). For backups, see [Disaster Recovery](disaster-recovery.md#adding-an-app).
 
 ## Checklist
 
@@ -119,14 +119,14 @@ security_opt:
 
 `read_only: true` makes the container's root filesystem immutable. Use it unless the image or Compose feature needs rootfs writes. Add `tmpfs: /tmp` when the app might write temp files.
 
-Most apps need `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` because they do user switching or chown on volumes at startup. Start with these and only remove them for truly stateless single-binary apps (Go/Node apps like dozzle).
+Most apps need `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` because they do user switching or chown on volumes at startup. Start with these and only remove them for truly stateless single-binary apps.
 
-| Capability                                    | When needed                                                |
-| --------------------------------------------- | ---------------------------------------------------------- |
-| `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` | Most apps (user switching, writable volumes, init systems) |
-| `NET_BIND_SERVICE`                            | App binds to port < 1024 (e.g., port 80)                   |
-| `SETGID, SETUID`                              | Redis (only needs user switching, no file ownership)       |
-| `NET_ADMIN`                                   | VPN containers (gluetun)                                   |
+| Capability                                    | When needed                                                     |
+| --------------------------------------------- | --------------------------------------------------------------- |
+| `CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID` | Most apps that switch users, chown volumes, or use init systems |
+| `NET_BIND_SERVICE`                            | App binds to port < 1024                                        |
+| `SETGID, SETUID`                              | Redis user switching                                            |
+| `NET_ADMIN`                                   | VPN containers (gluetun)                                        |
 
 ### Logging
 
@@ -164,13 +164,13 @@ healthcheck:
   retries: 3
 ```
 
-For scratch/minimal images with no shell, `curl`, or `wget`, either use the app's own healthcheck command or mount a static helper binary. See [apps/gatus/README.md → httpcheck Pattern](../apps/gatus/README.md#httpcheck-pattern) for the canonical example.
+For scratch/minimal images with no shell, `curl`, or `wget`, either use the app's own healthcheck command or mount a static helper binary. See [apps/gatus/README.md → httpcheck Pattern](../apps/gatus/README.md#httpcheck-pattern).
 
 To register the app for uptime monitoring and ntfy alerts, add an endpoint per [apps/gatus/README.md](../apps/gatus/README.md#adding-an-endpoint).
 
 ### Init Process
 
-Add `init: true` for proper signal handling and zombie process reaping. **Do NOT** add this to s6-overlay containers (LinuxServer.io images, homeassistant) — they require being PID 1.
+Add `init: true` for proper signal handling and zombie process reaping. **Do NOT** add this to s6-overlay containers such as LinuxServer.io images or Home Assistant; they require being PID 1.
 
 ```yaml
 restart: unless-stopped
@@ -182,7 +182,7 @@ init: true # skip for s6-overlay containers
 Postgres containers should include extra settings for reliability:
 
 ```yaml
-shm_size: 256m # prevent shared memory crashes (default 64MB is too low)
+shm_size: 256m # default 64MB is too low
 stop_grace_period: 30s # allow time for graceful shutdown
 oom_score_adj: -300 # protect from OOM killer
 ```
@@ -192,10 +192,10 @@ oom_score_adj: -300 # protect from OOM killer
 Critical infrastructure gets `oom_score_adj: -500`, databases get `-300`. This ensures the OOM killer targets low-priority app containers first:
 
 ```yaml
-# Critical infra (traefik, adguard, docker-cd, oauth2-proxy)
+# Critical infra: traefik, adguard, docker-cd, oauth2-proxy
 oom_score_adj: -500
 
-# Databases (postgres, redis, clickhouse)
+# Databases: postgres, redis, clickhouse
 oom_score_adj: -300
 ```
 
@@ -206,9 +206,9 @@ oom_score_adj: -300
 git add -A && git commit -m "add myapp" && git push
 ```
 
-docker-cd auto-deploys via polling (interval configured in `infra/docker-cd/docker-cd.yml`).
+docker-cd auto-deploys via the interval in `infra/docker-cd/docker-cd.yml`.
 
-## With Secrets (SOPS)
+## With Secrets
 
 docker-cd auto-decrypts `.env.sops` files on deployment.
 
@@ -377,9 +377,9 @@ Create `apps/myapp/docker-cd.yml`:
 rolling_update: false
 ```
 
-## Apps Behind Reverse Proxy (Trusted Proxies)
+## Apps Behind Reverse Proxy
 
-Some apps (e.g., Home Assistant) reject requests from reverse proxies unless explicitly configured. After first deploy, add the traefik network subnet as a trusted proxy in the app's config:
+Some apps reject requests from reverse proxies unless explicitly configured. After first deploy, add the traefik network subnet as a trusted proxy in the app's config:
 
 ```yaml
 # Home Assistant: ~/data/homeassistant/configuration.yaml

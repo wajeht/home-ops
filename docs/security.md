@@ -1,8 +1,8 @@
 # Security
 
-Server hardening for the Dell OptiPlex 7050 (Ubuntu 24.04).
+Server hardening for the Dell OptiPlex 7050 running Ubuntu 24.04.
 
-Use this doc for host/network controls. App-level container requirements live in [Adding Apps](adding-apps.md#container-hardening).
+App-level container requirements live in [Adding Apps](adding-apps.md#container-hardening).
 
 ## Open Ports
 
@@ -12,7 +12,7 @@ Scanned from LAN via `nmap -F <server-ip>`:
 | ----- | --------------- | -------------------- | ------------------------------------------ |
 | 22    | SSH             | open                 | Harden through SSH settings                |
 | 80    | HTTP            | open through Traefik | Redirects to HTTPS                         |
-| 443   | HTTPS           | open (Traefik)       | OK                                         |
+| 443   | HTTPS           | open through Traefik | OK                                         |
 | 111   | rpcbind         | **disabled**         | Unnecessary for NFS v4.1                   |
 | 1883  | MQTT            | open (Zigbee2MQTT)   | Blocked by UFW, Docker-internal only       |
 | 2283  | Immich          | open                 | Blocked by UFW, access via Traefik only    |
@@ -95,7 +95,7 @@ sudo systemctl disable --now ModemManager wpa_supplicant packagekit udisks2 upow
 
 ## Docker Socket
 
-Several services mount `/var/run/docker.sock` (root-equivalent access) — Traefik, Backrest, Dozzle, Beszel, Homepage, Walker, docker-cd. Consider [docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy) to limit API access.
+Several services mount `/var/run/docker.sock`, which is root-equivalent access: Traefik, Backrest, Dozzle, Beszel, Homepage, Walker, docker-cd. Consider [docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy) to limit API access.
 
 ## Cloudflare and Origin Lock
 
@@ -124,7 +124,7 @@ The user allowlists live encrypted in `apps/oauth2-proxy/.env.sops`. docker-cd d
 
 ## IoT VLAN
 
-Isolates IoT devices (cameras, sensors, smart plugs) from the main LAN. Devices can't reach the internet or other VLANs, but the server can reach them.
+Isolates cameras, sensors, and smart plugs from the main LAN. Devices can't reach the internet or other VLANs, but the server can reach them.
 
 ### Network layout
 
@@ -134,7 +134,7 @@ Isolates IoT devices (cameras, sensors, smart plugs) from the main LAN. Devices 
 | Guest   | 2       | 192.168.2.0/24  | Yes      | Guest WiFi           |
 | IoT     | 30      | 192.168.30.0/24 | No       | Cameras, IoT devices |
 
-### Setup (UniFi Cloud Gateway Fiber)
+### Setup
 
 #### 1. Create IoT network
 
@@ -143,9 +143,9 @@ Settings → Networks → Create New:
 - **Name:** IoT
 - **VLAN ID:** 30
 - **IPv4 Address:** 192.168.30.1, Netmask /24
-- **Isolate Network:** checked (blocks IoT → other VLANs)
-- **Allow Internet Access:** unchecked (blocks IoT → internet)
-- **mDNS:** checked (device discovery across VLANs)
+- **Isolate Network:** checked
+- **Allow Internet Access:** unchecked
+- **mDNS:** checked
 - **DHCP:** Server, range 192.168.30.6 - 192.168.30.254
 
 #### 2. Create IoT WiFi
@@ -154,8 +154,8 @@ Settings → WiFi → Create New:
 
 - **Name:** IoT
 - **Password:** set one
-- **Network:** IoT (VLAN 30)
-- **Radio Band:** 2.4 GHz only (most IoT devices are 2.4 only)
+- **Network:** IoT, VLAN 30
+- **Radio Band:** 2.4 GHz only
 
 #### 3. Firewall rules
 
@@ -165,25 +165,25 @@ UniFi auto-creates isolation rules when "Isolate Network" is checked, but two **
 | ----------------------------- | ------ | --------------- | ----------- | -------------------- | ------------------------ |
 | Allow Server to IoT           | Accept | 192.168.4.161   | IoT network | Any                  | Server can reach cameras |
 | Allow Established/Related IoT | Accept | IoT network     | Any         | Established, Related | Return traffic only      |
-| Isolate IoT (auto)            | Drop   | 192.168.30.0/24 | All VLANs   | Any                  | IoT can't reach main LAN |
-| Block IoT internet (auto)     | Drop   | 192.168.30.0/24 | Any         | Any                  | No cloud phoning home    |
+| Isolate IoT                   | Drop   | 192.168.30.0/24 | All VLANs   | Any                  | IoT can't reach main LAN |
+| Block IoT internet            | Drop   | 192.168.30.0/24 | Any         | Any                  | No cloud phoning home    |
 
 **Why two manual rules?** The "Isolate Network" toggle blocks all inter-VLAN traffic, including return traffic from IoT devices back to the server. Without these rules, the server can send packets to the camera but never gets a response.
 
 **Why Established/Related instead of a broad allow?** A broad "Allow IoT → Server" rule lets a compromised IoT device initiate new connections to the server. Using Established/Related state means IoT devices can only respond to connections the server started — they can never open new connections to anything.
 
-Both manual rules must have a lower ID than the auto-created isolation rules (60001+) so they're evaluated first.
+Both manual rules must have a lower ID than the auto-created isolation rules, usually `60001+`, so they're evaluated first.
 
 #### 4. Move devices to IoT WiFi
 
-1. Open device app (e.g., Tapo) → WiFi settings → connect to `IoT` SSID
-2. Set static IP (e.g., 192.168.30.56 for camera)
+1. Open the device app → WiFi settings → connect to `IoT` SSID
+2. Set static IP, such as `192.168.30.56` for camera
 3. Update `.env.sops` with new IP
 4. Push and redeploy
 
 #### 5. Verify isolation
 
-From your main LAN (192.168.4.x):
+From your main LAN:
 
 ```bash
 # Server can reach camera
@@ -191,7 +191,7 @@ ping 192.168.30.56
 nc -zv 192.168.30.56 554   # RTSP
 nc -zv 192.168.30.56 2020  # ONVIF
 
-# Camera can't reach server (test from camera's perspective)
+# Camera can't reach server
 # No way to test directly, but Tapo app should fail remotely
 ```
 
@@ -199,7 +199,7 @@ nc -zv 192.168.30.56 2020  # ONVIF
 
 - IoT devices get no internet — TP-Link, Tuya, etc. can't phone home
 - IoT devices can't reach your main LAN — compromised camera can't attack your server
-- Server (192.168.4.161) can reach IoT VLAN — Frigate/HA connects to cameras
+- Server `192.168.4.161` can reach IoT VLAN — Frigate/HA connects to cameras
 - mDNS enabled — allows device discovery across VLANs if needed
 - Camera credentials still in `.env.sops` — only the IP changes when moving VLANs
 - Delete vendor apps after setup — camera runs standalone on RTSP/ONVIF
@@ -210,16 +210,16 @@ AMT runs on the Management Engine chipset independently of the OS. It listens on
 
 - **Access**: `http://192.168.4.161:16992` or HTTPS on 16993
 - **KVM**: VNC client to port 5900
-- **Risk**: AMT has had critical CVEs (auth bypass, RCE) — keep BIOS firmware updated
-- **Mitigation**: LAN-only access, UFW doesn't affect AMT (runs below OS), firewall at router blocks inbound
+- **Risk**: AMT has had critical CVEs — keep BIOS firmware updated
+- **Mitigation**: LAN-only access, UFW doesn't affect AMT, firewall at router blocks inbound
 - USB Provision disabled, User Consent set to None, Remote IT config disabled
 
 ## Checklist
 
-- [x] Disable rpcbind (NFS v4.1)
+- [x] Disable rpcbind
 - [x] Enable UFW firewall
-- [x] IoT VLAN (VLAN 30, 192.168.30.0/24)
-- [x] Intel AMT/vPro enabled (remote power + KVM)
+- [x] IoT VLAN: VLAN 30, 192.168.30.0/24
+- [x] Intel AMT/vPro enabled for remote power and KVM
 - [ ] SSH: key-only auth
 - [ ] Install fail2ban
 - [ ] Disable unnecessary services

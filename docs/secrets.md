@@ -2,8 +2,6 @@
 
 Secrets are encrypted with [SOPS](https://github.com/getsops/sops) + [age](https://github.com/FiloSottile/age), stored per-app in git. docker-cd auto-decrypts during deployment.
 
-Use this doc when adding, viewing, or editing `.env.sops` files.
-
 ## How It Works
 
 ```
@@ -96,12 +94,12 @@ docker-cd will auto-deploy with decrypted secrets.
 
 ## Special Files
 
-- `~/.sops/age-key.txt` - Decryption key (never commit to public repo)
+- `~/.sops/age-key.txt` - Decryption key. Never commit this.
 - `~/.docker/config.json` - Created from GH_TOKEN for private images
 
 ## Security Notes
 
-- `.env.sops` files are safe to commit (encrypted)
+- `.env.sops` files are safe to commit
 - Plain `.env` files are gitignored
 - docker-cd mounts age key at `/sops/age-key.txt`
 - Secrets can be passed as env vars or rendered into runtime config files

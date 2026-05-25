@@ -52,7 +52,7 @@ docker-cd should start first, then deploy the rest of `apps/*`.
 
 ## OS Tuning
 
-Optional. Apply after install if this is a fresh Ubuntu host. These are host-level performance defaults for the Docker server.
+Apply after install on a fresh Ubuntu host. These are host-level performance defaults for the Docker server.
 
 | Setting            | What it does                                                                    | Why we use it                                                 |
 | ------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------- |
