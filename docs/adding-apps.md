@@ -12,8 +12,8 @@ Before pushing a new app:
 - service has `restart`, `init`, healthcheck, logging, and resource limits
 - container drops capabilities and uses `no-new-privileges`
 - internet-facing app is on the external `traefik` network
-- protected apps use `google-auth-admin@file`
-- wider user access is handled by host rules in `apps/google-auth-admin/docker-compose.yml`, not by a second auth container
+- protected apps use `oauth2-admin@file`
+- media apps use `oauth2-media@file`
 - app data under `/home/jaw/data/<name>` has a Backrest plan unless intentionally ignored
 - `./scripts/lint.sh` passes
 
@@ -66,7 +66,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
       - "traefik.http.routers.myapp.entrypoints=websecure"
-      - "traefik.http.routers.myapp.middlewares=google-auth-admin@file"
+      - "traefik.http.routers.myapp.middlewares=oauth2-admin@file"
       - "traefik.http.services.myapp.loadbalancer.server.port=80"
 
 networks:
@@ -74,39 +74,30 @@ networks:
     external: true
 ```
 
-Use `google-auth-admin@file` for protected apps.
+Use `oauth2-admin@file` for protected apps.
 Omit auth middleware for public apps.
 
 ## Access Scopes
 
-There is one Google auth container: `google-auth-admin`.
+OAuth access is split by middleware:
 
-- Default protected apps use `WHITELIST_ADMINS`.
-- Media-facing apps use `WHITELIST_MEDIA` through host rules in `apps/google-auth-admin/docker-compose.yml`.
-- Media hosts: `plex.jaw.dev`, `seerr.jaw.dev`, `convertx.jaw.dev`.
+- Admin apps use `oauth2-admin@file` and `apps/oauth2-proxy/admin-emails.txt`.
+- Media apps use `oauth2-media@file` and `apps/oauth2-proxy/media-emails.txt`.
+- Current media hosts: `plex.jaw.dev`, `seerr.jaw.dev`, `convertx.jaw.dev`.
 
-For a normal admin-only app, only add the middleware label:
-
-```yaml
-- "traefik.http.routers.myapp.middlewares=google-auth-admin@file"
-```
-
-For an app that should allow media users too:
-
-1. Keep the same middleware label on the app.
-2. Add a host rule to `apps/google-auth-admin/docker-compose.yml`.
-3. Add users to `WHITELIST_MEDIA` in `apps/google-auth-admin/.env.sops`.
-
-Example:
+Admin-only app:
 
 ```yaml
-command:
-  - --rule.myapp.action=auth
-  - --rule.myapp.rule=Host(`myapp.jaw.dev`)
-  - --rule.myapp.whitelist=${WHITELIST_MEDIA}
+- "traefik.http.routers.myapp.middlewares=oauth2-admin@file"
 ```
 
-Rule-specific whitelists override `WHITELIST_ADMINS` for matching hosts. That means a media user can access media-scoped apps but is denied on admin-only apps.
+Media app:
+
+```yaml
+- "traefik.http.routers.myapp.middlewares=oauth2-media@file"
+```
+
+Add/remove users by editing the matching email file in `apps/oauth2-proxy/`.
 
 ## Container Hardening
 
@@ -199,7 +190,7 @@ oom_score_adj: -300 # protect from OOM killer
 Critical infrastructure gets `oom_score_adj: -500`, databases get `-300`. This ensures the OOM killer targets low-priority app containers first:
 
 ```yaml
-# Critical infra (traefik, adguard, docker-cd, google-auth-admin)
+# Critical infra (traefik, adguard, docker-cd, oauth2-proxy)
 oom_score_adj: -500
 
 # Databases (postgres, redis, clickhouse)
@@ -257,7 +248,7 @@ labels:
   - "traefik.enable=true"
   - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
   - "traefik.http.routers.myapp.entrypoints=websecure"
-  - "traefik.http.routers.myapp.middlewares=google-auth-admin@file"
+  - "traefik.http.routers.myapp.middlewares=oauth2-admin@file"
   - "traefik.http.services.myapp.loadbalancer.server.port=8080"
 ```
 
@@ -278,7 +269,7 @@ labels:
   - "traefik.enable=true"
   - "traefik.http.routers.myapp.rule=Host(`myapp.jaw.dev`)"
   - "traefik.http.routers.myapp.entrypoints=websecure"
-  - "traefik.http.routers.myapp.middlewares=google-auth-admin@file"
+  - "traefik.http.routers.myapp.middlewares=oauth2-admin@file"
   - "traefik.http.routers.myapp-webhook.rule=Host(`myapp.jaw.dev`) && Path(`/webhook`)"
   - "traefik.http.routers.myapp-webhook.entrypoints=websecure"
   - "traefik.http.routers.myapp-webhook.priority=100"

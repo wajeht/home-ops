@@ -6,8 +6,8 @@ Home Assistant at `ha.jaw.dev`.
 
 Two Traefik routers, two subdomains, same backend:
 
-- **`ha.jaw.dev`** — protected by `google-auth-admin` (browser access)
-- **`ha-app.jaw.dev`** — no `google-auth-admin`, HA's own auth + rate limiting (Companion App)
+- **`ha.jaw.dev`** — protected by `oauth2-admin` (browser access)
+- **`ha-app.jaw.dev`** — no `oauth2-admin`, HA's own auth + rate limiting (Companion App)
 
 Google blocks OAuth in WebViews (`disallowed_useragent`), so the Companion App can't use the admin Google OAuth layer. Separate subdomain is the standard solution — HA's own auth (username/password + optional 2FA) protects the app endpoint.
 

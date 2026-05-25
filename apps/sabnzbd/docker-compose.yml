@@ -44,7 +44,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.jaw.dev`)"
       - "traefik.http.routers.sabnzbd.entrypoints=websecure"
-      - "traefik.http.routers.sabnzbd.middlewares=google-auth-admin@file"
+      - "traefik.http.routers.sabnzbd.middlewares=oauth2-admin@file"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
 
 networks:

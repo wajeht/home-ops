@@ -46,7 +46,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.dbgate.rule=Host(`dbgate.jaw.dev`)"
       - "traefik.http.routers.dbgate.entrypoints=websecure"
-      - "traefik.http.routers.dbgate.middlewares=google-auth-admin@file"
+      - "traefik.http.routers.dbgate.middlewares=oauth2-admin@file"
       - "traefik.http.services.dbgate.loadbalancer.server.port=3000"
 
 networks:

@@ -34,7 +34,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.seerr.rule=Host(`seerr.jaw.dev`)"
       - "traefik.http.routers.seerr.entrypoints=websecure"
-      - "traefik.http.routers.seerr.middlewares=google-auth-admin@file"
+      - "traefik.http.routers.seerr.middlewares=oauth2-media@file"
       - "traefik.http.services.seerr.loadbalancer.server.port=5055"
 
 networks:

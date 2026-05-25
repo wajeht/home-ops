@@ -49,7 +49,7 @@ services:
       - traefik.http.routers.zigbee2mqtt.rule=Host(`z2m.jaw.dev`)
       - traefik.http.routers.zigbee2mqtt.entrypoints=websecure
       - traefik.http.routers.zigbee2mqtt.tls.certresolver=cloudflare
-      - traefik.http.routers.zigbee2mqtt.middlewares=google-auth-admin@file
+      - traefik.http.routers.zigbee2mqtt.middlewares=oauth2-admin@file
       - traefik.http.services.zigbee2mqtt.loadbalancer.server.port=8080
     depends_on:
       mosquitto:

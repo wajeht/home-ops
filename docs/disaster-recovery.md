@@ -50,7 +50,7 @@ apps/backrest/
 ```
 
 - **Image:** `ghcr.io/wajeht/backrest` — custom build of upstream Backrest with `sqlite`, `postgresql-client`, `jq` baked in. Source: [wajeht/backrest](https://github.com/wajeht/backrest). Renovate **does not** auto-update `ghcr.io/wajeht/*` images — manually bump the digest when a new version is published.
-- **Web UI:** `https://backrest.jaw.dev` (gated by Google OAuth via Traefik middleware; Backrest's own auth is disabled).
+- **Web UI:** `https://backrest.jaw.dev` (gated by `oauth2-admin@file`; Backrest's own auth is disabled).
 - **Repos:** `/home/jaw/backup/restic/<app>/` — one restic repo per app + one `global`. All use the same shared `RESTIC_PASSWORD`.
 - **Source data:** `/home/jaw/data/` mounted into Backrest as `/source/` (read-write — pre-backup hooks need to write dump files into per-app data dirs).
 - **SOPS age key:** `/home/jaw/.sops/` mounted as `/sops/` (read-only) — only the global plan reads this.
@@ -633,6 +633,6 @@ Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
 - **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `walker`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`
-- **Infra tracked in git**: `backrest`, `google-auth-admin`. The auth config includes admin and media user whitelists.
+- **Infra tracked in git**: `backrest`, `oauth2-proxy`. The auth config includes admin and media email allowlists.
 
 If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, the app is stateless and doesn't need a Backrest plan.

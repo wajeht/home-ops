@@ -66,7 +66,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.immich.rule=Host(`immich.jaw.dev`)"
       - "traefik.http.routers.immich.entrypoints=websecure"
-      - "traefik.http.routers.immich.middlewares=google-auth-admin@file"
+      - "traefik.http.routers.immich.middlewares=oauth2-admin@file"
       - "traefik.http.services.immich.loadbalancer.server.port=2283"
 
   immich-machine-learning:

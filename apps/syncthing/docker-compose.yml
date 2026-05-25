@@ -47,7 +47,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.syncthing.rule=Host(`syncthing.jaw.dev`)"
       - "traefik.http.routers.syncthing.entrypoints=websecure"
-      - "traefik.http.routers.syncthing.middlewares=google-auth-admin-no-ratelimit@file"
+      - "traefik.http.routers.syncthing.middlewares=oauth2-admin-no-ratelimit@file"
       - "traefik.http.services.syncthing.loadbalancer.server.port=8384"
 
 networks:

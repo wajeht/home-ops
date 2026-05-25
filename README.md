@@ -47,7 +47,7 @@ flowchart LR
         subgraph dell[Dell OptiPlex 7050 Micro]
             docker_cd[docker-cd] -->|compose up| apps
             traefik[Traefik] -->|proxy| docker_cd
-            traefik -->|forward-auth| google_auth_admin[Google Auth Admin] -->|authed| apps
+            traefik -->|forward-auth| oauth2_proxy[OAuth2 Proxy] -->|authed| apps
 
             apps["apps/*
             Home Assistant
@@ -135,7 +135,7 @@ flowchart LR
     style ap fill:#cce0f5,stroke:#0559c9,color:#333
     style traefik fill:#e0f2fe,stroke:#0284c7,color:#333
     style docker_cd fill:#dbeafe,stroke:#2563eb,color:#333
-    style google_auth_admin fill:#fef3c7,stroke:#d97706,color:#333
+    style oauth2_proxy fill:#fef3c7,stroke:#d97706,color:#333
     style apps fill:#f0fdf4,stroke:#16a34a,color:#333
     style nfs fill:#e0e7ff,stroke:#4f46e5,color:#333
     classDef trigger fill:#fce7f3,stroke:#db2777,color:#333

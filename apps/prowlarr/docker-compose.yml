@@ -43,7 +43,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.jaw.dev`)"
       - "traefik.http.routers.prowlarr.entrypoints=websecure"
-      - "traefik.http.routers.prowlarr.middlewares=google-auth-admin@file"
+      - "traefik.http.routers.prowlarr.middlewares=oauth2-admin@file"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
 networks:
   traefik:

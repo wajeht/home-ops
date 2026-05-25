@@ -94,27 +94,45 @@ http:
         sourceCriterion:
           requestHeaderName: CF-Connecting-IP
 
-    # Google auth service. App-specific user lists live in google-auth-admin rules.
-    google-auth-admin-forward:
+    # OAuth2 admin auth.
+    oauth2-admin-forward:
       forwardAuth:
-        address: http://google-auth-admin:4181
+        address: http://oauth2-admin:4180/
         trustForwardHeader: true
         maxResponseBodySize: 4096
         authResponseHeaders:
-          - X-Forwarded-User
+          - X-Auth-Request-User
+          - X-Auth-Request-Email
 
-    # Standard admin auth chain: rate limit first, then Google auth.
-    google-auth-admin:
+    # OAuth2 media auth.
+    oauth2-media-forward:
+      forwardAuth:
+        address: http://oauth2-media:4180/
+        trustForwardHeader: true
+        maxResponseBodySize: 4096
+        authResponseHeaders:
+          - X-Auth-Request-User
+          - X-Auth-Request-Email
+
+    # Standard admin auth chain: rate limit first, then OAuth2 auth.
+    oauth2-admin:
       chain:
         middlewares:
           - rate-limit-auth
-          - google-auth-admin-forward
+          - oauth2-admin-forward
 
     # Admin auth without rate limiting for routes that already limit elsewhere.
-    google-auth-admin-no-ratelimit:
+    oauth2-admin-no-ratelimit:
       chain:
         middlewares:
-          - google-auth-admin-forward
+          - oauth2-admin-forward
+
+    # Media auth chain: wider allowlist for Plex, Seerr, and ConvertX.
+    oauth2-media:
+      chain:
+        middlewares:
+          - rate-limit-auth
+          - oauth2-media-forward
 
   routers:
     # Low-priority fallback: unknown *.jaw.dev subdomains redirect to jaw.dev.

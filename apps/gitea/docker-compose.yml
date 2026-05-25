@@ -92,7 +92,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.gitea.rule=Host(`gitea.jaw.dev`)"
       - "traefik.http.routers.gitea.entrypoints=websecure"
-      - "traefik.http.routers.gitea.middlewares=google-auth-admin@file"
+      - "traefik.http.routers.gitea.middlewares=oauth2-admin@file"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 
 networks:

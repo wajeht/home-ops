@@ -46,7 +46,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.gatus.rule=Host(`gatus.jaw.dev`)"
       - "traefik.http.routers.gatus.entrypoints=websecure"
-      - "traefik.http.routers.gatus.middlewares=google-auth-admin@file"
+      - "traefik.http.routers.gatus.middlewares=oauth2-admin@file"
       - "traefik.http.services.gatus.loadbalancer.server.port=8080"
 
 networks:
