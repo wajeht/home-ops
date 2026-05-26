@@ -20,6 +20,13 @@ https://auth.jaw.dev/oauth2/admin/callback
 https://auth.jaw.dev/oauth2/media/callback
 ```
 
+Only the `/oauth2/admin/*` and `/oauth2/media/*` paths are routed. `auth.jaw.dev` root is intentionally not an app.
+
+Cookie lifetimes:
+
+- Admin: 24 hours
+- Media: 7 days
+
 ## Access Lists
 
 Edit `apps/oauth2-proxy/.env.sops` to add or remove users:

@@ -9,9 +9,11 @@ services:
       - --client-secret=${OAUTH2_PROXY_CLIENT_SECRET}
       - --cookie-secret=${OAUTH2_PROXY_COOKIE_SECRET}
       - --cookie-domain=.jaw.dev
+      - --cookie-expire=24h
       - --cookie-secure=true
       - --cookie-samesite=lax
       - --reverse-proxy=true
+      - --trusted-proxy-ip=172.16.0.0/12
       - --upstream=static://202
       - --set-xauthrequest=true
       - --skip-provider-button=true
@@ -60,10 +62,6 @@ services:
       - "traefik.http.routers.oauth2-admin.rule=Host(`auth.jaw.dev`) && PathPrefix(`/oauth2/admin`)"
       - "traefik.http.routers.oauth2-admin.entrypoints=websecure"
       - "traefik.http.routers.oauth2-admin.priority=100"
-      - "traefik.http.routers.oauth2-admin-root.rule=Host(`auth.jaw.dev`)"
-      - "traefik.http.routers.oauth2-admin-root.entrypoints=websecure"
-      - "traefik.http.routers.oauth2-admin-root.priority=2"
-      - "traefik.http.routers.oauth2-admin-root.service=oauth2-admin"
       - "traefik.http.services.oauth2-admin.loadbalancer.server.port=4180"
 
   oauth2-media:
@@ -76,9 +74,11 @@ services:
       - --client-secret=${OAUTH2_PROXY_CLIENT_SECRET}
       - --cookie-secret=${OAUTH2_PROXY_COOKIE_SECRET}
       - --cookie-domain=.jaw.dev
+      - --cookie-expire=168h
       - --cookie-secure=true
       - --cookie-samesite=lax
       - --reverse-proxy=true
+      - --trusted-proxy-ip=172.16.0.0/12
       - --upstream=static://202
       - --set-xauthrequest=true
       - --skip-provider-button=true
