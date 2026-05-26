@@ -492,6 +492,24 @@
       }
     },
     {
+      "id": "invidious",
+      "uri": "/repos/invidious",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 4 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 5 * * 0"
+        },
+        "structureOnly": true
+      }
+    },
+    {
       "id": "syncthing",
       "uri": "/repos/syncthing",
       "password": "",
@@ -1894,6 +1912,53 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=immich+backup+FAILED&priority=Max&tags=skull",
             "template": "immich backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "invidious",
+      "repo": "invidious",
+      "paths": ["/source/invidious/.invidious.dump"],
+      "schedule": {
+        "cron": "40 4 * * *",
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec invidious-db pg_dump -U invidious -d invidious -F custom -f /tmp/invidious.dump && docker cp invidious-db:/tmp/invidious.dump /source/invidious/.invidious.dump && docker exec invidious-db rm -f /tmp/invidious.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/invidious/.invidious.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=invidious+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "invidious backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=invidious+backup+FAILED&priority=Max&tags=skull",
+            "template": "invidious backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

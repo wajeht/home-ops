@@ -1,0 +1,129 @@
+services:
+  invidious:
+    container_name: invidious
+    image: quay.io/invidious/invidious:2026.05.21-99390d0@sha256:c01db291ca784bdc94a2563b7de91b2d3bd9b49bd9aa9a912162917a5bf105f1
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Chicago
+    volumes:
+      - ./config/config.yml:/invidious/config/config.yml:ro
+    depends_on:
+      invidious-db:
+        condition: service_healthy
+      invidious-sig-helper:
+        condition: service_started
+    networks:
+      - traefik
+      - invidious-internal
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO /dev/null http://localhost:3000/api/v1/comments/jNQXAC9IVRw || exit 1",
+        ]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.invidious.rule=Host(`invidious.jaw.dev`)"
+      - "traefik.http.routers.invidious.entrypoints=websecure"
+      - "traefik.http.routers.invidious.middlewares=oauth2-admin@file"
+      - "traefik.http.services.invidious.loadbalancer.server.port=3000"
+
+  invidious-sig-helper:
+    container_name: invidious-sig-helper
+    image: quay.io/invidious/inv-sig-helper:latest@sha256:39fee87693ef3d71c212d9511f2adb3230783753342321489deab17caa87c42f
+    command: ["--tcp", "0.0.0.0:12999"]
+    environment:
+      - TZ=America/Chicago
+      - RUST_LOG=info
+    read_only: true
+    tmpfs:
+      - /tmp
+    networks:
+      - invidious-internal
+    restart: unless-stopped
+    init: true
+    # lint-ignore: healthcheck  # distroless Rust binary, no shell/nc — rely on restart-on-exit
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  invidious-db:
+    container_name: invidious-db
+    image: postgres:16-alpine@sha256:16bc17c64a573ef34162af9298258d1aec548232985b33ed7b1eac33ba35c229
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=invidious
+      - POSTGRES_DB=invidious
+      - POSTGRES_INITDB_ARGS=--data-checksums
+    volumes:
+      - /home/jaw/data/invidious/db:/var/lib/postgresql/data
+    networks:
+      - invidious-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U invidious"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    stop_grace_period: 30s
+    init: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    shm_size: 128m
+    oom_score_adj: -300
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  traefik:
+    external: true
+  invidious-internal:

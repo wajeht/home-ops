@@ -1,0 +1,33 @@
+db:
+  user: invidious
+  host: invidious-db
+  port: 5432
+  dbname: invidious
+
+check_tables: true
+
+domain: invidious.jaw.dev
+https_only: true
+external_port: 443
+
+# Private instance — registration disabled, login still allowed so prefs persist.
+registration_enabled: false
+login_enabled: true
+captcha_enabled: false
+
+# Privacy: do not publish instance stats or expose a public popular feed.
+statistics_enabled: false
+popular_enabled: false
+
+# Signature decryption is delegated to inv-sig-helper; without it videos break
+# whenever YouTube rotates their player.
+signature_server: invidious-sig-helper:12999
+
+default_user_preferences:
+  default_home: Subscriptions
+  feed_menu: [Subscriptions, Trending]
+  quality: hd720
+  quality_dash: best
+  player_style: invidious
+  dark_mode: dark
+  comments: [youtube, ""]
