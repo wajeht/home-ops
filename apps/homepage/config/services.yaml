@@ -1,14 +1,4 @@
 - Media:
-    - Radarr:
-        icon: radarr
-        href: https://radarr.jaw.dev
-        description: Movies
-        # siteMonitor: http://radarr:7878
-        # widget:
-        #   type: radarr
-        #   url: http://radarr:7878
-        #   key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
-
     - Plex:
         icon: plex
         href: https://plex.jaw.dev
@@ -23,6 +13,27 @@
         icon: jellyfin
         href: https://jellyfin.jaw.dev
         description: Movies & TV
+
+    - Immich:
+        icon: immich
+        href: https://immich.jaw.dev
+        description: Photos
+        # siteMonitor: http://immich-server:2283
+        # widget:
+        #   type: immich
+        #   url: http://immich-server:2283
+        #   key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
+
+- Downloaders:
+    - Radarr:
+        icon: radarr
+        href: https://radarr.jaw.dev
+        description: Movies
+        # siteMonitor: http://radarr:7878
+        # widget:
+        #   type: radarr
+        #   url: http://radarr:7878
+        #   key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
 
     - Bazarr:
         icon: bazarr
@@ -44,17 +55,6 @@
         #   url: http://seerr:5055
         #   key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
 
-    - Immich:
-        icon: immich
-        href: https://immich.jaw.dev
-        description: Photos
-        # siteMonitor: http://immich-server:2283
-        # widget:
-        #   type: immich
-        #   url: http://immich-server:2283
-        #   key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
-
-- Downloaders:
     - SABnzbd:
         icon: sabnzbd
         href: https://sabnzbd.jaw.dev
