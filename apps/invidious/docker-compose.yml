@@ -8,6 +8,7 @@ services:
       - TZ=America/Chicago
     volumes:
       - ./config/config.yml:/invidious/config/config.yml:ro
+      - ./portcheck:/portcheck:ro
     depends_on:
       invidious-db:
         condition: service_healthy
@@ -16,12 +17,13 @@ services:
     networks:
       - traefik
       - invidious-internal
+    # portcheck avoids the BusyBox-wget IPv6 issue (localhost→::1 but app binds 0.0.0.0).
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO /dev/null http://localhost:3000/api/v1/stats || exit 1"]
-      interval: 1m
-      timeout: 10s
+      test: ["CMD", "/portcheck", "--port", "3000"]
+      interval: 30s
+      timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 60s
     restart: unless-stopped
     init: true
     cap_drop:
@@ -56,14 +58,16 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/jaw/data/invidious/companion-cache:/var/tmp/youtubei.js
+      - ./portcheck:/portcheck:ro
     networks:
       - invidious-internal
+    # Companion image is distroless — no /bin/sh, no wget. portcheck is a static binary.
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO /dev/null http://localhost:8282/healthz || exit 1"]
-      interval: 1m
-      timeout: 10s
+      test: ["CMD", "/portcheck", "--port", "8282"]
+      interval: 30s
+      timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 60s
     restart: unless-stopped
     init: true
     cap_drop:
