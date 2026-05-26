@@ -38,6 +38,16 @@ renderD128  - Render device (used for transcoding)
 
 Jellyfin is behind `oauth2-media@file` — only emails in the media allowlist (see `apps/oauth2-proxy/.env.sops`) can reach the login page. Create matching local Jellyfin users for each allowed account.
 
+## Required: Known Proxies (one-time post-install)
+
+Behind Traefik, Jellyfin sees the Traefik container IP as the client, which breaks rate limiting and IP-based logging. Fix once after first boot:
+
+1. Dashboard → Networking → **Known proxies**
+2. Add the Docker `traefik` network CIDR (find it with `docker network inspect traefik | jq -r '.[0].IPAM.Config[0].Subnet'` — typically `172.18.0.0/16` or similar)
+3. Save and restart Jellyfin
+
+Use the CIDR, not a single IP — Traefik's container IP rotates on every restart.
+
 ## Volumes
 
 | Path      | Purpose                        |

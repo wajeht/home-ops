@@ -6,6 +6,14 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/Chicago
+      - JELLYFIN_PublishedServerUrl=https://jellyfin.jaw.dev
+      # OpenCL runtime for QSV HDR→SDR tone mapping. Without it, HDR transcodes look washed out.
+      - DOCKER_MODS=ghcr.io/linuxserver/mods:jellyfin-opencl-intel@sha256:99a00d7feac6793017c0c8d3328b0b75e189395d380a10757f4530c6c231ac48
+    # Add host render + video groups so the container can use /dev/dri without running as root.
+    # Matches the immich pattern (Ubuntu 24.04: 993=render, 44=video).
+    group_add:
+      - "993"
+      - "44"
     volumes:
       - /home/jaw/data/jellyfin:/config
       - /home/jaw/plex/movies:/movies:ro

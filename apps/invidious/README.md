@@ -4,18 +4,26 @@ Self-hosted YouTube frontend. Private instance behind `oauth2-admin@file`.
 
 ## Services
 
-| Service                | Purpose                                                                             |
-| ---------------------- | ----------------------------------------------------------------------------------- |
-| `invidious`            | Web UI + API                                                                        |
-| `invidious-sig-helper` | Rust service that decrypts YouTube signatures — without it, videos break frequently |
-| `invidious-db`         | Postgres 16 for user accounts, subscriptions, and watch history                     |
+| Service               | Purpose                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| `invidious`           | Web UI + API                                                                                     |
+| `invidious-companion` | Deno sidecar — handles signature decryption, DASH manifests, PO-tokens. Replaced inv-sig-helper. |
+| `invidious-db`        | Postgres 16 for user accounts, subscriptions, and watch history                                  |
 
 ## Caveats
 
 YouTube actively blocks third-party frontends. Two failure modes to expect:
 
 - **Bot detection on the residential IP.** If the home internet IP gets rate-limited or flagged, videos return 403/429. Symptoms: thumbnails load but playback fails. There is no fix beyond waiting it out.
-- **Signature scheme changes.** YouTube rotates its player JS; until `inv-sig-helper` updates, playback breaks. Bump the `quay.io/invidious/inv-sig-helper` digest when this happens.
+- **Player-JS rotation.** YouTube rotates the player scripts every 1–2 weeks; `invidious-companion` typically follows within a day. When playback breaks, bump the `quay.io/invidious/invidious-companion` digest (Renovate handles this automatically).
+
+## Recommended: nightly restart
+
+Upstream docs recommend restarting the Invidious container daily to clear caches and pick up companion's latest YouTube workarounds. Add this to the host's root crontab:
+
+```cron
+0 5 * * * /usr/bin/docker restart invidious invidious-companion >/dev/null 2>&1
+```
 
 Do not route this through `gluetun` — datacenter VPN IPs are blocked harder than residential.
 

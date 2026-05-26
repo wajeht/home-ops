@@ -11,17 +11,13 @@ services:
     depends_on:
       invidious-db:
         condition: service_healthy
-      invidious-sig-helper:
+      invidious-companion:
         condition: service_started
     networks:
       - traefik
       - invidious-internal
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "wget -qO /dev/null http://localhost:3000/api/v1/comments/jNQXAC9IVRw || exit 1",
-        ]
+      test: ["CMD-SHELL", "wget -qO /dev/null http://localhost:3000/api/v1/stats || exit 1"]
       interval: 1m
       timeout: 10s
       retries: 3
@@ -49,23 +45,35 @@ services:
       - "traefik.http.routers.invidious.middlewares=oauth2-admin@file"
       - "traefik.http.services.invidious.loadbalancer.server.port=3000"
 
-  invidious-sig-helper:
-    container_name: invidious-sig-helper
-    image: quay.io/invidious/inv-sig-helper:latest@sha256:39fee87693ef3d71c212d9511f2adb3230783753342321489deab17caa87c42f
-    command: ["--tcp", "0.0.0.0:12999"]
+  # Deno sidecar that handles YouTube signature decryption + DASH/PO-token flows.
+  # Replaced the older inv-sig-helper in late 2024 — required for playback to keep working.
+  invidious-companion:
+    container_name: invidious-companion
+    image: quay.io/invidious/invidious-companion:master-e1ab452@sha256:314ebe3e2ff8569557b5a619123e2c69e66275a05e368a096dac4f5d5240eadc
+    env_file:
+      - .env
     environment:
       - TZ=America/Chicago
-      - RUST_LOG=info
-    read_only: true
-    tmpfs:
-      - /tmp
+    volumes:
+      - /home/jaw/data/invidious/companion-cache:/var/tmp/youtubei.js
     networks:
       - invidious-internal
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO /dev/null http://localhost:8282/healthz || exit 1"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     restart: unless-stopped
     init: true
-    # lint-ignore: healthcheck  # distroless Rust binary, no shell/nc — rely on restart-on-exit
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
     security_opt:
       - no-new-privileges:true
     deploy:

@@ -19,9 +19,12 @@ captcha_enabled: false
 statistics_enabled: false
 popular_enabled: false
 
-# Signature decryption is delegated to inv-sig-helper; without it videos break
-# whenever YouTube rotates their player.
-signature_server: invidious-sig-helper:12999
+# Playback flows (signature decryption, DASH manifests, PO-tokens) are delegated
+# to invidious-companion. The shared secret is supplied via the env var
+# INVIDIOUS_INVIDIOUS_COMPANION_KEY (which also goes to the companion as
+# SERVER_SECRET_KEY). Without companion, playback breaks within days.
+invidious_companion:
+  - private_url: "http://invidious-companion:8282/companion"
 
 default_user_preferences:
   default_home: Subscriptions
