@@ -24,12 +24,6 @@
         #   url: http://immich-server:2283
         #   key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
 
-    - Invidious:
-        icon: invidious
-        href: https://invidious.jaw.dev
-        description: YouTube Frontend
-        # siteMonitor: http://invidious:3000
-
 - Downloaders:
     - Radarr:
         icon: radarr

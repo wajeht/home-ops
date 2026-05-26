@@ -103,15 +103,6 @@ endpoints:
     alerts:
       - type: ntfy
 
-  - name: Invidious
-    group: Media
-    url: http://invidious:3000/api/v1/stats
-    interval: 5m
-    conditions:
-      - "[STATUS] == 200"
-    alerts:
-      - type: ntfy
-
   - name: Radarr
     group: Downloads
     url: http://radarr:7878/ping
