@@ -2,7 +2,7 @@
 services:
   backrest:
     container_name: backrest
-    image: ghcr.io/wajeht/backrest:sha-6555d5b@sha256:8a00d9b4b03b7406f9dcc0657379c0d83434c54e9c28ff0957ea8a2635950231
+    image: ghcr.io/wajeht/backrest:v0.0.1@sha256:f69672d015538c8485cfb055e2b65fcac5dca3f8d87a8cd5f5ed6af8e4d0f374
     env_file:
       - .env
     environment:
