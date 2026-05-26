@@ -1,8 +1,6 @@
-db:
-  user: invidious
-  host: invidious-db
-  port: 5432
-  dbname: invidious
+# Database connection comes from $INVIDIOUS_DATABASE_URL (set in .env.sops).
+# Defining `db:` here would require `password:` inline because Invidious parses
+# the YAML before applying env-var overrides — keep secrets out of the file.
 
 check_tables: true
 
