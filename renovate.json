@@ -24,11 +24,6 @@
     {
       "enabled": false,
       "matchPackageNames": ["/^ghcr\\.io/wajeht//"]
-    },
-    {
-      "description": "Pin LinuxServer images to stable -lsNNN tags; reject unstable/develop/nightly/development channels",
-      "matchPackageNames": ["/^linuxserver\\//"],
-      "allowedVersions": "/^v?\\d[\\w.-]*-ls\\d+$/"
     }
   ]
 }
