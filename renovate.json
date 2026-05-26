@@ -22,7 +22,7 @@
       "enabled": false
     },
     {
-      "enabled": false,
+      "enabled": true,
       "matchPackageNames": ["/^ghcr\\.io/wajeht//"]
     }
   ]
