@@ -348,6 +348,24 @@
       }
     },
     {
+      "id": "jellyfin",
+      "uri": "/repos/jellyfin",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 4 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 5 * * 0"
+        },
+        "structureOnly": true
+      }
+    },
+    {
       "id": "prowlarr",
       "uri": "/repos/prowlarr",
       "password": "",
@@ -1496,6 +1514,66 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plex+backup+FAILED&priority=Max&tags=skull",
             "template": "plex backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "jellyfin",
+      "repo": "jellyfin",
+      "paths": ["/source/jellyfin"],
+      "excludes": [
+        "**/jellyfin/cache",
+        "**/jellyfin/log",
+        "**/jellyfin/data/cache",
+        "**/jellyfin/data/transcodes",
+        "**/jellyfin/data/subtitles",
+        "**/jellyfin/data/jellyfin.db",
+        "**/jellyfin/data/jellyfin.db-wal",
+        "**/jellyfin/data/jellyfin.db-shm",
+        "**/jellyfin/data/library.db",
+        "**/jellyfin/data/library.db-wal",
+        "**/jellyfin/data/library.db-shm"
+      ],
+      "schedule": {
+        "cron": "30 4 * * *",
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "for db in jellyfin.db library.db; do if [ -f \"/source/jellyfin/data/$db\" ]; then sqlite3 \"/source/jellyfin/data/$db\" -cmd '.timeout 30000' \".backup /source/jellyfin/.${db}.bak\"; fi; done"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/jellyfin/.jellyfin.db.bak /source/jellyfin/.library.db.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=jellyfin+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "jellyfin backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=jellyfin+backup+FAILED&priority=Max&tags=skull",
+            "template": "jellyfin backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

@@ -118,7 +118,7 @@ If it changes files, review the diff and deploy through the normal git flow.
 Traefik routes protected apps through oauth2-proxy:
 
 - `oauth2-admin@file` for admin-only apps
-- `oauth2-media@file` for media apps such as Plex, Seerr, and ConvertX
+- `oauth2-media@file` for media apps such as Plex, Jellyfin, Seerr, and ConvertX
 
 The user allowlists live encrypted in `apps/oauth2-proxy/.env.sops`. docker-cd decrypts them during deploy and Compose renders the runtime files oauth2-proxy reads.
 

@@ -88,6 +88,7 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | syncthing     | 4:00 AM     | Files only           | Config only (`/config`); excludes index DBs, logs, .stversions                                                                |
 | vaultwarden   | 4:10 AM     | SQLite + files       | DB file is `db.sqlite3`                                                                                                       |
 | gitea         | 4:20 AM     | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                                                                                |
+| jellyfin      | 4:30 AM     | SQLite x2 + files    | DBs at `data/jellyfin.db` + `data/library.db`. Excludes cache, logs, transcodes, subtitles                                    |
 | ~~zepp~~      | ~~4:40 AM~~ | ~~SQLite DB only~~   | ~~DB at `db.sqlite`.~~ Schedule disabled — app is `ignore_deployment: true`. Re-enable in config when zepp comes back online. |
 | **global**    | 4:50 AM     | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state                                                                   |
 

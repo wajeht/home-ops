@@ -1,0 +1,57 @@
+services:
+  jellyfin:
+    image: linuxserver/jellyfin:10.11.10ubu2404-ls34@sha256:c0ed73678fb4ca761e0d940a92e49b95352f7f241a9be79a2c575c0099288f46
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/jaw/data/jellyfin:/config
+      - /home/jaw/plex/movies:/movies:ro
+      - /home/jaw/plex/tv:/tv:ro
+      - /home/jaw/plex/music:/music:ro
+    devices:
+      - /dev/dri:/dev/dri # Intel Quick Sync (shared with Plex; concurrent transcodes compete)
+    shm_size: "2g" # shared memory for 4K transcoding (default 64MB crashes)
+    tmpfs:
+      - /transcode:size=8G # RAM-based transcode dir (set in Dashboard > Playback > Transcoding path)
+    networks:
+      - traefik
+    restart: unless-stopped
+    # lint-ignore: init  # LinuxServer.io s6-overlay must be PID 1
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 4G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8096/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.jaw.dev`)"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.middlewares=oauth2-media@file"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+
+networks:
+  traefik:
+    external: true
