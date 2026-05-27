@@ -7,7 +7,7 @@ services:
       - .env
     environment:
       - TZ=America/Chicago
-      - DRY_RUN=true
+      - DRY_RUN=false
     networks:
       - traefik
     healthcheck:
