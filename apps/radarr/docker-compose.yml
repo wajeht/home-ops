@@ -1,6 +1,6 @@
 services:
   radarr:
-    image: linuxserver/radarr:6.1.1.10360-ls300@sha256:b01097ad2d948c9f5eca39eb60bb529e2e55b0738c4bf7db09383bef0abab59d
+    image: linuxserver/radarr:6.2.0-develop@sha256:3d101b1b7f6c101f62a659bfd2cfea29c4fc2e94ea48969a8cfae8c2ac74ec6a
     container_name: radarr
     environment:
       - PUID=1000
