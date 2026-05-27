@@ -2,7 +2,7 @@
 services:
   prowlarr:
     container_name: prowlarr
-    image: linuxserver/prowlarr:2.3.5.5327-ls143@sha256:c5de2a8758a05594319263e7691c1dce56899442ed1720d6eca216c0958f4caf
+    image: linuxserver/prowlarr:2.4.0-nightly@sha256:addd9e8152a01ee741202ba4cafa3c32589c2a62860b9deeac3e77339f235801
     environment:
       - PUID=1000
       - PGID=1000
