@@ -311,3 +311,9 @@
         #   type: gitea
         #   url: http://gitea:3000
         #   key: "{{HOMEPAGE_VAR_GITEA_KEY}}"
+
+    - Cap:
+        icon: mdi-shield-check
+        href: https://cap.jaw.dev
+        description: CAPTCHA
+        # siteMonitor: http://cap:3000
