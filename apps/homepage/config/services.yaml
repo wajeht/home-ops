@@ -168,6 +168,12 @@
         description: Server Monitor
         # siteMonitor: http://beszel:8090
 
+    - Umami:
+        icon: umami
+        href: https://umami.jaw.dev
+        description: Web Analytics
+        # siteMonitor: http://umami:3000
+
 - Personal:
     - UFC:
         icon: mdi-mixed-martial-arts

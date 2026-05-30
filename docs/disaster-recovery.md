@@ -90,8 +90,9 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | gitea         | 4:20 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                                             |
 | jellyfin      | 4:30 AM  | SQLite x2 + files    | DBs at `data/jellyfin.db` + `data/library.db`. Excludes cache, logs, transcodes, subtitles |
 | zepp          | 4:40 AM  | SQLite DB only       | DB at `db.sqlite`. App is `ignore_deployment: true`; data still backed up.                 |
-| **global**    | 4:50 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state                                |
 | cap           | 5:00 AM  | Redis RDB only       | `redis-cli SAVE` hook, then snapshot `dump.rdb`                                            |
+| umami         | 5:10 AM  | Postgres DB only     | `pg_dump` via `docker exec umami-db`                                                       |
+| **global**    | 5:20 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state                                |
 
 Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 4 AM, integrity check Sunday 5 AM.
 

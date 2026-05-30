@@ -546,6 +546,24 @@
       }
     },
     {
+      "id": "umami",
+      "uri": "/repos/umami",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 4 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 5 * * 0"
+        },
+        "structureOnly": true
+      }
+    },
+    {
       "id": "global",
       "uri": "/repos/global",
       "password": "",
@@ -2045,6 +2063,53 @@
       ]
     },
     {
+      "id": "umami",
+      "repo": "umami",
+      "paths": ["/source/umami/.umami.dump"],
+      "schedule": {
+        "cron": "10 5 * * *",
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec umami-db pg_dump -U umami -d umami -F custom -f /tmp/umami.dump && docker cp umami-db:/tmp/umami.dump /source/umami/.umami.dump && docker exec umami-db rm -f /tmp/umami.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/umami/.umami.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=umami+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "umami backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=umami+backup+FAILED&priority=Max&tags=skull",
+            "template": "umami backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
       "id": "global",
       "repo": "global",
       "paths": ["/source", "/sops"],
@@ -2057,7 +2122,7 @@
         "**/*.dump"
       ],
       "schedule": {
-        "cron": "50 4 * * *",
+        "cron": "20 5 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
