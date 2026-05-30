@@ -1961,7 +1961,7 @@
       "repo": "zepp",
       "paths": ["/source/zepp/.zepp.bak"],
       "schedule": {
-        "disabled": true,
+        "cron": "40 4 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
