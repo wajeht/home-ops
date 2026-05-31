@@ -38,9 +38,15 @@ services:
         max-file: "3"
     labels:
       - "traefik.enable=true"
+      # Public file serving — shared links (reads) open to everyone, rate-limited
       - "traefik.http.routers.linx.rule=Host(`linx.jaw.dev`)"
       - "traefik.http.routers.linx.entrypoints=websecure"
-      - "traefik.http.routers.linx.middlewares=oauth2-admin@file"
+      - "traefik.http.routers.linx.middlewares=rate-limit-global@file"
+      # Upload UI + endpoints — gated by oauth2-admin (Google SSO, browser)
+      - "traefik.http.routers.linx-admin.rule=Host(`linx.jaw.dev`) && (Path(`/`) || PathPrefix(`/upload`) || PathPrefix(`/paste`))"
+      - "traefik.http.routers.linx-admin.entrypoints=websecure"
+      - "traefik.http.routers.linx-admin.middlewares=oauth2-admin@file"
+      - "traefik.http.routers.linx-admin.priority=100"
       - "traefik.http.services.linx.loadbalancer.server.port=8080"
 networks:
   traefik:
