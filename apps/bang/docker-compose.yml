@@ -1,6 +1,6 @@
 services:
   bang:
-    image: ghcr.io/wajeht/bang:5c22b48@sha256:50a1a7ca9ef835f900fc889b8a08a91e99eb96e117a65edc58cb218d290c845c
+    image: ghcr.io/wajeht/bang:3c609d1@sha256:94b209185f26d8aaccf92a57cd7cdb89fd5a0b7a352fb2a3d6cbfe7911603933
     env_file:
       - .env
     environment:
