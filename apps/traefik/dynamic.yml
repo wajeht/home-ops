@@ -30,7 +30,7 @@ http:
           # Trusted LAN: lets split-horizon clients reach Traefik directly,
           # bypassing the Cloudflare hairpin. Outside the managed block below
           # so scripts/cloudflare.sh won't overwrite it.
-          - 192.168.4.0/24
+          # - 192.168.4.0/24
           # BEGIN managed cloudflare source ranges — scripts/cloudflare.sh
           - 173.245.48.0/20
           - 103.21.244.0/22
