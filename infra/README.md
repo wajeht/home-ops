@@ -2,11 +2,11 @@
 
 Core services that other apps depend on.
 
-| Service                               | Type  | Notes              |
-| ------------------------------------- | ----- | ------------------ |
-| [docker-cd](docker-cd/)               | infra | GitOps deployer    |
-| [traefik](traefik/)                   | infra | Reverse proxy      |
-| [oauth2-proxy](../apps/oauth2-proxy/) | infra | OAuth forward-auth |
+| Service                       | Type  | Notes              |
+| ----------------------------- | ----- | ------------------ |
+| [docker-cd](docker-cd/)       | infra | GitOps deployer    |
+| [traefik](traefik/)           | infra | Reverse proxy      |
+| [oauth2-proxy](oauth2-proxy/) | infra | OAuth forward-auth |
 
 Managed via `./scripts/setup.sh`:
 
