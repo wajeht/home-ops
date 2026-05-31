@@ -90,10 +90,9 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | gitea         | 4:20 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                                             |
 | jellyfin      | 4:30 AM  | SQLite x2 + files    | DBs at `data/jellyfin.db` + `data/library.db`. Excludes cache, logs, transcodes, subtitles |
 | zepp          | 4:40 AM  | SQLite DB only       | DB at `db.sqlite`. App is `ignore_deployment: true`; data still backed up.                 |
-| linx          | 4:50 AM  | Files only           | Uploads + per-file metadata (`files/` + `meta/`). App is `ignore_deployment: true`.        |
-| cap           | 5:00 AM  | Redis RDB only       | `redis-cli SAVE` hook, then snapshot `dump.rdb`                                            |
-| umami         | 5:10 AM  | Postgres DB only     | `pg_dump` via `docker exec umami-db`                                                       |
-| **global**    | 5:20 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state                                |
+| cap           | 4:50 AM  | Redis RDB only       | `redis-cli SAVE` hook, then snapshot `dump.rdb`                                            |
+| umami         | 5:00 AM  | Postgres DB only     | `pg_dump` via `docker exec umami-db`                                                       |
+| **global**    | 5:10 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state                                |
 
 Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 4 AM, integrity check Sunday 5 AM.
 
@@ -535,14 +534,14 @@ A formatter has been observed to strip new entries from `config.json` between pu
 
 ```bash
 jq '(.repos | length), (.plans | length)' ~/home-ops/apps/backrest/config/config.json
-# Expect 33 then 33. If either is lower, re-add the missing entries.
+# Expect 32 then 32. If either is lower, re-add the missing entries.
 ```
 
 #### 6. Verify
 
 ```bash
 docker logs backrest --tail 50          # should be no errors after orchestrator starts
-docker exec backrest ls /repos          # should list 33 repos
+docker exec backrest ls /repos          # should list 32 repos
 ```
 
 ### Testing Recovery
@@ -624,7 +623,7 @@ Known issues and their fixes.
 | First backup is very slow                                                                  | No dedup baseline; everything has to be written to the new repo                           | Expected. Subsequent backups are seconds.                                                                                         |
 | Snapshot succeeds but `.bak`/`.dump` lingers in app dir                                    | Post-hook (CONDITION_SNAPSHOT_END) didn't fire or errored                                 | Check the hook's output in the UI. Common cause: wrong filename in the rm command.                                                |
 | ntfy notifications never arrive                                                            | Shoutrrr URL syntax wrong                                                                 | Use `ntfy://ntfy/<topic>?scheme=http&title=foo&priority=Min&tags=skull`. Priority must be capitalized.                            |
-| `config.json` entries disappear after pushing                                              | A formatter strips JSON entries it doesn't recognize                                      | After each push, run `jq '(.repos \| length), (.plans \| length)' ~/home-ops/apps/backrest/config/config.json`. Expect 33 and 33. |
+| `config.json` entries disappear after pushing                                              | A formatter strips JSON entries it doesn't recognize                                      | After each push, run `jq '(.repos \| length), (.plans \| length)' ~/home-ops/apps/backrest/config/config.json`. Expect 32 and 32. |
 | Stateless app got accidentally added to Backrest                                           | Misread of which apps had data                                                            | If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, skip it. Examples: close-powerlifting, ufc, ip.          |
 
 ## Apps Without Backup
@@ -634,5 +633,6 @@ Apps that don't need backup, by category:
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
 - **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `walker`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`
 - **Infra tracked in git**: `backrest`, `oauth2-proxy`. The encrypted oauth2-proxy `.env.sops` includes admin and media email allowlists.
+- **Data in object storage**: `linx` — uploads + metadata live in the Garage `linx` bucket, captured by the `garage` plan (no local `~/data/linx`).
 
 If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, the app is stateless and doesn't need a Backrest plan.
