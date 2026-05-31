@@ -338,6 +338,8 @@ endpoints:
   - name: Calendar
     group: Sites
     url: http://calendar:80/healthz
+    headers:
+      X-Forwarded-Proto: https
     interval: 1m
     conditions:
       - "[STATUS] == 200"
@@ -368,16 +370,6 @@ endpoints:
   - name: Gains
     group: Sites
     url: http://gains:80/healthz
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-    alerts:
-      - type: ntfy
-
-  - name: Git
-    group: Sites
-    url: http://git:80/healthz
     interval: 1m
     conditions:
       - "[STATUS] == 200"
@@ -418,16 +410,6 @@ endpoints:
   - name: Power Badge
     group: Sites
     url: http://power-badge:80/healthz
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-    alerts:
-      - type: ntfy
-
-  - name: Zepp
-    group: Sites
-    url: http://zepp:80/api/healthz
     interval: 1m
     conditions:
       - "[STATUS] == 200"
