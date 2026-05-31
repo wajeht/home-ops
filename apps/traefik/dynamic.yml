@@ -65,7 +65,7 @@ http:
         permissionsPolicy: "camera=(), microphone=(), geolocation=()"
         customResponseHeaders:
           Cross-Origin-Opener-Policy: "same-origin"
-          Cross-Origin-Resource-Policy: "same-site"
+          Cross-Origin-Resource-Policy: "cross-origin"
 
     # General rate limit. Uses Cloudflare's real-client IP header.
     rate-limit-global:
