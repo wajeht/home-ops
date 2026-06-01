@@ -564,6 +564,24 @@
       }
     },
     {
+      "id": "miniflux",
+      "uri": "/repos/miniflux",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 4 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 5 * * 0"
+        },
+        "structureOnly": true
+      }
+    },
+    {
       "id": "global",
       "uri": "/repos/global",
       "password": "",
@@ -2110,6 +2128,53 @@
       ]
     },
     {
+      "id": "miniflux",
+      "repo": "miniflux",
+      "paths": ["/source/miniflux/.miniflux.dump"],
+      "schedule": {
+        "cron": "10 5 * * *",
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec miniflux-db pg_dump -U miniflux -d miniflux -F custom -f /tmp/miniflux.dump && docker cp miniflux-db:/tmp/miniflux.dump /source/miniflux/.miniflux.dump && docker exec miniflux-db rm -f /tmp/miniflux.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/miniflux/.miniflux.dump"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "miniflux backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+FAILED&priority=Max&tags=skull",
+            "template": "miniflux backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
       "id": "global",
       "repo": "global",
       "paths": ["/source", "/sops"],
@@ -2122,7 +2187,7 @@
         "**/*.dump"
       ],
       "schedule": {
-        "cron": "10 5 * * *",
+        "cron": "20 5 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {

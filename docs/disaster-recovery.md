@@ -92,7 +92,8 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | zepp          | 4:40 AM  | SQLite DB only       | DB at `db.sqlite`. App is `ignore_deployment: true`; data still backed up.                 |
 | cap           | 4:50 AM  | Redis RDB only       | `redis-cli SAVE` hook, then snapshot `dump.rdb`                                            |
 | umami         | 5:00 AM  | Postgres DB only     | `pg_dump` via `docker exec umami-db`                                                       |
-| **global**    | 5:10 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state                                |
+| miniflux      | 5:10 AM  | Postgres DB only     | `pg_dump` via `docker exec miniflux-db`                                                    |
+| **global**    | 5:20 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state                                |
 
 Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 4 AM, integrity check Sunday 5 AM.
 
@@ -623,7 +624,7 @@ Known issues and their fixes.
 | First backup is very slow                                                                  | No dedup baseline; everything has to be written to the new repo                           | Expected. Subsequent backups are seconds.                                                                                         |
 | Snapshot succeeds but `.bak`/`.dump` lingers in app dir                                    | Post-hook (CONDITION_SNAPSHOT_END) didn't fire or errored                                 | Check the hook's output in the UI. Common cause: wrong filename in the rm command.                                                |
 | ntfy notifications never arrive                                                            | Shoutrrr URL syntax wrong                                                                 | Use `ntfy://ntfy/<topic>?scheme=http&title=foo&priority=Min&tags=skull`. Priority must be capitalized.                            |
-| `config.json` entries disappear after pushing                                              | A formatter strips JSON entries it doesn't recognize                                      | After each push, run `jq '(.repos \| length), (.plans \| length)' ~/home-ops/apps/backrest/config/config.json`. Expect 32 and 32. |
+| `config.json` entries disappear after pushing                                              | A formatter strips JSON entries it doesn't recognize                                      | After each push, run `jq '(.repos \| length), (.plans \| length)' ~/home-ops/apps/backrest/config/config.json`. Expect 33 and 33. |
 | Stateless app got accidentally added to Backrest                                           | Misread of which apps had data                                                            | If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, skip it. Examples: close-powerlifting, ufc, ip.          |
 
 ## Apps Without Backup
