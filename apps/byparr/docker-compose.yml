@@ -6,7 +6,7 @@ services:
       - TZ=America/Chicago
       - LOG_LEVEL=info
     networks:
-      - media
+      - traefik
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8191 || exit 1"]
       interval: 30s
@@ -31,5 +31,5 @@ services:
         max-file: "3"
 
 networks:
-  media:
+  traefik:
     external: true

@@ -122,6 +122,16 @@ Traefik routes protected apps through oauth2-proxy:
 
 The user allowlists live encrypted in `apps/oauth2-proxy/.env.sops`. docker-cd decrypts them during deploy and Compose renders the runtime files oauth2-proxy reads.
 
+## Container Networking
+
+All app containers share one external `traefik` network. Traefik reaches them for ingress, and they can reach each other's internal ports directly. Stateful apps additionally keep their database on a private `<app>-internal` network, so the DB is never on `traefik`.
+
+There is **no per-app or per-zone network segmentation** between app containers — the `traefik` network is flat.
+
+**Why flat?** Auth is enforced only at Traefik ingress (`oauth2-*@file`), not east-west, so a compromised container can already reach any other container's internal port. Segmentation (per-app nets, or trust zones with Traefik as hub) would cap that blast radius, but on a single-node homelab behind Cloudflare + oauth2 the lateral-movement risk is low-probability defense-in-depth, and it adds permanent maintenance: every new app must be wired into Traefik plus the cross-cutting reachers (gatus health probes, ntfy notifications) and the lint network checks. The posture instead leans on patching (Renovate), secrets hygiene (SOPS), and backups (Backrest). Evaluated and declined June 2026; the legacy `media` and `backup` networks were removed at the same time.
+
+**If revisiting:** the highest-ROI single step is a private net for Vaultwarden alone (its own net shared only with Traefik + gatus), walling off the password store without touching the other ~50 apps.
+
 ## IoT VLAN
 
 Isolates cameras, sensors, and smart plugs from the main LAN. Devices can't reach the internet or other VLANs, but the server can reach them.

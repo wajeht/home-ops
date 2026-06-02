@@ -29,7 +29,6 @@ services:
       - /home/jaw/data/gluetun:/gluetun
     networks:
       - traefik
-      - media
     logging:
       driver: "json-file"
       options:
@@ -104,6 +103,4 @@ services:
 
 networks:
   traefik:
-    external: true
-  media:
     external: true

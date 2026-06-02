@@ -12,7 +12,6 @@ services:
       - /home/jaw/plex:/data
     networks:
       - traefik
-      - media
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 30s
@@ -49,6 +48,4 @@ services:
 
 networks:
   traefik:
-    external: true
-  media:
     external: true

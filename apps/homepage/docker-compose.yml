@@ -16,7 +16,6 @@ services:
       - /mnt/sata:/host/sata:ro
     networks:
       - traefik
-      - media
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
       interval: 30s
@@ -46,6 +45,4 @@ services:
       - "traefik.http.services.homepage.loadbalancer.server.port=3000"
 networks:
   traefik:
-    external: true
-  media:
     external: true

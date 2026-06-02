@@ -8,7 +8,6 @@ services:
       - /home/jaw/data/seerr:/app/config
     networks:
       - traefik
-      - media
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:5055/api/v1/status"]
       interval: 30s
@@ -39,6 +38,4 @@ services:
 
 networks:
   traefik:
-    external: true
-  media:
     external: true

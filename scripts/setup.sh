@@ -195,8 +195,6 @@ ensure_external_networks() {
 	require_cmd docker
 	# External networks/volumes used across stacks.
 	$SUDO docker network create traefik 2>/dev/null || true
-	$SUDO docker network create backup 2>/dev/null || true
-	$SUDO docker network create media 2>/dev/null || true
 	$SUDO docker volume create traefik-logs 2>/dev/null || true
 }
 
@@ -568,8 +566,6 @@ cmd_uninstall() {
 	for _ in 1 2 3; do
 		$SUDO docker network prune -f 2>/dev/null || true
 		$SUDO docker network rm traefik 2>/dev/null || true
-		$SUDO docker network rm backup 2>/dev/null || true
-		$SUDO docker network rm media 2>/dev/null || true
 		sleep 2
 	done
 
