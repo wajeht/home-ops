@@ -71,6 +71,7 @@ services:
     volumes:
       - /home/jaw/data/qbittorrent:/config
       - /home/jaw/plex:/data
+      - ./init/remove-stale-lock.sh:/custom-cont-init.d/remove-stale-lock.sh:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8085"]
       interval: 30s
