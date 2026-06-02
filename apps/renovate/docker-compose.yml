@@ -1,7 +1,7 @@
 services:
   # lint-ignore: backup  # stateless — PR cache, rebuilds from git remotes on next run
   renovate:
-    image: ghcr.io/mend/renovate-ce:14.5.0-full@sha256:4ba2e31c26b4cb1e3b014e361be1e7ab76011a91593c6020373ea301bfe72dce
+    image: ghcr.io/mend/renovate-ce:14.6.0-full@sha256:b6a1450e9609bc01fb35c26aadd8a58242274770d48da56ba9751ff5f348059e
     container_name: renovate
     environment:
       MEND_RNV_ACCEPT_TOS: "y"
