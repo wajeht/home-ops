@@ -113,6 +113,16 @@ endpoints:
     alerts:
       - type: ntfy
 
+  - name: Sonarr
+    group: Downloads
+    url: http://sonarr:8989/ping
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
   - name: Prowlarr
     group: Downloads
     url: http://prowlarr:9696/ping
