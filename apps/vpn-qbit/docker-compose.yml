@@ -68,7 +68,6 @@ services:
       - PGID=1000
       - TZ=America/Chicago
       - WEBUI_PORT=8085
-      - DOCKER_MODS=ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest@sha256:3da222c098e686ca4157c913c2b553dd48dfb1f5c5453c388c680d51c7fb8a62
     volumes:
       - /home/jaw/data/qbittorrent:/config
       - /home/jaw/plex:/data
