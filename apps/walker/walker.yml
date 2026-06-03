@@ -1,8 +1,4 @@
 repos:
-  # - repo: wajeht/home-ops
-  #   pools:
-  #     - name: default
-  #       runners: 0
   - repo: wajeht/jaw.dev
     pools:
       - name: default
