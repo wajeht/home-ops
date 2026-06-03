@@ -2,4 +2,4 @@ repos:
   - repo: wajeht/jaw.dev
     pools:
       - name: default
-        runners: 1
+        runners: 0
