@@ -1,6 +1,6 @@
 services:
   commit:
-    image: ghcr.io/wajeht/commit:bfa3ec2@sha256:595ee9321fb9b4cf9e9131580660be481db439e686fe9783929f428a7a8e7ba0
+    image: ghcr.io/wajeht/commit:16e6041@sha256:2e4a53a5643459f9998345d148ed96584a5bbd047fec813a27c0dc4f9172ee43
     networks:
       - traefik
     env_file:
