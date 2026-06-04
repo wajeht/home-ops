@@ -176,7 +176,9 @@ with:
   auth-middleware: ${{ contains(github.event.pull_request.labels.*.name, 'temp-deploy-with-auth') && 'oauth2-admin@file' || '' }}
 ```
 
-Use the matching cleanup workflow and only run it when the PR closes or the last temp label is removed.
+Put the matching cleanup workflow in `.github/workflows/temp-cleanup.yml`, separate from regular CI. Give it its own concurrency group with `cancel-in-progress: false` so a push, merge, or temp redeploy cannot cancel cleanup halfway through.
+
+Only run cleanup when the PR closes or the last temp label is removed.
 
 Source of truth:
 
