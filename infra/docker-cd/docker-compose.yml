@@ -1,6 +1,6 @@
 services:
   docker-cd:
-    image: ghcr.io/wajeht/docker-cd:v0.2.0@sha256:ea26f79bd74eb6e3d2af1f3855fd42ca2498f448a1465fbea8a86915835d3bc6
+    image: ghcr.io/wajeht/docker-cd:v0.2.1
     container_name: docker-cd
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
