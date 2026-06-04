@@ -67,7 +67,7 @@ jobs:
 
   deploy:
     needs: build-and-push
-    uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.21
+    uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.25
     with:
       app-path: apps/your-app-name
       service-name: your-compose-service-name
@@ -144,7 +144,7 @@ The workflow uses native GitHub Actions `environment:` which provides:
 For custom domains outside `*.jaw.dev`, pass the `url` input:
 
 ```yaml
-uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.21
+uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.25
 with:
   app-path: apps/close-powerlifting
   service-name: close-powerlifting
@@ -155,6 +155,28 @@ with:
 ## Which Apps Use It
 
 Use instant deploy for apps you build and publish as `ghcr.io/wajeht/*`.
+
+## Temporary PR Apps
+
+App repos can also create preview stacks in `home-ops` with the reusable temp workflows.
+
+- `temp-deploy` deploys `apps/<app>-pr-<N>` at `https://pr-<N>-<app>.jaw.dev` with production middleware labels
+- `temp-deploy-with-auth` deploys the same preview with `oauth2-admin@file`
+- if both labels are present, auth wins
+- removing one temp label redeploys with the remaining mode
+- removing the last temp label, or closing the PR, removes the preview stack
+
+Use `wajeht/docker-cd-deploy-workflow/.github/workflows/temp-deploy.yaml@v0.0.25` with:
+
+```yaml
+with:
+  app-path: apps/your-app
+  service-name: your-compose-service
+  tag: ${{ needs.temp-build.outputs.tag }}
+  auth-middleware: ${{ contains(github.event.pull_request.labels.*.name, 'temp-deploy-with-auth') && 'oauth2-admin@file' || '' }}
+```
+
+Use the matching cleanup workflow and only run it when the PR closes or the last temp label is removed.
 
 Source of truth:
 

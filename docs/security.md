@@ -122,6 +122,13 @@ Traefik routes protected apps through oauth2-proxy:
 
 The user allowlists live encrypted in `apps/oauth2-proxy/.env.sops`. docker-cd decrypts them during deploy and Compose renders the runtime files oauth2-proxy reads.
 
+Temporary PR apps can opt into the same guard. App repos should use:
+
+- `temp-deploy` for normal previews with production middleware labels
+- `temp-deploy-with-auth` for previews protected by `oauth2-admin@file`
+
+The auth label passes `auth-middleware: oauth2-admin@file` to `docker-cd-deploy-workflow`; the temp compose rewrite replaces the temp router middleware with that guard.
+
 ## Container Networking
 
 All app containers share one external `traefik` network. Traefik reaches them for ingress, and they can reach each other's internal ports directly. Stateful apps additionally keep their database on a private `<app>-internal` network, so the DB is never on `traefik`.
