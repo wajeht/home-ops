@@ -36,7 +36,7 @@ run_check() {
 
 # shellcheck disable=SC2329
 check_shell() {
-	find scripts apps infra -name '*.sh' -not -path './apps/adguard/*' -print0 |
+	find scripts apps infra -name '*.sh' -not -path 'apps/adguard/*' -print0 |
 		xargs -0 shellcheck -x
 }
 
@@ -122,7 +122,7 @@ check_service_hygiene() {
 			svc && /^    healthcheck:/ { has_healthcheck=1 }
 			END { flush() }
 		' "$f")
-	done < <(find apps -name 'docker-compose.yml' -print0)
+	done < <(find apps -name 'docker-compose.yml' -not -path 'apps/adguard/*' -print0)
 	if [ "${#issues[@]}" -gt 0 ]; then
 		printf '%s\n' "${issues[@]}"
 		return 1

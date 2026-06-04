@@ -24,6 +24,16 @@
         #   url: http://immich-server:2283
         #   key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
 
+    - Miniflux:
+        icon: miniflux
+        href: https://rss.jaw.dev
+        description: RSS Reader
+        # siteMonitor: http://miniflux:8080
+        # widget:
+        #   type: miniflux
+        #   url: http://miniflux:8080
+        #   key: "{{HOMEPAGE_VAR_MINIFLUX_KEY}}"
+
 - Downloaders:
     - Radarr:
         icon: radarr
