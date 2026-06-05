@@ -1,6 +1,6 @@
 services:
   www:
-    image: ghcr.io/wajeht/jaw.dev:eb4fe4c
+    image: ghcr.io/wajeht/jaw.dev:eb4fe4c@sha256:7d1779efefb0bdb3b57a9b8cecde5d9710fa9a9de5fa31c26a9b7961140290b0
     environment:
       - TZ=America/Chicago
       - HTTP_PORT=80
