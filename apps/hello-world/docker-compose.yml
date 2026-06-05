@@ -1,6 +1,6 @@
 services:
   hello-world:
-    image: ghcr.io/wajeht/hello-world:6824dab@sha256:0e62b00f09c1f5f1dce0a3ea15a16ca495a467459dab84835248750eaf084bc5
+    image: ghcr.io/wajeht/hello-world:00e3c42@sha256:47244c899c6e03d40eaede5e5d7bb686a9d072bee3467123f3c620fefde7a355
     env_file:
       - .env
     networks:
