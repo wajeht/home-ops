@@ -1,6 +1,6 @@
 services:
   power-badge:
-    image: ghcr.io/wajeht/power-badge:50f4d71@sha256:dfe4dd1f02b31779d91f7806ecb9c06d7a4b1c8228fbb407cc2be7e40b1693f0
+    image: ghcr.io/wajeht/power-badge:9b3509d@sha256:5aa17b52b3783e066a0fefa5e51e0cbefd481c34f344cfec26a7302a39508006
     container_name: power-badge
     restart: unless-stopped
     init: true
