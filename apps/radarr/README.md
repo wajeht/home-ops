@@ -19,8 +19,15 @@ Size limits (Settings → Quality, MB/min):
 
 | Quality            | Min | Preferred | Max |
 | ------------------ | --- | --------- | --- |
-| WEBDL/WEBRip-1080p | 0   | 15        | 100 |
-| Bluray-1080p       | 0   | 30        | 150 |
+| WEBDL/WEBRip-1080p | 0   | 15        | 40  |
+| Bluray-1080p       | 0   | 30        | 40  |
+
+> **Max is a hard cap, not a preference.** It was 100/150 — too loose: a 2h movie
+> could still grab at 12–18GB and "pass", and usenet-first would take that big copy
+> over a small YTS torrent. **40 MB/min** caps a 2h movie at ~4.8GB; YTS (~2GB)
+> sails through, 8–17GB bloat is rejected outright. Lower this further to shrink
+> more aggressively. Tradeoff: a movie only available large won't grab until a
+> smaller release appears.
 
 ## Release Preference: usenet first, YTS torrent fallback
 
@@ -60,3 +67,26 @@ Synced from Prowlarr (Full Sync) — do not edit indexers in Radarr, changes are
 | ----------- | -------------- | -------- |
 | qBittorrent | `gluetun:8085` | `radarr` |
 | SABnzbd     | `sabnzbd:8080` | `movies` |
+
+## Shrinking oversized existing files
+
+Radarr **never auto-downgrades** — a 40GB Remux or fat Bluray stays forever, even
+though it exceeds the size cap, because Radarr treats it as equal/higher quality.
+The only way to shrink is delete-the-file → re-search.
+
+Safe method (no permanent gaps): only delete a file once a clean small replacement
+is confirmed grabbable. The leftover worklist is `redownload-list.md` (repo root,
+gitignored).
+
+Per movie:
+
+1. Interactive search; find an allowed-quality (1080p WEB/Bluray) release whose
+   only rejection reasons are existing-file ones (`existing meets cutoff`,
+   `equal or higher preference`) — those vanish once the file is gone. Skip if the
+   release also fails on size/seeders/subs.
+2. Delete the movie file, trigger `MoviesSearch`. The new file imports under the
+   40 MB/min cap + usenet-first/YTS rules.
+3. Some grabs fail repeatedly (bad usenet articles) — re-search or leave for RSS.
+
+Gotcha: clearing the queue with `blocklist=true` blocklists those exact releases —
+only do it for the bad/big ones, not in-progress good downloads.
