@@ -1,6 +1,6 @@
 services:
   ip:
-    image: ghcr.io/wajeht/ip:9d4dfd6@sha256:50f7f79613ddf33a5ecd94b5d254a9aad434f2abb10157b51e0ac6ca1db5e57b
+    image: ghcr.io/wajeht/ip:118e530@sha256:6067eed5124e8fed944a78b66ecf7c9a84f6cd658cbf2aa3e8bf889038fe1c81
     environment:
       - TZ=America/Chicago
       - PORT=80
