@@ -36,12 +36,12 @@ The goal is small, good-quality 1080p — usenet when available, otherwise YTS/Y
 
 Scored in the HD-1080p profile:
 
-| Format                            | Score  | Why                                  |
-| --------------------------------- | ------ | ------------------------------------ |
-| YTS                               | +150   | prefer YTS/YIFY among torrents       |
-| x265 (HD)                         | +100   | HEVC — ~half the size at 1080p       |
-| Repack/Proper / Repack2 / Repack3 | +5/6/7 | auto-replace broken releases         |
-| BR-DISK / Upscaled / Extras       | -10000 | block genuine junk                   |
+| Format                            | Score  | Why                                       |
+| --------------------------------- | ------ | ----------------------------------------- |
+| YTS                               | +150   | prefer YTS/YIFY among torrents            |
+| x265 (HD)                         | +100   | HEVC — ~half the size at 1080p            |
+| Repack/Proper / Repack2 / Repack3 | +5/6/7 | auto-replace broken releases              |
+| BR-DISK / Upscaled / Extras       | -10000 | block genuine junk                        |
 | LQ / LQ (Release Title)           | **0**  | TRaSH bans YTS here — kept OFF on purpose |
 
 > The `LQ` formats are TRaSH's "low quality groups" list, which includes YTS/YIFY.
