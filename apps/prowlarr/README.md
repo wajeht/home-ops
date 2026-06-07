@@ -1,5 +1,16 @@
 # Prowlarr
 
+## App Sync
+
+Prowlarr pushes indexers to Sonarr and Radarr via **Full Sync** — any indexer edits made directly in those apps are overwritten on the next sync.
+
+The **Standard** sync profile (Settings → Apps → Sync Profiles) controls the flags pushed to both apps:
+
+- Enable RSS: **on** (was off — caused "no indexers available for RSS" in Radarr, kept reverting manual fixes)
+- Enable Automatic/Interactive Search: on
+
+The profile is shared per-indexer across all apps; per-app RSS is not possible. Sonarr/Radarr API keys for sync live in Settings → Apps (update there if an app's key is regenerated).
+
 ## Proxy Setup
 
 Prowlarr's indexers (e.g. 1337x) fetch `.torrent` files from sites like `itorrents.org`. Without a proxy, these requests go out from your real IP, which can trigger ISP flags or UniFi IPS P2P blocks.
