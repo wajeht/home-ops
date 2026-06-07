@@ -30,6 +30,17 @@ Imported from [TRaSH Guides](https://trash-guides.info) sonarr JSONs, scored in 
 
 x265 is preferred (~half the size of x264 at 1080p); negative scores block junk releases entirely via the min format score.
 
+## Release Preference: usenet first, torrent fallback
+
+**Delay profile** (Settings → Profiles → Delay) — matches Radarr:
+
+- Preferred protocol: **Usenet**
+- Usenet delay: **0** — grab usenet the moment it's found
+- Torrent delay: **60 min** — hold torrents an hour so usenet gets first shot
+
+No YTS scoring here (YTS/YIFY only releases movies, never TV), so the LQ junk
+filters stay fully enabled — unlike Radarr.
+
 ## Indexers
 
 Synced from Prowlarr (Full Sync) — do not edit indexers in Sonarr, changes are overwritten every sync. RSS/search flags come from Prowlarr's sync profile (see `apps/prowlarr/README.md`).
