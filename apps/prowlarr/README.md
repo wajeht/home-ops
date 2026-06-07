@@ -2,14 +2,7 @@
 
 ## App Sync
 
-Prowlarr pushes indexers to Sonarr and Radarr via **Full Sync** — any indexer edits made directly in those apps are overwritten on the next sync.
-
-The **Standard** sync profile (Settings → Apps → Sync Profiles) controls the flags pushed to both apps:
-
-- Enable RSS: **on** (was off — caused "no indexers available for RSS" in Radarr, kept reverting manual fixes)
-- Enable Automatic/Interactive Search: on
-
-The profile is shared per-indexer across all apps; per-app RSS is not possible. Sonarr/Radarr API keys for sync live in Settings → Apps (update there if an app's key is regenerated).
+Prowlarr pushes indexers to Sonarr/Radarr via Full Sync — edits made in those apps are overwritten each sync. The **Standard** sync profile (Settings → Apps → Sync Profiles) sets the shared flags: RSS on, Automatic/Interactive Search on. RSS is per-indexer, not per-app. App API keys live in Settings → Apps (update there if a key is regenerated).
 
 ## Proxy Setup
 
@@ -26,7 +19,7 @@ In `apps/vpn-qbit/docker-compose.yml`, Gluetun has:
 - HTTPPROXY_LISTENING_ADDRESS=:8888
 ```
 
-This starts an HTTP proxy inside Gluetun on port `8888`. Any traffic sent to this proxy exits through the VPN tunnel. Prowlarr can reach it at `gluetun:8888` because both containers share the `media` network.
+This starts an HTTP proxy inside Gluetun on port `8888`. Any traffic sent to this proxy exits through the VPN tunnel. Prowlarr reaches it at `gluetun:8888` over the shared `traefik` network.
 
 ### 2. Prowlarr
 

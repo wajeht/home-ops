@@ -1,25 +1,24 @@
 # Sonarr
 
-Runtime config lives in `~/data/sonarr/` on the server, not in this repo. This documents the settings applied via UI/API so they can be restored.
+Runtime config in `~/data/sonarr/` (not GitOps). Restore from Backrest; or re-apply below by hand.
 
-## Quality
+## Quality — profile HD-1080p (only profile, mirrors Radarr)
 
-Single profile: **HD-1080p** (all stock profiles deleted). Mirrors Radarr.
+- Allowed: WEBDL/WEBRip-1080p, Bluray-1080p. Cutoff WEB 1080p, upgrades on.
+- Min format score: -1000 (junk formats below are rejected).
 
-- **Allowed:** WEBDL-1080p, WEBRip-1080p, Bluray-1080p (no HDTV/SD/4K)
-- **Cutoff:** WEB 1080p, upgrades enabled
-- **Min format score:** -1000 (hard-rejects junk formats below)
-
-Size limits (Settings → Quality, MB/min):
+Size limits (MB/min):
 
 | Quality            | Min | Preferred | Max |
 | ------------------ | --- | --------- | --- |
 | WEBDL/WEBRip-1080p | 0   | 15        | 100 |
 | Bluray-1080p       | 0   | 30        | 150 |
 
-## Custom Formats (TRaSH)
+## Release preference — usenet first, torrent fallback
 
-Imported from [TRaSH Guides](https://trash-guides.info) sonarr JSONs, scored in the HD-1080p profile:
+Delay profile: prefer Usenet, usenet delay 0, torrent delay 60 min.
+
+## Custom formats (scored in HD-1080p)
 
 | Format                            | Score  |
 | --------------------------------- | ------ |
@@ -28,30 +27,15 @@ Imported from [TRaSH Guides](https://trash-guides.info) sonarr JSONs, scored in 
 | LQ / LQ (Release Title)           | -10000 |
 | Upscaled / BR-DISK                | -10000 |
 
-x265 is preferred (~half the size of x264 at 1080p); negative scores block junk releases entirely via the min format score.
-
-## Release Preference: usenet first, torrent fallback
-
-**Delay profile** (Settings → Profiles → Delay) — matches Radarr:
-
-- Preferred protocol: **Usenet**
-- Usenet delay: **0** — grab usenet the moment it's found
-- Torrent delay: **60 min** — hold torrents an hour so usenet gets first shot
-
-No YTS scoring here (YTS/YIFY only releases movies, never TV), so the LQ junk
-filters stay fully enabled — unlike Radarr.
+No YTS format — YTS/YIFY is movies only, so LQ junk filters stay on (unlike Radarr).
 
 ## Indexers
 
-Synced from Prowlarr (Full Sync) — do not edit indexers in Sonarr, changes are overwritten every sync. RSS/search flags come from Prowlarr's sync profile (see `apps/prowlarr/README.md`).
+Synced from Prowlarr (Full Sync) — don't edit here, overwritten each sync. RSS sync interval 60 min; older gaps need Wanted → Missing → Search.
 
-RSS sync interval: 60 min (Settings → Indexers → Options). RSS only grabs releases published after it runs; older gaps need Wanted → Missing → Search.
-
-## Download Clients
+## Download clients
 
 | Client      | Host           | Category |
 | ----------- | -------------- | -------- |
 | qBittorrent | `gluetun:8085` | `sonarr` |
 | SABnzbd     | `sabnzbd:8080` | `tv`     |
-
-Credentials live in each client's own config under `~/data/`.
