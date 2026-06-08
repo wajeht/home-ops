@@ -107,6 +107,11 @@
         #   key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
 
 - Systems:
+    - Synology:
+        icon: synology
+        href: http://192.168.4.243:5000/#/signin
+        description: Nas
+
     - Home Assistant:
         icon: home-assistant
         href: https://ha.jaw.dev
