@@ -112,6 +112,11 @@
         href: http://192.168.4.243:5000/#/signin
         description: Nas
 
+    - UniFi:
+        icon: unifi
+        href: https://192.168.4.1/login
+        description: Network Controller
+
     - Home Assistant:
         icon: home-assistant
         href: https://ha.jaw.dev
