@@ -309,7 +309,7 @@
 
 - Tools:
     - DbGate:
-        icon: dbgate
+        icon: sh-dbgate.png
         href: https://dbgate.jaw.dev
         description: Database Manager
         # siteMonitor: http://dbgate:3000
