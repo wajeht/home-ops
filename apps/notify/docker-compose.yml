@@ -1,6 +1,6 @@
 services:
   notify:
-    image: ghcr.io/wajeht/notify:c10e7a2@sha256:68e1d0eb1fbbe7ed1b57607cc943bf4d09b59d9237bc379aa4e40325320676ca
+    image: ghcr.io/wajeht/notify:3e25adc@sha256:bb0df0d48e6e3f3ec0a8de7fb5908a3349b23937722b513d44f177cecd8519bb
     env_file:
       - .env
     environment:
