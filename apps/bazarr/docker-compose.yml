@@ -1,7 +1,7 @@
 services:
   bazarr:
     container_name: bazarr
-    image: linuxserver/bazarr:1.5.7-development@sha256:2ca3f69655a035cb22887440ff0716c6a8c3ba4347a95da14ef59a05b5e2a3ff
+    image: linuxserver/bazarr:1.5.7-development@sha256:936f41e72be4021b4fee91f7da995bbc19d6fa28bc5004636f1262f85861d5fa
     environment:
       - PUID=1000
       - PGID=1000
