@@ -1,7 +1,7 @@
 services:
   # lint-ignore: backup  # stateless — polls GitHub notifications, no persistent data
   clear-renovate-notifications:
-    image: ghcr.io/wajeht/clear-renovate-notifications:54b566d@sha256:2e6e16a6ae72f5af173ec7bea6b28b5a4117464a987e67837f037c34118bb4b0
+    image: ghcr.io/wajeht/clear-renovate-notifications:c175ccd@sha256:7116fc1634bc4b4035f10e675536a65bf25db1c51d93934c16d588d14c5911f6
     container_name: clear-renovate-notifications
     env_file:
       - .env
