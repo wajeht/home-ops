@@ -46,7 +46,6 @@ docker-cd should start first, then deploy the rest of `apps/*`.
 ./scripts/setup.sh update-infra-force  # Force-recreate docker-cd
 ./scripts/setup.sh nfs mount           # Mount NFS shares
 ./scripts/setup.sh nfs persist         # Persist NFS mounts
-./scripts/setup.sh sata persist        # Persist SATA mount
 ./scripts/cloudflare.sh                # Update Cloudflare IP allowlists
 ```
 

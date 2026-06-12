@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update update-force status relogin cloudflare format lint push fix-git images images-prune clean update-submodules nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status sata-mount sata-unmount sata-persist sata-unpersist sata-status help
+.PHONY: setup install install-fresh uninstall update update-force status relogin cloudflare format lint push fix-git images images-prune clean update-submodules nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status help
 
 ## setup                   Create data dirs and base setup
 setup:
@@ -101,26 +101,6 @@ nfs-unpersist:
 ## nfs-status              Show NFS mount status
 nfs-status:
 	@./scripts/setup.sh nfs status
-
-## sata-mount              Mount SATA drive
-sata-mount:
-	@./scripts/setup.sh sata mount
-
-## sata-unmount            Unmount SATA drive
-sata-unmount:
-	@./scripts/setup.sh sata unmount
-
-## sata-persist            Add SATA mount to fstab
-sata-persist:
-	@./scripts/setup.sh sata persist
-
-## sata-unpersist          Remove SATA mount from fstab
-sata-unpersist:
-	@./scripts/setup.sh sata unpersist
-
-## sata-status             Show SATA mount status
-sata-status:
-	@./scripts/setup.sh sata status
 
 ## help                    Show this help
 help:

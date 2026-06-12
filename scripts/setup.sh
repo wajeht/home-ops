@@ -162,13 +162,6 @@ SUDO="sudo"
 REPO_DIR="$USER_HOME/home-ops"
 export SOPS_AGE_KEY_FILE="$USER_HOME/.sops/age-key.txt"
 
-# SATA config (local secondary disk)
-SATA_DEVICE="/dev/sda1"
-SATA_MOUNT="/mnt/sata"
-SATA_DIRS=(
-	"$SATA_MOUNT/frigate/media"
-)
-
 # NFS config
 NAS_IP="192.168.4.243"
 NFS_MOUNTS=(
@@ -203,8 +196,6 @@ ensure_external_networks() {
 #=============================================================================
 cmd_setup() {
 	header "Mounts"
-	sata_mount
-	sata_persist
 	cmd_nfs mount all
 	cmd_nfs persist all
 
@@ -349,91 +340,6 @@ cmd_nfs() {
 	if [ "$matched" -eq 0 ]; then
 		die "unknown nfs target: $target"
 	fi
-}
-
-#=============================================================================
-# SATA - Mount/unmount local SATA drive
-#=============================================================================
-sata_mount() {
-	if mountpoint -q "$SATA_MOUNT" 2>/dev/null; then
-		dim "sata: Already mounted"
-		return
-	fi
-	if [ ! -b "$SATA_DEVICE" ]; then
-		warn "SATA device $SATA_DEVICE not found, skipping"
-		return
-	fi
-	info "Mounting SATA: $SATA_DEVICE -> $SATA_MOUNT"
-	$SUDO mkdir -p "$SATA_MOUNT"
-	if $SUDO mount "$SATA_DEVICE" "$SATA_MOUNT"; then
-		# Create subdirectories
-		for dir in "${SATA_DIRS[@]}"; do
-			$SUDO mkdir -p "$dir"
-		done
-		$SUDO chown -R 1000:1000 "$SATA_MOUNT"
-		ok "sata"
-	else
-		err "sata mount failed"
-		return 1
-	fi
-}
-
-sata_unmount() {
-	info "Unmounting SATA: $SATA_MOUNT"
-	if $SUDO umount "$SATA_MOUNT" 2>/dev/null; then
-		ok "sata"
-	else
-		dim "Not mounted"
-	fi
-}
-
-sata_persist() {
-	local entry="$SATA_DEVICE $SATA_MOUNT ext4 defaults 0 2"
-	if grep -qF "$SATA_DEVICE" /etc/fstab; then
-		dim "sata: already in fstab"
-	else
-		printf '%s\n' "$entry" | $SUDO tee -a /etc/fstab >/dev/null
-		ok "sata: added to fstab"
-	fi
-}
-
-sata_unpersist() {
-	if grep -qF "$SATA_DEVICE" /etc/fstab; then
-		$SUDO sed -i "\|$SATA_DEVICE|d" /etc/fstab
-		ok "sata: removed from fstab"
-	else
-		dim "sata: not in fstab"
-	fi
-}
-
-sata_status() {
-	local mount_status fstab_status
-	if mountpoint -q "$SATA_MOUNT" 2>/dev/null; then
-		mount_status="${GREEN}MOUNTED${NC}   $(df -h "$SATA_MOUNT" | awk 'NR==2 {print $3"/"$2" ("$5" used)"}')"
-	else
-		mount_status="${RED}NOT MOUNTED${NC}"
-	fi
-	if grep -qF "$SATA_DEVICE" /etc/fstab; then
-		fstab_status="${GREEN}PERSISTED${NC}"
-	else
-		fstab_status="${DIM}NOT PERSISTED${NC}"
-	fi
-	printf "%-10s %b  %b\n" "sata:" "$mount_status" "$fstab_status"
-}
-
-cmd_sata() {
-	local action=${1:-status}
-	case "$action" in
-		mount) sata_mount ;;
-		unmount | umount) sata_unmount ;;
-		persist) sata_persist ;;
-		unpersist) sata_unpersist ;;
-		status) sata_status ;;
-		*)
-			printf 'Usage: %s sata {mount|unmount|persist|unpersist|status}\n' "$0"
-			return 1
-			;;
-	esac
 }
 
 #=============================================================================
@@ -586,14 +492,11 @@ cmd_status() {
 	printf '%b\n' "${BOLD}Containers:${NC}"
 	$SUDO docker ps --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || dim "None"
 	printf '\n'
-	printf '%b\n' "${BOLD}SATA:${NC}"
-	sata_status
-	printf '\n'
 	printf '%b\n' "${BOLD}NFS Mounts:${NC}"
 	cmd_nfs status
 	printf '\n'
 	printf '%b\n' "${BOLD}Disk:${NC}"
-	df -h "$USER_HOME/data" "$USER_HOME/plex" "$SATA_MOUNT" 2>/dev/null | tail -n +2 || true
+	df -h "$USER_HOME/data" "$USER_HOME/plex" 2>/dev/null | tail -n +2 || true
 }
 
 #=============================================================================
@@ -767,11 +670,6 @@ print_usage() {
 	printf '\n'
 	printf '%b\n' "${BOLD}Commands:${NC}"
 	printf '%b\n' "  ${GREEN}setup${NC}                    Create all data directories"
-	printf '%b\n' "  ${GREEN}sata mount${NC}               Mount SATA drive (/mnt/sata)"
-	printf '%b\n' "  ${GREEN}sata unmount${NC}             Unmount SATA drive"
-	printf '%b\n' "  ${GREEN}sata persist${NC}             Add SATA mount to fstab (survives reboot)"
-	printf '%b\n' "  ${GREEN}sata unpersist${NC}           Remove SATA mount from fstab"
-	printf '%b\n' "  ${GREEN}sata status${NC}              Show SATA mount status"
 	printf '%b\n' "  ${GREEN}nfs mount${NC} [target]       Mount NFS shares (plex|backup|all)"
 	printf '%b\n' "  ${GREEN}nfs unmount${NC} [target]     Unmount NFS shares"
 	printf '%b\n' "  ${GREEN}nfs persist${NC} [target]     Add NFS mounts to fstab (survives reboot)"
@@ -805,10 +703,6 @@ case "${1:-}" in
 		;;
 	setup)
 		cmd_setup
-		;;
-	sata)
-		shift
-		cmd_sata "$@"
 		;;
 	nfs)
 		shift

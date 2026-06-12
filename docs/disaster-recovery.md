@@ -463,12 +463,11 @@ cd ~/home-ops && ./scripts/setup.sh install
 
 The install script handles Docker, SOPS, networks, and docker-cd deployment.
 
-#### 3. Mount NFS and SATA
+#### 3. Mount NFS
 
 ```bash
 ./scripts/setup.sh nfs mount
 ./scripts/setup.sh nfs persist      # survives reboots
-./scripts/setup.sh sata persist     # survives reboots
 ```
 
 #### 4. Bootstrap Backrest
@@ -509,14 +508,7 @@ NFS mounts drop on reboot/network change. If docker-cd deploys before NFS is mou
 ./scripts/setup.sh nfs persist
 ```
 
-#### 2. SATA Mount
-
-```bash
-./scripts/setup.sh sata mount
-./scripts/setup.sh sata persist
-```
-
-#### 3. Stale Restic Locks
+#### 2. Stale Restic Locks
 
 If Backrest was killed mid-backup before the redeploy, its restic locks remain in the repos. After redeploy:
 
@@ -526,11 +518,11 @@ for app in $(docker exec backrest ls /repos); do
 done
 ```
 
-#### 4. Container Permission Issues
+#### 3. Container Permission Issues
 
 After a fresh deploy, Backrest can crash with `mkdir /data/processlogs: permission denied`. Cause: `cap_drop: ALL` strips capabilities root needs. Already fixed in the compose with `cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]`. If you see this on a new install, verify those caps are set.
 
-#### 5. Re-deploying after pushing changes to config.json
+#### 4. Re-deploying after pushing changes to config.json
 
 A formatter has been observed to strip new entries from `config.json` between push and apply. After any push to `apps/backrest/`, verify on the server:
 

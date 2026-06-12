@@ -13,7 +13,6 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /home/jaw/plex:/host/nas:ro
-      # - /mnt/sata:/host/sata:ro
     networks:
       - traefik
     healthcheck:

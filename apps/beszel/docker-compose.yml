@@ -56,7 +56,6 @@ services:
       - /:/extra-filesystems/host:ro
     devices:
       - /dev/nvme0:/dev/nvme0
-      - /dev/sda:/dev/sda
     networks:
       - beszel-internal
     healthcheck:
