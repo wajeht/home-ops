@@ -10,10 +10,17 @@ flowchart LR
 
     subgraph cloudflare[Cloudflare]
         cf((WAF))
+        cf_region([Region Blocking])
+        cf_ddos([DDoS Protection])
+        cf_bot([Bot Management])
     end
 
     subgraph ucg[UniFi Cloud Gateway Fiber]
         unifi{{Firewall}}
+        ucg_cf([Cloudflare IPs Only])
+        ucg_region([Region Blocking])
+        ucg_ids([IDS/IPS])
+        ucg_threat([Threat Management])
     end
 
     subgraph uswproxg[UniFi Pro XG 8 PoE]
@@ -26,6 +33,7 @@ flowchart LR
 
     subgraph k3s_node[Dell OptiPlex 7070 Micro]
         traefik[Traefik] -->|proxy| apps
+        traefik -->|forward-auth| oauth2_proxy[OAuth2 Proxy] -->|authed| apps
         apps["apps/*"]
     end
 
@@ -67,15 +75,23 @@ flowchart LR
     style public fill:#dbeafe,stroke:#2563eb,color:#333
     style cloudflare fill:#fde8d0,stroke:#f6821f
     style cf fill:#fde8d0,stroke:#f6821f,color:#333
+    style cf_region fill:#fde8d0,stroke:#f6821f,color:#333
+    style cf_ddos fill:#fde8d0,stroke:#f6821f,color:#333
+    style cf_bot fill:#fde8d0,stroke:#f6821f,color:#333
     style you fill:#fef3c7,stroke:#f59e0b,color:#333
     style ucg fill:#fef2f2,stroke:#dc2626
     style unifi fill:#fde8e8,stroke:#dc2626,color:#333
+    style ucg_cf fill:#fde8e8,stroke:#dc2626,color:#333
+    style ucg_region fill:#fde8e8,stroke:#dc2626,color:#333
+    style ucg_ids fill:#fde8e8,stroke:#dc2626,color:#333
+    style ucg_threat fill:#fde8e8,stroke:#dc2626,color:#333
     style uswproxg fill:#f3f4f6,stroke:#6b7280
     style xg fill:#d1d5db,stroke:#6b7280,color:#333
     style uswflex fill:#f3f4f6,stroke:#6b7280
     style poe fill:#d1d5db,stroke:#6b7280,color:#333
     style k3s_node fill:#fffbeb,stroke:#d97706
     style traefik fill:#e0f2fe,stroke:#0284c7,color:#333
+    style oauth2_proxy fill:#fef3c7,stroke:#d97706,color:#333
     style apps fill:#f0fdf4,stroke:#16a34a,color:#333
     style nas fill:#fffbeb,stroke:#d97706
     style nfs fill:#e0e7ff,stroke:#4f46e5,color:#333
