@@ -101,8 +101,8 @@ flowchart LR
         adguard -->|DNS| unifi
         unifi -->|10GbE| xg
         xg -->|10GbE| nfs
-        xg -->|2.5GbE| dell
         xg -->|10GbE| poe
+        unifi -->|2.5GbE| dell
         unifi -->|PoE| ap
         poe -->|PoE| zigbee
         poe -->|PoE| adguard
