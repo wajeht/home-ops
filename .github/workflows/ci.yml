@@ -25,18 +25,6 @@ jobs:
       - name: Check formatting
         run: |
           npx oxfmt --check "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
-          find scripts apps infra -name '*.sh' -not -path './apps/adguard/*' -print0 | xargs -0 shfmt -d -i 0 -ci
+          find scripts apps -name '*.sh' -not -path './apps/adguard/*' -print0 | xargs -0 shfmt -d -i 0 -ci
       - name: Lint
         run: ./scripts/lint.sh
-
-  sync:
-    if: github.event_name == 'push'
-    needs: lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger docker-cd sync
-        run: |
-          RESPONSE=$(curl -sS --max-time 10 -X POST \
-            -H "Authorization: Bearer ${{ secrets.DOCKER_CD_API_SECRET }}" \
-            "${{ secrets.DOCKER_CD_URL }}/api/sync" 2>&1) || true
-          echo "$RESPONSE" | jq . 2>/dev/null || echo "Response: $RESPONSE"
