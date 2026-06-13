@@ -81,6 +81,10 @@ flowchart LR
         zigbee -->|Zigbee| plugs([Smart Plugs x4])
         zigbee -->|Zigbee| switches([Smart Switches x2])
 
+        subgraph uswproxg[UniFi Pro XG 8 PoE]
+            xg{{10G Switch}}
+        end
+
         subgraph uswflex[UniFi Flex 2.5G PoE]
             poe{{PoE Switch}}
         end
@@ -95,12 +99,13 @@ flowchart LR
 
         nfs -->|NFS| apps
         adguard -->|DNS| unifi
-        unifi -->|2.5GbE| nfs
-        unifi --> poe
-        unifi -->|2.5GbE| dell
+        unifi -->|10GbE| xg
+        xg -->|10GbE| nfs
+        xg -->|2.5GbE| dell
+        xg -->|GbE| ap
+        xg -->|10GbE| poe
         poe -->|PoE| zigbee
         poe -->|PoE| adguard
-        poe -->|PoE| ap
         poe -->|PoE| nvr
         nvr -->|WiFi| camera([G6 Instant Camera])
     end
@@ -145,6 +150,8 @@ flowchart LR
     style ucg fill:#fef2f2,stroke:#dc2626
     style pi fill:#f0fdf4,stroke:#22c55e
     style slzb fill:#faf5ff,stroke:#9b59b6
+    style uswproxg fill:#f3f4f6,stroke:#6b7280
+    style xg fill:#d1d5db,stroke:#6b7280,color:#333
     style uswflex fill:#f3f4f6,stroke:#6b7280
     style u6 fill:#eff6ff,stroke:#0559c9
     style unvr fill:#fef2f2,stroke:#dc2626
@@ -152,14 +159,14 @@ flowchart LR
     style camera fill:#fde8e8,stroke:#dc2626,color:#333
     style plugs fill:#f5e6ff,stroke:#9b59b6,color:#333
     style switches fill:#f5e6ff,stroke:#9b59b6,color:#333
-    linkStyle 27 stroke:#22c55e,stroke-dasharray:5
     linkStyle 28 stroke:#22c55e,stroke-dasharray:5
     linkStyle 29 stroke:#22c55e,stroke-dasharray:5
     linkStyle 30 stroke:#22c55e,stroke-dasharray:5
-    linkStyle 31 stroke:#2563eb,stroke-dasharray:5
+    linkStyle 31 stroke:#22c55e,stroke-dasharray:5
     linkStyle 32 stroke:#2563eb,stroke-dasharray:5
     linkStyle 33 stroke:#2563eb,stroke-dasharray:5
     linkStyle 34 stroke:#2563eb,stroke-dasharray:5
+    linkStyle 35 stroke:#2563eb,stroke-dasharray:5
 ```
 
 GitOps-driven homelab running on Docker Compose.
