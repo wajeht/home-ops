@@ -102,8 +102,8 @@ flowchart LR
         unifi -->|10GbE| xg
         xg -->|10GbE| nfs
         xg -->|2.5GbE| dell
-        xg -->|GbE| ap
         xg -->|10GbE| poe
+        unifi -->|PoE| ap
         poe -->|PoE| zigbee
         poe -->|PoE| adguard
         poe -->|PoE| nvr
