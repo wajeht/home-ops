@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: false
+
 services:
   oauth2-admin:
     container_name: oauth2-admin

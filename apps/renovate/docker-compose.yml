@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: false
+
 services:
   # lint-ignore: backup  # stateless — PR cache, rebuilds from git remotes on next run
   renovate:

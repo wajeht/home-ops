@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: true
+
 services:
   mm2us:
     image: ghcr.io/wajeht/mm2us.com:1be9380@sha256:4529c72fddeb18b81313849f3cdebb8bb4b00c89f4bcd38b97d83a9bdbd454c2

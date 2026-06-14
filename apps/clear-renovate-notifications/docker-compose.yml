@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: false
+
 services:
   # lint-ignore: backup  # stateless — polls GitHub notifications, no persistent data
   clear-renovate-notifications:

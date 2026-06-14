@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: true
+
 services:
   commit:
     image: ghcr.io/wajeht/commit:3d7cb2b@sha256:3ea8f8de0265a864f2a5b5ee052ddd6de6614f2bdb9f647ff16bf307c9528281

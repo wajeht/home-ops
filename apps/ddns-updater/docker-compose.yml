@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: false
+
 services:
   # lint-ignore: backup  # stateless — last-known-IP cache, auto-rebuilds on startup
   ddns-updater:

@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: false
+
 services:
   radarr:
     image: linuxserver/radarr:6.2.1-develop@sha256:470e93728e0b2d12ed2f8328fcdfdfc509465329e94f20fb5404a9f2e548ab6b

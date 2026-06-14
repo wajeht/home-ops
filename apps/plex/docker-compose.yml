@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: false
+
 services:
   plex:
     image: linuxserver/plex:1.43.2.10687-563d026ea-ls307@sha256:626eb0d52b4522db3be91110a89161be6ccffc0741e9abf0e93aaf4fea98ccb9

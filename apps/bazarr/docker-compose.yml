@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: false
+
 services:
   bazarr:
     container_name: bazarr

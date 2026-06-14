@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: true
+
 services:
   gains:
     image: ghcr.io/wajeht/gains:70caca1@sha256:b7eb603d8142f98f59716a633f7987738f82f988d555a6d9455e5a04199ea835
