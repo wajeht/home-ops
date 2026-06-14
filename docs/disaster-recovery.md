@@ -95,7 +95,7 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | sonarr        | 5:10 AM  | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid                                 |
 | **global**    | 5:20 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state                                |
 
-Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 4 AM, integrity check Sunday 5 AM.
+Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 6 AM, integrity check Sunday 7 AM — both after `global` (5:20 AM) finishes, so weekly maintenance never overlaps the daily backups.
 
 ## Adding an App
 
