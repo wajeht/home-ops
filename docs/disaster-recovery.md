@@ -85,7 +85,6 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | bazarr        | 3:30 AM  | SQLite + files       | DB at `db/bazarr.db`                                                                       |
 | sabnzbd       | 3:40 AM  | SQLite + files       | DB at `admin/history1.db`. Excludes Downloads                                              |
 | vpn-qbit      | 3:50 AM  | Files only           | Two source paths: qbittorrent + gluetun                                                    |
-| syncthing     | 4:00 AM  | Files only           | Config only (`/config`); excludes index DBs, logs, .stversions                             |
 | vaultwarden   | 4:10 AM  | SQLite + files       | DB file is `db.sqlite3`                                                                    |
 | gitea         | 4:20 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                                             |
 | jellyfin      | 4:30 AM  | SQLite x2 + files    | DBs at `data/jellyfin.db` + `data/library.db`. Excludes cache, logs, transcodes, subtitles |
