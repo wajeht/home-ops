@@ -210,7 +210,7 @@ oom_score_adj: -300
 git add -A && git commit -m "add myapp" && git push
 ```
 
-docker-cd auto-deploys via the interval in `infra/docker-cd/docker-cd.yml`.
+docker-cd auto-deploys via the interval in `infra/docker-cd/docker-compose.yml`.
 
 ## With Secrets
 
