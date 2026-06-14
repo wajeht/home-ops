@@ -1150,7 +1150,7 @@
         "**/gitea/borgmatic"
       ],
       "schedule": {
-        "cron": "20 4 * * *",
+        "cron": "10 4 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1590,7 +1590,7 @@
         "**/jellyfin/data/library.db-shm"
       ],
       "schedule": {
-        "cron": "30 4 * * *",
+        "cron": "20 4 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1750,7 +1750,7 @@
         "**/vaultwarden/borgmatic"
       ],
       "schedule": {
-        "cron": "10 4 * * *",
+        "cron": "0 4 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -1957,7 +1957,7 @@
       "repo": "zepp",
       "paths": ["/source/zepp/.zepp.bak"],
       "schedule": {
-        "cron": "40 4 * * *",
+        "cron": "30 4 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -2004,7 +2004,7 @@
       "repo": "cap",
       "paths": ["/source/cap/redis/dump.rdb"],
       "schedule": {
-        "cron": "50 4 * * *",
+        "cron": "40 4 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -2045,7 +2045,7 @@
       "repo": "umami",
       "paths": ["/source/umami/.umami.dump"],
       "schedule": {
-        "cron": "0 5 * * *",
+        "cron": "50 4 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -2092,7 +2092,7 @@
       "repo": "miniflux",
       "paths": ["/source/miniflux/.miniflux.dump"],
       "schedule": {
-        "cron": "10 5 * * *",
+        "cron": "0 5 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -2154,7 +2154,7 @@
         "**/sonarr/borgmatic"
       ],
       "schedule": {
-        "cron": "20 5 * * *",
+        "cron": "10 5 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -2209,7 +2209,7 @@
         "**/*.dump"
       ],
       "schedule": {
-        "cron": "30 5 * * *",
+        "cron": "20 5 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
