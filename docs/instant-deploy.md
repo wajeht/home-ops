@@ -67,7 +67,7 @@ jobs:
 
   deploy:
     needs: build-and-push
-    uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.25
+    uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.26
     with:
       app-path: apps/your-app-name
       service-name: your-compose-service-name
@@ -144,7 +144,7 @@ The workflow uses native GitHub Actions `environment:` which provides:
 For custom domains outside `*.jaw.dev`, pass the `url` input:
 
 ```yaml
-uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.25
+uses: wajeht/docker-cd-deploy-workflow/.github/workflows/deploy.yaml@v0.0.26
 with:
   app-path: apps/close-powerlifting
   service-name: close-powerlifting
@@ -166,7 +166,7 @@ App repos can also create preview stacks in `home-ops` with the reusable temp wo
 - removing one temp label redeploys with the remaining mode
 - removing the last temp label, or closing the PR, removes the preview stack
 
-Use `wajeht/docker-cd-deploy-workflow/.github/workflows/temp-deploy.yaml@v0.0.25` with:
+Use `wajeht/docker-cd-deploy-workflow/.github/workflows/temp-deploy.yaml@v0.0.26` with:
 
 ```yaml
 with:
