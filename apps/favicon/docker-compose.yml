@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: true
+
 services:
   favicon:
     image: ghcr.io/wajeht/favicon:06156a0@sha256:1e0a63308e1082777de600821ff474d14985caaa2c3444627b75662e1c2fec5f

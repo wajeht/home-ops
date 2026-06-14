@@ -1,3 +1,7 @@
+x-docker-cd:
+  rolling_update: false
+  ignore_deployment: true
+
 services:
   # lint-ignore: backup  # cache-only (just a small JSON of configured repos, auto-regenerates)
   walker:

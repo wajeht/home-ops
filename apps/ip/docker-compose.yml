@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: true
+
 services:
   ip:
     image: ghcr.io/wajeht/ip:20d0c8a@sha256:775b5c378b4a024aeb4c4d14e019bf793aabdac193d59179012bccddf6e6ffa0

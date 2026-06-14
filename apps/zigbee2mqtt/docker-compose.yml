@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: false
+
 services:
   zigbee2mqtt:
     image: ghcr.io/koenkk/zigbee2mqtt:2.12.0@sha256:1debff565ab6841417bd9f7ce8ad44f8c5f25a8b02a24ce3fd79e4779a4763a5

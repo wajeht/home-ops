@@ -1,3 +1,7 @@
+x-docker-cd:
+  rolling_update: true
+  ignore_deployment: true
+
 services:
   git:
     image: ghcr.io/wajeht/git:1a035e4@sha256:52dfb610fb9d11bbc4050c4a4884c16331feae83939d7280556fa70489ff1837

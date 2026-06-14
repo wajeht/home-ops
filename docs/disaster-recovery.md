@@ -40,10 +40,9 @@ RESTIC_PASSWORD               # In apps/backrest/.env.sops — without it, NO re
 
 ```
 apps/backrest/
-├── docker-compose.yml      # Backrest service
+├── docker-compose.yml      # Backrest service + x-docker-cd.rolling_update: false
 ├── config/
 │   └── config.json         # repos + plans
-├── docker-cd.yml           # rolling_update: false
 └── .env.sops               # RESTIC_PASSWORD
 ```
 
@@ -212,7 +211,7 @@ Plex has spaces in its paths (`Library/Application Support/...`) — wrap each p
 
 ### Plan: App Without `container_name`
 
-If the app uses `rolling_update: true`, adding `container_name` breaks rolling updates because Docker can't have two containers with the same name during the swap. Use an ephemeral container instead:
+If the app uses `x-docker-cd.rolling_update: true`, adding `container_name` breaks rolling updates because Docker can't have two containers with the same name during the swap. Use an ephemeral container instead:
 
 ```json
 "command": "docker run --rm -v /home/jaw/data/bang:/data keinos/sqlite3:3.51.3@sha256:520cfebb116119cc642b72d72c3ff948cc120a891dc4d83824c664f1ca65a354 sqlite3 /data/db.sqlite \".backup /data/.bang.bak\""
@@ -605,7 +604,7 @@ Known issues and their fixes.
 | `mkdir /data/processlogs: permission denied`                                               | Backrest container can't write to bind-mounted `/data`                                    | Verify `cap_add` includes `DAC_OVERRIDE`. `DAC_READ_SEARCH` alone is insufficient.                                                |
 | `Tini is not running as PID 1` warning on startup                                          | `init: true` set on the compose service — wraps Backrest's tini twice                     | Remove `init: true`. The image already has tini at PID 1.                                                                         |
 | Backrest tries to rewrite config.json on every startup                                     | `version` field doesn't match current schema, Backrest tries to migrate it                | Set `"version": 6` explicitly in config.json so Backrest sees the current schema.                                                 |
-| Hook fails with `No such container: <app>`                                                 | App container has no `container_name:` set; docker generates `bang-bang-1`-style names    | Add `container_name:` to the app compose with `rolling_update: false`, OR use an ephemeral container in the hook                  |
+| Hook fails with `No such container: <app>`                                                 | App container has no `container_name:` set; docker generates `bang-bang-1`-style names    | Add `container_name:` to the app compose with `x-docker-cd.rolling_update: false`, OR use an ephemeral container in the hook                  |
 | Want both `container_name:` AND rolling updates                                            | Impossible — can't have two containers with the same name during the rolling swap         | Pick one. If rolling-update matters (instant-deploy apps), use ephemeral container approach instead.                              |
 | sqlite3 backup fails immediately under concurrent writes                                   | No retry budget configured                                                                | Add `-cmd ".timeout 30000"` before the `.backup` command                                                                          |
 | Spaces in DB path break the hook                                                           | Shell word-splitting on unquoted paths                                                    | Wrap each path in **single quotes**. JSON escapes inside double-quoted strings only escape the JSON, not the shell.               |

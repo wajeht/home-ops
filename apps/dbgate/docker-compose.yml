@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: false
+
 services:
   dbgate:
     container_name: dbgate

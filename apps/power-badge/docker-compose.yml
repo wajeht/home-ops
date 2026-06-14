@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: false
+
 services:
   power-badge:
     image: ghcr.io/wajeht/power-badge:9b3509d@sha256:5aa17b52b3783e066a0fefa5e51e0cbefd481c34f344cfec26a7302a39508006

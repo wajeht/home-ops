@@ -9,6 +9,7 @@ For secrets, see [Secrets](secrets.md). For backups, see [Disaster Recovery](dis
 Before pushing a new app:
 
 - `docker-compose.yml` lives in `apps/<name>/`
+- docker-cd app config lives in top-level `x-docker-cd` inside Compose
 - service has `restart`, `init`, healthcheck, logging, and resource limits
 - container drops capabilities and uses `no-new-privileges`
 - internet-facing app is on the external `traefik` network
@@ -26,6 +27,9 @@ mkdir -p apps/myapp
 Create `apps/myapp/docker-compose.yml`:
 
 ```yaml
+x-docker-cd:
+  rolling_update: false
+
 services:
   myapp:
     image: nginx:1.25
@@ -369,12 +373,15 @@ To back up a new app, add a repo + plan to `apps/backrest/config/config.json`. P
 
 ## Disable Rolling Deploy
 
-For apps that cannot run multiple instances:
-
-Create `apps/myapp/docker-cd.yml`:
+For apps that cannot run multiple instances, add top-level app config to `apps/myapp/docker-compose.yml`:
 
 ```yaml
-rolling_update: false
+x-docker-cd:
+  rolling_update: false
+
+services:
+  myapp:
+    image: nginx:1.25
 ```
 
 ## Apps Behind Reverse Proxy

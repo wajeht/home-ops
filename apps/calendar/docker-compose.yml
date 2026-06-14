@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: true
+
 services:
   calendar:
     image: ghcr.io/wajeht/calendar:397e09e@sha256:ec5dc5a8eb5be6ead69eae1088e552a2b9427a36f3000d38283fb12612f2b2a7

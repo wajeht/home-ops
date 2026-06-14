@@ -53,6 +53,17 @@ check_sops() {
 }
 
 # shellcheck disable=SC2329
+check_docker_cd_app_config() {
+	local legacy=() f
+	while IFS= read -r -d '' f; do
+		legacy+=("$f: move app config to top-level x-docker-cd in docker-compose.yml")
+	done < <(find apps -mindepth 2 -maxdepth 2 -name 'docker-cd.yml' -print0)
+	if [ "${#legacy[@]}" -gt 0 ]; then
+		printf '%s\n' "${legacy[@]}"
+		return 1
+	fi
+}
+# shellcheck disable=SC2329
 check_hardening() {
 	local missing=() f
 	while IFS= read -r -d '' f; do
@@ -311,6 +322,7 @@ check_resources() {
 printf '\n%s==>%s %slint%s\n' "$BOLD$CYAN" "$RESET" "$BOLD" "$RESET"
 run_check "shell scripts" check_shell
 run_check "sops encryption" check_sops
+run_check "docker-cd app config" check_docker_cd_app_config
 run_check "container hardening" check_hardening
 run_check "service hygiene" check_service_hygiene
 run_check "backup plans" check_backup

@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: true
+
 services:
   screenshot:
     image: ghcr.io/wajeht/screenshot:a35b098@sha256:be083b78b85328611af47fdf1ccf06634949bf0a9ea1c459957eafbe92d0bed9

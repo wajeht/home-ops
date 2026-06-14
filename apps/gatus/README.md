@@ -6,8 +6,7 @@
 
 ```
 apps/gatus/
-├── docker-compose.yml
-├── docker-cd.yml          # rolling_update: false
+├── docker-compose.yml     # includes x-docker-cd.rolling_update: false
 ├── config/
 │   └── config.yaml        # endpoints + alerting
 └── httpcheck              # static binary used for container healthcheck

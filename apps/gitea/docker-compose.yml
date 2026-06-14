@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: false
+
 services:
   mirror-sync:
     container_name: gitea-mirror-sync

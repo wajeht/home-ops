@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: [close-powerlifting]
+
 services:
   close-powerlifting:
     image: ghcr.io/wajeht/close-powerlifting:44098a0@sha256:58f2f832caee7412611d77f254f12079aa4600ce23b70b5fbd16ca57c97e77d9

@@ -1,3 +1,6 @@
+x-docker-cd:
+  rolling_update: true
+
 services:
   ufc:
     image: ghcr.io/wajeht/ufc:d758277@sha256:7b4f4f35fc6a8257d15fd21e7bd6708dabbe4b5f68cc4b907fe2af7c8c102224
