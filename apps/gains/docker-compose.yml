@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   gains:
-    image: ghcr.io/wajeht/gains:70caca1@sha256:b7eb603d8142f98f59716a633f7987738f82f988d555a6d9455e5a04199ea835
+    image: ghcr.io/wajeht/gains:d58e0e6@sha256:d6e7ed7e4beb9dc8837403014704cf8bc01c89f96d4447e1afbe0b2b75440701
     env_file:
       - .env
     environment:
