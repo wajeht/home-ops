@@ -47,7 +47,9 @@ services:
     networks:
       - traefik
     restart: unless-stopped
-    init: true
+    # docker-cd already starts with tini. Compose init adds a second init
+    # and logs a harmless startup warning.
+    # init: true
     cap_drop:
       - ALL
     cap_add:
