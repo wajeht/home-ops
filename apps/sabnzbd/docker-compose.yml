@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   sabnzbd:
-    image: linuxserver/sabnzbd:5.0.4-unstable@sha256:83bd4ddd4cca0056380834c8486aafd74086de4e15ae5abb867bb75a3e72908e
+    image: linuxserver/sabnzbd:5.1.0-unstable@sha256:080988fff807065029588e08bb5a72524edba4f0b31e493f93facf07b487f9c3
     container_name: sabnzbd
     environment:
       - PUID=1000
