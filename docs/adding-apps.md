@@ -196,7 +196,7 @@ oom_score_adj: -300 # protect from OOM killer
 Critical infrastructure gets `oom_score_adj: -500`, databases get `-300`. This ensures the OOM killer targets low-priority app containers first:
 
 ```yaml
-# Critical infra: traefik, adguard, docker-cd, oauth2-proxy
+# Critical infra: traefik, docker-cd, oauth2-proxy
 oom_score_adj: -500
 
 # Databases: postgres, redis, clickhouse

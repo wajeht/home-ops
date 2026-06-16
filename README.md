@@ -70,10 +70,6 @@ flowchart LR
             ucg_threat([Threat Management])
         end
 
-        subgraph pi[Raspberry Pi 5]
-            adguard[AdGuard Home] --> unbound[Unbound]
-        end
-
         subgraph slzb[SMLIGHT SLZB-MR3U]
             zigbee{{Zigbee Gateway}}
         end
@@ -98,14 +94,12 @@ flowchart LR
         end
 
         nfs -->|NFS| apps
-        adguard -->|DNS| unifi
         unifi -->|10GbE| xg
         xg -->|10GbE| nfs
         xg -->|10GbE| poe
         unifi -->|2.5GbE| dell
         unifi -->|PoE| ap
         poe -->|PoE| zigbee
-        poe -->|PoE| adguard
         poe -->|PoE| nvr
         nvr -->|WiFi| camera([G6 Instant Camera])
     end
@@ -132,8 +126,6 @@ flowchart LR
     class ci,ops_ci gha
     style app_renovate fill:#d5d7f2,stroke:#1a1f6c,color:#333
     style ops_renovate fill:#d5d7f2,stroke:#1a1f6c,color:#333
-    style adguard fill:#d4f0d7,stroke:#68bc71,color:#333
-    style unbound fill:#d4f0d7,stroke:#68bc71,color:#333
     style unifi fill:#fde8e8,stroke:#dc2626,color:#333
     style zigbee fill:#f5e6ff,stroke:#9b59b6,color:#333
     style poe fill:#d1d5db,stroke:#6b7280,color:#333

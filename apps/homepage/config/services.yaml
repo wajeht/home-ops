@@ -128,12 +128,6 @@
         description: Smart Home
         # siteMonitor: http://homeassistant:8123
 
-    - AdGuard:
-        icon: adguard-home
-        href: http://192.168.4.181
-        description: DNS Ad Blocking
-        # siteMonitor: http://192.168.4.181:80
-
     - Traefik:
         icon: traefik
         href: https://traefik.jaw.dev
@@ -228,12 +222,6 @@
         description: Workout Tracker
         # siteMonitor: http://gains:80
 
-    - Zepp:
-        icon: mdi-watch
-        href: https://zepp.jaw.dev
-        description: Fitness Data
-        # siteMonitor: http://zepp:80
-
     - Close Powerlifting:
         icon: mdi-weight-lifter
         href: https://closepowerlifting.com
@@ -263,12 +251,6 @@
         href: https://screenshot.jaw.dev
         description: Screenshot API
         # siteMonitor: http://screenshot:80
-
-    - Walker:
-        icon: mdi-web-box
-        href: https://walker.jaw.dev
-        description: Link Shortener
-        # siteMonitor: http://walker:80
 
     - Bang:
         icon: duckduckgo

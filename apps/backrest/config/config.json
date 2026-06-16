@@ -510,24 +510,6 @@
       }
     },
     {
-      "id": "zepp",
-      "uri": "/repos/zepp",
-      "password": "",
-      "autoInitialize": true,
-      "prunePolicy": {
-        "schedule": {
-          "cron": "0 6 * * 0"
-        },
-        "maxUnusedPercent": 10
-      },
-      "checkPolicy": {
-        "schedule": {
-          "cron": "0 7 * * 0"
-        },
-        "structureOnly": true
-      }
-    },
-    {
       "id": "cap",
       "uri": "/repos/cap",
       "password": "",
@@ -1948,53 +1930,6 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=immich+backup+FAILED&priority=Max&tags=skull",
             "template": "immich backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
-          }
-        }
-      ]
-    },
-    {
-      "id": "zepp",
-      "repo": "zepp",
-      "paths": ["/source/zepp/.zepp.bak"],
-      "schedule": {
-        "cron": "30 4 * * *",
-        "clock": "CLOCK_LOCAL"
-      },
-      "retention": {
-        "policyTimeBucketed": {
-          "daily": 7,
-          "weekly": 4,
-          "monthly": 6
-        }
-      },
-      "hooks": [
-        {
-          "conditions": ["CONDITION_SNAPSHOT_START"],
-          "onError": "ON_ERROR_CANCEL",
-          "actionCommand": {
-            "command": "sqlite3 /source/zepp/db.sqlite -cmd \".timeout 30000\" \".backup /source/zepp/.zepp.bak\""
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_END"],
-          "actionCommand": {
-            "command": "rm -f /source/zepp/.zepp.bak"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zepp+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "zepp backup finished"
-          }
-        },
-        {
-          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
-          "onError": "ON_ERROR_IGNORE",
-          "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zepp+backup+FAILED&priority=Max&tags=skull",
-            "template": "zepp backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

@@ -87,7 +87,6 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | vaultwarden   | 4:00 AM  | SQLite + files       | DB file is `db.sqlite3`                                                                    |
 | gitea         | 4:10 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                                             |
 | jellyfin      | 4:20 AM  | SQLite x2 + files    | DBs at `data/jellyfin.db` + `data/library.db`. Excludes cache, logs, transcodes, subtitles |
-| zepp          | 4:30 AM  | SQLite DB only       | DB at `db.sqlite`.                                                                         |
 | cap           | 4:40 AM  | Redis RDB only       | `redis-cli SAVE` hook, then snapshot `dump.rdb`                                            |
 | umami         | 4:50 AM  | Postgres DB only     | `pg_dump` via `docker exec umami-db`                                                       |
 | miniflux      | 5:00 AM  | Postgres DB only     | `pg_dump` via `docker exec miniflux-db`                                                    |
@@ -526,7 +525,7 @@ A formatter has been observed to strip new entries from `config.json` between pu
 
 ```bash
 jq '(.repos | length), (.plans | length)' ~/home-ops/apps/backrest/config/config.json
-# Expect 34 then 34. If either is lower, re-add the missing entries.
+# Expect 32 then 32. If either is lower, re-add the missing entries.
 ```
 
 #### 6. Verify
@@ -615,7 +614,7 @@ Known issues and their fixes.
 | First backup is very slow                                                                  | No dedup baseline; everything has to be written to the new repo                           | Expected. Subsequent backups are seconds.                                                                                         |
 | Snapshot succeeds but `.bak`/`.dump` lingers in app dir                                    | Post-hook (CONDITION_SNAPSHOT_END) didn't fire or errored                                 | Check the hook's output in the UI. Common cause: wrong filename in the rm command.                                                |
 | ntfy notifications never arrive                                                            | Shoutrrr URL syntax wrong                                                                 | Use `ntfy://ntfy/<topic>?scheme=http&title=foo&priority=Min&tags=skull`. Priority must be capitalized.                            |
-| `config.json` entries disappear after pushing                                              | A formatter strips JSON entries it doesn't recognize                                      | After each push, run `jq '(.repos \| length), (.plans \| length)' ~/home-ops/apps/backrest/config/config.json`. Expect 34 and 34. |
+| `config.json` entries disappear after pushing                                              | A formatter strips JSON entries it doesn't recognize                                      | After each push, run `jq '(.repos \| length), (.plans \| length)' ~/home-ops/apps/backrest/config/config.json`. Expect 32 and 32. |
 | Stateless app got accidentally added to Backrest                                           | Misread of which apps had data                                                            | If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, skip it. Examples: close-powerlifting, ufc, ip.          |
 
 ## Apps Without Backup
@@ -623,7 +622,7 @@ Known issues and their fixes.
 Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
-- **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `walker`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`
+- **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`
 - **Config tracked in git**: `backrest`, `oauth2-proxy`, `docker-cd`. The encrypted oauth2-proxy `.env.sops` includes admin and media email allowlists.
 - **Data in object storage**: `linx` — uploads + metadata live in the Garage `linx` bucket, captured by the `garage` plan (no local `~/data/linx`).
 

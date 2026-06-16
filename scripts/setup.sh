@@ -57,45 +57,6 @@ docker_relogin() {
 	fi
 }
 
-sync_submodules() {
-	local decrypted="" gh_token="" askpass="" tmp_dir="" rc=0
-
-	[ ! -f .gitmodules ] && return 0
-
-	require_cmd git
-	info "Syncing git submodules..."
-
-	if [ -f "$DOCKER_CD_SECRET_FILE" ]; then
-		decrypted=$(decrypt_dotenv_sops "$DOCKER_CD_SECRET_FILE")
-		gh_token=$(printf '%s\n' "$decrypted" | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2- || true)
-	fi
-
-	if [ -n "$gh_token" ]; then
-		tmp_dir=$(mktemp -d)
-		askpass="$tmp_dir/git-askpass"
-		cat >"$askpass" <<'EOF'
-#!/bin/sh
-case "$1" in
-*Username*) printf '%s\n' "x-access-token" ;;
-*Password*) printf '%s\n' "${GIT_ACCESS_TOKEN:-}" ;;
-*) printf '\n' ;;
-esac
-EOF
-		chmod 700 "$askpass"
-
-		GIT_TERMINAL_PROMPT=0 GIT_ASKPASS="$askpass" GIT_ACCESS_TOKEN="$gh_token" git submodule sync --recursive || rc=$?
-		if [ "$rc" -eq 0 ]; then
-			GIT_TERMINAL_PROMPT=0 GIT_ASKPASS="$askpass" GIT_ACCESS_TOKEN="$gh_token" git submodule update --init --recursive || rc=$?
-		fi
-
-		rm -rf "$tmp_dir"
-		return "$rc"
-	fi
-
-	GIT_TERMINAL_PROMPT=0 git submodule sync --recursive
-	GIT_TERMINAL_PROMPT=0 git submodule update --init --recursive
-}
-
 compose_cmd() {
 	local dir=$1
 	shift
@@ -430,9 +391,6 @@ cmd_install() {
 	# Registry auth
 	cd "$REPO_DIR"
 
-	# Keep submodules in sync (e.g. apps/adguard) before deployments.
-	sync_submodules
-
 	docker_relogin
 
 	# Deploy core services (order matters)
@@ -483,14 +441,6 @@ cmd_uninstall() {
 	# Stop core services first to prevent re-deployments.
 	step "1/4" "Stopping core services..."
 	stop_core_services
-
-	# Best-effort submodule sync so uninstall also sees submodule apps.
-	if [ -f "$REPO_DIR/.gitmodules" ] && command -v git &>/dev/null; then
-		(
-			cd "$REPO_DIR"
-			sync_submodules
-		) || warn "Submodule sync failed, continuing uninstall"
-	fi
 
 	# Stop all app compose projects
 	step "2/4" "Stopping all apps..."
@@ -553,9 +503,6 @@ prepare_update() {
 	cd "$REPO_DIR"
 	info "Pulling latest..."
 	git pull
-
-	# Keep submodules current after pull.
-	sync_submodules || warn "Submodule sync failed, continuing"
 
 	docker_relogin
 	ensure_external_networks
@@ -644,39 +591,6 @@ cmd_images() {
 }
 
 #=============================================================================
-# UPDATE-SUBMODULES - Update submodules to latest and commit
-#=============================================================================
-cmd_update_submodules() {
-	header "Updating submodules"
-	require_cmd git
-	cd "$REPO_DIR"
-
-	[ ! -f .gitmodules ] && {
-		warn "No submodules found"
-		return 0
-	}
-
-	local updated=0
-	# shellcheck disable=SC2016
-	git submodule foreach --quiet 'printf "%s\n" "$sm_path"' | while read -r sm_path; do
-		local name
-		name=$(basename "$sm_path")
-		info "Checking $name..."
-		git submodule update --remote "$sm_path"
-		if git diff --quiet "$sm_path"; then
-			dim "$name: already up to date"
-		else
-			git add "$sm_path"
-			git commit -m "chore($name): update submodule"
-			ok "$name: updated"
-			updated=$((updated + 1))
-		fi
-	done
-
-	ok "Done"
-}
-
-#=============================================================================
 # MAIN
 #=============================================================================
 print_usage() {
@@ -698,7 +612,6 @@ print_usage() {
 	printf '%b\n' "  ${GREEN}update${NC}                   Force-recreate docker-cd"
 	printf '%b\n' "  ${GREEN}images${NC}                   Show unused Docker images and volumes"
 	printf '%b\n' "  ${GREEN}images prune${NC}             Remove unused images and orphan volumes"
-	printf '%b\n' "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
 	printf '%b\n' "  ${GREEN}status${NC}                   Show containers, mounts, disk usage"
 	printf '\n'
 	printf '%b\n' "${BOLD}Examples:${NC}"
@@ -744,9 +657,6 @@ case "${1:-}" in
 	images)
 		shift
 		cmd_images "$@"
-		;;
-	update-submodules)
-		cmd_update_submodules
 		;;
 	*)
 		print_usage
