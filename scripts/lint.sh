@@ -36,7 +36,7 @@ run_check() {
 
 # shellcheck disable=SC2329
 check_shell() {
-	find scripts apps -name '*.sh' -not -path 'apps/adguard/*' -print0 |
+	find scripts apps -name '*.sh' -print0 |
 		xargs -0 shellcheck -x
 }
 
@@ -45,7 +45,7 @@ check_sops() {
 	local missing=() f
 	while IFS= read -r -d '' f; do
 		grep -q 'sops_mac=' "$f" || missing+=("$f")
-	done < <(find . -name '.env.sops' -not -path './.git/*' -not -path './apps/adguard/*' -print0)
+	done < <(find . -name '.env.sops' -not -path './.git/*' -print0)
 	if [ "${#missing[@]}" -gt 0 ]; then
 		printf '%s not SOPS-encrypted\n' "${missing[@]}"
 		return 1
@@ -93,7 +93,7 @@ check_compose() {
 		if [ "$had_env" -eq 0 ]; then
 			rm -f "$dir/.env"
 		fi
-	done < <(find . -name 'docker-compose.yml' -not -path './.git/*' -not -path './apps/adguard/*' -print0)
+	done < <(find . -name 'docker-compose.yml' -not -path './.git/*' -print0)
 	if [ "${#broken[@]}" -gt 0 ]; then
 		printf '%s\n' "${broken[@]}"
 		return 1
@@ -133,7 +133,7 @@ check_service_hygiene() {
 			svc && /^    healthcheck:/ { has_healthcheck=1 }
 			END { flush() }
 		' "$f")
-	done < <(find apps -name 'docker-compose.yml' -not -path 'apps/adguard/*' -print0)
+	done < <(find apps -name 'docker-compose.yml' -print0)
 	if [ "${#issues[@]}" -gt 0 ]; then
 		printf '%s\n' "${issues[@]}"
 		return 1

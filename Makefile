@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update status relogin cloudflare format lint push fix-git images images-prune clean update-submodules nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status help
+.PHONY: setup install install-fresh uninstall update status relogin cloudflare format lint push fix-git images images-prune clean nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status help
 
 ## setup                   Create data dirs and base setup
 setup:
@@ -36,8 +36,8 @@ cloudflare:
 
 ## format                  Format yaml, markdown, json, and shell
 format:
-	@npx oxfmt "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
-	@find scripts apps -name '*.sh' -not -path './apps/adguard/*' -print0 | xargs -0 shfmt -w -i 0 -ci
+	@npx oxfmt "**/*.{yml,yaml,md,json}"
+	@find scripts apps -name '*.sh' -print0 | xargs -0 shfmt -w -i 0 -ci
 
 ## lint                    Run repo lint checks
 lint:
@@ -50,13 +50,6 @@ push:
 	@git add -A
 	@curl -s https://commit.jaw.dev/ | sh -s -- --no-verify
 	@git push --no-verify
-
-## update-submodules       Update git submodules
-update-submodules:
-	@git submodule update --remote
-	@git add -A
-	@git commit -m "chore: update submodules"
-	@git push
 
 ## fix-git                 Re-add tracked files after gitignore changes
 fix-git:
