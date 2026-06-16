@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: setup install install-fresh uninstall update update-force status relogin cloudflare format lint push fix-git images images-prune clean update-submodules nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status help
+.PHONY: setup install install-fresh uninstall update status relogin cloudflare format lint push fix-git images images-prune clean update-submodules nfs-mount nfs-unmount nfs-persist nfs-unpersist nfs-status help
 
 ## setup                   Create data dirs and base setup
 setup:
@@ -18,13 +18,9 @@ install-fresh:
 uninstall:
 	@./scripts/setup.sh uninstall
 
-## update                  Pull latest and redeploy docker-cd
+## update                  Force recreate docker-cd
 update:
 	@./scripts/setup.sh update
-
-## update-force            Force recreate docker-cd
-update-force:
-	@./scripts/setup.sh update-force
 
 ## status                  Show services, mounts, and disk usage
 status:
