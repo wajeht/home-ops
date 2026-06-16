@@ -16,7 +16,6 @@ Each stack has its own `.env.sops` file. When docker-cd deploys, it decrypts `.e
 
 ```
 apps/<app>/.env.sops
-infra/<service>/.env.sops
 ```
 
 ## Local Setup
