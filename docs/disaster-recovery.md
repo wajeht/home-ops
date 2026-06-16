@@ -624,7 +624,7 @@ Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
 - **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `walker`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`, `adguard`
-- **Infra tracked in git**: `backrest`, `oauth2-proxy`. The encrypted oauth2-proxy `.env.sops` includes admin and media email allowlists.
+- **Config tracked in git**: `backrest`, `oauth2-proxy`, `docker-cd`. The encrypted oauth2-proxy `.env.sops` includes admin and media email allowlists.
 - **Data in object storage**: `linx` — uploads + metadata live in the Garage `linx` bucket, captured by the `garage` plan (no local `~/data/linx`).
 
 If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, the app is stateless and doesn't need a Backrest plan.

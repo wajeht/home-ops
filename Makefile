@@ -6,7 +6,7 @@
 setup:
 	@./scripts/setup.sh setup
 
-## install                 Deploy infra and apps
+## install                 Deploy apps
 install:
 	@./scripts/setup.sh install
 
@@ -20,11 +20,11 @@ uninstall:
 
 ## update                  Pull latest and redeploy docker-cd
 update:
-	@./scripts/setup.sh update-infra
+	@./scripts/setup.sh update
 
 ## update-force            Force recreate docker-cd
 update-force:
-	@./scripts/setup.sh update-infra-force
+	@./scripts/setup.sh update-force
 
 ## status                  Show services, mounts, and disk usage
 status:
@@ -41,7 +41,7 @@ cloudflare:
 ## format                  Format yaml, markdown, json, and shell
 format:
 	@npx oxfmt "**/*.{yml,yaml,md,json}" '!apps/adguard/**'
-	@find scripts apps infra -name '*.sh' -not -path './apps/adguard/*' -print0 | xargs -0 shfmt -w -i 0 -ci
+	@find scripts apps -name '*.sh' -not -path './apps/adguard/*' -print0 | xargs -0 shfmt -w -i 0 -ci
 
 ## lint                    Run repo lint checks
 lint:

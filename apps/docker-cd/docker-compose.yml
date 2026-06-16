@@ -1,7 +1,10 @@
+x-docker-cd:
+  rolling_update: true
+
 services:
   docker-cd:
-    image: ghcr.io/wajeht/docker-cd:v0.4.0@sha256:a830bbf72a0575c7eaaf46492a5fa23485ab396e483df90a8ded5f0efcea3d1c
-    container_name: docker-cd
+    # lint-ignore: backup  # state/cache only, can be rebuilt from Git and Docker
+    image: ghcr.io/wajeht/docker-cd:v0.5.0@sha256:69b8e1413ab181e2fb482ddd3b180f1c01410ac71a56238f5b97f55f9d6806ed
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/jaw/data/docker-cd:/home/jaw/data/docker-cd
@@ -19,6 +22,7 @@ services:
       BASE_DIR: apps
       BRANCH: main
       INTERVAL: 5m
+      AUTO_UPDATE_DOCKER_CD: "true"
       SOPS_AGE_KEY_FILE: /sops/age-key.txt
       GIT_ACCESS_TOKEN: ${GIT_ACCESS_TOKEN}
       ENABLE_BADGES: "true"
@@ -47,8 +51,7 @@ services:
     networks:
       - traefik
     restart: unless-stopped
-    # docker-cd already starts with tini. Compose init adds a second init
-    # and logs a harmless startup warning.
+    # lint-ignore: init  # docker-cd already starts with tini; Compose init logs a warning
     # init: true
     cap_drop:
       - ALL

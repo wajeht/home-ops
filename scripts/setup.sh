@@ -19,16 +19,15 @@ decrypt_dotenv_sops() {
 
 docker_relogin() {
 	require_cmd docker
-	local secret_file="$REPO_DIR/infra/docker-cd/.env.sops"
 	local decrypted=""
 	local dh_user="" dh_token="" gh_token=""
 
-	if [ ! -f "$secret_file" ]; then
-		warn "Missing $secret_file, skipping docker registry login"
+	if [ ! -f "$DOCKER_CD_SECRET_FILE" ]; then
+		warn "Missing $DOCKER_CD_SECRET_FILE, skipping docker registry login"
 		return 0
 	fi
 
-	decrypted=$(decrypt_dotenv_sops "$secret_file")
+	decrypted=$(decrypt_dotenv_sops "$DOCKER_CD_SECRET_FILE")
 	dh_user=$(printf '%s\n' "$decrypted" | grep "^DOCKER_HUB_USER=" | cut -d= -f2- || true)
 	dh_token=$(printf '%s\n' "$decrypted" | grep "^DOCKER_HUB_TOKEN=" | cut -d= -f2- || true)
 	gh_token=$(printf '%s\n' "$decrypted" | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2- || true)
@@ -51,7 +50,6 @@ docker_relogin() {
 }
 
 sync_submodules() {
-	local secret_file="$REPO_DIR/infra/docker-cd/.env.sops"
 	local decrypted="" gh_token="" askpass="" tmp_dir="" rc=0
 
 	[ ! -f .gitmodules ] && return 0
@@ -59,8 +57,8 @@ sync_submodules() {
 	require_cmd git
 	info "Syncing git submodules..."
 
-	if [ -f "$secret_file" ]; then
-		decrypted=$(decrypt_dotenv_sops "$secret_file")
+	if [ -f "$DOCKER_CD_SECRET_FILE" ]; then
+		decrypted=$(decrypt_dotenv_sops "$DOCKER_CD_SECRET_FILE")
 		gh_token=$(printf '%s\n' "$decrypted" | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2- || true)
 	fi
 
@@ -156,10 +154,41 @@ redeploy_compose() {
 	ok "$name redeployed"
 }
 
+compose_stop_service() {
+	local dir=$1 service=$2
+	(cd "$dir" 2>/dev/null && $SUDO docker compose stop "$service" 2>/dev/null) || true
+}
+
+compose_down() {
+	local dir=$1
+	(cd "$dir" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null) || true
+}
+
+deploy_core_services() {
+	local stack name dir
+	for stack in "${CORE_STACKS[@]}"; do
+		IFS='|' read -r name dir <<<"$stack"
+		deploy_compose "$dir" "$name"
+	done
+}
+
+stop_core_services() {
+	local i stack name dir
+	for ((i = ${#CORE_STACKS[@]} - 1; i >= 0; i--)); do
+		IFS='|' read -r name dir <<<"${CORE_STACKS[$i]}"
+		compose_down "$dir"
+	done
+}
+
 # Config
 USER_HOME="/home/jaw"
 SUDO="sudo"
 REPO_DIR="$USER_HOME/home-ops"
+DOCKER_CD_DIR="$REPO_DIR/apps/docker-cd"
+TRAEFIK_DIR="$REPO_DIR/apps/traefik"
+OAUTH2_PROXY_DIR="$REPO_DIR/apps/oauth2-proxy"
+DOCKER_CD_SECRET_FILE="$DOCKER_CD_DIR/.env.sops"
+DOCKER_CD_DATA_DIR="$USER_HOME/data/docker-cd"
 export SOPS_AGE_KEY_FILE="$USER_HOME/.sops/age-key.txt"
 
 # NFS config
@@ -172,7 +201,7 @@ NFS_MOUNTS=(
 
 # Static directories (not in compose files)
 STATIC_DIRS=(
-	"$USER_HOME/data/docker-cd"
+	"$DOCKER_CD_DATA_DIR"
 	"$USER_HOME/data/dozzle"
 	"$USER_HOME/plex/downloads"
 	"$USER_HOME/plex/movies"
@@ -182,6 +211,12 @@ STATIC_DIRS=(
 	"$USER_HOME/plex/podcasts"
 	"$USER_HOME/.sops"
 	"$USER_HOME/.docker"
+)
+
+CORE_STACKS=(
+	"traefik|$TRAEFIK_DIR"
+	"oauth2-proxy|$OAUTH2_PROXY_DIR"
+	"docker-cd|$DOCKER_CD_DIR"
 )
 
 ensure_external_networks() {
@@ -216,7 +251,7 @@ cmd_setup() {
 	# Auto-create ~/data/ and ~/backup/ dirs from compose volume mounts
 	info "Scanning compose files for volume mounts..."
 	local dirs
-	dirs=$(sed -n "s|.*- \($USER_HOME/[^:]*\):.*|\1|p" "$REPO_DIR"/apps/*/docker-compose.yml "$REPO_DIR"/infra/*/docker-compose.yml 2>/dev/null | sort -u)
+	dirs=$(sed -n "s|.*- \($USER_HOME/[^:]*\):.*|\1|p" "$REPO_DIR"/apps/*/docker-compose.yml 2>/dev/null | sort -u)
 	local discovered=0
 	for dir in $dirs; do
 		discovered=$((discovered + 1))
@@ -398,9 +433,7 @@ cmd_install() {
 	# Deploy core services (order matters)
 	step "4/4" "Deploying..."
 
-	deploy_compose "$REPO_DIR/apps/traefik" traefik
-	deploy_compose "$REPO_DIR/apps/oauth2-proxy" oauth2-proxy
-	deploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
+	deploy_core_services
 
 	header "Done"
 	printf '\n'
@@ -411,15 +444,13 @@ cmd_install() {
 }
 
 reset_docker_cd_state() {
-	local docker_cd_data_dir="$USER_HOME/data/docker-cd"
-
 	info "Resetting docker-cd state/cache..."
 
 	# Stop docker-cd first so it cannot rewrite state while files are removed.
-	$SUDO docker stop docker-cd 2>/dev/null || true
+	compose_stop_service "$DOCKER_CD_DIR" docker-cd
 
-	$SUDO rm -f "$docker_cd_data_dir/state.json" "$docker_cd_data_dir/history.json"
-	$SUDO rm -rf "$docker_cd_data_dir/wajeht"
+	$SUDO rm -f "$DOCKER_CD_DATA_DIR/state.json" "$DOCKER_CD_DATA_DIR/history.json"
+	$SUDO rm -rf "$DOCKER_CD_DATA_DIR/wajeht"
 
 	ok "Cleared docker-cd state and repository cache"
 }
@@ -444,11 +475,9 @@ cmd_uninstall() {
 	printf '\n'
 	[[ ! $reply =~ ^[Yy]$ ]] && exit 1
 
-	# Stop core infra first to prevent re-deployments.
-	step "1/4" "Stopping core infra..."
-	(cd "$REPO_DIR/infra/docker-cd" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null) || true
-	(cd "$REPO_DIR/apps/oauth2-proxy" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null) || true
-	(cd "$REPO_DIR/apps/traefik" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null) || true
+	# Stop core services first to prevent re-deployments.
+	step "1/4" "Stopping core services..."
+	stop_core_services
 
 	# Best-effort submodule sync so uninstall also sees submodule apps.
 	if [ -f "$REPO_DIR/.gitmodules" ] && command -v git &>/dev/null; then
@@ -511,13 +540,13 @@ cmd_relogin() {
 }
 
 #=============================================================================
-# UPDATE-INFRA - Redeploy docker-cd (which manages all other services)
+# UPDATE - Redeploy docker-cd (which manages all other services)
 #=============================================================================
-cmd_update_infra() {
-	header "Updating infra"
+prepare_update() {
 	require_cmd docker
 	require_cmd git
 	require_cmd sops
+
 	cd "$REPO_DIR"
 	info "Pulling latest..."
 	git pull
@@ -527,33 +556,20 @@ cmd_update_infra() {
 
 	docker_relogin
 	ensure_external_networks
-
-	step "1/1" "Redeploying docker-cd..."
-	redeploy_compose "$REPO_DIR/infra/docker-cd" docker-cd
-
-	header "Done"
 }
 
-#=============================================================================
-# UPDATE-INFRA-FORCE - Force recreate docker-cd (which manages all other services)
-#=============================================================================
-cmd_update_infra_force() {
-	header "Updating infra (force recreate)"
-	require_cmd docker
-	require_cmd git
-	require_cmd sops
-	cd "$REPO_DIR"
-	info "Pulling latest..."
-	git pull
+cmd_update() {
+	local force=${1:-0}
+	header "Updating docker-cd"
+	prepare_update
 
-	# Keep submodules current after pull.
-	sync_submodules || warn "Submodule sync failed, continuing"
-
-	docker_relogin
-	ensure_external_networks
-
-	step "1/1" "Force-redeploying docker-cd..."
-	redeploy_compose "$REPO_DIR/infra/docker-cd" docker-cd 1
+	if [ "$force" = "1" ]; then
+		step "1/1" "Force-redeploying docker-cd..."
+		redeploy_compose "$DOCKER_CD_DIR" docker-cd 1
+	else
+		step "1/1" "Redeploying docker-cd..."
+		redeploy_compose "$DOCKER_CD_DIR" docker-cd
+	fi
 
 	header "Done"
 }
@@ -679,8 +695,8 @@ print_usage() {
 	printf '%b\n' "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
 	printf '%b\n' "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
 	printf '%b\n' "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
-	printf '%b\n' "  ${GREEN}update-infra${NC}             Redeploy docker-cd"
-	printf '%b\n' "  ${GREEN}update-infra-force${NC}       Force-recreate docker-cd"
+	printf '%b\n' "  ${GREEN}update${NC}                   Redeploy docker-cd"
+	printf '%b\n' "  ${GREEN}update-force${NC}             Force-recreate docker-cd"
 	printf '%b\n' "  ${GREEN}images${NC}                   Show unused Docker images and volumes"
 	printf '%b\n' "  ${GREEN}images prune${NC}             Remove unused images and orphan volumes"
 	printf '%b\n' "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
@@ -692,7 +708,7 @@ print_usage() {
 	printf '%b\n' "  ${DIM}$0 nfs mount plex${NC}        # Mount only plex"
 	printf '%b\n' "  ${DIM}$0 install${NC}               # Deploy everything"
 	printf '%b\n' "  ${DIM}$0 install-fresh${NC}         # Force full docker-cd app reconcile"
-	printf '%b\n' "  ${DIM}$0 update-infra-force${NC}    # Force-recreate infra containers"
+	printf '%b\n' "  ${DIM}$0 update-force${NC}          # Force-recreate docker-cd"
 	printf '%b\n' "  ${DIM}$0 status${NC}                # Show status"
 }
 
@@ -723,11 +739,11 @@ case "${1:-}" in
 	relogin)
 		cmd_relogin
 		;;
-	update-infra)
-		cmd_update_infra
+	update)
+		cmd_update
 		;;
-	update-infra-force)
-		cmd_update_infra_force
+	update-force)
+		cmd_update 1
 		;;
 	images)
 		shift

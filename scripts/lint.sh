@@ -36,7 +36,7 @@ run_check() {
 
 # shellcheck disable=SC2329
 check_shell() {
-	find scripts apps infra -name '*.sh' -not -path 'apps/adguard/*' -print0 |
+	find scripts apps -name '*.sh' -not -path 'apps/adguard/*' -print0 |
 		xargs -0 shellcheck -x
 }
 
