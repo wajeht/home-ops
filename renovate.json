@@ -17,11 +17,6 @@
   ],
   "packageRules": [
     {
-      "description": "Ignore apps excluded from docker-cd deployment",
-      "matchFileNames": ["/(^|/)apps\\/(adguard)\\//"],
-      "enabled": false
-    },
-    {
       "enabled": true,
       "matchPackageNames": ["/^ghcr\\.io/wajeht//"]
     }
