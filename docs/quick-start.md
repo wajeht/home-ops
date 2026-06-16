@@ -42,11 +42,10 @@ docker-cd should start first, then deploy the rest of `apps/*`.
 ## Common Commands
 
 ```bash
-./scripts/setup.sh update        # Pull latest and redeploy docker-cd
-./scripts/setup.sh update-force  # Force-recreate docker-cd
-./scripts/setup.sh nfs mount     # Mount NFS shares
-./scripts/setup.sh nfs persist   # Persist NFS mounts
-./scripts/cloudflare.sh          # Update Cloudflare IP allowlists
+./scripts/setup.sh update       # Pull latest and force-recreate docker-cd
+./scripts/setup.sh nfs mount    # Mount NFS shares
+./scripts/setup.sh nfs persist  # Persist NFS mounts
+./scripts/cloudflare.sh         # Update Cloudflare IP allowlists
 ```
 
 ## OS Tuning

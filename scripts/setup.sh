@@ -540,7 +540,7 @@ cmd_relogin() {
 }
 
 #=============================================================================
-# UPDATE - Redeploy docker-cd (which manages all other services)
+# UPDATE - Force-recreate docker-cd (which manages all other services)
 #=============================================================================
 prepare_update() {
 	require_cmd docker
@@ -559,17 +559,11 @@ prepare_update() {
 }
 
 cmd_update() {
-	local force=${1:-0}
-	header "Updating docker-cd"
+	header "Force-updating docker-cd"
 	prepare_update
 
-	if [ "$force" = "1" ]; then
-		step "1/1" "Force-redeploying docker-cd..."
-		redeploy_compose "$DOCKER_CD_DIR" docker-cd 1
-	else
-		step "1/1" "Redeploying docker-cd..."
-		redeploy_compose "$DOCKER_CD_DIR" docker-cd
-	fi
+	step "1/1" "Force-redeploying docker-cd..."
+	redeploy_compose "$DOCKER_CD_DIR" docker-cd 1
 
 	header "Done"
 }
@@ -695,8 +689,7 @@ print_usage() {
 	printf '%b\n' "  ${GREEN}install-fresh${NC}            Reset docker-cd state, then deploy all services"
 	printf '%b\n' "  ${GREEN}uninstall${NC}                Remove all services and cleanup"
 	printf '%b\n' "  ${GREEN}relogin${NC}                  Refresh docker registry credentials"
-	printf '%b\n' "  ${GREEN}update${NC}                   Redeploy docker-cd"
-	printf '%b\n' "  ${GREEN}update-force${NC}             Force-recreate docker-cd"
+	printf '%b\n' "  ${GREEN}update${NC}                   Force-recreate docker-cd"
 	printf '%b\n' "  ${GREEN}images${NC}                   Show unused Docker images and volumes"
 	printf '%b\n' "  ${GREEN}images prune${NC}             Remove unused images and orphan volumes"
 	printf '%b\n' "  ${GREEN}update-submodules${NC}        Update submodules to latest and commit"
@@ -708,7 +701,7 @@ print_usage() {
 	printf '%b\n' "  ${DIM}$0 nfs mount plex${NC}        # Mount only plex"
 	printf '%b\n' "  ${DIM}$0 install${NC}               # Deploy everything"
 	printf '%b\n' "  ${DIM}$0 install-fresh${NC}         # Force full docker-cd app reconcile"
-	printf '%b\n' "  ${DIM}$0 update-force${NC}          # Force-recreate docker-cd"
+	printf '%b\n' "  ${DIM}$0 update${NC}                # Force-recreate docker-cd"
 	printf '%b\n' "  ${DIM}$0 status${NC}                # Show status"
 }
 
@@ -741,9 +734,6 @@ case "${1:-}" in
 		;;
 	update)
 		cmd_update
-		;;
-	update-force)
-		cmd_update 1
 		;;
 	images)
 		shift
