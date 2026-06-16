@@ -17,8 +17,16 @@ decrypt_dotenv_sops() {
 	sops --decrypt --input-type dotenv --output-type dotenv "$1"
 }
 
-docker_relogin() {
+docker_cmd() {
 	require_cmd docker
+	if docker info >/dev/null 2>&1; then
+		docker "$@"
+	else
+		$SUDO docker "$@"
+	fi
+}
+
+docker_relogin() {
 	local decrypted=""
 	local dh_user="" dh_token="" gh_token=""
 
@@ -33,18 +41,18 @@ docker_relogin() {
 	gh_token=$(printf '%s\n' "$decrypted" | grep "^GIT_ACCESS_TOKEN=" | cut -d= -f2- || true)
 
 	if [ -n "$dh_user" ] && [ -n "$dh_token" ]; then
-		printf '%s' "$dh_token" | $SUDO docker login -u "$dh_user" --password-stdin
+		printf '%s' "$dh_token" | docker_cmd login -u "$dh_user" --password-stdin
 	else
 		warn "DOCKER_HUB_USER/DOCKER_HUB_TOKEN missing, skipping docker.io login"
 	fi
 
 	if [ -n "$gh_token" ]; then
-		printf '%s' "$gh_token" | $SUDO docker login ghcr.io -u wajeht --password-stdin
+		printf '%s' "$gh_token" | docker_cmd login ghcr.io -u wajeht --password-stdin
 	else
 		warn "GIT_ACCESS_TOKEN missing, skipping ghcr.io login"
 	fi
 
-	if [ "$EUID" -ne 0 ] && [ -f /root/.docker/config.json ]; then
+	if ! docker info >/dev/null 2>&1 && [ "$EUID" -ne 0 ] && [ -f /root/.docker/config.json ]; then
 		$SUDO install -m 600 /root/.docker/config.json "$USER_HOME/.docker/config.json"
 	fi
 }
@@ -94,8 +102,6 @@ compose_cmd() {
 	local tmp_dir="" env_file="" env_backup="" had_env=0 rc=0
 	local compose_file="$dir/docker-compose.yml"
 
-	require_cmd docker
-
 	if [ -f "$dir/.env.sops" ]; then
 		tmp_dir=$(mktemp -d)
 		env_file="$tmp_dir/env"
@@ -112,7 +118,7 @@ compose_cmd() {
 		fi
 		cp "$env_file" "$dir/.env"
 
-		$SUDO docker compose -f "$compose_file" --project-directory "$dir" --env-file "$env_file" "$@" || rc=$?
+		docker_cmd compose -f "$compose_file" --project-directory "$dir" --env-file "$env_file" "$@" || rc=$?
 
 		if [ "$had_env" = "1" ]; then
 			cp "$env_backup" "$dir/.env"
@@ -123,7 +129,7 @@ compose_cmd() {
 		return "$rc"
 	fi
 
-	$SUDO docker compose -f "$compose_file" --project-directory "$dir" "$@"
+	docker_cmd compose -f "$compose_file" --project-directory "$dir" "$@"
 }
 
 deploy_compose() {
@@ -156,12 +162,12 @@ redeploy_compose() {
 
 compose_stop_service() {
 	local dir=$1 service=$2
-	(cd "$dir" 2>/dev/null && $SUDO docker compose stop "$service" 2>/dev/null) || true
+	compose_cmd "$dir" stop "$service" 2>/dev/null || true
 }
 
 compose_down() {
 	local dir=$1
-	(cd "$dir" 2>/dev/null && $SUDO docker compose down -v 2>/dev/null) || true
+	compose_cmd "$dir" down -v 2>/dev/null || true
 }
 
 deploy_core_services() {
@@ -220,10 +226,9 @@ CORE_STACKS=(
 )
 
 ensure_external_networks() {
-	require_cmd docker
 	# External networks/volumes used across stacks.
-	$SUDO docker network create traefik 2>/dev/null || true
-	$SUDO docker volume create traefik-logs 2>/dev/null || true
+	docker_cmd network create traefik 2>/dev/null || true
+	docker_cmd volume create traefik-logs 2>/dev/null || true
 }
 
 #=============================================================================
@@ -438,7 +443,7 @@ cmd_install() {
 	header "Done"
 	printf '\n'
 	printf '%b\n' "${BOLD}Containers:${NC}"
-	$SUDO docker ps --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || true
+	docker_cmd ps --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || true
 	printf '\n'
 	ok "docker-cd will auto-deploy remaining apps within 60s: ${CYAN}https://cd.jaw.dev${NC}"
 }
@@ -469,7 +474,7 @@ cmd_install_fresh() {
 cmd_uninstall() {
 	header "home-ops Uninstall"
 	local reply=""
-	require_cmd docker
+	docker_cmd info >/dev/null
 	printf '%b\n' "${RED}This will remove ALL containers, networks, and prune images.${NC}"
 	read -r -n 1 -p "Continue? [y/N] " reply
 	printf '\n'
@@ -492,21 +497,21 @@ cmd_uninstall() {
 	for dir in "$REPO_DIR"/apps/*/; do
 		if [ -f "$dir/docker-compose.yml" ]; then
 			dim "Stopping $(basename "$dir")..."
-			(cd "$dir" && $SUDO docker compose down -v 2>/dev/null) || true
+			compose_down "$dir"
 		fi
 	done
 	cd "$USER_HOME"
 
 	step "3/4" "Removing networks..."
 	for _ in 1 2 3; do
-		$SUDO docker network prune -f 2>/dev/null || true
-		$SUDO docker network rm traefik 2>/dev/null || true
+		docker_cmd network prune -f 2>/dev/null || true
+		docker_cmd network rm traefik 2>/dev/null || true
 		sleep 2
 	done
 
 	step "4/4" "Pruning images..."
-	$SUDO docker image prune -af 2>/dev/null || true
-	$SUDO docker system prune -af 2>/dev/null || true
+	docker_cmd image prune -af 2>/dev/null || true
+	docker_cmd system prune -af 2>/dev/null || true
 
 	header "Done"
 	cmd_status
@@ -519,7 +524,7 @@ cmd_status() {
 	header "Status"
 	printf '\n'
 	printf '%b\n' "${BOLD}Containers:${NC}"
-	$SUDO docker ps --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || dim "None"
+	docker_cmd ps --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || dim "None"
 	printf '\n'
 	printf '%b\n' "${BOLD}NFS Mounts:${NC}"
 	cmd_nfs status
@@ -533,7 +538,6 @@ cmd_status() {
 #=============================================================================
 cmd_relogin() {
 	header "Docker registry relogin"
-	require_cmd docker
 	cd "$REPO_DIR"
 	docker_relogin
 	ok "Docker registry credentials refreshed"
@@ -543,7 +547,6 @@ cmd_relogin() {
 # UPDATE - Force-recreate docker-cd (which manages all other services)
 #=============================================================================
 prepare_update() {
-	require_cmd docker
 	require_cmd git
 	require_cmd sops
 
@@ -562,7 +565,10 @@ cmd_update() {
 	header "Force-updating docker-cd"
 	prepare_update
 
-	step "1/1" "Force-redeploying docker-cd..."
+	step "1/2" "Stopping docker-cd..."
+	compose_stop_service "$DOCKER_CD_DIR" docker-cd
+
+	step "2/2" "Force-redeploying docker-cd..."
 	redeploy_compose "$DOCKER_CD_DIR" docker-cd 1
 
 	header "Done"
@@ -573,7 +579,7 @@ cmd_update() {
 #=============================================================================
 cmd_images() {
 	local action=${1:-status}
-	require_cmd docker
+	docker_cmd info >/dev/null
 	header "Docker Cleanup"
 
 	case "$action" in
@@ -581,14 +587,14 @@ cmd_images() {
 			local running_file tmp_dir
 			tmp_dir=$(mktemp -d)
 			running_file="$tmp_dir/running-images"
-			docker ps --format '{{.ID}}' | while read -r cid; do
-				docker inspect --format '{{.Image}}' "$cid" 2>/dev/null | sed 's/sha256://' | cut -c1-12
+			docker_cmd ps --format '{{.ID}}' | while read -r cid; do
+				docker_cmd inspect --format '{{.Image}}' "$cid" 2>/dev/null | sed 's/sha256://' | cut -c1-12
 			done | sort -u >"$running_file"
 
 			printf '\n'
 			printf '%b\n' "${BOLD}Stale images (outdated, freed after next redeploy):${NC}"
 			local stale_out
-			stale_out=$(docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | awk -F'\t' '$3 == "<none>"' | while IFS=$'\t' read -r id repo _ size; do
+			stale_out=$(docker_cmd images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | awk -F'\t' '$3 == "<none>"' | while IFS=$'\t' read -r id repo _ size; do
 				if grep -q "$id" "$running_file" 2>/dev/null; then
 					printf "  %-45s %10s\n" "$repo" "$size"
 				fi
@@ -598,7 +604,7 @@ cmd_images() {
 			printf '\n'
 			printf '%b\n' "${BOLD}Prunable images (safe to remove now):${NC}"
 			local prunable_out
-			prunable_out=$(docker images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | while IFS=$'\t' read -r id repo tag size; do
+			prunable_out=$(docker_cmd images --format '{{.ID}}\t{{.Repository}}\t{{.Tag}}\t{{.Size}}' | while IFS=$'\t' read -r id repo tag size; do
 				grep -q "$id" "$running_file" 2>/dev/null || printf "  %-45s %10s\n" "$repo:$tag" "$size"
 			done)
 			if [ -z "$prunable_out" ]; then dim "None"; else printf '%s\n' "$prunable_out"; fi
@@ -608,13 +614,13 @@ cmd_images() {
 			printf '\n'
 			printf '%b\n' "${BOLD}Orphan volumes:${NC}"
 			local total_vols orphan_vols
-			total_vols=$(docker volume ls -q | wc -l)
-			orphan_vols=$(docker volume ls -f dangling=true -q | wc -l)
+			total_vols=$(docker_cmd volume ls -q | wc -l)
+			orphan_vols=$(docker_cmd volume ls -f dangling=true -q | wc -l)
 			printf '  %s orphan (%s total)\n' "$orphan_vols" "$total_vols"
 
 			printf '\n'
 			printf '%b\n' "${BOLD}Docker disk usage:${NC}"
-			docker system df
+			docker_cmd system df
 
 			printf '\n'
 			dim "Stale images free up after docker-cd redeploys those stacks"
@@ -622,13 +628,13 @@ cmd_images() {
 			;;
 		prune)
 			info "Removing unused images..."
-			docker image prune -af
+			docker_cmd image prune -af
 			printf '\n'
 			info "Removing orphan volumes..."
-			docker volume prune -f
+			docker_cmd volume prune -f
 			printf '\n'
 			info "Final state:"
-			docker system df
+			docker_cmd system df
 			ok "Cleanup complete"
 			;;
 		*)
