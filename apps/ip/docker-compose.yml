@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   ip:
-    image: ghcr.io/wajeht/ip:69e950b@sha256:3bb8985dfe429b543a815ee50d3ba9343c1d63bac43cfadbb816ae62410370e9
+    image: ghcr.io/wajeht/ip:c7a79e3@sha256:83e2abf979b529871e00403ca465f60b8f7fb5b6b46bb37f3f1aea341f780bc1
     environment:
       - TZ=America/Chicago
       - PORT=80
