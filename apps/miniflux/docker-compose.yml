@@ -48,7 +48,7 @@ services:
 
   miniflux-db:
     container_name: miniflux-db
-    image: postgres:17-alpine@sha256:6f30057d31f5861b66f3545d4821f987aacf1dd920765f0acadea0c58ff975b1
+    image: postgres:17-alpine@sha256:4649d4ce53680767b3ba9a57f814d7ffa5cd694a03bba551576fb3dd6cb90b01
     env_file:
       - .env
     environment:
