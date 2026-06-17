@@ -13,6 +13,15 @@ message: |
   {{- if .strategy }}
   **strategy:** {{ .strategy }}
   {{- end }}
+  {{- if .version }}
+  **version:** {{ .version }}
+  {{- end }}
+  {{- if .previousVersion }}
+  **previous version:** {{ .previousVersion }}
+  {{- end }}
+  {{- if .targetVersion }}
+  **target version:** {{ .targetVersion }}
+  {{- end }}
   {{- if .service }}
   **service:** {{ .service }}
   {{- end }}
