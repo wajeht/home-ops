@@ -4,7 +4,7 @@ x-docker-cd:
 services:
   docker-cd:
     # lint-ignore: backup  # state/cache only, can be rebuilt from Git and Docker
-    image: ghcr.io/wajeht/docker-cd:v0.8.2
+    image: ghcr.io/wajeht/docker-cd:v0.8.2@sha256:a3cc4263f19efc72b325b8db92b3b6704fb8470b5369d95ee06c4b8406babe27
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/jaw/data/docker-cd:/home/jaw/data/docker-cd
