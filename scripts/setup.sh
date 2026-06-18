@@ -187,9 +187,8 @@ CORE_STACKS=(
 )
 
 ensure_external_networks() {
-	# External networks/volumes used across stacks.
+	# External networks used across stacks.
 	docker_cmd network create traefik 2>/dev/null || true
-	docker_cmd volume create traefik-logs 2>/dev/null || true
 }
 
 #=============================================================================

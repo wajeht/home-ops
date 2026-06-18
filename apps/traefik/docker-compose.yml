@@ -71,8 +71,9 @@ services:
       - "--entrypoints.websecure.http.tls.certresolver=cloudflare"
 
       # Logs, healthcheck endpoint, and dynamic config file.
+      # Access logs go to stdout (no filepath) so Docker's json-file driver
+      # rotates them and Dozzle can read them; Traefik can't rotate file logs.
       - "--accesslog=true"
-      - "--accesslog.filepath=/var/log/traefik/access.log"
       - "--accesslog.format=json"
       - "--log.level=INFO"
       - "--ping=true"
@@ -82,7 +83,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/jaw/data/traefik/certs:/certs
       - ./dynamic.yml:/etc/traefik/dynamic.yml:ro
-      - traefik-logs:/var/log/traefik
     networks:
       - traefik
     healthcheck:
@@ -119,8 +119,4 @@ services:
 
 networks:
   traefik:
-    external: true
-
-volumes:
-  traefik-logs:
     external: true

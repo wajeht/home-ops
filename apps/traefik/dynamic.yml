@@ -161,3 +161,22 @@ http:
       loadBalancer:
         servers:
           - url: "http://127.0.0.1"
+
+tls:
+  options:
+    # "default" auto-applies to every HTTPS router that names no other options.
+    # Matters most for the LAN split-horizon path that hits the origin directly;
+    # Cloudflare already negotiates modern TLS on the public path.
+    default:
+      minVersion: VersionTLS12
+      curvePreferences:
+        - X25519
+        - CurveP256
+      cipherSuites:
+        # TLS 1.2 suites only — TLS 1.3 suites are fixed by Go, not configurable.
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
