@@ -18,6 +18,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+      start_period: 90s
     restart: unless-stopped
     # lint-ignore: init  # home-assistant uses s6, must be PID 1
     cap_drop:
