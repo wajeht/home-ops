@@ -4,7 +4,7 @@ x-docker-cd:
 services:
   dbgate:
     container_name: dbgate
-    image: dbgate/dbgate:7.2.0@sha256:331726a5387fe38f0ed37b97092b12d891308e5995f36d8e4db3028fe0744140
+    image: dbgate/dbgate:7.2.1@sha256:c657a24817722f959ad740f620cd035f0b1ec78a4e8dd37842f3ba97ea6a8d8a
     env_file:
       - .env
     volumes:
