@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   sonarr:
-    image: linuxserver/sonarr:4.0.18-develop@sha256:a0e356f0833e886fde965c6fa378e54663e2a0ccc57b3fb6a4e2c41f1bb663dd
+    image: linuxserver/sonarr:develop-4.0.17.2969-ls174@sha256:2a1fea1dd1c64c9f31b5e1e899449892ebe6f147852253573542dc0fc4d66524
     container_name: sonarr
     environment:
       - PUID=1000
