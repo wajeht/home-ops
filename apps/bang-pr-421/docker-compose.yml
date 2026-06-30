@@ -2,7 +2,7 @@ x-docker-cd:
   rolling_update: false
 services:
   bang:
-    image: ghcr.io/wajeht/bang:2b09e09
+    image: ghcr.io/wajeht/bang:2b09e09@sha256:41938cb7f01d1f0c9794f170978f325cc79da879416955ad14b93479280eb4fd
     env_file:
       - .env
     environment:
