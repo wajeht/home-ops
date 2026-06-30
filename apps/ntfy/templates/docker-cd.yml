@@ -31,7 +31,7 @@ message: |
   {{- if .targetVersion }}
   **target docker-cd version:** {{ .targetVersion }}
   {{- end }}
-  {{- if .service }}
+  {{- if and .service (not .services) }}
   **service:** {{ .service }}
   {{- end }}
   {{- if .services }}
