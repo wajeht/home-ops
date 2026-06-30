@@ -19,10 +19,10 @@ message: |
   {{- if .appVersion }}
   **app version:** {{ .appVersion }}
   {{- end }}
-  {{- if .serviceVersions }}
+  {{- if and .serviceVersions (not .appVersion) }}
   **service versions:**
   {{- range $service, $version := .serviceVersions }}
-  - **{{ $service }}:** {{ $version }}
+  **{{ $service }} version:** {{ $version }}
   {{- end }}
   {{- end }}
   {{- if .previousVersion }}
