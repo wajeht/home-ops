@@ -13,14 +13,23 @@ message: |
   {{- if .strategy }}
   **strategy:** {{ .strategy }}
   {{- end }}
-  {{- if .version }}
-  **version:** {{ .version }}
+  {{- if .dockerCdVersion }}
+  **docker-cd version:** {{ .dockerCdVersion }}
+  {{- end }}
+  {{- if .appVersion }}
+  **app version:** {{ .appVersion }}
+  {{- end }}
+  {{- if .serviceVersions }}
+  **service versions:**
+  {{- range $service, $version := .serviceVersions }}
+  - **{{ $service }}:** {{ $version }}
+  {{- end }}
   {{- end }}
   {{- if .previousVersion }}
-  **previous version:** {{ .previousVersion }}
+  **previous docker-cd version:** {{ .previousVersion }}
   {{- end }}
   {{- if .targetVersion }}
-  **target version:** {{ .targetVersion }}
+  **target docker-cd version:** {{ .targetVersion }}
   {{- end }}
   {{- if .service }}
   **service:** {{ .service }}
