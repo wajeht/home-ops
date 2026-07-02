@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   www:
-    image: ghcr.io/wajeht/jaw.dev:db35787@sha256:6b26899f0f232970e808ba795e71c3ead78bdf7354da8327d4b6f48ced5d0d5f
+    image: ghcr.io/wajeht/jaw.dev:194b871@sha256:daa1113fd1c25dca76c805c9d4dffdb5cf0f1bdb5b7a7a010915c94a39ac9b91
     environment:
       - TZ=America/Chicago
       - HTTP_PORT=80
