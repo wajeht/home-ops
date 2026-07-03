@@ -24,7 +24,7 @@ jobs:
           command -v shfmt &>/dev/null || sudo apt-get install -y shfmt
       - name: Check formatting
         run: |
-          npx oxfmt --check "**/*.{yml,yaml,md,json}"
+          npx oxfmt --check "**/*.{yml,yaml,md,json,js}"
           find scripts apps -name '*.sh' -print0 | xargs -0 shfmt -d -i 0 -ci
       - name: Lint
         run: ./scripts/lint.sh
