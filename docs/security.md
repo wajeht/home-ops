@@ -221,6 +221,29 @@ nc -zv 192.168.30.56 2020  # ONVIF
 - Camera credentials still in `.env.sops` — only the IP changes when moving VLANs
 - Delete vendor apps after setup — camera runs standalone on RTSP/ONVIF
 
+## Secret Rotation
+
+All app secrets live encrypted in `apps/<app>/.env.sops`. **The repo is public — SOPS is the only thing protecting these values**, so periodic rotation matters. The full inventory, grouped by cadence, is in [`.github/secrets-rotation.json`](../.github/secrets-rotation.json).
+
+`.github/workflows/secrets-rotation.yml` runs on the 1st of each month and opens a GitHub issue (labels `security`, `rotation`) with a rotation checklist whenever a cadence is due. Run it manually any time via **Actions → Secrets Rotation Reminder → Run workflow** (tick `force_all` to preview the full checklist).
+
+| Cadence     | Due                   | Scope                                                                                |
+| ----------- | --------------------- | ------------------------------------------------------------------------------------ |
+| Quarterly   | Jan / Apr / Jul / Oct | External, billed, or high-blast-radius tokens (Cloudflare, GitHub, S3, LLM/SMS APIs) |
+| Semi-annual | Jan / Jul             | OAuth client secrets, provider keys (WireGuard, Garage), internal API keys           |
+| Annual      | Jan                   | App signing secrets, DB passwords, admin credentials, SMTP creds                     |
+
+To rotate: regenerate the credential at its source, then update the value in `.env.sops` (`sops --input-type dotenv --output-type dotenv apps/<app>/.env.sops`), commit, and push — docker-cd redeploys.
+
+### Master keys — do not rotate casually
+
+- **`RESTIC_PASSWORD`** (`apps/backrest/.env.sops`) — rotating orphans every existing restic snapshot. Only rotate alongside a full re-backup. The annual issue lists it as _review only_: confirm it is still in your password manager.
+- **`.sops/age-key.txt`** — rotating requires re-encrypting all `.env.sops` files (`sops updatekeys`). Deliberate operation only; keep offline copies.
+
+### Cleanup
+
+`BORG_PASSPHRASE` is present in ~20 `.env.sops` files but referenced by zero compose/config files — vestigial from the pre-Backrest borgmatic era. Remove it the next time each file is edited.
+
 ## Intel AMT/vPro
 
 AMT runs on the Management Engine chipset independently of the OS. It listens on ports 16992/16993/5900 and provides remote power control and KVM.
@@ -242,3 +265,5 @@ AMT runs on the Management Engine chipset independently of the OS. It listens on
 - [ ] Disable unnecessary services
 - [ ] Bind non-Traefik ports to 127.0.0.1
 - [ ] Docker socket proxy
+- [x] Secret rotation reminders (monthly GH Actions issue)
+- [ ] Remove vestigial `BORG_PASSPHRASE` from `.env.sops` files
