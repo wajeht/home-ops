@@ -53,6 +53,15 @@ check_sops() {
 }
 
 # shellcheck disable=SC2329
+check_secrets() {
+	if ! command -v gitleaks >/dev/null 2>&1; then
+		echo "gitleaks not installed — skipping (brew install gitleaks); CI enforces this"
+		return 0
+	fi
+	gitleaks dir . --config .gitleaks.toml --redact --no-banner -v
+}
+
+# shellcheck disable=SC2329
 check_docker_cd_app_config() {
 	local legacy=() f
 	while IFS= read -r -d '' f; do
@@ -322,6 +331,7 @@ check_resources() {
 printf '\n%s==>%s %slint%s\n' "$BOLD$CYAN" "$RESET" "$BOLD" "$RESET"
 run_check "shell scripts" check_shell
 run_check "sops encryption" check_sops
+run_check "secret scan" check_secrets
 run_check "docker-cd app config" check_docker_cd_app_config
 run_check "container hardening" check_hardening
 run_check "service hygiene" check_service_hygiene
