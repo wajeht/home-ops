@@ -1,0 +1,18 @@
+# gitleaks config — extends the built-in ruleset and allowlists files that are
+# encrypted by design or contain only placeholders, so the scan's real job —
+# catching a PLAINTEXT secret committed to this public repo — isn't drowned in
+# false positives.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Encrypted-by-design files, doc placeholders, and gitignored local secrets"
+paths = [
+  '''.*\.env\.sops$''', # SOPS-encrypted (values are AES-256 ciphertext)
+  '''\.sops\.yaml$''',  # SOPS recipient config (public keys only)
+  '''^\.sops/''',       # local age key — gitignored, never committed
+  '''^\.claude/''',     # local tooling settings — gitignored, never committed
+]
+regexes = [
+  '''(?i)YOUR_[A-Z0-9_]+''', # documentation placeholders, e.g. YOUR_GITEA_TOKEN
+]
