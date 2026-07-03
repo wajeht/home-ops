@@ -19,6 +19,15 @@
     {
       "enabled": true,
       "matchPackageNames": ["/^ghcr\\.io/wajeht//"]
+    },
+    {
+      "matchPackageNames": ["ghcr.io/immich-app/postgres", "postgres"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["/^linuxserver//"],
+      "rollbackPrs": false
     }
   ]
 }
