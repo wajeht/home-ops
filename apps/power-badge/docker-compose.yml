@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   power-badge:
-    image: ghcr.io/wajeht/power-badge:91ddd4d@sha256:de0a968e170686ceffadc328aed850ad6cf43c6d599ec02995cce851c198e9f8
+    image: ghcr.io/wajeht/power-badge:e2cdeda@sha256:2d9738931443325927d3854d79831b8d55d027cf63088897ca8dd2f3a7c60127
     container_name: power-badge
     restart: unless-stopped
     init: true
