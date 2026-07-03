@@ -81,7 +81,7 @@ http:
           requestHeaderName: CF-Connecting-IP
 
     # Rate limit for auth-protected routes. Burst is wide enough for
-    # SPA bundle loads (e.g. Jellyfin fans out 25+ parallel chunk requests).
+    # SPA bundle loads (media SPAs fan out 25+ parallel chunk requests).
     rate-limit-auth:
       rateLimit:
         period: 1s

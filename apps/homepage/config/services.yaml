@@ -9,11 +9,6 @@
         #   url: http://plex:32400
         #   key: "{{HOMEPAGE_VAR_PLEX_KEY}}"
 
-    - Jellyfin:
-        icon: jellyfin
-        href: https://jellyfin.jaw.dev
-        description: Movies & TV
-
     - Immich:
         icon: immich
         href: https://immich.jaw.dev
