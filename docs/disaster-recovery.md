@@ -87,13 +87,13 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | vpn-qbit      | 3:50 AM  | Files only           | Two source paths: qbittorrent + gluetun                       |
 | vaultwarden   | 4:00 AM  | SQLite + files       | DB file is `db.sqlite3`                                       |
 | gitea         | 4:10 AM  | SQLite + files       | DB at `gitea/gitea.db`. Includes all git repos                |
-| cap           | 4:40 AM  | Redis RDB only       | `redis-cli SAVE` hook, then snapshot `dump.rdb`               |
-| umami         | 4:50 AM  | Postgres DB only     | `pg_dump` via `docker exec umami-db`                          |
-| miniflux      | 5:00 AM  | Postgres DB only     | `pg_dump` via `docker exec miniflux-db`                       |
-| sonarr        | 5:10 AM  | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid    |
-| **global**    | 5:20 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state   |
+| cap           | 4:20 AM  | Redis RDB only       | `redis-cli SAVE` hook, then snapshot `dump.rdb`               |
+| umami         | 4:30 AM  | Postgres DB only     | `pg_dump` via `docker exec umami-db`                          |
+| miniflux      | 4:40 AM  | Postgres DB only     | `pg_dump` via `docker exec miniflux-db`                       |
+| sonarr        | 4:50 AM  | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid    |
+| **global**    | 5:00 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state   |
 
-Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 6 AM, integrity check Sunday 7 AM — both after `global` (5:20 AM) finishes, so weekly maintenance never overlaps the daily backups.
+Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 6 AM, integrity check Sunday 7 AM — both after `global` (5:00 AM) finishes, so weekly maintenance never overlaps the daily backups.
 
 ## Adding an App
 
