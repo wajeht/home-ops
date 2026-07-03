@@ -9,6 +9,7 @@ Backups run through [Backrest](https://github.com/garethgeorge/backrest), a web 
 - New app backup: [Adding an App](#adding-an-app)
 - Manual backup: [Backup Commands](#backup-commands)
 - Restore one app: [Restore](#restore)
+- Ad-hoc SQL dump/restore: [dcdb](#ad-hoc-dumps--restores-with-dcdb)
 - Full rebuild: [Full Rebuild](#full-rebuild)
 - Backrest operations: [Operations](#operations)
 
@@ -557,6 +558,80 @@ diff /tmp/live.sql /tmp/backup.sql | head
 ```
 
 Diff should be empty or only show data appended since the snapshot was taken.
+
+## Ad-hoc Dumps & Restores with dcdb
+
+Backrest handles scheduled, on-server backups. [dcdb](https://github.com/wajeht/dcdb) is a separate CLI for one-off SQL dumps and restores — a manual point-in-time dump before a risky migration, or cloning prod data into a PR stack. It runs from the laptop and targets the server's containers over SSH; dump files land on the laptop, not the NAS.
+
+Local checkout: `~/Dev/dcdb`. Run via `npx tsx src/index.ts` (or a built `release/` binary).
+
+### Setup
+
+Point the Docker client at the server, then every command targets its containers:
+
+```bash
+export DOCKER_HOST=ssh://jaw@192.168.4.161
+cd ~/Dev/dcdb
+```
+
+### Discover database services
+
+```bash
+npx tsx src/index.ts discover              # scan all running compose projects
+npx tsx src/index.ts -p <app> discover     # scan one project
+```
+
+`-p` is the Compose project (the `apps/<app>` dir name). Add `-s <service>` when a project runs more than one DB service — e.g. `immich` exposes both `immich-db` (postgres) and `immich-redis`.
+
+### Dump
+
+```bash
+# single-DB project — service auto-detected
+npx tsx src/index.ts -p <app> dump -z ~/Downloads/<app>-<date>.sql.gz
+
+# multi-DB project — name the service
+npx tsx src/index.ts -p immich -s immich-db dump -z ~/Downloads/immich-pre-v3.sql.gz
+```
+
+- `-z` gzips the output.
+- Omit the filename to auto-name `<database>_<timestamp>.sql[.gz]` in the current dir.
+- Output path is on the laptop running dcdb.
+
+Verify the dump before trusting it:
+
+```bash
+gzip -t ~/Downloads/immich-pre-v3.sql.gz && gunzip -c ~/Downloads/immich-pre-v3.sql.gz | tail -3
+```
+
+A valid Postgres dump ends with a `\unrestrict ...` or `-- PostgreSQL database dump complete` trailer.
+
+### Restore
+
+```bash
+npx tsx src/index.ts -p <app> -s <service> restore --replace -y ~/Downloads/<app>-<date>.sql.gz
+```
+
+- `--replace` clears target data first (Postgres: `DROP SCHEMA public CASCADE; CREATE SCHEMA public`). Without it, the dump layers on top of existing data.
+- `-y` skips the confirmation prompt (required for non-interactive runs).
+- `.gz` input is auto-decompressed.
+- Postgres restore runs with `ON_ERROR_STOP=1` — it fails fast. If it errors midway, rerun the same command.
+
+### Prod → PR clone
+
+```bash
+npx tsx src/index.ts -p <app> dump -z /tmp/<app>-prod.sql.gz
+npx tsx src/index.ts -p <app>-pr-1 -s <app>-db restore --replace -y /tmp/<app>-prod.sql.gz
+```
+
+### Dialect support
+
+| Dialect                        | dump | restore |
+| ------------------------------ | ---- | ------- |
+| postgres, mariadb/mysql, mongo | yes  | yes     |
+| sqlite                         | yes  | yes     |
+| redis                          | no   | no      |
+
+Redis dump/restore is unsupported — use Backrest's RDB snapshot hook (see the `cap` plan) for Redis persistence. Full flag reference: [dcdb/docs/cli.md](https://github.com/wajeht/dcdb/blob/main/docs/cli.md).
 
 ## Operations
 
