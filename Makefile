@@ -36,7 +36,7 @@ cloudflare:
 
 ## format                  Format yaml, markdown, json, and shell
 format:
-	@npx oxfmt@0.57.0 "**/*.{yml,yaml,md,json,js}"
+	@npx oxfmt@0.57.0 "**/*.{yml,yaml,md,json,js,mjs}"
 	@find scripts apps -name '*.sh' -print0 | xargs -0 shfmt -w -i 0 -ci
 
 ## lint                    Run repo lint checks

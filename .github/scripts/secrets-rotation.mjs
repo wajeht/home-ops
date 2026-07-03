@@ -1,10 +1,10 @@
 // Opens a GitHub issue with a secret-rotation checklist when a cadence is due.
 // Invoked from .github/workflows/secrets-rotation.yml via actions/github-script:
-//   const run = require('./.github/scripts/secrets-rotation.js')
+//   const { default: run } = await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/secrets-rotation.mjs`)
 //   await run({ github, context, core })
 // The secret inventory lives in .github/secrets-rotation.json (names only, no values).
 
-const fs = require("fs");
+import fs from "node:fs";
 
 const CADENCE = {
   quarterly: {
@@ -35,7 +35,7 @@ function item(entry) {
   return `- [ ] ${label} — ${entry.what}\n  <sub>↳ ${entry.where}</sub>\n`;
 }
 
-module.exports = async ({ github, context, core }) => {
+export default async function run({ github, context, core }) {
   const manifest = JSON.parse(fs.readFileSync(".github/secrets-rotation.json", "utf8"));
 
   const now = new Date();
@@ -108,4 +108,4 @@ module.exports = async ({ github, context, core }) => {
     assignees: [context.repo.owner],
   });
   core.info(`Opened ${issue.data.html_url}`);
-};
+}
