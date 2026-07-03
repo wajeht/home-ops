@@ -13,6 +13,7 @@ services:
       - SIGNUPS_ALLOWED=false
       - INVITATIONS_ALLOWED=true
       - SHOW_PASSWORD_HINT=false
+      - ORG_CREATION_USERS=none
     volumes:
       - /home/jaw/data/vaultwarden:/data
     networks:
