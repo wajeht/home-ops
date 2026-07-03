@@ -3,7 +3,7 @@
 Self-hosted Bitwarden-compatible password vault ([dani-garcia/vaultwarden](https://github.com/dani-garcia/vaultwarden)).
 
 WebUI: `https://vault.jaw.dev`
-Admin: `https://vault.jaw.dev/admin` (gated by `ADMIN_TOKEN`)
+Admin: `https://vault.jaw.dev/admin` (gated by Google OAuth, then `ADMIN_TOKEN`)
 
 ## ADMIN_TOKEN (Argon2 PHC)
 
