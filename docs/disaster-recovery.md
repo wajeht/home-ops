@@ -529,11 +529,11 @@ jq '(.repos | length), (.plans | length)' ~/home-ops/apps/backrest/config/config
 # Expect 32 then 32. If either is lower, re-add the missing entries.
 ```
 
-#### 6. Verify
+#### 5. Verify
 
 ```bash
 docker logs backrest --tail 50          # should be no errors after orchestrator starts
-docker exec backrest ls /repos          # should list 34 repos
+docker exec backrest ls /repos          # should list 32 repos
 ```
 
 ### Testing Recovery
