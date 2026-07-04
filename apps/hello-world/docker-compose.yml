@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   hello-world:
-    image: ghcr.io/wajeht/hello-world:96834bc@sha256:f99e082f7a3f55796795c43ae34bcdc61a517e16781f9d830e40c7fe22f1f6f4
+    image: ghcr.io/wajeht/hello-world:cca11e5@sha256:00799437c567043559c65ba6ea9acaab8a5147dc7553508733dfdd3d3dcff5a6
     env_file:
       - .env
     networks:
