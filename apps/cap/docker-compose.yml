@@ -11,6 +11,7 @@ services:
       - TZ=America/Chicago
       - REDIS_URL=redis://cap-redis:6379
       - ENABLE_ASSETS_SERVER=true # serve widget.js/wasm from cap.jaw.dev (no CDN dependency)
+      - RATELIMIT_IP_HEADER=cf-connecting-ip # behind Cloudflare+Traefik; key limiter on real client IP, not the shared proxy IP
     volumes:
       - ./portcheck:/portcheck:ro # static healthcheck helper (oven/bun:slim has no curl/wget)
     depends_on:
