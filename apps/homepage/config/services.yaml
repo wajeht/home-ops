@@ -156,10 +156,10 @@
         description: Zigbee Bridge
         # siteMonitor: http://zigbee2mqtt:8080
 
-    - Intel AMT (7050):
-        icon: mdi-desktop-tower-monitor
-        href: http://192.168.4.161:16992
-        description: Remote KVM / Power Control
+    # - Intel AMT (7050):
+    #     icon: mdi-desktop-tower-monitor
+    #     href: http://192.168.4.161:16992
+    #     description: Remote KVM / Power Control
 
     - GL.iNet Comet PoE:
         icon: mdi-video-input-hdmi
