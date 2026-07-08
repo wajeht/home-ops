@@ -161,6 +161,11 @@
         href: http://192.168.4.161:16992
         description: Remote KVM / Power Control
 
+    - GL.iNet Comet PoE:
+        icon: mdi-video-input-hdmi
+        href: https://192.168.4.193/#/login
+        description: Remote KVM
+
     - DDNS Updater:
         icon: mdi-dns
         href: https://ddns.jaw.dev
