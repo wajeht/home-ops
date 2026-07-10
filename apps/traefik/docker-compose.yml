@@ -5,7 +5,7 @@ x-docker-cd:
 services:
   traefik:
     container_name: traefik
-    image: traefik:v3.7.7@sha256:6ed4e7c21f70c336bd10f798f259a75378affa622e328eae04484f64ff5882aa
+    image: traefik:v3.7.7@sha256:1cb3845d7a05e1473c9086351426597e911db49db382b6e4769f9b0744962ac8
     ports:
       - "80:80"
       - "443:443"
