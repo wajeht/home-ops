@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   mm2us:
-    image: ghcr.io/wajeht/mm2us.com:bdd0f84@sha256:570f50a1e6bdbe92a843d4444fe8c223ebd3dbbfa3ce107f882b56c5151739b4
+    image: ghcr.io/wajeht/mm2us.com:285c4cd@sha256:290b61c1abfca18bf505b46eccfaca91b0eb36e8795864d3ad4517c12c41db72
     env_file:
       - .env
     environment:
