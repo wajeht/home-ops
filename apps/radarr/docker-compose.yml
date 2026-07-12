@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   radarr:
-    image: linuxserver/radarr:6.3.0-nightly@sha256:cc25121312550c840957a10bbf3b0cf2916eceb65f296eed3d1d926eabff6788
+    image: linuxserver/radarr:6.3.0-nightly@sha256:8afebfb198084d5f6d5657f10527361ce61ab89112f1f1f845c5b0393d0ac797
     container_name: radarr
     environment:
       - PUID=1000
