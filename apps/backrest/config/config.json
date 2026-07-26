@@ -546,6 +546,24 @@
       }
     },
     {
+      "id": "minecraft",
+      "uri": "/repos/minecraft",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 6 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 7 * * 0"
+        },
+        "structureOnly": true
+      }
+    },
+    {
       "id": "global",
       "uri": "/repos/global",
       "password": "",
@@ -2049,6 +2067,55 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sonarr+backup+FAILED&priority=Max&tags=skull",
             "template": "sonarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "minecraft",
+      "repo": "minecraft",
+      "paths": ["/source/minecraft"],
+      "excludes": ["**/minecraft/logs", "**/minecraft/cache", "**/minecraft/.cache"],
+      "schedule": {
+        "cron": "50 23 * * *",
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "docker exec minecraft rcon-cli save-all flush && docker exec minecraft rcon-cli save-off"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionCommand": {
+            "command": "docker exec minecraft rcon-cli save-on"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=minecraft+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "minecraft backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=minecraft+backup+FAILED&priority=Max&tags=skull",
+            "template": "minecraft backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

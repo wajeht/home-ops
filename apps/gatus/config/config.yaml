@@ -93,6 +93,15 @@ endpoints:
     alerts:
       - type: ntfy
 
+  - name: Minecraft
+    group: Games
+    url: tcp://minecraft:25565
+    interval: 1m
+    conditions:
+      - "[CONNECTED] == true"
+    alerts:
+      - type: ntfy
+
   - name: Radarr
     group: Downloads
     url: http://radarr:7878/ping

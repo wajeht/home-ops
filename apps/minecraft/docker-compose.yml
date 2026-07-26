@@ -1,0 +1,77 @@
+x-docker-cd:
+  rolling_update: false
+
+services:
+  minecraft:
+    container_name: minecraft
+    image: itzg/minecraft-server:java25@sha256:9e09d64e8cab977f0152e1ca5f75d9ca972617cb946ef2f76acd4348bb950825
+    environment:
+      EULA: "TRUE"
+      TYPE: PAPER
+      VERSION: "26.2"
+      MEMORY: 4G
+      TZ: America/Chicago
+      UID: "1000"
+      GID: "1000"
+      MODE: survival
+      DIFFICULTY: normal
+      MAX_PLAYERS: "8"
+      VIEW_DISTANCE: "10"
+      SIMULATION_DISTANCE: "6"
+      ONLINE_MODE: "TRUE"
+      ENABLE_WHITELIST: "TRUE"
+      ENFORCE_WHITELIST: "TRUE"
+      MOTD: jaw.dev Minecraft
+      PLUGINS: |
+        https://download.geysermc.org/v2/projects/geyser/versions/2.11.0/builds/1204/downloads/spigot
+        https://download.geysermc.org/v2/projects/floodgate/versions/2.2.5/builds/138/downloads/spigot
+      COPY_CONFIG_DEST: /data
+      SYNC_SKIP_NEWER_IN_DESTINATION: "false"
+    volumes:
+      - /home/jaw/data/minecraft:/data
+      - ./config:/config:ro
+    ports:
+      - "25565:25565/tcp"
+      - "19132:19132/udp"
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=false"
+    healthcheck:
+      test: ["CMD", "mc-health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 2m
+    restart: unless-stopped
+    stop_grace_period: 2m
+    init: true
+    tty: true
+    stdin_open: true
+    read_only: true
+    tmpfs:
+      - /tmp:exec
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "3.0"
+          memory: 6G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  traefik:
+    external: true
