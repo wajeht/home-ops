@@ -4,7 +4,7 @@ x-docker-cd:
 services:
   # lint-ignore: backup  # stateless — polls GitHub notifications, no persistent data
   clear-renovate-notifications:
-    image: ghcr.io/wajeht/clear-renovate-notifications:1d86fd0@sha256:e2e5084a1d37ae959b0ce3b74f7376585cc3c623de5dbab403d8bced3c54ac2c
+    image: ghcr.io/wajeht/clear-renovate-notifications:4e32fda@sha256:1007bbc3b81344c3ab04cef022395ded632998a1999cad53ff610a1f20fc850f
     container_name: clear-renovate-notifications
     env_file:
       - .env
