@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   algo:
-    image: ghcr.io/wajeht/algorithm-visualizer:v1.0.0
+    image: ghcr.io/wajeht/algorithm-visualizer:v1.0.0@sha256:94941f4dcec3101123c22741640b98405a5263d12944479b90f1731e5f9785b2
     environment:
       HTTP_PORT: 8080
       HTTPS_PORT: 8443
