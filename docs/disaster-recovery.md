@@ -61,6 +61,7 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 
 | App           | Schedule | Type                 | Notes                                                         |
 | ------------- | -------- | -------------------- | ------------------------------------------------------------- |
+| minecraft     | 11:50 PM | Files                | Flushes and pauses world saves during the snapshot            |
 | hello-world   | 12:00 AM | Postgres DB only     |                                                               |
 | immich        | 12:10 AM | Postgres DB only     | Photos at `~/immich` on NFS are not backed up here            |
 | gatus         | 12:20 AM | SQLite + files       | DB file is `gatus.db`                                         |

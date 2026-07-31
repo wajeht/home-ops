@@ -8,19 +8,21 @@ App-level container requirements live in [Adding Apps](adding-apps.md#container-
 
 Scanned from LAN via `nmap -F <server-ip>`:
 
-| Port  | Service         | Status               | Action                                     |
-| ----- | --------------- | -------------------- | ------------------------------------------ |
-| 22    | SSH             | open                 | Harden through SSH settings                |
-| 80    | HTTP            | open through Traefik | Redirects to HTTPS                         |
-| 443   | HTTPS           | open through Traefik | OK                                         |
-| 111   | rpcbind         | **disabled**         | Unnecessary for NFS v4.1                   |
-| 1883  | MQTT            | open (Zigbee2MQTT)   | Blocked by UFW, Docker-internal only       |
-| 2283  | Immich          | open                 | Blocked by UFW, access via Traefik only    |
-| 8123  | Home Assistant  | open                 | Blocked by UFW, access via Traefik only    |
-| 16992 | Intel AMT HTTP  | open                 | LAN-only remote management                 |
-| 16993 | Intel AMT HTTPS | open                 | LAN-only remote management                 |
-| 5900  | AMT KVM/VNC     | open                 | LAN-only remote screen access              |
-| 32400 | Plex            | open                 | Direct Plex access; bypasses Traefik OAuth |
+| Port  | Service           | Status               | Action                                     |
+| ----- | ----------------- | -------------------- | ------------------------------------------ |
+| 22    | SSH               | open                 | Harden through SSH settings                |
+| 80    | HTTP              | open through Traefik | Redirects to HTTPS                         |
+| 443   | HTTPS             | open through Traefik | OK                                         |
+| 111   | rpcbind           | **disabled**         | Unnecessary for NFS v4.1                   |
+| 1883  | MQTT              | open (Zigbee2MQTT)   | Blocked by UFW, Docker-internal only       |
+| 2283  | Immich            | open                 | Blocked by UFW, access via Traefik only    |
+| 5900  | AMT KVM/VNC       | open                 | LAN-only remote screen access              |
+| 8123  | Home Assistant    | open                 | Blocked by UFW, access via Traefik only    |
+| 16992 | Intel AMT HTTP    | open                 | LAN-only remote management                 |
+| 16993 | Intel AMT HTTPS   | open                 | LAN-only remote management                 |
+| 19132 | Minecraft Bedrock | open (UDP)           | Geyser cross-play; whitelist enforced      |
+| 25565 | Minecraft Java    | open                 | Direct game access; whitelist enforced     |
+| 32400 | Plex              | open                 | Direct Plex access; bypasses Traefik OAuth |
 
 To restrict ports further, change Docker port mappings from `0.0.0.0:PORT:PORT` to `127.0.0.1:PORT:PORT`.
 
@@ -35,10 +37,18 @@ sudo ufw allow 22/tcp    # SSH
 sudo ufw allow 80/tcp    # Traefik HTTP
 sudo ufw allow 443/tcp   # Traefik HTTPS
 sudo ufw allow 32400/tcp # Plex remote access
+sudo ufw allow 25565/tcp # Minecraft Java
+sudo ufw allow 19132/udp # Minecraft Bedrock via Geyser
 sudo ufw enable
 ```
 
 `plex.jaw.dev` is protected by `oauth2-media@file`, but direct access to `<server-ip>:32400` does not pass through Traefik. Keep `32400/tcp` open only if direct Plex client access is required. Close it if Plex must be reachable only through Cloudflare/Traefik/OAuth.
+
+Minecraft is exposed directly on TCP `25565` and Geyser on UDP `19132`;
+Traefik and Cloudflare's HTTP proxy do not protect either protocol. Keep online
+authentication, Floodgate's Xbox Live validation, and the player whitelist
+enabled, and do not publish the internal RCON port or commit Floodgate's
+`key.pem`.
 
 ```bash
 # Management

@@ -1,0 +1,12 @@
+# Geyser 2.11 configuration managed by home-ops.
+# Unspecified settings use the plugin defaults.
+bedrock:
+  address: 0.0.0.0
+  port: 19132
+  clone-remote-port: false
+
+java:
+  # Floodgate authenticates Xbox Live players without requiring a Java license.
+  auth-type: floodgate
+
+config-version: 7
