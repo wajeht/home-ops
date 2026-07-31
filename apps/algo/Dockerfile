@@ -23,13 +23,15 @@ RUN mkdir -p /src/frontend /src/server /src/algorithms \
       "https://github.com/algorithm-visualizer/algorithms/archive/${ALGORITHMS_COMMIT}.tar.gz" \
       | tar -xz --strip-components=1 -C /src/algorithms
 
-COPY frontend.patch server.patch /patches/
+COPY frontend.patch /patches/
 
 WORKDIR /src/frontend
 RUN patch --batch -p1 < /patches/frontend.patch \
     && rm package-lock.json \
     && npm install --legacy-peer-deps \
     && npm run build
+
+COPY server.patch /patches/
 
 WORKDIR /src/server
 RUN patch --batch -p1 < /patches/server.patch \

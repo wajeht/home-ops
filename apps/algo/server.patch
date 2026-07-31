@@ -1,3 +1,11 @@
+diff --git a/src/controllers/index.ts b/src/controllers/index.ts
+index 7d3ebf0..83853a5 100644
+--- a/src/controllers/index.ts
++++ b/src/controllers/index.ts
+@@ -2 +1,0 @@ export { AlgorithmsController } from './AlgorithmsController';
+-export { AuthController } from './AuthController';
+@@ -4 +2,0 @@ export { TracersController } from './TracersController';
+-export { VisualizationsController } from './VisualizationsController';
 diff --git a/src/models/Algorithm.ts b/src/models/Algorithm.ts
 index d886799..a7eac6f 100644
 --- a/src/models/Algorithm.ts
