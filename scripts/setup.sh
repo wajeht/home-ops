@@ -174,6 +174,7 @@ STATIC_DIRS=(
 	"$USER_HOME/plex/movies"
 	"$USER_HOME/plex/tv"
 	"$USER_HOME/plex/music"
+	"$USER_HOME/plex/youtube-music"
 	"$USER_HOME/plex/audiobooks"
 	"$USER_HOME/plex/podcasts"
 	"$USER_HOME/.sops"

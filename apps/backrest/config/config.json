@@ -546,6 +546,24 @@
       }
     },
     {
+      "id": "yubal",
+      "uri": "/repos/yubal",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 6 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 7 * * 0"
+        },
+        "structureOnly": true
+      }
+    },
+    {
       "id": "global",
       "uri": "/repos/global",
       "password": "",
@@ -2054,6 +2072,54 @@
       ]
     },
     {
+      "id": "yubal",
+      "repo": "yubal",
+      "paths": ["/source/yubal"],
+      "excludes": ["**/yubal/yubal.db", "**/yubal/yubal.db-wal", "**/yubal/yubal.db-shm"],
+      "schedule": {
+        "cron": "0 5 * * *",
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/yubal/yubal/yubal.db -cmd \".timeout 30000\" \".backup /source/yubal/.yubal.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/yubal/.yubal.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=yubal+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "yubal backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=yubal+backup+FAILED&priority=Max&tags=skull",
+            "template": "yubal backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
       "id": "global",
       "repo": "global",
       "paths": ["/source", "/sops"],
@@ -2066,7 +2132,7 @@
         "**/*.dump"
       ],
       "schedule": {
-        "cron": "0 5 * * *",
+        "cron": "10 5 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
