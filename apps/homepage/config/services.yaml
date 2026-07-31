@@ -311,6 +311,11 @@
         href: https://algo.jaw.dev
         description: Interactive Algorithm Visualizations
 
+    - RegExr:
+        icon: mdi-regex
+        href: https://regex.jaw.dev
+        description: Regular Expression Tester
+
     - DbGate:
         icon: sh-dbgate.png
         href: https://dbgate.jaw.dev

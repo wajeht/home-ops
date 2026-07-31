@@ -335,6 +335,16 @@ endpoints:
     alerts:
       - type: ntfy
 
+  - name: RegExr
+    group: Sites
+    url: http://regexr:8080/healthz
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
   - name: Bang
     group: Sites
     url: http://bang:80/healthz
