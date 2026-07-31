@@ -1,0 +1,57 @@
+x-docker-cd:
+  rolling_update: false
+
+services:
+  algo:
+    image: ghcr.io/wajeht/algorithm-visualizer:v1.0.0@sha256:94941f4dcec3101123c22741640b98405a5263d12944479b90f1731e5f9785b2
+    environment:
+      HTTP_PORT: 8080
+      HTTPS_PORT: 8443
+      CREDENTIALS_ENABLED: 0
+      WEBHOOK_ENABLED: 0
+      GITHUB_CLIENT_ID: disabled
+      GITHUB_CLIENT_SECRET: disabled
+      AWS_ACCESS_KEY_ID: disabled
+      AWS_SECRET_ACCESS_KEY: disabled
+    networks:
+      - traefik
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://127.0.0.1:8080/api/algorithms',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.algo.rule=Host(`algo.jaw.dev`)"
+      - "traefik.http.routers.algo.entrypoints=websecure"
+      - "traefik.http.routers.algo.middlewares=rate-limit-global@file"
+      - "traefik.http.services.algo.loadbalancer.server.port=8080"
+
+networks:
+  traefik:
+    external: true
