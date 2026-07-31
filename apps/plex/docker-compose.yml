@@ -15,6 +15,7 @@ services:
       - /home/jaw/plex/movies:/movies
       - /home/jaw/plex/tv:/tv
       - /home/jaw/plex/music:/music
+      - /home/jaw/plex/youtube-music:/youtube-music:ro
     devices:
       - /dev/dri:/dev/dri # Intel Quick Sync (cardN=HDR tone mapping, renderD128=transcode)
     shm_size: "2g" # shared memory for 4K transcoding (default 64MB crashes)

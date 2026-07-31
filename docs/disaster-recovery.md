@@ -91,9 +91,10 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | umami         | 4:30 AM  | Postgres DB only     | `pg_dump` via `docker exec umami-db`                          |
 | miniflux      | 4:40 AM  | Postgres DB only     | `pg_dump` via `docker exec miniflux-db`                       |
 | sonarr        | 4:50 AM  | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid    |
-| **global**    | 5:00 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state   |
+| yubal         | 5:00 AM  | SQLite + files       | Config only; downloaded music remains on the NAS              |
+| **global**    | 5:10 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state   |
 
-Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 6 AM, integrity check Sunday 7 AM — both after `global` (5:00 AM) finishes, so weekly maintenance never overlaps the daily backups.
+Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 6 AM, integrity check Sunday 7 AM — both after `global` (5:10 AM) finishes, so weekly maintenance never overlaps the daily backups.
 
 ## Adding an App
 
@@ -525,14 +526,14 @@ A formatter has been observed to strip new entries from `config.json` between pu
 
 ```bash
 jq '(.repos | length), (.plans | length)' ~/home-ops/apps/backrest/config/config.json
-# Expect 31 then 31. If either is lower, re-add the missing entries.
+# Expect 32 then 32. If either is lower, re-add the missing entries.
 ```
 
 #### 5. Verify
 
 ```bash
 docker logs backrest --tail 50          # should be no errors after orchestrator starts
-docker exec backrest ls /repos          # should list 31 repos
+docker exec backrest ls /repos          # should list 32 repos
 ```
 
 ### Testing Recovery
@@ -688,7 +689,7 @@ Known issues and their fixes.
 | First backup is very slow                                                                  | No dedup baseline; everything has to be written to the new repo                           | Expected. Subsequent backups are seconds.                                                                                         |
 | Snapshot succeeds but `.bak`/`.dump` lingers in app dir                                    | Post-hook (CONDITION_SNAPSHOT_END) didn't fire or errored                                 | Check the hook's output in the UI. Common cause: wrong filename in the rm command.                                                |
 | ntfy notifications never arrive                                                            | Shoutrrr URL syntax wrong                                                                 | Use `ntfy://ntfy/<topic>?scheme=http&title=foo&priority=Min&tags=skull`. Priority must be capitalized.                            |
-| `config.json` entries disappear after pushing                                              | A formatter strips JSON entries it doesn't recognize                                      | After each push, run `jq '(.repos \| length), (.plans \| length)' ~/home-ops/apps/backrest/config/config.json`. Expect 31 and 31. |
+| `config.json` entries disappear after pushing                                              | A formatter strips JSON entries it doesn't recognize                                      | After each push, run `jq '(.repos \| length), (.plans \| length)' ~/home-ops/apps/backrest/config/config.json`. Expect 32 and 32. |
 | Stateless app got accidentally added to Backrest                                           | Misread of which apps had data                                                            | If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, skip it. Examples: close-powerlifting, ufc, ip.          |
 
 ## Apps Without Backup

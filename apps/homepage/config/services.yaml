@@ -2,12 +2,17 @@
     - Plex:
         icon: plex
         href: https://plex.jaw.dev
-        description: Movies & TV
+        description: Movies, TV & Music
         # siteMonitor: http://plex:32400
         # widget:
         #   type: plex
         #   url: http://plex:32400
         #   key: "{{HOMEPAGE_VAR_PLEX_KEY}}"
+
+    - Yubal:
+        icon: youtube-music
+        href: https://yubal.jaw.dev
+        description: YouTube Music Downloader
 
     - Immich:
         icon: immich
