@@ -1,0 +1,78 @@
+diff --git a/package.json b/package.json
+index 8e4114d..2f6d923 100644
+--- a/package.json
++++ b/package.json
+@@ -43 +43 @@
+-    "node-sass": "^4.12.0",
++    "node-sass": "4.14.1",
+diff --git a/public/index.html b/public/index.html
+index 3ea91f1..12c3396 100644
+--- a/public/index.html
++++ b/public/index.html
+@@ -4,11 +3,0 @@
+-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-78128848-1"></script>
+-    <script>
+-      window.dataLayer = window.dataLayer || [];
+-
+-      function gtag() {
+-        dataLayer.push(arguments);
+-      }
+-
+-      gtag('js', new Date());
+-      gtag('config', 'UA-78128848-1');
+-    </script>
+diff --git a/src/common/config.js b/src/common/config.js
+index e716405..d7eb30a 100644
+--- a/src/common/config.js
++++ b/src/common/config.js
+@@ -1 +1 @@
+-import { CODE_CPP, CODE_JAVA, CODE_JS } from 'files';
++import { CODE_JS } from 'files';
+@@ -8,10 +7,0 @@ const languages = [{
+-}, {
+-  name: 'C++',
+-  ext: 'cpp',
+-  mode: 'c_cpp',
+-  skeleton: CODE_CPP,
+-}, {
+-  name: 'Java',
+-  ext: 'java',
+-  mode: 'java',
+-  skeleton: CODE_JAVA,
+diff --git a/src/components/Header/index.js b/src/components/Header/index.js
+index f9fa9ef..143ee61 100644
+--- a/src/components/Header/index.js
++++ b/src/components/Header/index.js
+@@ -11 +10,0 @@ import faCaretRight from '@fortawesome/fontawesome-free-solid/faCaretRight';
+-import faCodeBranch from '@fortawesome/fontawesome-free-solid/faCodeBranch';
+@@ -13,3 +11,0 @@ import faExpandArrowsAlt from '@fortawesome/fontawesome-free-solid/faExpandArrow
+-import faGithub from '@fortawesome/fontawesome-free-brands/faGithub';
+-import faTrashAlt from '@fortawesome/fontawesome-free-solid/faTrashAlt';
+-import faSave from '@fortawesome/fontawesome-free-solid/faSave';
+@@ -113,4 +109,2 @@ class Header extends BaseComponent {
+-    const { scratchPaper, titles, saved } = this.props.current;
+-    const { ext, user } = this.props.env;
+-
+-    const permitted = this.hasPermission();
++    const { scratchPaper, titles } = this.props.current;
++    const { ext } = this.props.env;
+@@ -138,6 +131,0 @@ class Header extends BaseComponent {
+-            <Button icon={permitted ? faSave : faCodeBranch} primary disabled={permitted && saved}
+-                    onClick={() => this.saveGist()}>{permitted ? 'Save' : 'Fork'}</Button>
+-            {
+-              permitted &&
+-              <Button icon={faTrashAlt} primary onClick={() => this.deleteGist()} confirmNeeded>Delete</Button>
+-            }
+@@ -152,12 +139,0 @@ class Header extends BaseComponent {
+-            {
+-              user ?
+-                <Button className={styles.btn_dropdown} icon={user.avatar_url}>
+-                  {user.login}
+-                  <div className={styles.dropdown}>
+-                    <ListItem label="Sign Out" href="/api/auth/destroy" rel="opener"/>
+-                  </div>
+-                </Button> :
+-                <Button icon={faGithub} primary href="/api/auth/request" rel="opener">
+-                  <Ellipsis>Sign In</Ellipsis>
+-                </Button>
+-            }

@@ -1,0 +1,53 @@
+diff --git a/src/models/Algorithm.ts b/src/models/Algorithm.ts
+index d886799..a7eac6f 100644
+--- a/src/models/Algorithm.ts
++++ b/src/models/Algorithm.ts
+@@ -17,0 +18 @@ export class Algorithm {
++      .filter(fileName => /\.(js|md)$/i.test(fileName))
+diff --git a/src/models/Category.ts b/src/models/Category.ts
+index 52c9048..12dc2ef 100644
+--- a/src/models/Category.ts
++++ b/src/models/Category.ts
+@@ -16 +16,2 @@ export class Category {
+-      .map(algorithmName => new Algorithm(path.resolve(this.path, algorithmName), algorithmName));
++      .map(algorithmName => new Algorithm(path.resolve(this.path, algorithmName), algorithmName))
++      .filter(algorithm => algorithm.files.some(file => /\.js$/i.test(file.name)));
+diff --git a/src/models/Hierarchy.ts b/src/models/Hierarchy.ts
+index ec3c67b..21a2e4d 100644
+--- a/src/models/Hierarchy.ts
++++ b/src/models/Hierarchy.ts
+@@ -19 +18,0 @@ export class Hierarchy {
+-    this.update().catch(console.error);
+@@ -25,4 +23,0 @@ export class Hierarchy {
+-
+-    const files: File[] = [];
+-    this.categories.forEach(category => category.algorithms.forEach(algorithm => files.push(...algorithm.files)));
+-    this.cacheCommitAuthors().then(commitAuthors => this.cacheContributors(files, commitAuthors));
+diff --git a/src/tracers/Tracer.ts b/src/tracers/Tracer.ts
+index 400afe2..69cbba1 100644
+--- a/src/tracers/Tracer.ts
++++ b/src/tracers/Tracer.ts
+@@ -10 +9,0 @@ export abstract class Tracer {
+-    this.update().catch(console.error);
+diff --git a/src/tracers/index.ts b/src/tracers/index.ts
+index ae5ad72..47e962e 100644
+--- a/src/tracers/index.ts
++++ b/src/tracers/index.ts
+@@ -1,2 +0,0 @@
+-export { CppTracer } from './cpp/CppTracer';
+-export { JavaTracer } from './java/JavaTracer';
+diff --git a/src/tracers/js/JsTracer.ts b/src/tracers/js/JsTracer.ts
+index a798816..747b5fa 100644
+--- a/src/tracers/js/JsTracer.ts
++++ b/src/tracers/js/JsTracer.ts
+@@ -6,0 +7 @@ export class JsTracer extends Tracer {
++  readonly libraryPath: string;
+@@ -11,0 +13 @@ export class JsTracer extends Tracer {
++    this.libraryPath = path.resolve(__dirname, 'algorithm-visualizer.umd.js');
+@@ -20,5 +22 @@ export class JsTracer extends Tracer {
+-    router.get(`/${this.lang}`, (req, res) => {
+-      if (!this.tagName) throw new Error('JsTracer has not been built yet.');
+-      const version = this.tagName.slice(1);
+-      res.redirect(`https://unpkg.com/algorithm-visualizer@${version}/dist/algorithm-visualizer.umd.js`);
+-    });
++    router.get(`/${this.lang}`, (req, res) => res.sendFile(this.libraryPath));
