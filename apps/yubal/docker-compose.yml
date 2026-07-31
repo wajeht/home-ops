@@ -15,6 +15,7 @@ services:
       YUBAL_DOWNLOAD_UGC: "true"
       YUBAL_FETCH_LYRICS: "true"
       YUBAL_REPLAYGAIN: "true"
+      YUBAL_JOB_TIMEOUT_SECONDS: "21600"
       YUBAL_SCHEDULER_ENABLED: "true"
       YUBAL_SCHEDULER_CRON: "0 22 * * *"
       YUBAL_CORS_ORIGINS: '["https://yubal.jaw.dev"]'

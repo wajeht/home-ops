@@ -12,6 +12,8 @@ videos into Plex-friendly audio files. The web UI is available at
 4. Yubal checks subscriptions daily at 10:00 PM.
 5. Listen in Plexamp after Plex scans the library.
 
+Jobs may run for up to six hours so the first sync can process a large playlist.
+
 No YouTube cookies are required for public or unlisted playlists. Avoid adding
 account cookies unless a private playlist requires them; cookie-based downloads
 can trigger stricter YouTube account rate limits.
