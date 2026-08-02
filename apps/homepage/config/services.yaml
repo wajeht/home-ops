@@ -306,11 +306,6 @@
         # siteMonitor: http://hello-world:3000
 
 - Tools:
-    - Algorithm Visualizer:
-        icon: mdi-chart-timeline-variant
-        href: https://algo.jaw.dev
-        description: Interactive Algorithm Visualizations
-
     - RegExr:
         icon: mdi-regex
         href: https://regex.jaw.dev

@@ -325,16 +325,6 @@ endpoints:
     alerts:
       - type: ntfy
 
-  - name: Algorithm Visualizer
-    group: Sites
-    url: http://algo:8080/api/algorithms
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-      - "[RESPONSE_TIME] < 3000"
-    alerts:
-      - type: ntfy
-
   - name: RegExr
     group: Sites
     url: http://regexr:8080/healthz
