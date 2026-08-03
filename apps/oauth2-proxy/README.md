@@ -5,8 +5,6 @@ Google OAuth forward-auth via [oauth2-proxy](https://github.com/oauth2-proxy/oau
 - `oauth2-admin` uses admin email variables from `.env.sops`.
 - `oauth2-media` uses media email variables from `.env.sops`.
 - Traefik middlewares live in `apps/traefik/dynamic.yml`.
-- A valid `X-Bypass-Key` skips OAuth through the private `auth-bypass` gate in
-  `apps/traefik/`.
 
 Protected apps use one of these labels:
 
@@ -28,6 +26,18 @@ Cookie lifetimes:
 
 - Admin: 24 hours
 - Media: 7 days
+
+## Bearer Tokens
+
+Non-browser clients can authenticate without an OAuth cookie:
+
+```text
+Authorization: Bearer <Google ID token>
+```
+
+The token must be signed by Google, target `OAUTH2_PROXY_CLIENT_ID`, and include
+an email in the selected proxy's access list. Invalid bearer tokens return 403
+instead of falling back to the browser login flow.
 
 ## Access Lists
 
