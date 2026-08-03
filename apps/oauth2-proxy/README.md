@@ -5,6 +5,8 @@ Google OAuth forward-auth via [oauth2-proxy](https://github.com/oauth2-proxy/oau
 - `oauth2-admin` uses admin email variables from `.env.sops`.
 - `oauth2-media` uses media email variables from `.env.sops`.
 - Traefik middlewares live in `apps/traefik/dynamic.yml`.
+- A valid `X-Bypass-Key` skips OAuth through the private `auth-bypass` gate in
+  `apps/traefik/`.
 
 Protected apps use one of these labels:
 
