@@ -117,6 +117,47 @@ services:
       - "traefik.http.routers.dashboard.middlewares=oauth2-admin@file"
       - "traefik.http.services.dummy.loadbalancer.server.port=9999"
 
+  auth-bypass:
+    container_name: auth-bypass
+    image: caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        test -n "$${X_BYPASS_KEY}"
+        exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+    environment:
+      X_BYPASS_KEY: ${X_BYPASS_KEY}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:4181/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /config
+      - /data
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    oom_score_adj: -500
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+
 networks:
   traefik:
     external: true
