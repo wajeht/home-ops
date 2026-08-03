@@ -323,6 +323,12 @@
         description: File Converter
         # siteMonitor: http://convertx:3000
 
+    - Linx:
+        icon: mdi-file-upload
+        href: https://linx.jaw.dev
+        description: File Sharing
+        # siteMonitor: http://linx:8080
+
     - Vaultwarden:
         icon: vaultwarden
         href: https://vault.jaw.dev
