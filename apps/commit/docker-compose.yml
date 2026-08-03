@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   commit:
-    image: ghcr.io/wajeht/commit:bb7ed92@sha256:bee1e4d372558c17d88fc8b5a449284e2a965a89ccfc82cebbc90874dd825a6a
+    image: ghcr.io/wajeht/commit:bb7063d@sha256:2576447c3ba0bc33980802dbb5822d6172713107b818b0f758416b17968a71c0
     networks:
       - traefik
     env_file:
