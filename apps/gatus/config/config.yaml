@@ -265,6 +265,16 @@ endpoints:
     alerts:
       - type: ntfy
 
+  - name: Linx
+    group: Tools
+    url: http://linx:8080
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
   - name: Excalidraw
     group: Tools
     url: http://excalidraw:80
