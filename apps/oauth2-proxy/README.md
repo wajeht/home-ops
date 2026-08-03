@@ -27,17 +27,17 @@ Cookie lifetimes:
 - Admin: 24 hours
 - Media: 7 days
 
-## Bearer Tokens
+## Basic Auth
 
-Non-browser clients can authenticate without an OAuth cookie:
+Non-browser clients can authenticate using the legacy bypass key as a password:
 
-```text
-Authorization: Bearer <Google ID token>
+```bash
+curl --user "automation:${X_BYPASS_KEY}" https://myapp.jaw.dev
 ```
 
-The token must be signed by Google, target `OAUTH2_PROXY_CLIENT_ID`, and include
-an email in the selected proxy's access list. Invalid bearer tokens return 403
-instead of falling back to the browser login flow.
+OAuth2 Proxy validates the password against the bcrypt entry stored in
+`OAUTH2_HTPASSWD_ENTRY`. The password form is hidden, so browser users continue
+directly through Google OAuth.
 
 ## Access Lists
 

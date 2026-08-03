@@ -19,8 +19,8 @@ services:
       - --trusted-proxy-ip=172.16.0.0/12
       - --upstream=static://202
       - --set-xauthrequest=true
-      - --skip-jwt-bearer-tokens=true
-      - --bearer-token-login-fallback=false
+      - --htpasswd-file=/etc/oauth2-proxy/htpasswd
+      - --display-htpasswd-form=false
       - --skip-provider-button=true
       - --whitelist-domain=.jaw.dev
       - --silence-ping-logging=true
@@ -32,6 +32,8 @@ services:
     configs:
       - source: oauth2_admin_emails
         target: /etc/oauth2-proxy/admin-emails.txt
+      - source: oauth2_htpasswd
+        target: /etc/oauth2-proxy/htpasswd
     volumes:
       - ./portcheck:/portcheck:ro
     env_file:
@@ -87,8 +89,8 @@ services:
       - --trusted-proxy-ip=172.16.0.0/12
       - --upstream=static://202
       - --set-xauthrequest=true
-      - --skip-jwt-bearer-tokens=true
-      - --bearer-token-login-fallback=false
+      - --htpasswd-file=/etc/oauth2-proxy/htpasswd
+      - --display-htpasswd-form=false
       - --skip-provider-button=true
       - --whitelist-domain=.jaw.dev
       - --silence-ping-logging=true
@@ -100,6 +102,8 @@ services:
     configs:
       - source: oauth2_media_emails
         target: /etc/oauth2-proxy/media-emails.txt
+      - source: oauth2_htpasswd
+        target: /etc/oauth2-proxy/htpasswd
     volumes:
       - ./portcheck:/portcheck:ro
     env_file:
@@ -154,3 +158,6 @@ configs:
       ${OAUTH2_MEDIA_EMAIL_4}
       ${OAUTH2_MEDIA_EMAIL_5}
       ${OAUTH2_MEDIA_EMAIL_6}
+  oauth2_htpasswd:
+    content: |
+      ${OAUTH2_HTPASSWD_ENTRY}
