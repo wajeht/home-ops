@@ -19,6 +19,8 @@ services:
       - --trusted-proxy-ip=172.16.0.0/12
       - --upstream=static://202
       - --set-xauthrequest=true
+      - --skip-jwt-bearer-tokens=true
+      - --bearer-token-login-fallback=false
       - --skip-provider-button=true
       - --whitelist-domain=.jaw.dev
       - --silence-ping-logging=true
@@ -85,6 +87,8 @@ services:
       - --trusted-proxy-ip=172.16.0.0/12
       - --upstream=static://202
       - --set-xauthrequest=true
+      - --skip-jwt-bearer-tokens=true
+      - --bearer-token-login-fallback=false
       - --skip-provider-button=true
       - --whitelist-domain=.jaw.dev
       - --silence-ping-logging=true

@@ -99,20 +99,20 @@ http:
         sourceCriterion:
           requestHeaderName: CF-Connecting-IP
 
-    # OAuth2 admin auth with legacy X-Bypass-Key support.
+    # OAuth2 admin auth.
     oauth2-admin-forward:
       forwardAuth:
-        address: http://auth-bypass:4181/
+        address: http://oauth2-admin:4180/
         trustForwardHeader: true
         maxResponseBodySize: 4096
         authResponseHeaders:
           - X-Auth-Request-User
           - X-Auth-Request-Email
 
-    # OAuth2 media auth with legacy X-Bypass-Key support.
+    # OAuth2 media auth.
     oauth2-media-forward:
       forwardAuth:
-        address: http://auth-bypass:4182/
+        address: http://oauth2-media:4180/
         trustForwardHeader: true
         maxResponseBodySize: 4096
         authResponseHeaders:
