@@ -39,6 +39,23 @@ OAuth2 Proxy validates the password against the bcrypt entry stored in
 `OAUTH2_HTPASSWD_ENTRY`. The password form is hidden, so browser users continue
 directly through Google OAuth.
 
+For apps that accept custom headers, configure:
+
+```text
+Header name: Authorization
+Header value: Basic <base64 of automation:YOUR_BYPASS_KEY>
+```
+
+Generate the complete header value in a browser JavaScript console:
+
+```js
+const value = `Basic ${btoa("automation:YOUR_BYPASS_KEY")}`;
+console.log(value);
+```
+
+Copy the printed value into the app's custom-header setting. Base64 is encoding,
+not encryption, so treat the complete value as a password and never commit it.
+
 ## Access Lists
 
 Edit `apps/oauth2-proxy/.env.sops` to add or remove users:
