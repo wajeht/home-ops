@@ -8,6 +8,7 @@ services:
     env_file:
       - .env
     volumes:
+      - ./portcheck:/portcheck:ro
       - /home/jaw/data/dbgate:/root/.dbgate
       - /home/jaw/data/close-powerlifting:/mnt/close-powerlifting
       - /home/jaw/data/bang:/mnt/bang
@@ -19,7 +20,7 @@ services:
       - hello-world-internal
       - immich-internal
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000"]
+      test: ["CMD", "/portcheck", "--port", "3000"]
       interval: 30s
       timeout: 5s
       retries: 3
