@@ -2,7 +2,7 @@ x-docker-cd:
   rolling_update: false
 services:
   calendar:
-    image: ghcr.io/wajeht/calendar:a3fa7ad
+    image: ghcr.io/wajeht/calendar:a3fa7ad@sha256:89c8bb99631dc3967cf5f6ae6b59d32c7f5dec92044c8b6310355acbaaddca1c
     env_file:
       - .env
     environment:
