@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   calendar:
-    image: ghcr.io/wajeht/calendar:1cbdbe7@sha256:aeb47005777a76018122348ffe1a6590d8a7780f1309b5dc3dd361512a5154e3
+    image: ghcr.io/wajeht/calendar:dfe3441@sha256:149b94e786e495b0ee9e4df18b4f5181b0effbc0bde6dff9308c87596c0f6bcc
     env_file:
       - .env
     environment:
