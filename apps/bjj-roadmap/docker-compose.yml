@@ -1,0 +1,42 @@
+x-docker-cd:
+  rolling_update: true
+
+services:
+  bjj-roadmap:
+    image: ghcr.io/wajeht/roadmap-for-bjj:dba6a72@sha256:5e05f87982c6a101df7a3e7d646ddd0105e931be474cd5644dddcb09f5fa6319
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bjj-roadmap.rule=Host(`bjj.jaw.dev`)"
+      - "traefik.http.routers.bjj-roadmap.entrypoints=websecure"
+      - "traefik.http.routers.bjj-roadmap.middlewares=rate-limit-global@file"
+      - "traefik.http.services.bjj-roadmap.loadbalancer.server.port=8080"
+
+networks:
+  traefik:
+    external: true
