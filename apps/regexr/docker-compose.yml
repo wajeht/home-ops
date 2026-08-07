@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   regexr:
-    image: ghcr.io/wajeht/regexr:25d046c@sha256:00b129b03aa5d93928c349c0019f842f40dcec95d18e094cb2b1101ccd201619
+    image: ghcr.io/wajeht/regexr:v1.0.1@sha256:0cfb8f4806ac567f36f3c20d36c007f2d9b251f4124071dae28f8dd25325b40e
     networks:
       - traefik
     healthcheck:
