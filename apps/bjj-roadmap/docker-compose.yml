@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   bjj-roadmap:
-    image: ghcr.io/wajeht/roadmap-for-bjj:fbc2550@sha256:04ec2c059adc40debbcc397739d022024ef83866ba2c849719ce6c5245dfd637
+    image: ghcr.io/wajeht/roadmap-for-bjj:f35f6cd@sha256:fdb961ddb0d3bed1cd8724be830946f1f6ad4e3f5a2d4ad7e06078aec77b5a76
     networks:
       - traefik
     healthcheck:
