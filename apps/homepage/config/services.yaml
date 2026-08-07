@@ -215,6 +215,12 @@
         # siteMonitor: http://umami:3000
 
 - Personal:
+    - BJJ Roadmap:
+        icon: mdi-mixed-martial-arts
+        href: https://bjj.jaw.dev
+        description: Brazilian Jiu-Jitsu Cheat Sheet
+        # siteMonitor: http://bjj-roadmap:8080/healthz
+
     - UFC:
         icon: mdi-mixed-martial-arts
         href: https://ufc.jaw.dev
