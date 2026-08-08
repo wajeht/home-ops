@@ -696,7 +696,7 @@ Known issues and their fixes.
 
 Apps that don't need backup, by category:
 
-- **Stateless / config-in-image**: `bjj-roadmap`, `regexr`, `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
+- **Stateless / config-in-image**: `roadmap-for-bjj`, `regexr`, `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
 - **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`
 - **Config tracked in git**: `backrest`, `oauth2-proxy`, `docker-cd`. The encrypted oauth2-proxy `.env.sops` includes admin and media email allowlists.
 - **Data in object storage**: `linx` — uploads + metadata live in the Garage `linx` bucket, captured by the `garage` plan (no local `~/data/linx`).

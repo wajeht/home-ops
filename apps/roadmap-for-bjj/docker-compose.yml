@@ -2,12 +2,12 @@ x-docker-cd:
   rolling_update: true
 
 services:
-  bjj-roadmap:
-    image: ghcr.io/wajeht/roadmap-for-bjj:f35f6cd@sha256:fdb961ddb0d3bed1cd8724be830946f1f6ad4e3f5a2d4ad7e06078aec77b5a76
+  roadmap-for-bjj:
+    image: ghcr.io/wajeht/roadmap-for-bjj:v1.0.0@sha256:5f45e21e9b9cab346ed3af1049bf71d6ddeda3d4fdba9377a3a1bfb92f0f3a1c
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:8080/healthz"]
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:80/healthz"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -32,10 +32,10 @@ services:
         max-file: "3"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.bjj-roadmap.rule=Host(`bjj.jaw.dev`)"
-      - "traefik.http.routers.bjj-roadmap.entrypoints=websecure"
-      - "traefik.http.routers.bjj-roadmap.middlewares=rate-limit-global@file"
-      - "traefik.http.services.bjj-roadmap.loadbalancer.server.port=8080"
+      - "traefik.http.routers.roadmap-for-bjj.rule=Host(`bjj.jaw.dev`)"
+      - "traefik.http.routers.roadmap-for-bjj.entrypoints=websecure"
+      - "traefik.http.routers.roadmap-for-bjj.middlewares=rate-limit-global@file"
+      - "traefik.http.services.roadmap-for-bjj.loadbalancer.server.port=80"
 
 networks:
   traefik:

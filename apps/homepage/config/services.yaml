@@ -219,7 +219,7 @@
         icon: mdi-mixed-martial-arts
         href: https://bjj.jaw.dev
         description: Brazilian Jiu-Jitsu Cheat Sheet
-        # siteMonitor: http://bjj-roadmap:8080/healthz
+        # siteMonitor: http://roadmap-for-bjj:80/healthz
 
     - UFC:
         icon: mdi-mixed-martial-arts

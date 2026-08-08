@@ -337,7 +337,7 @@ endpoints:
 
   - name: BJJ Roadmap
     group: Sites
-    url: http://bjj-roadmap:8080/healthz
+    url: http://roadmap-for-bjj:80/healthz
     interval: 1m
     conditions:
       - "[STATUS] == 200"
