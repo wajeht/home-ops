@@ -1,0 +1,67 @@
+x-docker-cd:
+  rolling_update: false
+
+services:
+  course:
+    image: ghcr.io/wajeht/course:749936abb51d5bd6593712f1fa89dcf8f65328c8@sha256:49a94555d9c255a728c308505ffba9a0243d79509380ee65227b588143c36dea
+    environment:
+      TZ: America/Chicago
+      APP_ENV: production
+      APP_HOST: 0.0.0.0
+      APP_PORT: 80
+      VIDEOS_DIR: /videos
+      DATA_DIR: /data
+      SCAN_INTERVAL_MS: 300000
+      QSV_DEVICE: /dev/dri/renderD128
+    volumes:
+      - /home/jaw/data/course:/data
+      - /home/jaw/plex/videos:/videos:ro
+    devices:
+      - /dev/dri:/dev/dri
+    networks:
+      - traefik
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:80/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5m
+    restart: unless-stopped
+    stop_grace_period: 30s
+    init: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_OVERRIDE
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 2G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.course.rule=Host(`course.jaw.dev`)"
+      - "traefik.http.routers.course.entrypoints=websecure"
+      - "traefik.http.routers.course.middlewares=oauth2-media@file"
+      - "traefik.http.services.course.loadbalancer.server.port=80"
+
+networks:
+  traefik:
+    external: true
