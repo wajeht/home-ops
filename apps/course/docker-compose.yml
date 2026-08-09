@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   course:
-    image: ghcr.io/wajeht/course:v1.0.2@sha256:f47c9049ffc7ce1af2b5eda62aadb4e6d45e1006dc69755539f71585f3ba2b7c
+    image: ghcr.io/wajeht/course:v1.0.3@sha256:d0846ee8182b48a75e21306c332e35494d9407a1f15a166ce10ff35ea7bad8c9
     environment:
       TZ: America/Chicago
       APP_ENV: production
