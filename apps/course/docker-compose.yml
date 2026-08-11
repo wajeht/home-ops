@@ -4,6 +4,8 @@ x-docker-cd:
 services:
   course:
     image: ghcr.io/wajeht/course:v1.0.21@sha256:024852a45dae023285959cf476dc04a9d6fc19373e6e8664fad09612bc74688a
+    env_file:
+      - .env # docker-cd decrypts .env.sops -> .env (SESSION_SECRET)
     environment:
       TZ: America/Chicago
       APP_ENV: production
@@ -59,7 +61,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.course.rule=Host(`course.jaw.dev`)"
       - "traefik.http.routers.course.entrypoints=websecure"
-      - "traefik.http.routers.course.middlewares=oauth2-media@file"
+      - "traefik.http.routers.course.middlewares=rate-limit-global@file"
       - "traefik.http.services.course.loadbalancer.server.port=80"
 
 networks:
