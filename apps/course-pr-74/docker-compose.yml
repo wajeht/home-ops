@@ -2,7 +2,7 @@ x-docker-cd:
   rolling_update: false
 services:
   course:
-    image: ghcr.io/wajeht/course:3202843@sha256:3b102c8ae02c996d2a44669117c7f198064e4a3362bd91403a094bb21faec840
+    image: ghcr.io/wajeht/course:efd2d23
     env_file:
       - .env
     environment:
