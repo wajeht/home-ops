@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   bang:
-    image: ghcr.io/wajeht/bang:4cccb5e@sha256:4bc6b58956058e4f8aa2c557383252f3a10d052990ef217708eb38d2672540a5
+    image: ghcr.io/wajeht/bang:8c2dabe@sha256:1332b9cee84d63fb10336cacadaa803aac4d21b84549c147c365d458d1661910
     env_file:
       - .env
     environment:
