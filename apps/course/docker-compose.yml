@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   course:
-    image: ghcr.io/wajeht/course:v1.0.68@sha256:203f7afa810e5fb066c0300012c52546cfdc116e25b39cb4ba2a10f0dafeb541
+    image: ghcr.io/wajeht/course:v1.0.69@sha256:fc128208cdccc5d8f96f6c1b960b815417e648573625ee8519409a557417e7fc
     env_file:
       - .env # docker-cd decrypts .env.sops -> .env (SESSION_SECRET)
     environment:
