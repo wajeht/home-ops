@@ -564,8 +564,8 @@
       }
     },
     {
-      "id": "course",
-      "uri": "/repos/course",
+      "id": "videos",
+      "uri": "/repos/videos",
       "password": "",
       "autoInitialize": true,
       "prunePolicy": {
@@ -2138,9 +2138,9 @@
       ]
     },
     {
-      "id": "course",
-      "repo": "course",
-      "paths": ["/source/course/.course.bak"],
+      "id": "videos",
+      "repo": "videos",
+      "paths": ["/source/videos/.videos.bak"],
       "schedule": {
         "cron": "20 5 * * *",
         "clock": "CLOCK_LOCAL"
@@ -2157,29 +2157,29 @@
           "conditions": ["CONDITION_SNAPSHOT_START"],
           "onError": "ON_ERROR_CANCEL",
           "actionCommand": {
-            "command": "sqlite3 /source/course/course.sqlite -cmd \".timeout 30000\" \".backup /source/course/.course.bak\""
+            "command": "sqlite3 /source/videos/videos.sqlite -cmd \".timeout 30000\" \".backup /source/videos/.videos.bak\""
           }
         },
         {
           "conditions": ["CONDITION_SNAPSHOT_END"],
           "actionCommand": {
-            "command": "rm -f /source/course/.course.bak"
+            "command": "rm -f /source/videos/.videos.bak"
           }
         },
         {
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=course+backup+complete&priority=Min&tags=white_check_mark",
-            "template": "course backup finished"
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=videos+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "videos backup finished"
           }
         },
         {
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=course+backup+FAILED&priority=Max&tags=skull",
-            "template": "course backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=videos+backup+FAILED&priority=Max&tags=skull",
+            "template": "videos backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

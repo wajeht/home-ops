@@ -2,8 +2,8 @@ x-docker-cd:
   rolling_update: false
 
 services:
-  course:
-    image: ghcr.io/wajeht/course:v1.0.91@sha256:9c8f0b0b42c3665aacc07dee1d4c548053dbe268c79f6f09044bc21a57eb6a5f
+  videos:
+    image: ghcr.io/wajeht/videos:v1.0.91@sha256:9c8f0b0b42c3665aacc07dee1d4c548053dbe268c79f6f09044bc21a57eb6a5f
     env_file:
       - .env # docker-cd decrypts .env.sops -> .env (SESSION_SECRET)
     environment:
@@ -16,7 +16,7 @@ services:
       SCAN_INTERVAL_MS: 300000
       QSV_DEVICE: /dev/dri/renderD128
     volumes:
-      - /home/jaw/data/course:/data
+      - /home/jaw/data/videos:/data
       - /home/jaw/plex/videos:/videos:ro
     devices:
       - /dev/dri:/dev/dri
@@ -59,10 +59,10 @@ services:
         max-file: "3"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.course.rule=Host(`course.jaw.dev`)"
-      - "traefik.http.routers.course.entrypoints=websecure"
-      - "traefik.http.routers.course.middlewares=rate-limit-global@file"
-      - "traefik.http.services.course.loadbalancer.server.port=80"
+      - "traefik.http.routers.videos.rule=Host(`videos.jaw.dev`)"
+      - "traefik.http.routers.videos.entrypoints=websecure"
+      - "traefik.http.routers.videos.middlewares=rate-limit-global@file"
+      - "traefik.http.services.videos.loadbalancer.server.port=80"
 
 networks:
   traefik:
