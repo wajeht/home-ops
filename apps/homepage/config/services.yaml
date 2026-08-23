@@ -9,10 +9,10 @@
         #   url: http://plex:32400
         #   key: "{{HOMEPAGE_VAR_PLEX_KEY}}"
 
-    - Course:
-        icon: mdi-school
-        href: https://course.jaw.dev
-        description: Video Courses
+    - Videos:
+        icon: mdi-video
+        href: https://videos.jaw.dev
+        description: Video Library
 
     - Yubal:
         icon: youtube-music
