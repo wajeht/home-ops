@@ -4,7 +4,7 @@ x-docker-cd:
 services:
   bazarr:
     container_name: bazarr
-    image: linuxserver/bazarr:1.6.1-development@sha256:f938f6f11ff64cdb8fa2eb074630fcc8cae33ac278a8f6be2b2e308884400f05
+    image: linuxserver/bazarr:1.6.1-development@sha256:814d49548b5dd956f5bf7b014e9c25f67dd5fd85047f0d0fc10c3b0f3dbfb2be
     environment:
       - PUID=1000
       - PGID=1000
