@@ -5,7 +5,7 @@ x-docker-cd:
 services:
   prowlarr:
     container_name: prowlarr
-    image: linuxserver/prowlarr:2.6.2-nightly@sha256:ff4007dc43988ce71b94d1547dd192cd98e35d93f2d69266a782642ae97d783e
+    image: linuxserver/prowlarr:2.6.2-nightly@sha256:766f47e1413d67d306e6e631f9cae9176807e33d33e10d35387a402548c04942
     environment:
       - PUID=1000
       - PGID=1000
