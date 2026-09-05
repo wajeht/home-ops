@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   screenshot:
-    image: ghcr.io/wajeht/screenshot:c1a8099@sha256:bebb4f66a466138b57c1369e33996b07b2bd96f61e58f3b6e059205192e1ecc8
+    image: ghcr.io/wajeht/screenshot:03b8401@sha256:7b2a10e95ce38b6824f1fc37cd262d47d61f9dd5b313769716a7daa9ba54e6f5
     environment:
       TZ: America/Chicago
       APP_ENV: production
