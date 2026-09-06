@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   ufc:
-    image: ghcr.io/wajeht/ufc:81095d6@sha256:e2414ee87f688b4f08b5fae550ffb9e022b914fd7973f92231e49d4f416725b4
+    image: ghcr.io/wajeht/ufc:b407cbf@sha256:de7c67b3d42735642ded8dc837986daf01edef1821936110753c85dc858fca81
     environment:
       TZ: America/Chicago
     networks:
