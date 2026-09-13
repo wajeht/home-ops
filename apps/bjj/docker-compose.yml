@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   bjj:
-    image: ghcr.io/wajeht/bjj:v1.0.4@sha256:bdaf50c834e2aedc341bec8985af0beebfafaf133b5203b3cf3d869e9bbaf861
+    image: ghcr.io/wajeht/bjj:v1.0.5@sha256:8ae746100e537a47f493cdc824653658a25aa353420c73dbe723faeceb312ccb
     env_file:
       - .env # docker-cd decrypts .env.sops
     environment:
