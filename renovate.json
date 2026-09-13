@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>wajeht/renovate-config"],
-  "ignoreDeps": ["ghcr.io/wajeht/regexr", "ghcr.io/wajeht/roadmap-for-bjj"],
+  "ignoreDeps": ["ghcr.io/wajeht/regexr", "ghcr.io/wajeht/roadmap-for-bjj", "ghcr.io/wajeht/bjj"],
   "hostRules": [
     {
       "matchHost": "ghcr.io",

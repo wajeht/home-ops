@@ -466,3 +466,13 @@ endpoints:
       - "[RESPONSE_TIME] < 3000"
     alerts:
       - type: ntfy
+
+  - name: BJJ
+    group: Sites
+    url: http://bjj:80/healthz
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy

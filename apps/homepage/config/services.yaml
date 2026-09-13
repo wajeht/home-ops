@@ -220,6 +220,11 @@
         # siteMonitor: http://umami:3000
 
 - Personal:
+    - BJJ:
+        icon: mdi-karate
+        href: https://bjj.jaw.dev
+        description: Training events and notes
+
     - BJJ Roadmap:
         icon: mdi-mixed-martial-arts
         href: https://bjj.jaw.dev

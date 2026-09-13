@@ -1,0 +1,64 @@
+x-docker-cd:
+  rolling_update: false
+
+services:
+  bjj:
+    image: ghcr.io/wajeht/bjj:v1.0.0
+    env_file:
+      - .env # docker-cd decrypts .env.sops
+    environment:
+      TZ: America/Chicago
+      APP_ENV: production
+      APP_HOST: 0.0.0.0
+      APP_PORT: 80
+      APP_ORIGIN: https://bjj.jaw.dev
+      DATA_DIR: /data
+      SYNC_TIMEZONE: America/Chicago
+    volumes:
+      - /home/jaw/data/bjj:/data
+    networks:
+      - traefik
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:80/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    stop_grace_period: 30s
+    init: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bjj.rule=Host(`bjj.jaw.dev`)"
+      - "traefik.http.routers.bjj.entrypoints=websecure"
+      - "traefik.http.routers.bjj.middlewares=rate-limit-global@file"
+      - "traefik.http.services.bjj.loadbalancer.server.port=80"
+
+networks:
+  traefik:
+    external: true

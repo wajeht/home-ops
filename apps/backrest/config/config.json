@@ -598,6 +598,24 @@
         },
         "structureOnly": true
       }
+    },
+    {
+      "id": "bjj",
+      "uri": "/repos/bjj",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 6 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 7 * * 0"
+        },
+        "structureOnly": true
+      }
     }
   ],
   "plans": [
@@ -2222,6 +2240,53 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=global+backup+FAILED&priority=Max&tags=skull",
             "template": "global backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bjj",
+      "repo": "bjj",
+      "paths": ["/source/bjj/.bjj.bak"],
+      "schedule": {
+        "cron": "30 5 * * *",
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_START"],
+          "onError": "ON_ERROR_CANCEL",
+          "actionCommand": {
+            "command": "sqlite3 /source/bjj/bjj.sqlite -cmd \".timeout 30000\" \".backup /source/bjj/.bjj.bak\""
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_END"],
+          "actionCommand": {
+            "command": "rm -f /source/bjj/.bjj.bak"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bjj+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "bjj backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bjj+backup+FAILED&priority=Max&tags=skull",
+            "template": "bjj backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
