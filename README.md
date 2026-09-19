@@ -65,7 +65,7 @@ flowchart LR
         subgraph ucg[UniFi Cloud Gateway Fiber]
             unifi{{Firewall}}
             ucg_cf([Cloudflare IPs Only])
-            ucg_region([Region Blocking])
+            ucg_region([US-only Direct Plex])
             ucg_ids([IDS/IPS])
             ucg_threat([Threat Management])
         end
