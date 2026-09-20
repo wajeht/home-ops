@@ -1,269 +1,165 @@
 # Security
 
-Server hardening for the Dell OptiPlex 7050 running Ubuntu 24.04.
+Security controls and verification for the OptiPlex Ubuntu server and home network.
 
-App-level container requirements live in [Adding Apps](adding-apps.md#container-hardening).
+## Server Access
 
-## Open Ports
+Keep SSH and local app ports off the public internet. The public exceptions are listed under [Public Access](#public-access).
 
-Scanned from LAN via `nmap -F <server-ip>`:
+| Port | Service | Access and protection |
+| --- | --- | --- |
+| 22 | SSH | LAN or home VPN; key authentication only |
+| 80,443 | Traefik | Public origin connections restricted to Cloudflare |
+| 1883 | MQTT | Published to LAN; currently allows anonymous access |
+| 2283 | Immich | LAN access for direct uploads; Immich authentication |
+| 8123 | Home Assistant | LAN access for the Companion App and camera streaming; Home Assistant authentication |
+| 32400 | Plex | LAN and US public access; Plex authentication |
 
-| Port  | Service         | Status               | Action                                     |
-| ----- | --------------- | -------------------- | ------------------------------------------ |
-| 22    | SSH             | open                 | Harden through SSH settings                |
-| 80    | HTTP            | open through Traefik | Redirects to HTTPS                         |
-| 443   | HTTPS           | open through Traefik | OK                                         |
-| 111   | rpcbind         | **disabled**         | Unnecessary for NFS v4.1                   |
-| 1883  | MQTT            | open (Zigbee2MQTT)   | Blocked by UFW, Docker-internal only       |
-| 2283  | Immich          | open                 | Blocked by UFW, access via Traefik only    |
-| 8123  | Home Assistant  | open                 | Blocked by UFW, access via Traefik only    |
-| 16992 | Intel AMT HTTP  | open                 | LAN-only remote management                 |
-| 16993 | Intel AMT HTTPS | open                 | LAN-only remote management                 |
-| 5900  | AMT KVM/VNC     | open                 | LAN-only remote screen access              |
-| 32400 | Plex            | open                 | Direct Plex access; bypasses Traefik OAuth |
+Direct app ports bypass Traefik's OAuth and Cloudflare country filtering. Do not forward MQTT, Immich, or Home Assistant ports from the internet.
 
-To restrict ports further, change Docker port mappings from `0.0.0.0:PORT:PORT` to `127.0.0.1:PORT:PORT`.
+### Host firewall
 
-## Firewall
-
-Active since 2026-03-13.
+Keep incoming host traffic denied by default and allow only required services. Inspect rules with:
 
 ```bash
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw allow 22/tcp    # SSH
-sudo ufw allow 80/tcp    # Traefik HTTP
-sudo ufw allow 443/tcp   # Traefik HTTPS
-sudo ufw allow 32400/tcp # Plex remote access
-sudo ufw enable
-```
-
-`plex.jaw.dev` is protected by `oauth2-media@file`, but direct access to `<server-ip>:32400` does not pass through Traefik. Keep `32400/tcp` open only if direct Plex client access is required. Close it if Plex must be reachable only through Cloudflare/Traefik/OAuth.
-
-```bash
-# Management
 sudo ufw status verbose
 sudo ufw status numbered
-sudo ufw allow <port>/tcp
-sudo ufw delete <rule-number>
 ```
+
+Do not assume UFW blocks Docker-published ports: MQTT, Immich, and Home Assistant are reachable from the main LAN. Control exposure through Docker port mappings and UniFi policies, then test from the relevant network. Preserve intentional LAN access when changing port mappings.
 
 ## SSH
 
-Disable password auth, use key-based auth only.
+SSH uses key-based authentication only. The Mac alias `ssh one` connects as `jaw`; password, keyboard-interactive, and direct root login are disabled.
 
-```bash
-# Copy key from Mac
-ssh-copy-id user@<server-ip>
-```
-
-Edit `/etc/ssh/sshd_config`:
+Settings are in `/etc/ssh/sshd_config.d/00-homeops-key-only.conf`, loaded before the cloud-init configuration:
 
 ```
+PubkeyAuthentication yes
 PasswordAuthentication no
+KbdInteractiveAuthentication no
 PermitRootLogin no
-MaxAuthTries 3
 ```
+
+For future changes, keep an existing SSH session open, validate the configuration, and reload:
 
 ```bash
-sudo systemctl restart ssh
+sudo sshd -t && sudo systemctl reload ssh.service
 ```
 
-## fail2ban
+Verify a fresh key login before closing the existing session:
 
 ```bash
-sudo apt install fail2ban
-sudo systemctl enable --now fail2ban
+ssh -o BatchMode=yes -o PreferredAuthentications=publickey -o ControlPath=none one 'id -un'
 ```
 
-Bans IPs after 5 failed SSH attempts for 10 minutes.
+## Public Access
 
-## Unnecessary Services
+| Service | Allowed access | Enforcement |
+| --- | --- | --- |
+| OptiPlex websites | US visitors through Cloudflare | Cloudflare country rule; UniFi and Traefik allow only Cloudflare origin connections |
+| Direct Plex (`32400/tcp`) | US sources | UniFi country rules; Plex authentication |
+| UniFi WireGuard (`51820/udp`) | Any country, with a configured client key | UniFi's built-in WireGuard allowance and VPN authentication |
 
-| Service        | Purpose                   | Action               |
-| -------------- | ------------------------- | -------------------- |
-| rpcbind        | NFS v2/v3 port mapping    | **Already disabled** |
-| ModemManager   | Cellular modem management | Disable              |
-| wpa_supplicant | WiFi management           | Disable              |
-| packagekit     | GUI package management    | Disable              |
-| udisks2        | GUI disk management       | Disable              |
-| upower         | Power management for GUI  | Disable              |
+Cloudflare and UniFi dashboard settings are managed manually; deploying this repo does not recreate them.
 
-```bash
-sudo systemctl disable --now ModemManager wpa_supplicant packagekit udisks2 upower
-```
+### Cloudflare and origin lock
 
-## Docker Socket
+Cloudflare's first active custom rule for `jaw.dev`, **only allow united states**, blocks `(ip.geoip.country ne "US")`. The apex, `www`, and wildcard DNS records are proxied.
 
-Several services mount `/var/run/docker.sock`, which is root-equivalent access: Traefik, Backrest, Dozzle, Beszel, Homepage, Walker, docker-cd. Consider [docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy) to limit API access.
+UniFi forwards WAN1 ports `80,443` to `192.168.4.161` only from the **Cloudflare IPv4** source list. Traefik repeats the Cloudflare-only check on HTTPS routes, redirects HTTP to HTTPS, and trusts forwarded client headers only from Cloudflare. The **HTTP/HTTPS** port list contains only `80,443`.
 
-## Cloudflare and Origin Lock
-
-Web traffic is layered:
-
-1. Cloudflare handles edge WAF/DDoS/bot filtering.
-2. UniFi allows only Cloudflare IPs to reach `80/443`.
-3. Traefik repeats the Cloudflare-only check and trusts forwarded real-client headers only from Cloudflare.
-
-Keep Cloudflare IP ranges current with:
+Update Traefik's Cloudflare ranges with:
 
 ```bash
 ./scripts/cloudflare.sh
 ```
 
-If it changes files, review the diff and deploy through the normal git flow.
+Review the diff and deploy through the normal git flow. This script **does not update UniFi's source list**; check that separately against [Cloudflare's published ranges](https://www.cloudflare.com/ips/).
 
-## App Auth
+### UniFi firewall
 
-Traefik routes protected apps through oauth2-proxy:
+**CyberSecure → Region Blocking is OFF.** The global country filter would block WireGuard clients abroad and can also block Cloudflare origin connections classified outside the US. Country restrictions are applied per service instead.
 
-- `oauth2-admin@file` for admin-only apps
-- `oauth2-media@file` for media apps such as Plex, Seerr, and ConvertX
+UniFi uses the zone-based firewall. Default, Guest, and IoT are in Internal; WireGuard clients are in VPN. Manage policies under **Settings → Zones**:
 
-The user allowlists live encrypted in `apps/oauth2-proxy/.env.sops`. docker-cd decrypts them during deploy and Compose renders the runtime files oauth2-proxy reads.
+| Zone pair | Order | Policy | Match | Action |
+| --- | --- | --- | --- | --- |
+| External → Internal | 10000 | Allow HTTP(S) from Cloudflare over IPv4 | Cloudflare IPv4 list → `192.168.4.161`, TCP/UDP `80,443` | Allow |
+| External → Internal | 10001 | Block HTTP(S) from Internet over IPv4 | Any IPv4 source → TCP/UDP `80,443` | Block |
+| External → Internal | 10002 | Allow US Plex | United States → `192.168.4.161`, IPv4 TCP `32400` | Allow |
+| External → Internal | 10003 | Block other Plex access | Any source → TCP/UDP `32400`, IPv4 and IPv6 | Block |
+| External → Gateway | 10000 | Block UCG services from WAN | Any IPv4 source → ports `53,6789,8080,8443` | Block |
+| External → Gateway | 30002 | Allow WireGuard VPNs (built-in) | Any source → gateway UDP `51820`, IPv4 and IPv6 | Allow |
 
-Temporary PR apps can opt into the same guard. App repos should use:
+Order is evaluated within each zone pair. Custom policies precede generated port-forward allowances. The Plex port forward maps TCP/UDP `32400` to `192.168.4.161`; the policies above permit only US TCP traffic. Keep built-in return-traffic, invalid-traffic, default-deny, and IPv6 control-traffic policies intact. Do not add country restrictions to WireGuard.
 
-- `temp-deploy` for normal previews with production middleware labels
-- `temp-deploy-with-auth` for previews protected by `oauth2-admin@file`
+WireGuard runs on the **UniFi gateway**, subnet `192.168.3.0/24`, with automatic DNS. Authenticated clients use the VPN zone's access rules. A full-tunnel client abroad can exit through the US home connection to access the websites; browsing directly from abroad remains subject to Cloudflare's country rule.
 
-The auth label passes `auth-middleware: oauth2-admin@file` to `docker-cd-deploy-workflow`; the temp compose rewrite replaces the temp router middleware with that guard.
+LAN IPv6 is disabled. Review equivalent IPv6 access restrictions before enabling it. Intrusion Prevention protects Default and Guest in **Notify and Block** mode.
 
-## Container Networking
+## Guest and IoT Isolation
 
-All app containers share one external `traefik` network. Traefik reaches them for ingress, and they can reach each other's internal ports directly. Stateful apps additionally keep their database on a private `<app>-internal` network, so the DB is never on `traefik`.
+| Network | VLAN | Subnet | Required isolation |
+| --- | --- | --- | --- |
+| Default | 1 | `192.168.4.0/24` | Trusted LAN |
+| Guest | 2 | `192.168.2.0/24` | Internet allowed; access to other local networks blocked except the DNS allowance below |
+| IoT | 30 | `192.168.30.0/24` | Internet and new connections to other local networks blocked; server-initiated access allowed |
 
-There is **no per-app or per-zone network segmentation** between app containers — the `traefik` network is flat.
+Enable **Isolate Network** on Guest and IoT. Enable **Allow Internet Access** on Guest only, and Wi-Fi client isolation on Guest. Assign the IoT SSID to VLAN 30.
 
-**Why flat?** Auth is enforced only at Traefik ingress (`oauth2-*@file`), not east-west, so a compromised container can already reach any other container's internal port. Segmentation (per-app nets, or trust zones with Traefik as hub) would cap that blast radius, but on a single-node homelab behind Cloudflare + oauth2 the lateral-movement risk is low-probability defense-in-depth, and it adds permanent maintenance: every new app must be wired into Traefik plus the cross-cutting reachers (gatus health probes, ntfy notifications) and the lint network checks. The posture instead leans on patching (Renovate), secrets hygiene (SOPS), and backups (Backrest). Evaluated and declined June 2026; the legacy `media` and `backup` networks were removed at the same time.
+Keep these policies under **Settings → Zones**:
 
-**If revisiting:** the highest-ROI single step is a private net for Vaultwarden alone (its own net shared only with Traefik + gatus), walling off the password store without touching the other ~50 apps.
+| Zone pair | Order | Policy | Match and action |
+| --- | --- | --- | --- |
+| Internal → Internal | 10000 | Allow Server to IoT | Allow `192.168.4.161` → IoT |
+| Internal → Internal | 10001 | Allow Established/Related IoT | Allow IoT replies only: **Return Traffic** |
+| Internal → Internal | 10002 | Allow Guest DNS to AdGuard | Allow Guest → `192.168.4.181`, TCP/UDP `53` |
+| Internal → Internal | 30000 | Isolated Networks (generated) | Block Guest and IoT access to other local networks |
+| Internal → External | 30001 | Block 192.168.30.0/24 Internet Access (generated) | Block IoT internet access |
 
-## IoT VLAN
+Keep allowances before the generated isolation policy. Every IoT reply allowance must use **Return Traffic**, including copies in other zone pairs, so it cannot permit new connections from IoT devices.
 
-Isolates cameras, sensors, and smart plugs from the main LAN. Devices can't reach the internet or other VLANs, but the server can reach them.
+## App and Container Security
 
-### Network layout
+Use `oauth2-admin@file` for admin-only routes and `oauth2-media@file` for approved media routes. User allowlists are encrypted in `apps/oauth2-proxy/.env.sops`. Private app routes that intentionally bypass OAuth must retain their own application authentication; intentionally public pages do not require login.
 
-| Network | VLAN ID | Subnet          | Internet | Purpose              |
-| ------- | ------- | --------------- | -------- | -------------------- |
-| Default | 1       | 192.168.4.0/24  | Yes      | Main LAN, server     |
-| Guest   | 2       | 192.168.2.0/24  | Yes      | Guest WiFi           |
-| IoT     | 30      | 192.168.30.0/24 | No       | Cameras, IoT devices |
+Containers on the shared `traefik` network can reach each other's internal ports; ingress authentication does not isolate them. Keep databases on private app networks and expose only necessary ports. See [container hardening](adding-apps.md#container-hardening) for app requirements and [preview deployment](instant-deploy.md#temporary-pr-apps) for preview authentication.
 
-### Setup
+Treat `/var/run/docker.sock` access as host administrator access. A read-only socket mount does not restrict Docker API operations. Grant access only to services that require it.
 
-#### 1. Create IoT network
+## Host Maintenance
 
-Settings → Networks → Create New:
+Keep Ubuntu security updates, container images, and BIOS firmware current. Reboot when an update requires it.
 
-- **Name:** IoT
-- **VLAN ID:** 30
-- **IPv4 Address:** 192.168.30.1, Netmask /24
-- **Isolate Network:** checked
-- **Allow Internet Access:** unchecked
-- **mDNS:** checked
-- **DHCP:** Server, range 192.168.30.6 - 192.168.30.254
+Review unused services before disabling them. ModemManager, wpa_supplicant, packagekit, udisks2, and upower are candidates only if the server does not depend on their functions; do not disable them as a batch without checking.
 
-#### 2. Create IoT WiFi
+If Intel AMT/vPro is enabled, restrict management ports `16992`, `16993`, and `5900` to trusted management clients at the network firewall. AMT operates independently of Ubuntu, so UFW does not protect it.
 
-Settings → WiFi → Create New:
+## Secrets
 
-- **Name:** IoT
-- **Password:** set one
-- **Network:** IoT, VLAN 30
-- **Radio Band:** 2.4 GHz only
+This repository is public. Store app secrets in encrypted `apps/<app>/.env.sops` files; never commit plaintext credentials or the age private key. See [Secrets Management](secrets.md) for editing and deployment instructions.
 
-#### 3. Firewall rules
+Follow the cadence in the [rotation inventory](../.github/secrets-rotation.json). The [monthly reminder workflow](../.github/workflows/secrets-rotation.yml) opens issues for credentials due for rotation. Replace compromised credentials immediately regardless of schedule.
 
-UniFi auto-creates isolation rules when "Isolate Network" is checked, but two **manual** LAN In rules are needed so the server can talk to IoT devices:
+Preserve offline access to the SOPS age key and backup password. Changing only `RESTIC_PASSWORD` in the environment does not change existing repositories' passwords. Key changes require a planned migration and verification that existing secrets and backups remain readable. See [Disaster Recovery](disaster-recovery.md#critical-files).
 
-| Rule                          | Action | Source          | Destination | State                | Purpose                  |
-| ----------------------------- | ------ | --------------- | ----------- | -------------------- | ------------------------ |
-| Allow Server to IoT           | Accept | 192.168.4.161   | IoT network | Any                  | Server can reach cameras |
-| Allow Established/Related IoT | Accept | IoT network     | Any         | Established, Related | Return traffic only      |
-| Isolate IoT                   | Drop   | 192.168.30.0/24 | All VLANs   | Any                  | IoT can't reach main LAN |
-| Block IoT internet            | Drop   | 192.168.30.0/24 | Any         | Any                  | No cloud phoning home    |
+## Verify Security Controls
 
-**Why two manual rules?** The "Isolate Network" toggle blocks all inter-VLAN traffic, including return traffic from IoT devices back to the server. Without these rules, the server can send packets to the camera but never gets a response.
+Run these checks after firewall or access changes. For phone Wi-Fi tests, enable Airplane Mode, turn Wi-Fi back on, and disable VPNs to prevent cellular or VPN access from masking the result. Use a fresh page to avoid cached content.
 
-**Why Established/Related instead of a broad allow?** A broad "Allow IoT → Server" rule lets a compromised IoT device initiate new connections to the server. Using Established/Related state means IoT devices can only respond to connections the server started — they can never open new connections to anything.
+| Test | Expected result |
+| --- | --- |
+| US cellular, home VPN off | Websites work; direct Plex access works with Plex authentication |
+| Non-US connection, home VPN off | Websites and direct Plex access are blocked |
+| Connect directly to the public IP from outside Cloudflare, using the website's hostname for HTTP Host and TLS SNI | Origin access is blocked; a certificate error or unmatched route alone does not prove this |
+| WireGuard from a non-US source | VPN connects with a valid client key; permitted home services work |
+| Guest Wi-Fi | Internet and DNS work; `192.168.4.161:8123` and `:2283` are blocked |
+| Two Guest Wi-Fi clients | Clients cannot connect directly to each other |
+| IoT Wi-Fi | Internet and new connections to main-LAN services are blocked |
+| Server → IoT device | Required camera/device connections and replies work |
+| Fresh SSH connection | Key login works; password and direct root login are disabled |
 
-Both manual rules must have a lower ID than the auto-created isolation rules, usually `60001+`, so they're evaluated first.
+Check Cloudflare **Security → Analytics**, UniFi **Flows**, policy hit counters, and WireGuard handshakes against the test's source IP and time. Plex playback alone does not prove a direct connection; an empty block log does not prove successful access. Testing two blocked ports does not establish isolation for every service.
 
-#### 4. Move devices to IoT WiFi
-
-1. Open the device app → WiFi settings → connect to `IoT` SSID
-2. Set static IP, such as `192.168.30.56` for camera
-3. Update `.env.sops` with new IP
-4. Push and redeploy
-
-#### 5. Verify isolation
-
-From your main LAN:
-
-```bash
-# Server can reach camera
-ping 192.168.30.56
-nc -zv 192.168.30.56 554   # RTSP
-nc -zv 192.168.30.56 2020  # ONVIF
-
-# Camera can't reach server
-# No way to test directly, but Tapo app should fail remotely
-```
-
-### Key points
-
-- IoT devices get no internet — TP-Link, Tuya, etc. can't phone home
-- IoT devices can't reach your main LAN — compromised camera can't attack your server
-- Server `192.168.4.161` can reach IoT VLAN — Frigate/HA connects to cameras
-- mDNS enabled — allows device discovery across VLANs if needed
-- Camera credentials still in `.env.sops` — only the IP changes when moving VLANs
-- Delete vendor apps after setup — camera runs standalone on RTSP/ONVIF
-
-## Secret Rotation
-
-All app secrets live encrypted in `apps/<app>/.env.sops`. **The repo is public — SOPS is the only thing protecting these values**, so periodic rotation matters. The full inventory, grouped by cadence, is in [`.github/secrets-rotation.json`](../.github/secrets-rotation.json).
-
-`.github/workflows/secrets-rotation.yml` runs on the 1st of each month and opens a GitHub issue (labels `security`, `rotation`) with a rotation checklist whenever a cadence is due. Run it manually any time via **Actions → Secrets Rotation Reminder → Run workflow** (tick `force_all` to preview the full checklist).
-
-| Cadence     | Due                   | Scope                                                                                |
-| ----------- | --------------------- | ------------------------------------------------------------------------------------ |
-| Quarterly   | Jan / Apr / Jul / Oct | External, billed, or high-blast-radius tokens (Cloudflare, GitHub, S3, LLM/SMS APIs) |
-| Semi-annual | Jan / Jul             | OAuth client secrets, provider keys (WireGuard, Garage), internal API keys           |
-| Annual      | Jan                   | App signing secrets, DB passwords, admin credentials, SMTP creds                     |
-
-To rotate: regenerate the credential at its source, then update the value in `.env.sops` (`sops --input-type dotenv --output-type dotenv apps/<app>/.env.sops`), commit, and push — docker-cd redeploys.
-
-### Master keys — do not rotate casually
-
-- **`RESTIC_PASSWORD`** (`apps/backrest/.env.sops`) — rotating orphans every existing restic snapshot. Only rotate alongside a full re-backup. The annual issue lists it as _review only_: confirm it is still in your password manager.
-- **`.sops/age-key.txt`** — rotating requires re-encrypting all `.env.sops` files (`sops updatekeys`). Deliberate operation only; keep offline copies.
-
-### Cleanup
-
-`BORG_PASSPHRASE` is present in ~20 `.env.sops` files but referenced by zero compose/config files — vestigial from the pre-Backrest borgmatic era. Remove it the next time each file is edited.
-
-## Intel AMT/vPro
-
-AMT runs on the Management Engine chipset independently of the OS. It listens on ports 16992/16993/5900 and provides remote power control and KVM.
-
-- **Access**: `http://192.168.4.161:16992` or HTTPS on 16993
-- **KVM**: VNC client to port 5900
-- **Risk**: AMT has had critical CVEs — keep BIOS firmware updated
-- **Mitigation**: LAN-only access, UFW doesn't affect AMT, firewall at router blocks inbound
-- USB Provision disabled, User Consent set to None, Remote IT config disabled
-
-## Checklist
-
-- [x] Disable rpcbind
-- [x] Enable UFW firewall
-- [x] IoT VLAN: VLAN 30, 192.168.30.0/24
-- [x] Intel AMT/vPro enabled for remote power and KVM
-- [ ] SSH: key-only auth
-- [ ] Install fail2ban
-- [ ] Disable unnecessary services
-- [ ] Bind non-Traefik ports to 127.0.0.1
-- [ ] Docker socket proxy
-- [x] Secret rotation reminders (monthly GH Actions issue)
-- [ ] Remove vestigial `BORG_PASSPHRASE` from `.env.sops` files
+Keep UniFi configuration backups before firewall changes. Cloudflare and UniFi settings are managed outside this repository and must be checked separately after recovery. See [Disaster Recovery](disaster-recovery.md) for server restore procedures.
