@@ -2178,7 +2178,7 @@
       "repo": "videos",
       "paths": ["/source/videos/.videos.bak"],
       "schedule": {
-        "cron": "20 5 * * *",
+        "cron": "10 5 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -2233,7 +2233,7 @@
         "**/*.dump"
       ],
       "schedule": {
-        "cron": "10 5 * * *",
+        "cron": "40 5 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -2267,7 +2267,7 @@
       "repo": "bjj",
       "paths": ["/source/bjj/.bjj.bak"],
       "schedule": {
-        "cron": "30 5 * * *",
+        "cron": "20 5 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {
@@ -2314,7 +2314,7 @@
       "repo": "dozzle",
       "paths": ["/source/dozzle"],
       "schedule": {
-        "cron": "40 5 * * *",
+        "cron": "30 5 * * *",
         "clock": "CLOCK_LOCAL"
       },
       "retention": {

@@ -92,10 +92,10 @@ Per-app schedules are staggered to reduce resource contention. `global` adds a f
 | miniflux      | 4:40 AM  | Postgres DB only     | `pg_dump` via `docker exec miniflux-db`                       |
 | sonarr        | 4:50 AM  | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid    |
 | yubal         | 5:00 AM  | SQLite + files       | Config only; downloaded music remains on the NAS              |
-| **global**    | 5:10 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state   |
-| videos        | 5:20 AM  | SQLite DB only       |                                                               |
-| bjj           | 5:30 AM  | SQLite DB only       |                                                               |
-| dozzle        | 5:40 AM  | Files only           | Settings and authentication state in `/data`                  |
+| videos        | 5:10 AM  | SQLite DB only       |                                                               |
+| bjj           | 5:20 AM  | SQLite DB only       |                                                               |
+| dozzle        | 5:30 AM  | Files only           | Settings and authentication state in `/data`                  |
+| **global**    | 5:40 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state   |
 
 Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 6 AM, integrity check Sunday 7 AM.
 
