@@ -57,7 +57,7 @@ apps/backrest/
 
 ## Backup Schedule
 
-Per-app schedules are staggered to prevent resource contention. `global` runs last after all per-app backups complete.
+Per-app schedules are staggered to reduce resource contention. `global` adds a file-level copy of the data directory and SOPS key.
 
 | App           | Schedule | Type                 | Notes                                                         |
 | ------------- | -------- | -------------------- | ------------------------------------------------------------- |
@@ -93,8 +93,11 @@ Per-app schedules are staggered to prevent resource contention. `global` runs la
 | sonarr        | 4:50 AM  | SQLite + files       | Excludes MediaCover, Backups, logs.db, asp, Sentry, \*.pid    |
 | yubal         | 5:00 AM  | SQLite + files       | Config only; downloaded music remains on the NAS              |
 | **global**    | 5:10 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state   |
+| videos        | 5:20 AM  | SQLite DB only       |                                                               |
+| bjj           | 5:30 AM  | SQLite DB only       |                                                               |
+| dozzle        | 5:40 AM  | Files only           | Settings and authentication state in `/data`                  |
 
-Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 6 AM, integrity check Sunday 7 AM — both after `global` (5:10 AM) finishes, so weekly maintenance never overlaps the daily backups.
+Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 6 AM, integrity check Sunday 7 AM.
 
 ## Adding an App
 
@@ -697,7 +700,7 @@ Known issues and their fixes.
 Apps that don't need backup, by category:
 
 - **Stateless / config-in-image**: `roadmap-for-bjj`, `regexr`, `close-powerlifting`, `ufc`, `ip`, `homepage`, `commit`
-- **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `byparr`, `dozzle`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`
+- **Cache-only or tiny / no persistent state worth backing up**: `renovate`, `ddns-updater`, `byparr`, `convertx`, `excalidraw`, `git`, `jaw-dev`, `power-badge`
 - **Config tracked in git**: `backrest`, `oauth2-proxy`, `docker-cd`. The encrypted oauth2-proxy `.env.sops` includes admin and media email allowlists.
 - **Data in object storage**: `linx` — uploads + metadata live in the Garage `linx` bucket, captured by the `garage` plan (no local `~/data/linx`).
 

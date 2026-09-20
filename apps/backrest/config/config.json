@@ -616,6 +616,24 @@
         },
         "structureOnly": true
       }
+    },
+    {
+      "id": "dozzle",
+      "uri": "/repos/dozzle",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 6 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 7 * * 0"
+        },
+        "structureOnly": true
+      }
     }
   ],
   "plans": [
@@ -2287,6 +2305,40 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bjj+backup+FAILED&priority=Max&tags=skull",
             "template": "bjj backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dozzle",
+      "repo": "dozzle",
+      "paths": ["/source/dozzle"],
+      "schedule": {
+        "cron": "40 5 * * *",
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dozzle+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "dozzle backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dozzle+backup+FAILED&priority=Max&tags=skull",
+            "template": "dozzle backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]
