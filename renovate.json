@@ -29,6 +29,13 @@
     {
       "matchPackageNames": ["/^linuxserver//"],
       "rollbackPrs": false
+    },
+    {
+      "description": "Keep SABnzbd on stable numeric release tags; exclude unstable and prerelease builds.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["linuxserver/sabnzbd"],
+      "versioning": "docker",
+      "allowedVersions": "/^[0-9]+\\.[0-9]+\\.[0-9]+$/"
     }
   ]
 }
