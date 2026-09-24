@@ -4,7 +4,7 @@ x-docker-cd:
 services:
   cap:
     container_name: cap
-    image: tiago2/cap:3.1.11@sha256:c29417b6270d1fddc6a0603c08d972f89a12de81889d09c3f97a0915422fba5e
+    image: tiago2/cap:3.1.13@sha256:b48565b8a92d384e9f00fbffacbb0984c4833db81deae855055a23eafb90376e
     env_file:
       - .env # docker-cd decrypts .env.sops -> .env (ADMIN_KEY)
     environment:
