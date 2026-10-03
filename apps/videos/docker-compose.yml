@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   videos:
-    image: ghcr.io/wajeht/videos:v1.0.213@sha256:d42549a2c3d222c5b8c6c3af5c2999e5c1f3cc83031748938ff539054e5c4353
+    image: ghcr.io/wajeht/videos:v1.0.214@sha256:23caf937d1eb39f7096d852200d5e62499f923464d68a20b8cd3b7ecce3a70f0
     env_file:
       - .env # docker-cd decrypts .env.sops -> .env (SESSION_SECRET)
     environment:
