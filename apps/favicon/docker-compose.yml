@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   favicon:
-    image: ghcr.io/wajeht/favicon:0e1d91b@sha256:5d58c1e1d3e59a18f5ec00273c9c68a56d318e6920470079d454c81f73c34268
+    image: ghcr.io/wajeht/favicon:7fe3672@sha256:4dddff45d6c574d7726e1e1487477148bd107d6e97e599e22e887af144e31b5f
     environment:
       TZ: America/Chicago
     volumes:
