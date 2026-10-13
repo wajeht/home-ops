@@ -48,5 +48,6 @@ sops apps/renovate/.env.sops
 
 - Container runs as `uid=12021` — data dir needs matching ownership
 - SQLite DB persists at `~/data/renovate/renovate.db`
-- Scheduler runs 3x daily (12am, 8am, 6pm UTC)
+- Scheduler runs once nightly at 06:00 UTC: 1 AM in Chicago during daylight saving time, or midnight during standard time
+- See [maintenance timing](../../docs/renovate.md#maintenance-timing) for the coordinated Plex and Immich schedules
 - Webhooks trigger immediate re-scan on push/PR events
