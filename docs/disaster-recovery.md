@@ -97,13 +97,13 @@ Per-app schedules are staggered to reduce resource contention. `global` adds a f
 | dozzle        | 5:30 AM  | Files only           | Settings and authentication state in `/data`                  |
 | **global**    | 5:40 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state   |
 
-Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 6 AM, integrity check Sunday 7 AM.
+Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 6 AM. Weekly full-data checks are staggered across the week; see [Backup Data Checks](#backup-data-checks).
 
 ## Adding an App
 
 For each app, add **one repo + one plan** to `apps/backrest/config/config.json`. Commit + push — docker-cd restarts Backrest with the new config.
 
-After pushing, verify the entries are still in `config.json` on the server. A formatter has stripped new JSON entries on some pushes.
+After pushing, verify the live `/config/config.json` inside Backrest contains the entries tracked in git.
 
 ### Repo Block
 
@@ -113,7 +113,7 @@ After pushing, verify the entries are still in `config.json` on the server. A fo
   "uri": "/repos/<app>",
   "password": "",
   "autoInitialize": true,
-  "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
+  "prunePolicy": { "schedule": { "cron": "0 6 * * 0" }, "maxUnusedPercent": 10 },
   "checkPolicy": {
     "schedule": { "cron": "0 7 * * 1", "clock": "CLOCK_LOCAL" },
     "readDataSubsetPercent": 100
@@ -123,6 +123,7 @@ After pushing, verify the entries are still in `config.json` on the server. A fo
 
 - `password: ""` — falls back to the shared `RESTIC_PASSWORD` env var
 - `autoInitialize: true` — creates the restic repo on first backup
+- Choose an unused weekly check slot and copy an existing repo's `CONDITION_CHECK_ERROR` hook; see [Backup Data Checks](#backup-data-checks).
 
 ### Plan: SQLite DB Only
 
@@ -280,31 +281,37 @@ Plain `unlock` only removes non-exclusive locks. `--remove-all` clears exclusive
 
 Restoring = pick a snapshot → extract files → put them back. Backrest gives you the files; you handle the app-level swap.
 
+Run the commands below in Bash on the server with `set -euo pipefail` so a failed extraction, copy, or restore stops the procedure. Use a fresh restore directory for each snapshot.
+
+Before replacing live app data, stop `docker-cd` with `docker stop docker-cd` so it cannot restart an app you stopped for recovery. After the app is restored and healthy, resume deployment with `docker start docker-cd`.
+
 ### Via UI
 
 1. `https://backrest.jaw.dev` → click plan → **Tree View**
 2. Pick a snapshot → click **Restore**
-3. Target path: `/tmp/restore` inside the Backrest container. On the host this is tmpfs, so copy out before restart.
+3. Target path: a fresh directory under `/tmp/` inside the Backrest container. This is tmpfs; use `docker cp` to copy restored files to the host before Backrest restarts.
 
 ### Via CLI
 
 ```bash
 docker exec backrest restic -r /repos/<app> snapshots                      # list snapshots
-docker exec backrest restic -r /repos/<app> restore latest --target /tmp/restore
-docker exec backrest restic -r /repos/<app> restore <id> --target /tmp/restore  # specific snapshot
+restore_dir=$(docker exec backrest mktemp -d /tmp/restore.XXXXXX)
+docker exec backrest restic -r /repos/<app> restore latest --target "$restore_dir"
+# To select an older snapshot, replace latest with its ID.
 ```
 
 ### Restore: SQLite DB Only
 
 ```bash
 # 1. Extract
-docker exec backrest restic -r /repos/bang restore latest --target /tmp/restore
+restore_dir=$(docker exec backrest mktemp -d /tmp/restore.XXXXXX)
+docker exec backrest restic -r /repos/bang restore latest --target "$restore_dir"
 
 # 2. Stop the app
 cd ~/home-ops/apps/bang && docker compose stop
 
 # 3. Restore via sqlite3 .restore
-docker exec backrest sqlite3 /source/bang/db.sqlite ".restore /tmp/restore/source/bang/.bang.bak"
+docker exec backrest sqlite3 /source/bang/db.sqlite ".restore $restore_dir/source/bang/.bang.bak"
 
 # 4. Remove stale WAL/SHM
 rm -f /home/jaw/data/bang/db.sqlite-wal /home/jaw/data/bang/db.sqlite-shm
@@ -317,16 +324,19 @@ docker compose up -d
 
 ```bash
 # 1. Extract everything
-docker exec backrest restic -r /repos/<app> restore latest --target /tmp/restore
+restore_dir=$(docker exec backrest mktemp -d /tmp/restore.XXXXXX)
+docker exec backrest restic -r /repos/<app> restore latest --target "$restore_dir"
+host_restore_dir=$(mktemp -d)
+docker cp "backrest:$restore_dir/source/<app>/." "$host_restore_dir/"
 
 # 2. Stop the app
 cd ~/home-ops/apps/<app> && docker compose stop
 
 # 3. Restore files
-rsync -a --delete /tmp/restore/source/<app>/ /home/jaw/data/<app>/ --exclude '.<app>.bak'
+rsync -a --delete "$host_restore_dir/" /home/jaw/data/<app>/ --exclude '.<app>.bak'
 
 # 4. Restore DB via sqlite3 .restore
-docker exec backrest sqlite3 /home/jaw/data/<app>/<db-file>.db ".restore /tmp/restore/source/<app>/.<app>.bak"
+docker exec backrest sqlite3 /source/<app>/<db-file>.db ".restore $restore_dir/source/<app>/.<app>.bak"
 
 # 5. Remove stale WAL/SHM
 rm -f /home/jaw/data/<app>/<db-file>.db-wal /home/jaw/data/<app>/<db-file>.db-shm
@@ -339,19 +349,21 @@ docker compose up -d
 
 ```bash
 # 1. Extract
-docker exec backrest restic -r /repos/hello-world restore latest --target /tmp/restore
+restore_dir=$(docker exec backrest mktemp -d /tmp/restore.XXXXXX)
+docker exec backrest restic -r /repos/hello-world restore latest --target "$restore_dir"
 
-# 2. Bring DB container up
-cd ~/home-ops/apps/hello-world && docker compose up -d hello-world-db
+# 2. Stop the app and bring its DB container up
+cd ~/home-ops/apps/hello-world
+docker compose stop hello-world
+docker compose up -d hello-world-db
 
 # 3. Drop + recreate the database
-docker exec hello-world-db dropdb -U hello-world hello-world
-docker exec hello-world-db createdb -U hello-world hello-world
+docker exec hello-world-db dropdb -U hello hello
+docker exec hello-world-db createdb -U hello hello
 
-# 4. Restore via pg_restore
-docker cp /tmp/restore/source/hello-world/.hello-world.dump hello-world-db:/tmp/restore.dump
-docker exec hello-world-db pg_restore -U hello-world -d hello-world /tmp/restore.dump
-docker exec hello-world-db rm /tmp/restore.dump
+# 4. Stream the archive from Backrest into pg_restore
+docker exec backrest cat "$restore_dir/source/hello-world/.hello-world.dump" |
+  docker exec -i hello-world-db pg_restore -U hello -d hello --exit-on-error
 
 # 5. Bring app up
 docker compose up -d
@@ -361,13 +373,16 @@ docker compose up -d
 
 ```bash
 # 1. Extract
-docker exec backrest restic -r /repos/<app> restore latest --target /tmp/restore
+restore_dir=$(docker exec backrest mktemp -d /tmp/restore.XXXXXX)
+docker exec backrest restic -r /repos/<app> restore latest --target "$restore_dir"
+host_restore_dir=$(mktemp -d)
+docker cp "backrest:$restore_dir/source/<app>/." "$host_restore_dir/"
 
 # 2. Stop
 cd ~/home-ops/apps/<app> && docker compose stop
 
 # 3. rsync files back
-rsync -a --delete /tmp/restore/source/<app>/ /home/jaw/data/<app>/
+rsync -a --delete "$host_restore_dir/" /home/jaw/data/<app>/
 
 # 4. Start
 docker compose up -d
@@ -378,14 +393,17 @@ docker compose up -d
 Same as single-DB but restore each DB in sequence. Example for ntfy:
 
 ```bash
-docker exec backrest restic -r /repos/ntfy restore latest --target /tmp/restore
+restore_dir=$(docker exec backrest mktemp -d /tmp/restore.XXXXXX)
+docker exec backrest restic -r /repos/ntfy restore latest --target "$restore_dir"
+host_restore_dir=$(mktemp -d)
+docker cp "backrest:$restore_dir/source/ntfy/." "$host_restore_dir/"
 cd ~/home-ops/apps/ntfy && docker compose stop
 
-rsync -a --delete /tmp/restore/source/ntfy/ /home/jaw/data/ntfy/ \
+rsync -a --delete "$host_restore_dir/" /home/jaw/data/ntfy/ \
   --exclude '.ntfy-user.bak' --exclude '.ntfy-cache.bak'
 
-docker exec backrest sqlite3 /home/jaw/data/ntfy/user.db ".restore /tmp/restore/source/ntfy/.ntfy-user.bak"
-docker exec backrest sqlite3 /home/jaw/data/ntfy/cache.db ".restore /tmp/restore/source/ntfy/.ntfy-cache.bak"
+docker exec backrest sqlite3 /source/ntfy/user.db ".restore $restore_dir/source/ntfy/.ntfy-user.bak"
+docker exec backrest sqlite3 /source/ntfy/cache.db ".restore $restore_dir/source/ntfy/.ntfy-cache.bak"
 rm -f /home/jaw/data/ntfy/user.db-wal /home/jaw/data/ntfy/user.db-shm
 rm -f /home/jaw/data/ntfy/cache.db-wal /home/jaw/data/ntfy/cache.db-shm
 
@@ -418,7 +436,7 @@ All 35 repositories have a weekly **100% data check**, spread across Monday–Su
 
 Backup notifications and check failures use the `backrest` ntfy topic. Check failures are high priority. Successful checks remain quiet and are recorded in Backrest. Backup, retention, and prune schedules are unchanged.
 
-Before deploying the topic rename, subscribe to `backrest` on `https://ntfy.jaw.dev` in your ntfy app. Existing `borgmatic` subscriptions do not receive messages published to `backrest`. The encrypted ntfy access rules grant anonymous publishers write-only access to the new topic, matching the old topic's permissions.
+Subscribe to `backrest` on `https://ntfy.jaw.dev` in your ntfy app. The encrypted ntfy access rules grant anonymous publishers write-only access to this topic.
 
 When adding a repository, choose an unused weekly check slot and copy a repository's `CONDITION_CHECK_ERROR` notification hook. These checks verify stored backup data; they do not restore files or start application containers. Restore drills remain manual below.
 
@@ -426,8 +444,9 @@ When adding a repository, choose an unused weekly check slot and copy a reposito
 
 ```bash
 # Pick a small repo
-docker exec backrest restic -r /repos/bang restore latest --target /tmp/restore-test
-docker exec backrest sqlite3 /tmp/restore-test/source/bang/.bang.bak ".tables"
+restore_dir=$(docker exec backrest mktemp -d /tmp/restore-test.XXXXXX)
+docker exec backrest restic -r /repos/bang restore latest --target "$restore_dir"
+docker exec backrest sqlite3 "$restore_dir/source/bang/.bang.bak" ".tables"
 ```
 
 If `.tables` lists bang's tables, the full pipeline (backup + restore) works end-to-end. The cheapest way to discover backup rot before you need it.
@@ -538,18 +557,18 @@ After a fresh deploy, Backrest can crash with `mkdir /data/processlogs: permissi
 
 #### 4. Re-deploying after pushing changes to config.json
 
-A formatter has been observed to strip new entries from `config.json` between push and apply. After any push to `apps/backrest/`, verify on the server:
+After any push to `apps/backrest/`, verify the live configuration on the server and compare its repo and plan counts with the JSON tracked in git:
 
 ```bash
-jq '(.repos | length), (.plans | length)' ~/home-ops/apps/backrest/config/config.json
-# Expect 32 then 32. If either is lower, re-add the missing entries.
+docker exec backrest jq '(.repos | length), (.plans | length)' /config/config.json
+# Current config: 35 repos and 35 plans. These counts change when apps are added or removed.
 ```
 
 #### 5. Verify
 
 ```bash
 docker logs backrest --tail 50          # should be no errors after orchestrator starts
-docker exec backrest ls /repos          # should list 32 repos
+docker exec backrest ls /repos          # should include every repo URI in config.json
 ```
 
 ### Testing Recovery
@@ -564,16 +583,17 @@ A quick on-server drill that doesn't require a VM:
 
 ```bash
 # Pick a low-stakes app
-docker exec backrest restic -r /repos/bang restore latest --target /tmp/restore-test
-docker exec backrest sqlite3 /tmp/restore-test/source/bang/.bang.bak ".tables"
+restore_dir=$(docker exec backrest mktemp -d /tmp/restore-test.XXXXXX)
+docker exec backrest restic -r /repos/bang restore latest --target "$restore_dir"
+docker exec backrest sqlite3 "$restore_dir/source/bang/.bang.bak" ".tables"
 
-# Now restore into a SECOND location and diff
-docker exec bang sqlite3 /usr/src/app/dist/src/db/sqlite/db.sqlite ".dump" > /tmp/live.sql
-docker exec backrest sqlite3 /tmp/restore-test/source/bang/.bang.bak ".dump" > /tmp/backup.sql
+# Compare the restored database with the live database
+docker exec backrest sqlite3 /source/bang/db.sqlite ".dump" > /tmp/live.sql
+docker exec backrest sqlite3 "$restore_dir/source/bang/.bang.bak" ".dump" > /tmp/backup.sql
 diff /tmp/live.sql /tmp/backup.sql | head
 ```
 
-Diff should be empty or only show data appended since the snapshot was taken.
+Differences can reflect normal app changes since the snapshot, so inspect them rather than treating every difference as corruption.
 
 ## Ad-hoc Dumps & Restores with dcdb
 
@@ -688,25 +708,25 @@ Backrest's web UI lets you edit config interactively. **Don't do that.** Config 
 
 Known issues and their fixes.
 
-| Symptom                                                                                    | Cause                                                                                     | Fix                                                                                                                               |
-| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `error loading config: ... device or resource busy`                                        | `config.json` mounted as a single file — Backrest's atomic-rename on config updates fails | Mount the **directory** instead: `./config:/config`                                                                               |
-| `mkdir /data/processlogs: permission denied`                                               | Backrest container can't write to bind-mounted `/data`                                    | Verify `cap_add` includes `DAC_OVERRIDE`. `DAC_READ_SEARCH` alone is insufficient.                                                |
-| `Tini is not running as PID 1` warning on startup                                          | `init: true` set on the compose service — wraps Backrest's tini twice                     | Remove `init: true`. The image already has tini at PID 1.                                                                         |
-| Backrest tries to rewrite config.json on every startup                                     | `version` field doesn't match current schema, Backrest tries to migrate it                | Set `"version": 6` explicitly in config.json so Backrest sees the current schema.                                                 |
-| Hook fails with `No such container: <app>`                                                 | App container has no `container_name:` set; docker generates `bang-bang-1`-style names    | Add `container_name:` to the app compose with `x-docker-cd.rolling_update: false`, OR use an ephemeral container in the hook      |
-| Want both `container_name:` AND rolling updates                                            | Impossible — can't have two containers with the same name during the rolling swap         | Pick one. If rolling-update matters (instant-deploy apps), use ephemeral container approach instead.                              |
-| sqlite3 backup fails immediately under concurrent writes                                   | No retry budget configured                                                                | Add `-cmd ".timeout 30000"` before the `.backup` command                                                                          |
-| Spaces in DB path break the hook                                                           | Shell word-splitting on unquoted paths                                                    | Wrap each path in **single quotes**. JSON escapes inside double-quoted strings only escape the JSON, not the shell.               |
-| Multiple DBs per app                                                                       | One hook can run one shell command                                                        | Chain with `&&` — the whole pre-hook is a single shell line.                                                                      |
-| Nested DB path                                                                             | App stores its DB in a subdirectory                                                       | Excludes and sqlite3 paths must match the nested path exactly.                                                                    |
-| `unable to create lock in backend: repository is already locked by PID ... on <container>` | Stale lock from killed backup                                                             | `docker exec backrest restic -r /repos/<app> unlock --remove-all` — plain `unlock` only removes non-exclusive locks               |
-| Repeated OOM kills during backup                                                           | Memory limit too low — restic's in-memory index spikes well past source size              | Bump `deploy.resources.limits.memory`. Current default is 4G.                                                                     |
-| First backup is very slow                                                                  | No dedup baseline; everything has to be written to the new repo                           | Expected. Subsequent backups are seconds.                                                                                         |
-| Snapshot succeeds but `.bak`/`.dump` lingers in app dir                                    | Post-hook (CONDITION_SNAPSHOT_END) didn't fire or errored                                 | Check the hook's output in the UI. Common cause: wrong filename in the rm command.                                                |
-| ntfy notifications never arrive                                                            | Shoutrrr URL syntax wrong                                                                 | Use `ntfy://ntfy/<topic>?scheme=http&title=foo&priority=Min&tags=skull`. Priority must be capitalized.                            |
-| `config.json` entries disappear after pushing                                              | A formatter strips JSON entries it doesn't recognize                                      | After each push, run `jq '(.repos \| length), (.plans \| length)' ~/home-ops/apps/backrest/config/config.json`. Expect 32 and 32. |
-| Stateless app got accidentally added to Backrest                                           | Misread of which apps had data                                                            | If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, skip it. Examples: close-powerlifting, ufc, ip.          |
+| Symptom                                                                                    | Cause                                                                                     | Fix                                                                                                                          |
+| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `error loading config: ... device or resource busy`                                        | `config.json` mounted as a single file — Backrest's atomic-rename on config updates fails | Mount the **directory** instead: `./config:/config`                                                                          |
+| `mkdir /data/processlogs: permission denied`                                               | Backrest container can't write to bind-mounted `/data`                                    | Verify `cap_add` includes `DAC_OVERRIDE`. `DAC_READ_SEARCH` alone is insufficient.                                           |
+| `Tini is not running as PID 1` warning on startup                                          | `init: true` set on the compose service — wraps Backrest's tini twice                     | Remove `init: true`. The image already has tini at PID 1.                                                                    |
+| Backrest tries to rewrite config.json on every startup                                     | `version` field doesn't match current schema, Backrest tries to migrate it                | Set `"version": 6` explicitly in config.json so Backrest sees the current schema.                                            |
+| Hook fails with `No such container: <app>`                                                 | App container has no `container_name:` set; docker generates `bang-bang-1`-style names    | Add `container_name:` to the app compose with `x-docker-cd.rolling_update: false`, OR use an ephemeral container in the hook |
+| Want both `container_name:` AND rolling updates                                            | Impossible — can't have two containers with the same name during the rolling swap         | Pick one. If rolling-update matters (instant-deploy apps), use ephemeral container approach instead.                         |
+| sqlite3 backup fails immediately under concurrent writes                                   | No retry budget configured                                                                | Add `-cmd ".timeout 30000"` before the `.backup` command                                                                     |
+| Spaces in DB path break the hook                                                           | Shell word-splitting on unquoted paths                                                    | Wrap each path in **single quotes**. JSON escapes inside double-quoted strings only escape the JSON, not the shell.          |
+| Multiple DBs per app                                                                       | One hook can run one shell command                                                        | Chain with `&&` — the whole pre-hook is a single shell line.                                                                 |
+| Nested DB path                                                                             | App stores its DB in a subdirectory                                                       | Excludes and sqlite3 paths must match the nested path exactly.                                                               |
+| `unable to create lock in backend: repository is already locked by PID ... on <container>` | Stale lock from killed backup                                                             | `docker exec backrest restic -r /repos/<app> unlock --remove-all` — plain `unlock` only removes non-exclusive locks          |
+| Repeated OOM kills during backup                                                           | Memory limit too low — restic's in-memory index spikes well past source size              | Bump `deploy.resources.limits.memory`. Current default is 4G.                                                                |
+| First backup is very slow                                                                  | No dedup baseline; everything has to be written to the new repo                           | Expected. Subsequent backups are seconds.                                                                                    |
+| Snapshot succeeds but `.bak`/`.dump` lingers in app dir                                    | Post-hook (CONDITION_SNAPSHOT_END) didn't fire or errored                                 | Check the hook's output in the UI. Common cause: wrong filename in the rm command.                                           |
+| ntfy notifications never arrive                                                            | Shoutrrr URL syntax wrong                                                                 | Use `ntfy://ntfy/<topic>?scheme=http&title=foo&priority=Min&tags=skull`. Priority must be capitalized.                       |
+| `config.json` entries disappear after pushing                                              | Deployed config differs from the JSON tracked in git                                      | Read `/config/config.json` inside Backrest and compare it with git. Current config has 35 repos and 35 plans.                |
+| Stateless app got accidentally added to Backrest                                           | Misread of which apps had data                                                            | If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, skip it. Examples: close-powerlifting, ufc, ip.     |
 
 ## Apps Without Backup
 

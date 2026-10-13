@@ -10,7 +10,7 @@ apps/myapp/.env.sops  →  docker-cd auto-decrypts  →  .env
      safe to commit
 ```
 
-Each stack has its own `.env.sops` file. When docker-cd deploys, it decrypts `.env.sops` to `.env`. Compose can use that file as container env vars or render values into runtime config files.
+Only stacks that need secrets have an `.env.sops` file. When docker-cd deploys, it decrypts that file to `.env`. Compose can use it as container env vars or render values into runtime config files. Stacks without secrets do not need either file or an `env_file` entry.
 
 ## Structure
 

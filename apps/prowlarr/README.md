@@ -1,5 +1,12 @@
 # Prowlarr
 
+## Usenet Indexers
+
+- **altHUB:** enabled; kept as the active Usenet indexer.
+- **NZBgeek:** disabled after returning `Membership Expired`.
+
+These settings live in `~/data/prowlarr/`, outside git. If rebuilding Prowlarr without a backup, reapply them in its UI and use **Sync App Indexers** to update Sonarr/Radarr. Check the synced indexers in both apps afterward.
+
 ## App Sync
 
 Prowlarr pushes indexers to Sonarr/Radarr via Full Sync — edits made in those apps are overwritten each sync. The **Standard** sync profile (Settings → Apps → Sync Profiles) sets the shared flags: RSS on, Automatic/Interactive Search on. RSS is per-indexer, not per-app. App API keys live in Settings → Apps (update there if a key is regenerated).
