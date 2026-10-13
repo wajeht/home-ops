@@ -283,7 +283,9 @@ Restoring = pick a snapshot → extract files → put them back. Backrest gives 
 
 Run the commands below in Bash on the server with `set -euo pipefail` so a failed extraction, copy, or restore stops the procedure. Use a fresh restore directory for each snapshot.
 
-Before replacing live app data, stop `docker-cd` with `docker stop docker-cd` so it cannot restart an app you stopped for recovery. After the app is restored and healthy, resume deployment with `docker start docker-cd`.
+Compose commands below use docker-cd's deployed checkout at `/home/jaw/data/docker-cd/home-ops`, which contains the decrypted `.env` files.
+
+Before replacing live app data, run `docker compose -f /home/jaw/data/docker-cd/home-ops/apps/docker-cd/docker-compose.yml stop` so docker-cd cannot restart an app you stopped for recovery. After the app is restored and healthy, run the same command with `start` instead of `stop` to resume deployment.
 
 ### Via UI
 
@@ -308,7 +310,7 @@ restore_dir=$(docker exec backrest mktemp -d /tmp/restore.XXXXXX)
 docker exec backrest restic -r /repos/bang restore latest --target "$restore_dir"
 
 # 2. Stop the app
-cd ~/home-ops/apps/bang && docker compose stop
+cd /home/jaw/data/docker-cd/home-ops/apps/bang && docker compose stop
 
 # 3. Restore via sqlite3 .restore
 docker exec backrest sqlite3 /source/bang/db.sqlite ".restore $restore_dir/source/bang/.bang.bak"
@@ -330,7 +332,7 @@ host_restore_dir=$(mktemp -d)
 docker cp "backrest:$restore_dir/source/<app>/." "$host_restore_dir/"
 
 # 2. Stop the app
-cd ~/home-ops/apps/<app> && docker compose stop
+cd /home/jaw/data/docker-cd/home-ops/apps/<app> && docker compose stop
 
 # 3. Restore files
 rsync -a --delete "$host_restore_dir/" /home/jaw/data/<app>/ --exclude '.<app>.bak'
@@ -353,9 +355,9 @@ restore_dir=$(docker exec backrest mktemp -d /tmp/restore.XXXXXX)
 docker exec backrest restic -r /repos/hello-world restore latest --target "$restore_dir"
 
 # 2. Stop the app and bring its DB container up
-cd ~/home-ops/apps/hello-world
+cd /home/jaw/data/docker-cd/home-ops/apps/hello-world
 docker compose stop hello-world
-docker compose up -d hello-world-db
+docker compose up -d --wait hello-world-db
 
 # 3. Drop + recreate the database
 docker exec hello-world-db dropdb -U hello hello
@@ -379,7 +381,7 @@ host_restore_dir=$(mktemp -d)
 docker cp "backrest:$restore_dir/source/<app>/." "$host_restore_dir/"
 
 # 2. Stop
-cd ~/home-ops/apps/<app> && docker compose stop
+cd /home/jaw/data/docker-cd/home-ops/apps/<app> && docker compose stop
 
 # 3. rsync files back
 rsync -a --delete "$host_restore_dir/" /home/jaw/data/<app>/
@@ -397,7 +399,7 @@ restore_dir=$(docker exec backrest mktemp -d /tmp/restore.XXXXXX)
 docker exec backrest restic -r /repos/ntfy restore latest --target "$restore_dir"
 host_restore_dir=$(mktemp -d)
 docker cp "backrest:$restore_dir/source/ntfy/." "$host_restore_dir/"
-cd ~/home-ops/apps/ntfy && docker compose stop
+cd /home/jaw/data/docker-cd/home-ops/apps/ntfy && docker compose stop
 
 rsync -a --delete "$host_restore_dir/" /home/jaw/data/ntfy/ \
   --exclude '.ntfy-user.bak' --exclude '.ntfy-cache.bak'
