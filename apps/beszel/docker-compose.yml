@@ -5,6 +5,8 @@ services:
   beszel:
     container_name: beszel
     image: henrygd/beszel:0.21@sha256:6b39a8b64f9b15d00a25e7683e31a93c46161182a54f62713525107064e10599
+    environment:
+      - APP_URL=https://beszel.jaw.dev
     volumes:
       - /home/jaw/data/beszel:/beszel_data
     networks:
@@ -46,7 +48,7 @@ services:
 
   beszel-agent:
     container_name: beszel-agent
-    image: henrygd/beszel-agent:0.21@sha256:f27b1aa2c68404bc5b9e1a2ab36653bd9b4ee14f6299862f09cd5051a4134767
+    image: henrygd/beszel-agent:0.21-alpine@sha256:b133b004335261dd10d8e2f1fd989eb4ee6f424ec2f8a8050cce800e014da180
     env_file:
       - .env
     environment:
