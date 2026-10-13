@@ -234,7 +234,7 @@ ntfy uses Backrest's Shoutrrr action. Two hooks per plan: success and error.
   "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
   "onError": "ON_ERROR_IGNORE",
   "actionShoutrrr": {
-    "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=<app>+backup+complete&priority=Min&tags=white_check_mark",
+    "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=<app>+backup+complete&priority=Min&tags=white_check_mark",
     "template": "<app> backup finished"
   }
 }
@@ -416,7 +416,9 @@ Without `~/.sops/age-key.txt`, every `.env.sops` is unreadable. Recovery require
 
 All 35 repositories have a weekly **100% data check**, spread across Monday–Sunday at 7, 8, 9, 10, and 11 AM (`America/Chicago`). Each check reads all retained backup data, including older snapshots, rather than checking only repository structure. Larger repositories may take longer than their scheduled slot; Backrest queues operations.
 
-Check failures send a high-priority notification to the existing `borgmatic` ntfy topic. Successful checks remain quiet and are recorded in Backrest. Backup, retention, and prune schedules are unchanged.
+Backup notifications and check failures use the `backrest` ntfy topic. Check failures are high priority. Successful checks remain quiet and are recorded in Backrest. Backup, retention, and prune schedules are unchanged.
+
+Before deploying the topic rename, subscribe to `backrest` on `https://ntfy.jaw.dev` in your ntfy app. Existing `borgmatic` subscriptions do not receive messages published to `backrest`. The encrypted ntfy access rules grant anonymous publishers write-only access to the new topic, matching the old topic's permissions.
 
 When adding a repository, choose an unused weekly check slot and copy a repository's `CONDITION_CHECK_ERROR` notification hook. These checks verify stored backup data; they do not restore files or start application containers. Restore drills remain manual below.
 
