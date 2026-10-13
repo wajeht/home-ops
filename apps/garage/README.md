@@ -48,7 +48,7 @@ defaults write ch.sudo.cyberduck s3.region.default garage
 
 ## Backups
 
-Borgmatic backs up `~/data/garage/` to `~/backup/garage/` (NFS) daily at 2:10 AM.
+Backrest backs up `~/data/garage/` to `~/backup/restic/garage/` (NFS) daily at 2:40 AM (`America/Chicago`).
 
 ## Ports (internal)
 

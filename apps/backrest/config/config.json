@@ -28,7 +28,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bang+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bang+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "bang backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -57,7 +57,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=favicon+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=favicon+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "favicon backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -86,7 +86,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=calendar+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=calendar+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "calendar backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -115,7 +115,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=screenshot+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=screenshot+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "screenshot backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -144,7 +144,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gains+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gains+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "gains backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -173,7 +173,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=beszel+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=beszel+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "beszel backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -202,7 +202,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=ntfy+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=ntfy+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "ntfy backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -231,7 +231,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=mm2us+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=mm2us+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "mm2us backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -260,7 +260,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gatus+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gatus+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "gatus backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -289,7 +289,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dbgate+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=dbgate+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "dbgate backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -318,7 +318,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=notify+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=notify+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "notify backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -347,7 +347,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gitea+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gitea+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "gitea backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -376,7 +376,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=garage+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=garage+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "garage backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -405,7 +405,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=homeassistant+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=homeassistant+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "homeassistant backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -434,7 +434,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=seerr+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=seerr+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "seerr backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -463,7 +463,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bazarr+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bazarr+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "bazarr backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -492,7 +492,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sabnzbd+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=sabnzbd+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "sabnzbd backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -521,7 +521,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=radarr+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=radarr+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "radarr backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -550,7 +550,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sonarr+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=sonarr+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "sonarr backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -579,7 +579,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plex+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=plex+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "plex backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -608,7 +608,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=prowlarr+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=prowlarr+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "prowlarr backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -637,7 +637,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=hello-world+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=hello-world+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "hello-world backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -666,7 +666,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vaultwarden+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=vaultwarden+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "vaultwarden backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -695,7 +695,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vpn-qbit+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=vpn-qbit+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "vpn-qbit backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -724,7 +724,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=traefik+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=traefik+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "traefik backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -753,7 +753,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zigbee2mqtt+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=zigbee2mqtt+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "zigbee2mqtt backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -782,7 +782,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=immich+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=immich+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "immich backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -811,7 +811,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=cap+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=cap+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "cap backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -840,7 +840,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=umami+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=umami+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "umami backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -869,7 +869,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=miniflux+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "miniflux backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -898,7 +898,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=yubal+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=yubal+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "yubal backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -927,7 +927,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=videos+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=videos+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "videos backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -956,7 +956,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=global+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=global+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "global backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -985,7 +985,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bjj+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bjj+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "bjj backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1014,7 +1014,7 @@
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dozzle+backup+verification+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=dozzle+backup+verification+FAILED&priority=Max&tags=skull",
             "template": "dozzle backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1055,7 +1055,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bang+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bang+backup+complete&priority=Min&tags=white_check_mark",
             "template": "bang backup finished"
           }
         },
@@ -1063,7 +1063,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bang+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bang+backup+FAILED&priority=Max&tags=skull",
             "template": "bang backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1108,7 +1108,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=favicon+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=favicon+backup+complete&priority=Min&tags=white_check_mark",
             "template": "favicon backup finished"
           }
         },
@@ -1116,7 +1116,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=favicon+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=favicon+backup+FAILED&priority=Max&tags=skull",
             "template": "favicon backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1155,7 +1155,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=calendar+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=calendar+backup+complete&priority=Min&tags=white_check_mark",
             "template": "calendar backup finished"
           }
         },
@@ -1163,7 +1163,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=calendar+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=calendar+backup+FAILED&priority=Max&tags=skull",
             "template": "calendar backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1208,7 +1208,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=screenshot+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=screenshot+backup+complete&priority=Min&tags=white_check_mark",
             "template": "screenshot backup finished"
           }
         },
@@ -1216,7 +1216,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=screenshot+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=screenshot+backup+FAILED&priority=Max&tags=skull",
             "template": "screenshot backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1255,7 +1255,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gains+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gains+backup+complete&priority=Min&tags=white_check_mark",
             "template": "gains backup finished"
           }
         },
@@ -1263,7 +1263,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gains+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gains+backup+FAILED&priority=Max&tags=skull",
             "template": "gains backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1308,7 +1308,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=beszel+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=beszel+backup+complete&priority=Min&tags=white_check_mark",
             "template": "beszel backup finished"
           }
         },
@@ -1316,7 +1316,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=beszel+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=beszel+backup+FAILED&priority=Max&tags=skull",
             "template": "beszel backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1364,7 +1364,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=ntfy+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=ntfy+backup+complete&priority=Min&tags=white_check_mark",
             "template": "ntfy backup finished"
           }
         },
@@ -1372,7 +1372,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=ntfy+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=ntfy+backup+FAILED&priority=Max&tags=skull",
             "template": "ntfy backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1411,7 +1411,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=mm2us+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=mm2us+backup+complete&priority=Min&tags=white_check_mark",
             "template": "mm2us backup finished"
           }
         },
@@ -1419,7 +1419,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=mm2us+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=mm2us+backup+FAILED&priority=Max&tags=skull",
             "template": "mm2us backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1464,7 +1464,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gatus+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gatus+backup+complete&priority=Min&tags=white_check_mark",
             "template": "gatus backup finished"
           }
         },
@@ -1472,7 +1472,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gatus+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gatus+backup+FAILED&priority=Max&tags=skull",
             "template": "gatus backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1499,7 +1499,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dbgate+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=dbgate+backup+complete&priority=Min&tags=white_check_mark",
             "template": "dbgate backup finished"
           }
         },
@@ -1507,7 +1507,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dbgate+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=dbgate+backup+FAILED&priority=Max&tags=skull",
             "template": "dbgate backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1546,7 +1546,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=notify+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=notify+backup+complete&priority=Min&tags=white_check_mark",
             "template": "notify backup finished"
           }
         },
@@ -1554,7 +1554,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=notify+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=notify+backup+FAILED&priority=Max&tags=skull",
             "template": "notify backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1599,7 +1599,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gitea+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gitea+backup+complete&priority=Min&tags=white_check_mark",
             "template": "gitea backup finished"
           }
         },
@@ -1607,7 +1607,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gitea+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gitea+backup+FAILED&priority=Max&tags=skull",
             "template": "gitea backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1634,7 +1634,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=garage+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=garage+backup+complete&priority=Min&tags=white_check_mark",
             "template": "garage backup finished"
           }
         },
@@ -1642,7 +1642,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=garage+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=garage+backup+FAILED&priority=Max&tags=skull",
             "template": "garage backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1687,7 +1687,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=homeassistant+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=homeassistant+backup+complete&priority=Min&tags=white_check_mark",
             "template": "homeassistant backup finished"
           }
         },
@@ -1695,7 +1695,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=homeassistant+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=homeassistant+backup+FAILED&priority=Max&tags=skull",
             "template": "homeassistant backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1742,7 +1742,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=seerr+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=seerr+backup+complete&priority=Min&tags=white_check_mark",
             "template": "seerr backup finished"
           }
         },
@@ -1750,7 +1750,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=seerr+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=seerr+backup+FAILED&priority=Max&tags=skull",
             "template": "seerr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1797,7 +1797,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bazarr+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bazarr+backup+complete&priority=Min&tags=white_check_mark",
             "template": "bazarr backup finished"
           }
         },
@@ -1805,7 +1805,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bazarr+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bazarr+backup+FAILED&priority=Max&tags=skull",
             "template": "bazarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1853,7 +1853,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sabnzbd+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=sabnzbd+backup+complete&priority=Min&tags=white_check_mark",
             "template": "sabnzbd backup finished"
           }
         },
@@ -1861,7 +1861,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sabnzbd+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=sabnzbd+backup+FAILED&priority=Max&tags=skull",
             "template": "sabnzbd backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1915,7 +1915,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=radarr+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=radarr+backup+complete&priority=Min&tags=white_check_mark",
             "template": "radarr backup finished"
           }
         },
@@ -1923,7 +1923,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=radarr+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=radarr+backup+FAILED&priority=Max&tags=skull",
             "template": "radarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -1979,7 +1979,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plex+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=plex+backup+complete&priority=Min&tags=white_check_mark",
             "template": "plex backup finished"
           }
         },
@@ -1987,7 +1987,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plex+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=plex+backup+FAILED&priority=Max&tags=skull",
             "template": "plex backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2039,7 +2039,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=prowlarr+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=prowlarr+backup+complete&priority=Min&tags=white_check_mark",
             "template": "prowlarr backup finished"
           }
         },
@@ -2047,7 +2047,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=prowlarr+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=prowlarr+backup+FAILED&priority=Max&tags=skull",
             "template": "prowlarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2086,7 +2086,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=hello-world+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=hello-world+backup+complete&priority=Min&tags=white_check_mark",
             "template": "hello-world backup finished"
           }
         },
@@ -2094,7 +2094,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=hello-world+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=hello-world+backup+FAILED&priority=Max&tags=skull",
             "template": "hello-world backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2139,7 +2139,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vaultwarden+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=vaultwarden+backup+complete&priority=Min&tags=white_check_mark",
             "template": "vaultwarden backup finished"
           }
         },
@@ -2147,7 +2147,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vaultwarden+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=vaultwarden+backup+FAILED&priority=Max&tags=skull",
             "template": "vaultwarden backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2182,7 +2182,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vpn-qbit+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=vpn-qbit+backup+complete&priority=Min&tags=white_check_mark",
             "template": "vpn-qbit backup finished"
           }
         },
@@ -2190,7 +2190,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vpn-qbit+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=vpn-qbit+backup+FAILED&priority=Max&tags=skull",
             "template": "vpn-qbit backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2217,7 +2217,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=traefik+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=traefik+backup+complete&priority=Min&tags=white_check_mark",
             "template": "traefik backup finished"
           }
         },
@@ -2225,7 +2225,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=traefik+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=traefik+backup+FAILED&priority=Max&tags=skull",
             "template": "traefik backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2252,7 +2252,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zigbee2mqtt+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=zigbee2mqtt+backup+complete&priority=Min&tags=white_check_mark",
             "template": "zigbee2mqtt backup finished"
           }
         },
@@ -2260,7 +2260,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zigbee2mqtt+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=zigbee2mqtt+backup+FAILED&priority=Max&tags=skull",
             "template": "zigbee2mqtt backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2299,7 +2299,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=immich+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=immich+backup+complete&priority=Min&tags=white_check_mark",
             "template": "immich backup finished"
           }
         },
@@ -2307,7 +2307,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=immich+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=immich+backup+FAILED&priority=Max&tags=skull",
             "template": "immich backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2340,7 +2340,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=cap+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=cap+backup+complete&priority=Min&tags=white_check_mark",
             "template": "cap backup finished"
           }
         },
@@ -2348,7 +2348,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=cap+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=cap+backup+FAILED&priority=Max&tags=skull",
             "template": "cap backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2387,7 +2387,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=umami+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=umami+backup+complete&priority=Min&tags=white_check_mark",
             "template": "umami backup finished"
           }
         },
@@ -2395,7 +2395,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=umami+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=umami+backup+FAILED&priority=Max&tags=skull",
             "template": "umami backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2434,7 +2434,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=miniflux+backup+complete&priority=Min&tags=white_check_mark",
             "template": "miniflux backup finished"
           }
         },
@@ -2442,7 +2442,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=miniflux+backup+FAILED&priority=Max&tags=skull",
             "template": "miniflux backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2496,7 +2496,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sonarr+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=sonarr+backup+complete&priority=Min&tags=white_check_mark",
             "template": "sonarr backup finished"
           }
         },
@@ -2504,7 +2504,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sonarr+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=sonarr+backup+FAILED&priority=Max&tags=skull",
             "template": "sonarr backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2544,7 +2544,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=yubal+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=yubal+backup+complete&priority=Min&tags=white_check_mark",
             "template": "yubal backup finished"
           }
         },
@@ -2552,7 +2552,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=yubal+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=yubal+backup+FAILED&priority=Max&tags=skull",
             "template": "yubal backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2591,7 +2591,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=videos+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=videos+backup+complete&priority=Min&tags=white_check_mark",
             "template": "videos backup finished"
           }
         },
@@ -2599,7 +2599,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=videos+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=videos+backup+FAILED&priority=Max&tags=skull",
             "template": "videos backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2633,7 +2633,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=global+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=global+backup+complete&priority=Min&tags=white_check_mark",
             "template": "global backup finished"
           }
         },
@@ -2641,7 +2641,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=global+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=global+backup+FAILED&priority=Max&tags=skull",
             "template": "global backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2680,7 +2680,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bjj+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bjj+backup+complete&priority=Min&tags=white_check_mark",
             "template": "bjj backup finished"
           }
         },
@@ -2688,7 +2688,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bjj+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bjj+backup+FAILED&priority=Max&tags=skull",
             "template": "bjj backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
@@ -2714,7 +2714,7 @@
           "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dozzle+backup+complete&priority=Min&tags=white_check_mark",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=dozzle+backup+complete&priority=Min&tags=white_check_mark",
             "template": "dozzle backup finished"
           }
         },
@@ -2722,7 +2722,7 @@
           "conditions": ["CONDITION_SNAPSHOT_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
-            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dozzle+backup+FAILED&priority=Max&tags=skull",
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=dozzle+backup+FAILED&priority=Max&tags=skull",
             "template": "dozzle backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
