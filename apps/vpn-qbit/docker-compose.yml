@@ -60,7 +60,7 @@ services:
           memory: 512M
 
   qbittorrent:
-    image: linuxserver/qbittorrent:5.2.4-libtorrentv1@sha256:f6b1da8e425fc2c75487a737d6706451691c263fc3388a1164e1bf079e520125
+    image: linuxserver/qbittorrent:14.3.9.99202110311443-7435-01519b5e7ubuntu20.04.1-ls166@sha256:751f377e7bcfe8e7aee1d219049720690510f488bba649f8ceffcd911e83d908
     container_name: qbittorrent
     network_mode: "service:gluetun"
     depends_on:
