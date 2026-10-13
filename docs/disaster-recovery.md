@@ -114,7 +114,10 @@ After pushing, verify the entries are still in `config.json` on the server. A fo
   "password": "",
   "autoInitialize": true,
   "prunePolicy": { "schedule": { "cron": "0 4 * * 0" }, "maxUnusedPercent": 10 },
-  "checkPolicy": { "schedule": { "cron": "0 5 * * 0" }, "structureOnly": true }
+  "checkPolicy": {
+    "schedule": { "cron": "0 7 * * 1", "clock": "CLOCK_LOCAL" },
+    "readDataSubsetPercent": 100
+  }
 }
 ```
 
@@ -408,6 +411,14 @@ chmod 600 ~/.sops/age-key.txt
 ```
 
 Without `~/.sops/age-key.txt`, every `.env.sops` is unreadable. Recovery requires either the age key or plaintext copies of every secret and allowlist. Back up the age key to multiple locations.
+
+### Backup Data Checks
+
+All 35 repositories have a weekly **100% data check**, spread across Monday–Sunday at 7, 8, 9, 10, and 11 AM (`America/Chicago`). Each check reads all retained backup data, including older snapshots, rather than checking only repository structure. Larger repositories may take longer than their scheduled slot; Backrest queues operations.
+
+Check failures send a high-priority notification to the existing `borgmatic` ntfy topic. Successful checks remain quiet and are recorded in Backrest. Backup, retention, and prune schedules are unchanged.
+
+When adding a repository, choose an unused weekly check slot and copy a repository's `CONDITION_CHECK_ERROR` notification hook. These checks verify stored backup data; they do not restore files or start application containers. Restore drills remain manual below.
 
 ### Test Restore Drill
 

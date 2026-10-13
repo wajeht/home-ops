@@ -18,10 +18,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 7 * * 1",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bang+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "bang backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "favicon",
@@ -36,10 +47,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 7 * * 2",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=favicon+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "favicon backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "calendar",
@@ -54,10 +76,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 7 * * 3",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=calendar+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "calendar backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "screenshot",
@@ -72,10 +105,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 7 * * 4",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=screenshot+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "screenshot backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "gains",
@@ -90,10 +134,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 7 * * 5",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gains+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "gains backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "beszel",
@@ -108,10 +163,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 7 * * 6",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=beszel+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "beszel backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "ntfy",
@@ -126,10 +192,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 7 * * 0",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=ntfy+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "ntfy backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "mm2us",
@@ -144,10 +221,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 8 * * 1",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=mm2us+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "mm2us backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "gatus",
@@ -162,10 +250,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 8 * * 2",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gatus+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "gatus backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "dbgate",
@@ -180,10 +279,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 8 * * 3",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dbgate+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "dbgate backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "notify",
@@ -198,10 +308,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 8 * * 4",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=notify+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "notify backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "gitea",
@@ -216,10 +337,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 8 * * 5",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=gitea+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "gitea backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "garage",
@@ -234,10 +366,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 8 * * 6",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=garage+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "garage backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "homeassistant",
@@ -252,10 +395,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 8 * * 0",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=homeassistant+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "homeassistant backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "seerr",
@@ -270,10 +424,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 9 * * 1",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=seerr+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "seerr backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "bazarr",
@@ -288,10 +453,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 9 * * 2",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bazarr+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "bazarr backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "sabnzbd",
@@ -306,10 +482,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 9 * * 3",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sabnzbd+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "sabnzbd backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "radarr",
@@ -324,10 +511,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 9 * * 4",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=radarr+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "radarr backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "sonarr",
@@ -342,10 +540,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 9 * * 5",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=sonarr+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "sonarr backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "plex",
@@ -360,10 +569,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 9 * * 6",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=plex+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "plex backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "prowlarr",
@@ -378,10 +598,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 9 * * 0",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=prowlarr+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "prowlarr backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "hello-world",
@@ -396,10 +627,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 10 * * 1",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=hello-world+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "hello-world backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "vaultwarden",
@@ -414,10 +656,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 10 * * 2",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vaultwarden+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "vaultwarden backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "vpn-qbit",
@@ -432,10 +685,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 10 * * 3",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=vpn-qbit+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "vpn-qbit backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "traefik",
@@ -450,10 +714,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 10 * * 4",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=traefik+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "traefik backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "zigbee2mqtt",
@@ -468,10 +743,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 10 * * 5",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=zigbee2mqtt+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "zigbee2mqtt backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "immich",
@@ -486,10 +772,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 10 * * 6",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=immich+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "immich backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "cap",
@@ -504,10 +801,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 10 * * 0",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=cap+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "cap backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "umami",
@@ -522,10 +830,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 11 * * 1",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=umami+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "umami backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "miniflux",
@@ -540,10 +859,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 11 * * 2",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=miniflux+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "miniflux backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "yubal",
@@ -558,10 +888,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 11 * * 3",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=yubal+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "yubal backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "videos",
@@ -576,10 +917,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 11 * * 4",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=videos+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "videos backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "global",
@@ -594,10 +946,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 11 * * 5",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=global+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "global backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "bjj",
@@ -612,10 +975,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 11 * * 6",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=bjj+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "bjj backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     },
     {
       "id": "dozzle",
@@ -630,10 +1004,21 @@
       },
       "checkPolicy": {
         "schedule": {
-          "cron": "0 7 * * 0"
+          "cron": "0 11 * * 0",
+          "clock": "CLOCK_LOCAL"
         },
-        "structureOnly": true
-      }
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/borgmatic?scheme=http&title=dozzle+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "dozzle backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     }
   ],
   "plans": [
