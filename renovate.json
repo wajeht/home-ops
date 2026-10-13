@@ -31,6 +31,36 @@
       "rollbackPrs": false
     },
     {
+      "description": "Track qBittorrent application versions while preserving the libtorrent variant; reject legacy distro/build tags.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["linuxserver/qbittorrent"],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>libtorrentv[12])$"
+    },
+    {
+      "description": "Only accept complete Gitea release versions; reject legacy two-part tags such as 28.1.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["gitea/gitea"],
+      "allowedVersions": "/^[0-9]+\\.[0-9]+\\.[0-9]+$/"
+    },
+    {
+      "description": "Compare the full application build and move to stable only when it catches up; review database-bearing media updates manually.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["linuxserver/radarr", "linuxserver/prowlarr", "linuxserver/sonarr"],
+      "versioning": "regex:^(?:(?<prerelease>nightly|develop)-)?version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
+      "allowedVersions": "/^version-[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$/",
+      "ignoreUnstable": true,
+      "automerge": false
+    },
+    {
+      "description": "Hold the pinned Bazarr beta until an equal or newer stable release is available; review the transition manually.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["linuxserver/bazarr"],
+      "versioning": "regex:^(?<prerelease>development-)?version-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?:-beta\\.\\d+)?$",
+      "allowedVersions": "/^version-v[0-9]+\\.[0-9]+\\.[0-9]+$/",
+      "ignoreUnstable": true,
+      "automerge": false
+    },
+    {
       "description": "Keep SABnzbd on stable numeric release tags; exclude unstable and prerelease builds.",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["linuxserver/sabnzbd"],

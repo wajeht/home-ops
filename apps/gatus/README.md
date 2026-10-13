@@ -43,7 +43,19 @@ Gatus hot-reloads on config changes, so a `docker-cd` deploy is enough — no re
 | ICMP | `icmp://host`              | Plain reachability check                              |
 | DNS  | `dns://server`             | Validate a DNS record resolves                        |
 
-For apps running on a different host (e.g. AdGuard on `pi@192.168.4.181`), use a TCP probe against the host's published port: `tcp://<host-ip>:<port>`.
+For apps running on a different host, use the host's address. AdGuard uses an actual DNS query against `192.168.4.181:53`: it resolves `example.com` to an A record and requires `NOERROR` plus a non-empty answer. This catches a listening DNS port that cannot resolve names. Existing ntfy failure/recovery thresholds apply.
+
+### Monitoring From Outside the Home
+
+The **External Availability** GitHub Actions workflow runs every 15 minutes, at minutes 7, 22, 37, and 52, after this change is merged to `main`. It can also run manually from Actions. GitHub schedules may be delayed and public repositories disable schedules after 60 days without activity.
+
+It checks `https://jaw.dev/` and `https://ip.jaw.dev/healthz` through public DNS, Cloudflare, and the home origin. Both must return HTTP 200 with expected application content. Redirects, error pages, and network failures fail the check after three attempts with 10-second pauses. Results appear in the workflow summary.
+
+Because these sites allow US visitors only, the monitor first checks its runner's country using Cloudflare's trace endpoint. A non-US or unknown location fails with a monitor-configuration error instead of claiming the sites are healthy. Keep the country restrictions; use a US runner if this occurs.
+
+Enable **Settings → Notifications → Actions → Email → Send notifications for failed workflows only** in your GitHub account. Scheduled notifications go to the user who last changed the schedule. Before relying on it, run the workflow manually and confirm failure notifications reach you. Notifications use GitHub rather than home-hosted ntfy, so a home outage does not take down the notification sender.
+
+This checks public website availability, not every LAN device, WAN throughput, or direct Plex access. Healthy public checks also do not prove the internal DNS probe is healthy.
 
 ### Host Header Quirks
 

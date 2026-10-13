@@ -34,10 +34,15 @@ endpoints:
 
   - name: AdGuard
     group: Infra
-    url: tcp://192.168.4.181:53
+    url: "192.168.4.181:53"
+    dns:
+      query-name: "example.com"
+      query-type: "A"
     interval: 1m
     conditions:
       - "[CONNECTED] == true"
+      - "[DNS_RCODE] == NOERROR"
+      - "len([BODY]) > 0"
     alerts:
       - type: ntfy
 
