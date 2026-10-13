@@ -28,6 +28,8 @@ jobs:
           find scripts apps -name '*.sh' -print0 | xargs -0 shfmt -d -i 0 -ci
       - name: Lint
         run: ./scripts/lint.sh
+      - name: Test external availability checks
+        run: node --test .github/scripts/availability.test.mjs
 
   secrets:
     runs-on: ubuntu-24.04
