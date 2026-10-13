@@ -7,7 +7,7 @@ Renovate automatically creates PRs when third-party Docker image versions are av
 ```
 new third-party image tag available
     ↓
-Renovate detects new version every 3 hours
+Renovate detects new versions during scheduled sweeps and webhook-triggered runs
     ↓
 waits for minimumReleaseAge
     ↓
@@ -62,6 +62,23 @@ Major updates require manual review and merge.
 | ------------------ | ---------------------------- |
 | `ghcr.io/wajeht/*` | Ignored; uses instant deploy |
 | Third-party images | Creates PR for review        |
+
+## Maintenance Timing
+
+Run the scheduled dependency sweep before overnight media maintenance. Renovate runs once nightly at **06:00 UTC** in `apps/renovate/docker-compose.yml`: **1 AM** in Chicago during daylight saving time, or **midnight** during standard time. Repository-level Renovate schedules still control PR creation, and webhooks continue to enqueue immediate runs outside this scheduled window.
+
+The following schedules are configured in the apps' web settings and use **America/Chicago**:
+
+| App / job              | Schedule               | Where to configure                                             |
+| ---------------------- | ---------------------- | -------------------------------------------------------------- |
+| Plex scheduled tasks   | 2–5 AM                 | Settings → Scheduled Tasks                                     |
+| Immich missing files   | 5:30 AM (`30 5 * * *`) | Administration → Settings → Integrity checks → Missing files   |
+| Immich untracked files | 5:45 AM (`45 5 * * *`) | Administration → Settings → Integrity checks → Untracked files |
+| Immich checksum files  | 6 AM (`0 6 * * *`)     | Administration → Settings → Integrity checks → Checksum files  |
+
+Plex retains its three-hour maintenance window and enabled tasks. Immich checks remain enabled, with the checksum check retaining its one-hour time limit and percentage limit of `1`. Its separate midnight nightly tasks and the Backrest schedules are unchanged.
+
+These app settings live in the Plex and Immich data backed up by Backrest. Reapply the table after a fresh setup that does not restore that data. The scheduled windows reduce the known overlap; uploads, playback, and webhook-triggered jobs can still run at other times.
 
 ## Auto-Merge
 
