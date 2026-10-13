@@ -49,11 +49,13 @@ For apps running on a different host, use the host's address. AdGuard uses an ac
 
 The **External Availability** GitHub Actions workflow runs every 15 minutes, at minutes 7, 22, 37, and 52, after this change is merged to `main`. It can also run manually from Actions. GitHub schedules may be delayed and public repositories disable schedules after 60 days without activity.
 
-It checks `https://jaw.dev/` and `https://ip.jaw.dev/healthz` through public DNS, Cloudflare, and the home origin. Both must return HTTP 200 with expected application content. Redirects, error pages, and network failures fail the check after three attempts with 10-second pauses. Results appear in the workflow summary.
+It checks `https://jaw.dev/` and `https://ip.jaw.dev/healthz` through public DNS, Cloudflare, and the home origin. Both must return HTTP 200 with expected application content. The location request and website probes retry transient failures up to three times with 10-second pauses. Results appear in the workflow summary.
 
-Because these sites allow US visitors only, the monitor first checks its runner's country using Cloudflare's trace endpoint. A non-US or unknown location fails with a monitor-configuration error instead of claiming the sites are healthy. Keep the country restrictions; use a US runner if this occurs.
+Because these sites allow US visitors only, the monitor first checks its runner's country using Cloudflare's trace endpoint. A non-US, unknown, or unreachable location produces an incident and cannot close an existing outage. Keep the country restrictions; use a US runner if needed.
 
-Enable **Settings → Notifications → Actions → Email → Send notifications for failed workflows only** in your GitHub account. Scheduled notifications go to the user who last changed the schedule. Before relying on it, run the workflow manually and confirm failure notifications reach you. Notifications use GitHub rather than home-hosted ntfy, so a home outage does not take down the notification sender.
+Like the secret-rotation reminder, the workflow uses a GitHub issue as persistent state. The first failure opens **External availability incident**, assigned to the repo owner. Further failures leave it untouched. When both sites pass, the workflow adds recovery details and closes the issue; a later outage opens a new issue. Healthy runs without an incident stay quiet.
+
+Keep GitHub issue notifications enabled for assignment and subscribed issue activity. Outages use issue notifications rather than repeated workflow-failure emails or home-hosted ntfy. A successfully reported incident leaves the workflow green; the summary and open issue show actual service health. GitHub API errors still fail the workflow.
 
 This checks public website availability, not every LAN device, WAN throughput, or direct Plex access. Healthy public checks also do not prove the internal DNS probe is healthy.
 
