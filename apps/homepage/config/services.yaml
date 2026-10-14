@@ -122,6 +122,11 @@
         href: https://192.168.4.1/login
         description: Network Controller
 
+    - NVR:
+        icon: unifi
+        href: https://192.168.4.0/login
+        description: NVR Instant
+
     - Home Assistant:
         icon: home-assistant
         href: https://ha.jaw.dev
