@@ -124,7 +124,7 @@
 
     - NVR:
         icon: unifi
-        href: https://192.168.4.0/login
+        href: https://192.168.4.60/login
         description: NVR Instant
 
     - Home Assistant:
