@@ -25,6 +25,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bang+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "bang backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -53,6 +61,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=favicon+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "favicon backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -83,6 +99,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=calendar+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "calendar backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -111,6 +135,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=screenshot+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "screenshot backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -141,6 +173,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gains+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "gains backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -169,6 +209,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=beszel+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "beszel backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -199,6 +247,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=ntfy+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "ntfy backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -227,6 +283,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=mm2us+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "mm2us backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -257,6 +321,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gatus+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "gatus backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -285,6 +357,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=dbgate+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "dbgate backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -315,6 +395,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=notify+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "notify backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -343,6 +431,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=gitea+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "gitea backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -373,6 +469,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=garage+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "garage backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -401,6 +505,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=homeassistant+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "homeassistant backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -431,6 +543,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=seerr+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "seerr backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -459,6 +579,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bazarr+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "bazarr backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -489,6 +617,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=sabnzbd+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "sabnzbd backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -517,6 +653,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=radarr+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "radarr backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -547,6 +691,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=sonarr+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "sonarr backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -575,6 +727,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=plex+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "plex backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -605,6 +765,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=prowlarr+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "prowlarr backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -633,6 +801,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=hello-world+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "hello-world backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -663,6 +839,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=vaultwarden+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "vaultwarden backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -691,6 +875,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=vpn-qbit+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "vpn-qbit backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -721,6 +913,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=traefik+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "traefik backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -749,6 +949,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=zigbee2mqtt+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "zigbee2mqtt backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -779,6 +987,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=immich+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "immich backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -807,6 +1023,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=cap+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "cap backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -837,6 +1061,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=umami+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "umami backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -865,6 +1097,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=miniflux+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "miniflux backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -895,6 +1135,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=yubal+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "yubal backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -923,6 +1171,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=videos+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "videos backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
@@ -953,6 +1209,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=global+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "global backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -982,6 +1246,14 @@
       },
       "hooks": [
         {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=bjj+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "bjj backup verification passed"
+          }
+        },
+        {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",
           "actionShoutrrr": {
@@ -1010,6 +1282,14 @@
         "readDataSubsetPercent": 100
       },
       "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=dozzle+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "dozzle backup verification passed"
+          }
+        },
         {
           "conditions": ["CONDITION_CHECK_ERROR"],
           "onError": "ON_ERROR_IGNORE",

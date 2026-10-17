@@ -436,11 +436,11 @@ Without `~/.sops/age-key.txt`, every `.env.sops` is unreadable. Recovery require
 
 All 35 repositories have a weekly **100% data check**, spread across Monday–Sunday at 7, 8, 9, 10, and 11 AM (`America/Chicago`). Each check reads all retained backup data, including older snapshots, rather than checking only repository structure. Larger repositories may take longer than their scheduled slot; Backrest queues operations.
 
-Backup notifications and check failures use the `backrest` ntfy topic. Check failures are high priority. Successful checks remain quiet and are recorded in Backrest. Backup, retention, and prune schedules are unchanged.
+Backup notifications and integrity check results use the `backrest` ntfy topic. Successful checks send a low-priority notification; check failures send a high-priority notification. Results are also recorded in Backrest. Backup, retention, and prune schedules are unchanged.
 
 Subscribe to `backrest` on `https://ntfy.jaw.dev` in your ntfy app. The encrypted ntfy access rules grant anonymous publishers write-only access to this topic.
 
-When adding a repository, choose an unused weekly check slot and copy a repository's `CONDITION_CHECK_ERROR` notification hook. These checks verify stored backup data; they do not restore files or start application containers. Restore drills remain manual below.
+When adding a repository, choose an unused weekly check slot and copy a repository's `CONDITION_CHECK_SUCCESS` and `CONDITION_CHECK_ERROR` notification hooks. These checks verify stored backup data; they do not restore files or start application containers. Restore drills remain manual below.
 
 ### Test Restore Drill
 
