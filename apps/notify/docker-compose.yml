@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   notify:
-    image: ghcr.io/wajeht/notify:89a43f4@sha256:3b28063369432a4a1b9617f213097c4236d1a5993fb9556896283bcbd2a115a4
+    image: ghcr.io/wajeht/notify:bcd2226@sha256:18704159fe5f4c3b8392f168dbb2ab12387017aaefa5a557b720c836319145ca
     env_file:
       - .env
     environment:
