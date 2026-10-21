@@ -4,7 +4,7 @@ x-docker-cd:
 services:
   # lint-ignore: backup  # stateless — PR cache, rebuilds from git remotes on next run
   renovate:
-    image: ghcr.io/mend/renovate-ce:15.7.0-full@sha256:e7d054de8a8fd0ec368a44e68f8b29fe5c191788e0e00f24d0ef3c1bd87fd56f
+    image: ghcr.io/mend/renovate-ce:15.8.0-full@sha256:f8faf4708e8ded385d6690cb7ddac9d415b6890008995892d79d07c8be025572
     container_name: renovate
     environment:
       MEND_RNV_ACCEPT_TOS: "y"
