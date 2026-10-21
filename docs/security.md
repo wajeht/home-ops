@@ -69,6 +69,8 @@ Cloudflare's first active custom rule for `jaw.dev`, **only allow united states*
 
 UniFi forwards WAN1 ports `80,443` to `192.168.4.161` only from the **Cloudflare IPv4** source list. Traefik repeats the Cloudflare-only check on HTTPS routes, redirects HTTP to HTTPS, and trusts forwarded client headers only from Cloudflare. The **HTTP/HTTPS** port list contains only `80,443`.
 
+The catch-all redirect to `jaw.dev` is temporary and sends `Cache-Control: no-store`. An app can reach this fallback while its Docker router is unavailable during a deployment; browsers must not remember that redirect for later API or media requests. The `redirect-no-store` middleware must run before `redirect-to-main` so it also wraps the redirect response. Previously cached permanent redirects may still need to be cleared once in the affected browser after deployment.
+
 Update Traefik's Cloudflare ranges with:
 
 ```bash

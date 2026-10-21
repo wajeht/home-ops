@@ -1,11 +1,17 @@
 http:
   middlewares:
+    # An app can temporarily reach the fallback while its Docker router reloads.
+    redirect-no-store:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "no-store"
+
     # Used by the catch-all router for unknown *.jaw.dev subdomains.
     redirect-to-main:
       redirectRegex:
         regex: ".*"
         replacement: "https://jaw.dev"
-        permanent: true
+        permanent: false
 
     # Compress normal text responses; skip media formats that are already compressed.
     gzip:
@@ -146,6 +152,8 @@ http:
       entrypoints:
         - websecure
       middlewares:
+        # Wrap the redirect so even its early response receives Cache-Control.
+        - redirect-no-store
         - redirect-to-main
       service: dummy
       priority: 1
