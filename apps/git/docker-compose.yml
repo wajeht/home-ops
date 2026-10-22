@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   git:
-    image: ghcr.io/wajeht/git:6902aef@sha256:53f260e12ca68279dd57c889e356678dbd6f455a209aa9a0f2f0ae9ca99bb9be
+    image: ghcr.io/wajeht/git:51c99e0@sha256:329e95b279ff8fb46d7c698b0b5b3965ab871dc9fa92d3f83b5e415f079ef071
     environment:
       - TZ=America/Chicago
       - APP_PORT=80
