@@ -48,7 +48,7 @@ services:
 
   beszel-agent:
     container_name: beszel-agent
-    image: henrygd/beszel-agent:0.21-alpine@sha256:b133b004335261dd10d8e2f1fd989eb4ee6f424ec2f8a8050cce800e014da180
+    image: henrygd/beszel-agent:0.21-alpine@sha256:4100e26f7b5e6ab89e73699b2366417795f5046ab36bc452daf1f105766b40a0
     env_file:
       - .env
     environment:
