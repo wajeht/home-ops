@@ -1299,6 +1299,43 @@
           }
         }
       ]
+    },
+    {
+      "id": "homebridge",
+      "uri": "/repos/homebridge",
+      "password": "",
+      "autoInitialize": true,
+      "prunePolicy": {
+        "schedule": {
+          "cron": "0 6 * * 0"
+        },
+        "maxUnusedPercent": 10
+      },
+      "checkPolicy": {
+        "schedule": {
+          "cron": "0 12 * * 1",
+          "clock": "CLOCK_LOCAL"
+        },
+        "readDataSubsetPercent": 100
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_CHECK_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=homebridge+backup+verification+passed&priority=Min&tags=white_check_mark",
+            "template": "homebridge backup verification passed"
+          }
+        },
+        {
+          "conditions": ["CONDITION_CHECK_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=homebridge+backup+verification+FAILED&priority=Max&tags=skull",
+            "template": "homebridge backup verification failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
     }
   ],
   "plans": [
@@ -3004,6 +3041,40 @@
           "actionShoutrrr": {
             "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=dozzle+backup+FAILED&priority=Max&tags=skull",
             "template": "dozzle backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "homebridge",
+      "repo": "homebridge",
+      "paths": ["/source/homebridge"],
+      "schedule": {
+        "cron": "50 5 * * *",
+        "clock": "CLOCK_LOCAL"
+      },
+      "retention": {
+        "policyTimeBucketed": {
+          "daily": 7,
+          "weekly": 4,
+          "monthly": 6
+        }
+      },
+      "hooks": [
+        {
+          "conditions": ["CONDITION_SNAPSHOT_SUCCESS"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=homebridge+backup+complete&priority=Min&tags=white_check_mark",
+            "template": "homebridge backup finished"
+          }
+        },
+        {
+          "conditions": ["CONDITION_SNAPSHOT_ERROR"],
+          "onError": "ON_ERROR_IGNORE",
+          "actionShoutrrr": {
+            "shoutrrrUrl": "ntfy://ntfy/backrest?scheme=http&title=homebridge+backup+FAILED&priority=Max&tags=skull",
+            "template": "homebridge backup failed{{ if .Error }}: {{ .Error }}{{ end }}"
           }
         }
       ]

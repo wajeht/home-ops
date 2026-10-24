@@ -133,6 +133,12 @@
         description: Smart Home
         # siteMonitor: http://homeassistant:8123
 
+    - Homebridge:
+        icon: homebridge
+        href: http://192.168.4.161:8581
+        description: UniFi Cameras in Apple Home
+        # siteMonitor: http://192.168.4.161:8581
+
     - AdGuard:
         icon: adguard-home
         href: http://192.168.4.181

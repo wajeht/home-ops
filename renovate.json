@@ -18,6 +18,14 @@
   ],
   "packageRules": [
     {
+      "description": "Track stable dated Homebridge images and review updates to the camera bridge manually.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/homebridge/homebridge"],
+      "versioning": "regex:^(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$",
+      "allowedVersions": "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/",
+      "automerge": false
+    },
+    {
       "enabled": true,
       "matchPackageNames": ["/^ghcr\\.io/wajeht//"]
     },

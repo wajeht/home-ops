@@ -1,0 +1,46 @@
+x-docker-cd:
+  rolling_update: false
+
+services:
+  homebridge:
+    image: ghcr.io/homebridge/homebridge:2026-10-23@sha256:716b2cfb5743d9f36f850c8eb44ee5892357c0aa5696809ea8271f903da1f0ea
+    container_name: homebridge
+    # HomeKit discovery and camera streams must reach the LAN directly.
+    network_mode: host
+    environment:
+      TZ: America/Chicago
+      ENABLE_AVAHI: "1"
+    volumes:
+      - /home/jaw/data/homebridge:/homebridge
+    restart: unless-stopped
+    # lint-ignore: init  # Homebridge uses s6-overlay and must be PID 1
+    # Startup writes /etc and /var/lib, so the image needs a writable rootfs.
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - KILL # s6 stops Avahi/D-Bus after they switch users
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8581"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 300s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=false"

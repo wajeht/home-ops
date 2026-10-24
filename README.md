@@ -51,6 +51,7 @@ flowchart LR
 
             apps["apps/*
             Home Assistant
+            Homebridge
             Plex
             Gitea
             Vaultwarden

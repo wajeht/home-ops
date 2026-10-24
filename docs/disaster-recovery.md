@@ -96,6 +96,7 @@ Per-app schedules are staggered to reduce resource contention. `global` adds a f
 | bjj           | 5:20 AM  | SQLite DB only       |                                                               |
 | dozzle        | 5:30 AM  | Files only           | Settings and authentication state in `/data`                  |
 | **global**    | 5:40 AM  | All ~/data + ~/.sops | File-level only. Excludes `*.bak`, `*.dump`, backrest state   |
+| homebridge    | 5:50 AM  | Files only           | Config, plugins, credentials, and HomeKit pairing state       |
 
 Retention is **7 daily / 4 weekly / 6 monthly** for every plan. Prune runs Sunday 6 AM. Weekly full-data checks are staggered across the week; see [Backup Data Checks](#backup-data-checks).
 
@@ -434,7 +435,7 @@ Without `~/.sops/age-key.txt`, every `.env.sops` is unreadable. Recovery require
 
 ### Backup Data Checks
 
-All 35 repositories have a weekly **100% data check**, spread across Monday–Sunday at 7, 8, 9, 10, and 11 AM (`America/Chicago`). Each check reads all retained backup data, including older snapshots, rather than checking only repository structure. Larger repositories may take longer than their scheduled slot; Backrest queues operations.
+All 36 repositories have a weekly **100% data check**, spread across Monday–Sunday at 7, 8, 9, 10, and 11 AM, plus Monday at noon (`America/Chicago`). Each check reads all retained backup data, including older snapshots, rather than checking only repository structure. Larger repositories may take longer than their scheduled slot; Backrest queues operations.
 
 Backup notifications and integrity check results use the `backrest` ntfy topic. Successful checks send a low-priority notification; check failures send a high-priority notification. Results are also recorded in Backrest. Backup, retention, and prune schedules are unchanged.
 
@@ -563,7 +564,7 @@ After any push to `apps/backrest/`, verify the live configuration on the server 
 
 ```bash
 docker exec backrest jq '(.repos | length), (.plans | length)' /config/config.json
-# Current config: 35 repos and 35 plans. These counts change when apps are added or removed.
+# Current config: 36 repos and 36 plans. These counts change when apps are added or removed.
 ```
 
 #### 5. Verify
@@ -727,7 +728,7 @@ Known issues and their fixes.
 | First backup is very slow                                                                  | No dedup baseline; everything has to be written to the new repo                           | Expected. Subsequent backups are seconds.                                                                                    |
 | Snapshot succeeds but `.bak`/`.dump` lingers in app dir                                    | Post-hook (CONDITION_SNAPSHOT_END) didn't fire or errored                                 | Check the hook's output in the UI. Common cause: wrong filename in the rm command.                                           |
 | ntfy notifications never arrive                                                            | Shoutrrr URL syntax wrong                                                                 | Use `ntfy://ntfy/<topic>?scheme=http&title=foo&priority=Min&tags=skull`. Priority must be capitalized.                       |
-| `config.json` entries disappear after pushing                                              | Deployed config differs from the JSON tracked in git                                      | Read `/config/config.json` inside Backrest and compare it with git. Current config has 35 repos and 35 plans.                |
+| `config.json` entries disappear after pushing                                              | Deployed config differs from the JSON tracked in git                                      | Read `/config/config.json` inside Backrest and compare it with git. Current config has 36 repos and 36 plans.                |
 | Stateless app got accidentally added to Backrest                                           | Misread of which apps had data                                                            | If `apps/<app>/docker-compose.yml` has no `/home/jaw/data/<app>` volume, skip it. Examples: close-powerlifting, ufc, ip.     |
 
 ## Apps Without Backup

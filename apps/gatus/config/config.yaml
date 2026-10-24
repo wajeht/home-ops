@@ -68,6 +68,16 @@ endpoints:
     alerts:
       - type: ntfy
 
+  - name: Homebridge
+    group: Core
+    url: http://192.168.4.161:8581
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: ntfy
+
   - name: Immich
     group: Core
     url: http://immich:2283/api/server/ping
