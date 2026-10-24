@@ -3,7 +3,7 @@ x-docker-cd:
 
 services:
   close-powerlifting:
-    image: ghcr.io/wajeht/close-powerlifting:c01236b@sha256:5de6d32eb576b83bcbd81ad871748a69060a99b44c94de0afbc84d9ee03b220c
+    image: ghcr.io/wajeht/close-powerlifting:c01236b-snapshot-40104786687@sha256:d59827e50f576068d916aa30b5e4afee1921c4a93e8a18e5315364c18a32fe46
     env_file:
       - .env
     environment:
